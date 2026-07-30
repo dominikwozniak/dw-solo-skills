@@ -79,11 +79,13 @@ for name in $disk_skills; do
   fi
 done
 
-# explicit_list_text <doc> — the prose that names explicit-only skills in that doc.
-# README keeps it on one bolded line; docs/ keep it as an "## Explicit-only skills" section.
+# explicit_list_text <doc> — the prose that names explicit-only skills in that doc. docs/ keep it as
+# an "## Explicit-only skills" section; README keeps it as a bolded paragraph. Read the whole
+# paragraph (marker line through the next blank line), not just the marker line — prettier wraps at
+# 100 cols, so the names routinely continue onto the following lines.
 explicit_list_text() {
   case "$1" in
-    "$README") grep -F '**Explicit-only skills**' "$1" || true ;;
+    "$README") awk '/\*\*Explicit-only skills\*\*/{f=1} f&&/^[[:space:]]*$/{exit} f{print}' "$1" ;;
     *) awk '/^## Explicit-only skills/{f=1;next} f&&/^## /{exit} f{print}' "$1" ;;
   esac
 }
@@ -133,7 +135,7 @@ for d in skills/*/; do
     if in_list "$ref" "$disk_skills"; then
       echo "OK  $(basename "$d") -> $ref"
     else
-      echo "::error::$d/SKILL.md **Next:** names \`$ref\`, which is not a skill in this repo"
+      echo "::error::${d}SKILL.md **Next:** names \`$ref\`, which is not a skill in this repo"
       FAILED=1
     fi
   done

@@ -1,0 +1,39 @@
+{
+  "name": "dw-solo-skills",
+  "owner": {
+    "name": "Dominik Wozniak"
+  },
+  "metadata": {
+    "description": "The thin lane — a persistent spec-to-ship workflow for Claude Code, sized for repos only you read. One CHANGE.md per change, one quality pass, and the durable parts promoted out.",
+    "version": "0.1.0"
+  },
+  "plugins": [
+    {
+      "name": "dw-solo",
+      "version": "0.2.0",
+      "source": "./plugins/dw-solo",
+      "keywords": [
+        "solo",
+        "personal",
+        "lightweight",
+        "grill",
+        "interview",
+        "shape",
+        "change",
+        "checklist",
+        "workflow",
+        "init",
+        "land",
+        "git",
+        "commit",
+        "doctor",
+        "diagnose",
+        "precommit",
+        "husky",
+        "lint-staged"
+      ],
+      "category": "workflow",
+      "tags": ["solo", "workflow", "lightweight"]
+    }
+  ]
+}

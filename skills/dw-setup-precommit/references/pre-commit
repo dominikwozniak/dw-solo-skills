@@ -1,0 +1,7 @@
+pnpm exec lint-staged
+
+# Optional, consent-gated (see SKILL.md step 3). Uncomment only the lines whose
+# script exists and the dev opted into — both run the WHOLE project on every
+# commit, so they make commits slower and are often better left to CI.
+# pnpm run typecheck
+# pnpm run test

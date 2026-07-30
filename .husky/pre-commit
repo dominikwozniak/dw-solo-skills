@@ -1,0 +1,18 @@
+# Format every staged file with prettier (re-stages in place).
+pnpm exec lint-staged
+
+# Lint the agent-skills files with agnix, scoped to the staged paths only —
+# the repo `lint` script runs agnix over the whole tree and OOMs locally, so
+# never call it here. agnix --fix mirrors the repo's `lint:fix`.
+agnix_files=$(git diff --cached --name-only --diff-filter=ACM \
+  | grep -E '((^|/)(SKILL|CLAUDE|AGENTS)\.md|\.claude-plugin/[^/]*\.json)$' || true)
+if [ -n "$agnix_files" ]; then
+  echo "$agnix_files" | xargs pnpm exec agnix --fix
+  echo "$agnix_files" | xargs git add
+fi
+
+# When a plugin/marketplace manifest changed, enforce marketplace<->plugin
+# version sync (the same check CI runs). A failure here blocks the commit.
+if git diff --cached --name-only | grep -q '\.claude-plugin/'; then
+  pnpm validate:manifests
+fi

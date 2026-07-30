@@ -1,0 +1,26 @@
+# agnix lint config — dw-solo-skills is a Claude Code skills marketplace.
+# Docs: https://agent-sh.github.io/agnix/docs/configuration
+target = "ClaudeCode"
+severity = "Warning"
+
+exclude = [
+    "node_modules/**",
+    ".git/**",
+    # Local agent state (gitignored) — not part of the marketplace surface,
+    # so agnix doesn't lint the local drops.
+    ".claude/**",
+    # Template payloads — inert files copied verbatim INTO a target project
+    # (settings.json / hooks / CLAUDE.local.md, plus the artifact shapes under
+    # skills/*/references/). They reference `.claude/` paths and hook scripts
+    # that only exist once dropped, so they're not validatable in place.
+    "templates/**",
+    "skills/*/references/templates/**",
+]
+
+[rules]
+skills = true
+hooks = true
+plugins = true
+mcp = true
+frontmatter_validation = true
+import_references = true

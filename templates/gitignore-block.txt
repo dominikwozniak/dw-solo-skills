@@ -1,0 +1,19 @@
+# >>> dw-init managed block >>>
+# Personal agent memory & local overrides — never committed.
+/CLAUDE.local.md
+/.claude/settings.local.json
+
+# Worktree scratch — `claude --worktree` / `git worktree add` land here.
+/.claude/worktrees/
+
+# Editor / OS scratch.
+.DS_Store
+*.swp
+.vscode/
+.idea/
+.obsidian/
+
+# NOTE: `.ai/`, `.claude/settings.json`, and `.claude/hooks/` are TRACKED on
+# purpose — dw-* treats agent infra (change docs, backlog, guardrails) as
+# committed work. Do NOT add them here.
+# <<< dw-init managed block <<<

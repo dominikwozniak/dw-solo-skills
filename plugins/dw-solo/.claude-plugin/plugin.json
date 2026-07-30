@@ -1,0 +1,9 @@
+{
+  "name": "dw-solo",
+  "version": "0.2.0",
+  "description": "A persistent workflow for repos only you read. One artifact per change instead of three, one quality pass instead of five. Skills: dw-init (scaffold a solo repo), dw-grill (bounded interview, one question at a time), dw-shape (one CHANGE.md with a task checklist), dw-next (resume point and build step in one), dw-land (verdict, then promote decisions and drop the scaffolding), dw-git (git ops by your own conventions), dw-doctor (read-only health check), dw-setup-precommit (husky + lint-staged). Self-contained — do not install alongside dw-planning or dw-quality.",
+  "author": {
+    "name": "Dominik Wozniak"
+  },
+  "skills": "./skills"
+}

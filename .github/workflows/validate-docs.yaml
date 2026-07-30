@@ -1,0 +1,36 @@
+name: Validate docs
+
+on:
+  pull_request:
+    paths:
+      - README.md
+      - "docs/**"
+      - "skills/**/SKILL.md"
+      - scripts/validate-docs.sh
+      - .github/workflows/validate-docs.yaml
+  push:
+    branches: [main]
+    paths:
+      - README.md
+      - "docs/**"
+      - "skills/**/SKILL.md"
+      - scripts/validate-docs.sh
+      - .github/workflows/validate-docs.yaml
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Validate docs
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 1
+      - name: Validate docs
+        shell: bash
+        run: ./scripts/validate-docs.sh

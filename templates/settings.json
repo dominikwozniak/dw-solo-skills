@@ -1,0 +1,97 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "ask": [
+      "Bash(rm *)",
+      "Bash(rm -*)",
+      "Bash(rmdir *)",
+      "Bash(find * -delete*)",
+      "Bash(shred *)",
+      "Bash(sudo *)",
+      "Bash(gh repo delete *)",
+      "Bash(gh pr close *)",
+      "Bash(gh issue close *)",
+      "Bash(gh release delete *)",
+      "Bash(git push --force*)",
+      "Bash(git push -f*)",
+      "Bash(git reset --hard*)",
+      "Bash(git clean *)",
+      "Bash(rtk * repo delete *)",
+      "Bash(rtk * pr close *)",
+      "Bash(rtk * issue close *)",
+      "Bash(rtk * release delete *)",
+      "Bash(rtk find * -delete*)",
+      "Bash(rtk find * -exec*)",
+      "Bash(rtk git push --force*)",
+      "Bash(rtk git push -f*)"
+    ],
+    "deny": ["Read(./.env)", "Read(./**/.env)", "Edit(./.env)", "Edit(./**/.env)"]
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"${CLAUDE_PROJECT_DIR}/.claude/hooks/link-local-memory.sh\""
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"${CLAUDE_PROJECT_DIR}/.claude/hooks/block-dangerous-commands.sh\""
+          },
+          {
+            "type": "command",
+            "command": "bash \"${CLAUDE_PROJECT_DIR}/.claude/hooks/block-non-pnpm.sh\""
+          }
+        ]
+      },
+      {
+        "matcher": "Read|Edit|Write|MultiEdit|NotebookEdit|Grep|Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"${CLAUDE_PROJECT_DIR}/.claude/hooks/block-env-access.sh\""
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"${CLAUDE_PROJECT_DIR}/.claude/hooks/lint-on-edit.sh\"",
+            "timeout": 30,
+            "statusMessage": "Linting changed file..."
+          },
+          {
+            "type": "command",
+            "command": "bash \"${CLAUDE_PROJECT_DIR}/.claude/hooks/lint-on-edit-rb.sh\"",
+            "timeout": 30,
+            "statusMessage": "Linting changed Ruby file..."
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"${CLAUDE_PROJECT_DIR}/.claude/hooks/typecheck-on-stop.sh\"",
+            "timeout": 120,
+            "statusMessage": "Typechecking..."
+          }
+        ]
+      }
+    ]
+  }
+}

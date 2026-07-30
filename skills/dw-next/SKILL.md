@@ -1,0 +1,104 @@
+---
+name: dw-next
+description: >-
+  This lane's build step and its resume point in one skill. Bare, it reports where the active
+  `.ai/work/<slug>/CHANGE.md` stands and what the next unchecked task is — read from disk, so it
+  survives a `/clear`. With `go` it builds that task and commits. Use when picking work back up or
+  moving it forward, or when someone says "what's next", "where were we", "build the next task",
+  "keep going". One skill for both resuming and building — no separate resume step.
+argument-hint: "bare to report status · go to build the next task · all to keep going"
+---
+
+# dw-next — where we are, and the next slice
+
+Two jobs that are really one, which is why they're one skill: at 4–6 hours a week the question "what
+was I doing" and the question "do the next bit" arrive in the same breath. Splitting them would cost
+you an extra invocation to learn nothing.
+
+Everything comes from disk. Never reconstruct state from the conversation — the whole point is that a
+`/clear`, a closed laptop or a week away changes nothing about the answer.
+
+## What it reads and writes
+
+Reads `.ai/work/<slug>/CHANGE.md` (written by `dw-shape`). Writes code, ticks that file's checkboxes,
+appends to its Notes, and commits — plus a line in `.ai/BACKLOG.md` for an idea that belongs to a
+different change. `.ai/` is tracked in git.
+
+Find the active change by branch, not by guessing:
+
+```
+grep -l "^branch: $(git rev-parse --abbrev-ref HEAD)$" .ai/work/*/CHANGE.md 2>/dev/null
+```
+
+- **One match** — that's it.
+- **Several** — prefer the one whose `status:` isn't `landed`; if still ambiguous, list them and ask.
+- **None** — say so plainly. If exactly one non-`landed` change exists on another branch, offer it
+  (you may simply be on the wrong branch). Otherwise point at `dw-shape`. **Never invent a task
+  list** to have something to do.
+- **Detached HEAD** (the branch resolves to the literal `HEAD`) — say so, list every `CHANGE.md` with
+  its recorded `branch:`, and ask which one to build. Stop; don't guess.
+
+## Workflow
+
+### 1. Report, always
+
+Whatever the mode, start by stating from the file: the **goal** in one line, which tasks are done,
+what the **next unchecked task** is, and anything in Notes that changes how to approach it.
+
+If called bare, stop here. That is the whole resume path, and it is deliberately cheap.
+
+### 2. Confirm the task is still the right one
+
+Before writing code, sanity-check the next task against the repo as it is now. A week of gap, or the
+two tasks before it, may have made it wrong, redundant, or already done. If it no longer fits, say so
+and propose the amendment rather than building the stale thing.
+
+Order is a hint. If a later task is clearly takeable now and this one is blocked on something outside
+your control, take the later one and say why.
+
+### 3. Build one task — thin, end to end
+
+One task per invocation unless the mode says otherwise.
+
+- **Narrow and complete.** A vertical slice through whatever layers it needs, not a whole layer.
+  Resist widening scope mid-task; a second task is free, a sprawling commit is not. An idea that
+  belongs to a **different change** isn't a task here at all — it's one dated line in `.ai/BACKLOG.md`,
+  which is how you drop it without losing it.
+- **Test the way the project does.** Read the test command from `CLAUDE.md` / `CLAUDE.local.md` /
+  `AGENTS.md`, else the manifests. Where the project has a real test suite and the task has a
+  meaningful assertion, write the failing test first and make it pass — where it genuinely doesn't
+  (a config change, a copy edit), say so instead of fabricating a test to look rigorous.
+- **Follow the anchors.** The patterns `dw-shape` recorded are the local convention; match them
+  rather than importing a generic shape.
+- **Leave it green — run the tests, and only the tests.** Lint and typecheck are **hook-owned** in this
+  lane: `lint-on-edit` fires on every Write/Edit, `typecheck-on-stop` at the end of the turn. Re-running
+  them here would repeat a full pass per task for nothing. The test suite has no hook, so that one is
+  yours. If something unrelated was already failing, say so and don't pretend to have fixed it.
+
+### 4. Tick, note, commit
+
+- Flip the task's `- [ ]` to `- [x]` in `CHANGE.md`, and set frontmatter `status: building` if it's
+  still `shaping`.
+- Append to Notes only what a future session would actually need: a surprise, a dead end, a decision
+  taken while building. Not a narration of what the diff already shows.
+- Commit by the project's `## Git conventions` — stage by name, never `git add -A`. One task, one
+  commit; a `.ai/BACKLOG.md` line added while building ships in that same commit.
+
+### 5. Report and stop
+
+Say what shipped, what's left, and the next task. Then **stop** — a human deciding whether to
+continue is a feature at this cadence, not friction.
+
+**Next:** `dw-next` again for the following task, or `dw-land` once the boxes are all ticked.
+
+## Modes
+
+The mode is read from `$ARGUMENTS`. Empty means bare — reporting is always safe, so that is the
+default.
+
+- **bare** — report only. The resume path. Writes nothing.
+- **`go`** — report, then build exactly one task.
+- **`all`** — keep going task by task until the list is done or something needs a decision. Still
+  one commit per task, and still **stop** before anything irreversible: a migration, a destructive
+  data change, a force-push, a deploy, a published release, a deletion you can't undo from git.
+  Ask first, every time, even here.

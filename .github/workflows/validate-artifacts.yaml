@@ -1,0 +1,43 @@
+name: Validate artifacts
+
+on:
+  pull_request:
+    paths:
+      - scripts/tests/**
+      # Filter on the canon, never the plugin symlinks: editing scripts/runtime/<s>.sh
+      # leaves plugins/dw-solo/scripts/<s>.sh (the link target string) untouched,
+      # so a plugins/** filter never fires for it and the self-tests would be skipped.
+      - scripts/runtime/**
+      # hooks-in-sync + the two hook self-tests read templates/hooks/ directly.
+      - templates/**
+      # this repo's own installed copies, which hooks-in-sync pins to the canon.
+      - .claude/hooks/**
+      - scripts/validate-artifacts.sh
+      - .github/workflows/validate-artifacts.yaml
+  push:
+    branches: [main]
+    paths:
+      - scripts/tests/**
+      - scripts/runtime/**
+      - templates/**
+      - .claude/hooks/**
+      - scripts/validate-artifacts.sh
+      - .github/workflows/validate-artifacts.yaml
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Validate artifacts
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 1
+      - name: Validate artifacts
+        shell: bash
+        run: ./scripts/validate-artifacts.sh

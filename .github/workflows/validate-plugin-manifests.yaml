@@ -1,0 +1,73 @@
+name: Validate plugin marketplace manifests
+
+on:
+  pull_request:
+    paths:
+      - "**/marketplace.json"
+      - "**/plugin.json"
+      - scripts/validate-manifests.sh
+      - .github/workflows/validate-plugin-manifests.yaml
+  push:
+    branches: [main]
+    paths:
+      - "**/marketplace.json"
+      - "**/plugin.json"
+      - scripts/validate-manifests.sh
+      - .github/workflows/validate-plugin-manifests.yaml
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Validate all manifest files
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 1
+
+      - name: Install Claude Code CLI
+        shell: bash
+        run: npm install -g @anthropic-ai/claude-code@2.1.179
+
+      - name: Validate manifests
+        id: validate
+        shell: bash
+        run: |
+          set +e
+          output=$(./scripts/validate-manifests.sh 2>&1)
+          exit_code=$?
+          set -e
+          echo "$output"
+          {
+            echo "## Manifest Validation"
+            echo ""
+            echo '```'
+            echo "$output"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          if [ $exit_code -ne 0 ]; then
+            {
+              echo "failed_output<<EOF"
+              echo "$output"
+              echo "EOF"
+            } >> "$GITHUB_OUTPUT"
+            exit $exit_code
+          fi
+
+      - name: Comment on PR
+        if: failure() && steps.validate.outcome == 'failure' && github.event_name == 'pull_request'
+        uses: peter-evans/create-or-update-comment@f7c845d742ddcc26436b9547b75f949bdcd3012a
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            Manifest validation failed:
+
+            ```
+            ${{ steps.validate.outputs.failed_output }}
+            ```

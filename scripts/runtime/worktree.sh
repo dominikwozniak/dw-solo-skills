@@ -54,13 +54,9 @@ copy_worktree_includes() {
   )" || return 0
   [ -n "$candidates" ] || return 0
 
-  local total
-  total="$(printf '%s\n' "$candidates" | grep -c . || true)"
-  if [ "$total" -gt "$WORKTREE_INCLUDE_WARN_AT" ]; then
-    echo "worktree.sh: .worktreeinclude matches $total files — that looks like a directory tree, not local config. Copying anyway; narrow the patterns if this is wrong." >&2
-  fi
-
-  local copied=0 refused=0 rel
+  # Refusals first, so the volume warning below counts what will actually be copied. Warning about
+  # 395 files and then copying 1 of them teaches you to ignore the warning.
+  local keep="" refused=0 rel
   while IFS= read -r rel; do
     [ -n "$rel" ] || continue
     case "$rel" in
@@ -69,6 +65,23 @@ copy_worktree_includes() {
         continue
         ;;
     esac
+    keep="$keep$rel
+"
+    # Fed by heredoc, not a pipe: a pipe would run the loop in a subshell and the counters would
+    # come back zero.
+  done <<EOF
+$candidates
+EOF
+
+  local total
+  total="$(printf '%s' "$keep" | grep -c . || true)"
+  if [ "$total" -gt "$WORKTREE_INCLUDE_WARN_AT" ]; then
+    echo "worktree.sh: .worktreeinclude names $total files to copy — that looks like a directory tree, not local config. Copying anyway; narrow the patterns if this is wrong." >&2
+  fi
+
+  local copied=0
+  while IFS= read -r rel; do
+    [ -n "$rel" ] || continue
     [ -f "$src_root/$rel" ] || continue
     if mkdir -p "$dst_root/$(dirname "$rel")" 2>/dev/null &&
       cp -p "$src_root/$rel" "$dst_root/$rel" 2>/dev/null; then
@@ -76,10 +89,8 @@ copy_worktree_includes() {
     else
       echo "worktree.sh: could not copy $rel into the worktree — continuing without it" >&2
     fi
-    # Fed by heredoc, not a pipe: a pipe would run the loop in a subshell and the counters below
-    # would come back zero.
   done <<EOF
-$candidates
+$keep
 EOF
 
   [ "$refused" -eq 0 ] ||

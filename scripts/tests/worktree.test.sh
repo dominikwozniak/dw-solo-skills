@@ -196,6 +196,14 @@ else
   note_fail "include-refusal-reported-on-stderr" "no refusal line in stderr: $(tr '\n' '|' <"$ERRLOG")"
 fi
 
+# The volume warning counts post-refusal, so a pattern whose bulk is refused must not trip it —
+# otherwise it cries wolf on every repo with node_modules and stops being read.
+if grep -q "files to copy" "$ERRLOG"; then
+  note_fail "include-volume-warning-counts-after-refusals" "warned about files it was going to refuse"
+else
+  note_pass "include-volume-warning-counts-after-refusals"
+fi
+
 # Two, not three: tracked-probe.txt is listed but tracked, so the intersection drops it.
 if grep -q "copied 2 file(s) named by .worktreeinclude" "$ERRLOG"; then
   note_pass "include-copy-count-reported-on-stderr"

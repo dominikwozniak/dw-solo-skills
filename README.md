@@ -51,8 +51,9 @@ The plugin installs and validates, but ships no skills yet.
 A task may match several rows — read all that apply. `⭑` = explicit-invoke only: say its name (it
 never auto-fires). The phrases that trigger each skill live in its own `description`, not here.
 
-**Explicit-only skills**: `dw-start` and `dw-ship`. Marked `⭑` in the router; they never auto-fire
-— say the name. Being invisible to the model, they also can't be reached by other skills' prose.
+**Explicit-only skills**: `dw-start`, `dw-ship` and `dw-init`. Marked `⭑` in the router; they never
+auto-fire — say the name. Being invisible to the model, they also can't be reached by other skills'
+prose.
 
 **The loop** — shape → build → land → ship; grill first when the idea is fuzzy.
 
@@ -71,6 +72,13 @@ never auto-fires). The phrases that trigger each skill live in its own `descript
 | Skill                              | Task                                                     | What you get                       |
 | ---------------------------------- | -------------------------------------------------------- | ---------------------------------- |
 | [`dw-git`](skills/dw-git/SKILL.md) | All git ops — commit / push / PR / sync / branch / stash | commits / PR per `CLAUDE.local.md` |
+
+**Setup** — the `dw-solo-setup` plugin; run once per repo.
+
+| Skill                                    | Task                                                  | What you get                             |
+| ---------------------------------------- | ----------------------------------------------------- | ---------------------------------------- |
+| [`dw-init`](skills/dw-init/SKILL.md) `⭑` | Scaffold a solo repo: `.ai/`, hooks, settings, memory | tracked scaffold (+ optional pre-commit) |
+| [`dw-doctor`](skills/dw-doctor/SKILL.md) | Diagnose tools, hooks, `.ai/` sanity (read-only)      | health report + copy-paste fixes         |
 
 ## ⚙ How it works — the design in one screen
 

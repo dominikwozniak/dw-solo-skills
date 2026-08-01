@@ -146,8 +146,9 @@ you say the name, every time. The cost is deliberate and worth naming: an explic
 invisible to the model, so no other skill can reach it by prose either — anything the loop must be
 able to delegate to stays model-invocable.
 
-Currently: `dw-start` (creates a worktree and branch, and claims a change into it) and `dw-ship`
-(pushes, merges, and deletes the worktree and branch — the one irreversible step in the loop).
+Currently: `dw-start` (creates a worktree and branch, and claims a change into it), `dw-ship`
+(pushes, merges, and deletes the worktree and branch — the one irreversible step in the loop), and
+`dw-init` (scaffolds a repo and installs shared tooling).
 
 ## Why this is a separate repo
 

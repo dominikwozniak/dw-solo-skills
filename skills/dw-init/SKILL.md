@@ -31,6 +31,7 @@ handoffs, no status tables.
 | `.claude/settings.json`          | **tracked**        | permissions (ask + deny + derived allow) and hook wiring       |
 | `.claude/hooks/*.sh`             | **tracked**        | the guardrail scripts those settings reference                 |
 | `CLAUDE.local.md`                | personal / ignored | your commands, git conventions, and the loop                   |
+| `.worktreeinclude`               | **tracked**        | gitignored files a fresh worktree should carry in              |
 | `.gitignore`                     | tracked            | a managed marker block for the personal files                  |
 | `.husky/` + `.lintstagedrc.json` | tracked, optional  | the pre-commit twin of the hooks — only when opted in          |
 
@@ -101,6 +102,12 @@ is light.
   substitute `{{PROJECT_NAME}}` `{{DEFAULT_BRANCH}}` `{{STACK}}` `{{TEST_COMMAND}}`
   `{{LINT_COMMAND}}` `{{TYPECHECK_COMMAND}}` `{{HOOKS_INSTALLED}}`. The template ships this lane's
   loop and `## Git conventions`; reconcile the rendered copy with what step 1 actually found.
+- `.worktreeinclude` — if absent, copy `${CLAUDE_PLUGIN_ROOT}/templates/worktreeinclude.txt`
+  verbatim. **If it exists, leave it alone.** Every line ships commented out, so it copies nothing
+  until the user names a file; that is deliberate, because an uncommented guess would copy a secret
+  nobody asked for. Tracked, and it earns its keep twice: Claude Code reads it for `claude -w`
+  worktrees, `worktree.sh create` reads it for the loop's own. Say at the gate that it starts empty
+  and the user should add their `.env` line.
 - Append `${CLAUDE_PLUGIN_ROOT}/templates/gitignore-block.txt` to `.gitignore` between its markers.
   **Idempotent**: if the markers are already there, replace the block in place, never duplicate it.
 

@@ -84,7 +84,7 @@ nothing but the path on stdout.
       what must be regenerated — `package.json` present → name the install command; `.husky/` tracked
       with no `.husky/_/` → say plainly that **commit hooks are inactive until you install**. Tests:
       report lands on stderr, stdout stays path-only, the husky line fires only in that state.
-- [ ] 4. `templates/worktreeinclude.txt` — commented-out examples only, plus a warning comment about
+- [x] 4. `templates/worktreeinclude.txt` — commented-out examples only, plus a warning comment about
       the refused paths. Wired into `dw-init`: listed in the step-3 gate marked **tracked**, written
       idempotently in step 4.
 - [ ] 5. `skills/dw-start/SKILL.md` step 4 rewritten — the install stops being an offer and becomes a

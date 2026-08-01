@@ -63,6 +63,7 @@ name. Being invisible to the model, they also can't be reached by other skills' 
 | [`dw-start`](skills/dw-start/SKILL.md) `⭑` | Open a shaped change: worktree + branch + claim            | `.claude/worktrees/<slug>` on branch `<slug>` |
 | [`dw-next`](skills/dw-next/SKILL.md)       | Resume point _and_ build step (`go` builds and commits)    | code + ticked box + commit                    |
 | [`dw-check`](skills/dw-check/SKILL.md)     | Fast optional QA gate — delegate, or two-axis self-review  | findings at `file:line`, fixed in-session     |
+| [`dw-land`](skills/dw-land/SKILL.md)       | One thin verdict, then promote what's durable and clean up | `docs/decisions/` · `CONTEXT.md` · backlog    |
 
 **Anytime**
 

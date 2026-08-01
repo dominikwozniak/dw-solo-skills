@@ -56,6 +56,7 @@ never auto-fires). The phrases that trigger each skill live in its own `descript
 | Skill                                  | Task                                                       | What you get                          |
 | -------------------------------------- | ---------------------------------------------------------- | ------------------------------------- |
 | [`dw-grill`](skills/dw-grill/SKILL.md) | Interview a fuzzy idea into decisions — max five questions | shared understanding (writes nothing) |
+| [`dw-shape`](skills/dw-shape/SKILL.md) | Synthesize it into one goal + decisions + task checklist   | `.ai/work/<slug>/CHANGE.md`           |
 
 **Anytime**
 

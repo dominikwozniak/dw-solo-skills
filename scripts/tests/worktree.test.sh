@@ -215,6 +215,54 @@ else
 fi
 "$WORKTREE" remove epsilon >/dev/null 2>&1
 
+echo "CLAUDE.local.md (link-class, not copy-class):"
+echo "conventions" >"$REPO/CLAUDE.local.md"
+
+"$WORKTREE" create zeta >/dev/null 2>&1
+ZETA="$REPO/.claude/worktrees/zeta"
+if [ -L "$ZETA/CLAUDE.local.md" ] && [ "$(cat "$ZETA/CLAUDE.local.md")" = "conventions" ]; then
+  note_pass "local-memory-linked (symlink, reads through)"
+else
+  note_fail "local-memory-linked" "not a symlink, or content unreadable"
+fi
+
+# One source of truth: an edit in the worktree must land in the main tree, which a copy would not do.
+echo "edited" >"$ZETA/CLAUDE.local.md"
+if [ "$(cat "$REPO/CLAUDE.local.md")" = "edited" ]; then
+  note_pass "local-memory-edits-propagate"
+else
+  note_fail "local-memory-edits-propagate" "main tree still: $(cat "$REPO/CLAUDE.local.md")"
+fi
+echo "conventions" >"$REPO/CLAUDE.local.md"
+"$WORKTREE" remove zeta >/dev/null 2>&1
+
+# A real file already at the destination must be left alone. Reachable through the public interface
+# by tracking the file: then the checkout puts a real one there before the link step runs. Same `-e`
+# guard that lets this compose with the SessionStart hook.
+git -C "$REPO" add -f CLAUDE.local.md
+git -C "$REPO" commit -qm "track local memory"
+"$WORKTREE" create eta >/dev/null 2>&1
+ETA="$REPO/.claude/worktrees/eta"
+if [ ! -L "$ETA/CLAUDE.local.md" ] && [ -f "$ETA/CLAUDE.local.md" ]; then
+  note_pass "local-memory-existing-file-left-alone"
+else
+  note_fail "local-memory-existing-file-left-alone" "clobbered a real file with a link"
+fi
+"$WORKTREE" remove eta >/dev/null 2>&1
+git -C "$REPO" rm -q --cached CLAUDE.local.md
+git -C "$REPO" commit -qm "untrack local memory"
+
+# Absent source -> nothing to link, and create still succeeds.
+mv "$REPO/CLAUDE.local.md" "$REPO/CLAUDE.local.md.bak"
+out=$("$WORKTREE" create theta 2>/dev/null)
+if [ "$out" = "$REPO/.claude/worktrees/theta" ] && [ ! -e "$REPO/.claude/worktrees/theta/CLAUDE.local.md" ]; then
+  note_pass "local-memory-absent-is-a-no-op"
+else
+  note_fail "local-memory-absent-is-a-no-op" "out='$out' or a stray link appeared"
+fi
+"$WORKTREE" remove theta >/dev/null 2>&1
+mv "$REPO/CLAUDE.local.md.bak" "$REPO/CLAUDE.local.md"
+
 echo "errors (expect non-zero exit):"
 if "$WORKTREE" bogus >/dev/null 2>&1; then note_fail "unknown-subcmd" "expected non-zero"; else note_pass "unknown-subcmd"; fi
 if "$WORKTREE" >/dev/null 2>&1; then note_fail "no-subcmd" "expected non-zero"; else note_pass "no-subcmd"; fi

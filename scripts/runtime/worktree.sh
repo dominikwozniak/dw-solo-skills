@@ -88,6 +88,30 @@ EOF
     echo "worktree.sh: copied $copied file(s) named by .worktreeinclude" >&2
 }
 
+# Personal agent memory is link-class, not copy-class: one source of truth, so an edit in either
+# tree is visible in both. That is `link-local-memory.sh`'s argument, and it stays the right one.
+#
+# The hook cannot cover this path, though. It runs on SessionStart, which fires for `claude -w`
+# (the session starts *in* the worktree) but not for a session that enters a worktree mid-flight —
+# `/dw-start`'s route. Creating the link here has no session lifecycle to miss. Both sides test for
+# an existing entry first, so they compose rather than race.
+#
+# Absolute target, matching the hook: a relative one would break the moment the worktree moves.
+link_local_memory() {
+  local src_root="$1" dst_root="$2"
+  local src="$src_root/CLAUDE.local.md"
+  [ -f "$src" ] || return 0
+  # -e, not -f: a link the hook already made counts as present.
+  if [ -e "$dst_root/CLAUDE.local.md" ]; then
+    return 0
+  fi
+  if ln -s "$src" "$dst_root/CLAUDE.local.md" 2>/dev/null; then
+    echo "worktree.sh: linked CLAUDE.local.md from the main tree — it carries the git conventions and the lint/typecheck commands" >&2
+  else
+    echo "worktree.sh: could not link CLAUDE.local.md into the worktree — the agent will fall back to generic git conventions" >&2
+  fi
+}
+
 # In a linked worktree --git-dir is .git/worktrees/<name> while --git-common-dir stays the
 # main .git — the only reliable tell (path comparison breaks on symlinked tmpdirs).
 in_linked_worktree() {
@@ -127,6 +151,7 @@ case "$cmd" in
     # `already exists` guards above make a half-created one expensive to retry. A missing include
     # file is worth a warning, never a failure.
     copy_worktree_includes "$root" "$path" || true
+    link_local_memory "$root" "$path" || true
     printf '%s\n' "$path"
     ;;
   remove)

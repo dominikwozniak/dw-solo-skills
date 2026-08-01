@@ -77,7 +77,7 @@ nothing but the path on stdout.
       Header comment extended. Tests: no-file no-op, ignored+matching copied, tracked+matching
       skipped, ignored+non-matching skipped, nested pattern, `600` preserved, each refusal, and
       stdout still path-only while copying.
-- [ ] 2. `create` symlinks `CLAUDE.local.md` from the main tree, idempotently (skip when the target
+- [x] 2. `create` symlinks `CLAUDE.local.md` from the main tree, idempotently (skip when the target
       already exists, matching the hook's `-e` test). Tests: link made and readable through,
       pre-existing file left alone, absent source is a no-op.
 - [ ] 3. Readiness report on stderr at the end of `create`: what was copied, what was linked, and

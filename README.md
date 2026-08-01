@@ -35,18 +35,12 @@ The _why_ behind each design choice is in [`docs/DESIGN.md`](docs/DESIGN.md).
 ## ▸ Quick start
 
 ```
-claude plugin marketplace add git@github.com:dominikwozniak/dw-solo-skills.git
+claude plugin marketplace add dominikwozniak/dw-solo-skills
 claude plugin install dw-solo
 claude plugin install dw-solo-setup
 ```
 
 Then, in a project of your own: `/dw-init` scaffolds it, `/dw-shape` opens the first change.
-
-> **Cutover from `dw-skills`:** if that marketplace's old `dw-solo` plugin is still installed,
-> uninstall it first — two plugins with the same name from different marketplaces is undocumented
-> behavior. In a solo repo, enable this lane's two plugins and disable the team lane's: `dw-git`,
-> `dw-doctor` and `dw-init` exist in both lanes as deliberately diverging forks, and per-project
-> plugin enablement is what disambiguates them.
 
 ## ◇ Task router — which skill for which task
 
@@ -123,6 +117,11 @@ The cost, stated plainly: `templates/hooks/` (6 guardrail hooks — the team rep
 deliberately dropped in this Node-only lane) and `scripts/runtime/slugify.sh` are **vendored
 copies** of the same files in `dw-skills`. A fix must be applied in both — nothing across the repo
 boundary can detect drift.
+
+**Install one lane per repo, not both.** `dw-git`, `dw-doctor` and `dw-init` exist in both lanes as
+deliberately diverging forks, so two lanes in one project means two skills competing for the same
+task. Claude Code scopes plugins per project, which is where the choice is made once: in a solo repo
+enable this lane's two plugins and disable the team lane's.
 
 ## ▤ Project structure
 

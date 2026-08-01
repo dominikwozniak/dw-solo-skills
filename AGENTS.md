@@ -24,7 +24,7 @@ a symlink back to it — `plugins/dw-solo/skills/`, `scripts/` and `templates/` 
 
 Skill bodies invoke a shipped script as `${CLAUDE_PLUGIN_ROOT}/scripts/<script>.sh` — install
 dereferences the symlink, so the path resolves. A script used by only **one** skill needs no canon:
-bundle it in `skills/<name>/scripts/` and invoke it via `<this-skill-dir>/…`, as `dw-doctor` does.
+bundle it in `skills/<name>/scripts/` and invoke it via `<this-skill-dir>/…`.
 Why it's built this way: [`docs/DESIGN.md`](docs/DESIGN.md), "The symlink canon".
 
 ## Vendored from `dw-skills` — fix in both
@@ -35,22 +35,26 @@ These are **copies**, not references, and nothing can detect drift across the re
   `scripts/tests/hooks-in-sync.test.sh` only pins them to _this_ repo's `.claude/hooks/`.
 - `scripts/runtime/slugify.sh` — byte-identical.
 
-`dw-git`, `dw-doctor` and `dw-setup-precommit` are **forks**, simplified for one reader. They are
-expected to diverge; don't re-sync them.
+A skill copied from `dw-skills` is a **fork**, simplified for one reader — expected to diverge, never
+re-synced. There are none right now: the skill set was wiped and is being rebuilt from scratch, so
+`skills/` holds only a placeholder (`skills/.gitkeep`).
 
 ## Adding a skill
 
 1. `skills/<name>/SKILL.md` — kebab-case `name` matching the directory, a `description` that is
    routing signal only, `disable-model-invocation: true` if explicit-invoke only. Shape:
-   [`docs/SKILL-ANATOMY.md`](docs/SKILL-ANATOMY.md); copy a near neighbour like `dw-shape`.
+   [`docs/SKILL-ANATOMY.md`](docs/SKILL-ANATOMY.md) — with `skills/` empty, that file is the only
+   template; write the first skill to it deliberately, and copy a near neighbour after that.
 2. `ln -s ../../../skills/<name> plugins/dw-solo/skills/<name>` and `git add` the symlink.
 3. Bump the plugin's patch version in **both** `.claude-plugin/marketplace.json` and
    `plugins/dw-solo/.claude-plugin/plugin.json` — keep the two identical.
-4. Name the skill everywhere the docs list skills: the README **task-router** row, the **loop
-   diagram** if it joins the core loop, and — if explicit-invoke — the `⭑` marker plus the
-   explicit-only lists in README **and** `docs/DESIGN.md`.
+4. Name the skill everywhere the docs list skills: the README **task-router** row, a **loop diagram**
+   if it joins the core loop, and — if explicit-invoke — the `⭑` marker plus an explicit-only list in
+   README **and** `docs/DESIGN.md`. Both docs lost their loop diagram and explicit-only list when the
+   skill set was wiped; the first skill that needs one writes it back.
 5. End the body with a `**Next:**` line naming a skill that exists **in this repo** — a pointer at a
-   team-lane skill is a dead end here, and `validate:docs` fails it.
+   team-lane skill is a dead end here, and `validate:docs` fails it. The very first skill has nothing
+   to point at, so it omits the line; `validate:docs` only checks pointers that exist.
 6. `pnpm lint && pnpm format && pnpm validate:manifests && pnpm validate:docs`.
 
 Steps 3–5 are CI-enforced. The validators name the exact missing entry — run them rather than

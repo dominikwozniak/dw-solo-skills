@@ -84,6 +84,8 @@ echo "Checking every plugin skill entry is a symlink into the canon..."
 # git-tracked symlink back to it. A real directory here means the canon was bypassed, and edits
 # would silently land in the plugin copy instead.
 for d in skills/*/; do
+  # An empty skills/ leaves the glob unexpanded, and basename would yield a literal `*`.
+  [ -d "$d" ] || continue
   name="$(basename "$d")"
   link="plugins/dw-solo/skills/$name"
   if [ ! -L "$link" ]; then

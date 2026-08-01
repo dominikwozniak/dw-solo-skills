@@ -1,18 +1,22 @@
 # Design notes
 
-Why the skills are shaped this way. The [README](../README.md) is the short version — what each skill
-does; this is the _why_ behind the shape.
+Why the skills are shaped this way. The [README](../README.md) is the short version; this is the
+_why_ behind the shape.
+
+The skill set is currently being rebuilt from scratch, so this document names **roles** rather than
+skills — "the closing pass", "the resume step". Each constraint below is binding on whatever skill
+ends up filling that role; substitute the real names as they land.
 
 ## The failure modes these skills target
 
-| Failure mode                              | Design answer                                                 |
-| ----------------------------------------- | ------------------------------------------------------------- |
-| Context dies on `/clear`                  | The change persists as a tracked `.ai/` file, not in context  |
-| Agent runs on a wrong assumption          | `dw-grill`'s bounded interview surfaces decisions before code |
-| "Done" is claimed but never proven        | `dw-land` checks the ticked boxes against what actually runs  |
-| One skill grows into a do-everything blob | One skill, one job — they compose through `.ai/`, not chains  |
-| The process outweighs the change          | One file and one pass, not three artifacts and five audits    |
-| A private repo accumulates and forgets    | `dw-land` deletes the doc but promotes the durable parts out  |
+| Failure mode                              | Design answer                                                   |
+| ----------------------------------------- | --------------------------------------------------------------- |
+| Context dies on `/clear`                  | The change persists as a tracked `.ai/` file, not in context    |
+| Agent runs on a wrong assumption          | A bounded interview surfaces decisions before code              |
+| "Done" is claimed but never proven        | The closing pass checks ticked boxes against what actually runs |
+| One skill grows into a do-everything blob | One skill, one job — they compose through `.ai/`, not chains    |
+| The process outweighs the change          | One file and one pass, not three artifacts and five audits      |
+| A private repo accumulates and forgets    | The closing pass deletes the doc but promotes the durable parts |
 
 ## Persistence lives in the skill, not a wrapper
 
@@ -29,15 +33,17 @@ can't reliably resume.
 - **No shared index file.** A central registry becomes a merge-conflict magnet once tracked. Discovery
   is by directory name + per-file frontmatter, so two branches never fight over one file.
 - **One folder per change** (`.ai/work/<slug>/`) — parallel branches and worktrees don't collide.
-- **Branch-matched resume.** A change doc records its branch; `dw-next` globs the work dirs, matches
-  the current branch, and reports the first unticked box. Deterministic — no scrollback archaeology.
+- **Branch-matched resume.** A change doc records its branch; the resume step globs the work dirs,
+  matches the current branch, and reports the first unticked box. Deterministic — no scrollback
+  archaeology.
 - **Branch reads use `git rev-parse --abbrev-ref HEAD`**, never `git branch --show-current`, which
   returns an empty string on a detached HEAD and silently turns a branch match into a no-match.
 
 ## Persistent but disposable — and what gets promoted out
 
 **The change doc is tracked so a gap costs nothing, and deleted at merge so the repo doesn't rot.**
-These two ideas are usually conflated; splitting them is the point of `dw-land`'s second phase.
+These two ideas are usually conflated; splitting them is the point of the closing pass's second
+phase.
 
 What is genuinely durable is **promoted out** to four targets before the doc is deleted:
 
@@ -59,9 +65,9 @@ status column it is the validated plan this lane exists to avoid.
 
 A team-weight workflow splits quality across several read-only auditors and a separate writer, because
 an auditor that can also patch is tempted to under-report what it couldn't fix. Here you read every
-finding before anything happens, so the honesty is enforced by you instead: `dw-land` **reports
-first and mutates only after an explicit approval**, with the gate between its two phases doing the
-work the skill boundary did.
+finding before anything happens, so the honesty is enforced by you instead: the closing pass
+**reports first and mutates only after an explicit approval**, with the gate between its two phases
+doing the work the skill boundary did.
 
 Two more things this lane drops, and why that's safe:
 
@@ -82,16 +88,16 @@ commands it needs (test, lint, run) in this order:
 Stack is detected by which manifest is present, never branched on by name. With no declared commands a
 skill auto-detects and **states its assumption, asking when ambiguous** — it never guesses silently.
 
-Tier 1 is populated, not hoped for: `dw-init` seeds `## Commands` in **tracked** `CLAUDE.md` from the
-commands it actually found. Tracked matters — a copy that lives only in the gitignored
+Tier 1 is populated, not hoped for: the scaffolding step seeds `## Commands` in **tracked**
+`CLAUDE.md` from the commands it actually found. Tracked matters — a copy that lives only in the gitignored
 `CLAUDE.local.md` is invisible on a fresh clone and to any agent that reads `AGENTS.md`. That file
 keeps its own copy anyway, because the lint and typecheck hooks grep it for those names, so the two
 must be updated together.
 
 Being gitignored has one more consequence, and it is why the `link-local-memory` hook exists: a
 `git worktree` checkout receives only **tracked** files, so `CLAUDE.local.md` is simply absent there.
-Without it `dw-git` loses the repo's `## Git conventions` — commit format, trailer policy, the signing
-rule — and falls back to generic defaults. The visible symptom is a worktree commit carrying a trailer
+Without it a git skill loses the repo's `## Git conventions` — commit format, trailer policy, the
+signing rule — and falls back to generic defaults. The visible symptom is a worktree commit carrying a trailer
 the main tree forbids. The hook closes it by symlinking the main tree's copy in at `SessionStart`,
 detecting the worktree via `--git-dir` vs `--git-common-dir` (a path compare would misfire: in the
 main tree `--git-common-dir` returns a relative `.git`).
@@ -137,9 +143,9 @@ in this repo, because a stale pointer at a team-lane skill is a dead end.
 This lane started inside [`dw-skills`](https://github.com/dominikwozniak/dw-skills), sharing that
 repo's `templates/` canon, runtime scripts and CI. The concrete reason it moved out: **the shared
 `templates/` payload was team-shaped and this lane paid for it at runtime.** The template
-`CLAUDE.local.md` shipped the team loop, so `dw-init` had to replace a whole section after copying;
-the `.ai/` README documented `runs/`/`verify/`/`handoffs/`, so `dw-init` was told not to copy it and
-to hand-write one inline; the gitignore markers read `dw-bootstrap managed block`. Three
+`CLAUDE.local.md` shipped the team loop, so the scaffolding step had to replace a whole section after
+copying; the `.ai/` README documented `runs/`/`verify/`/`handoffs/`, so it was told not to copy that
+one and to hand-write one inline; the gitignore markers read `dw-bootstrap managed block`. Three
 work-arounds-in-prose that a separate `templates/` deletes outright.
 
 The costs, stated plainly rather than discovered later:
@@ -147,21 +153,15 @@ The costs, stated plainly rather than discovered later:
 - **`templates/hooks/` and `slugify.sh` are vendored copies.** Byte-identical today; a fix must be
   applied in both repos, and nothing across the boundary can detect drift. `hooks-in-sync.test.sh`
   only pins this repo's `.claude/hooks/` to its own canon.
-- **`dw-git`, `dw-doctor`, `dw-setup-precommit` are forks**, simplified for one reader. These are
-  _meant_ to diverge — `dw-git` drops ticket prefixes and the PR flow, `dw-doctor` drops the team
-  checks. Don't re-sync them.
+- **Skills that exist in both lanes will be forks**, simplified for one reader, and are _meant_ to
+  diverge — a solo git skill drops ticket prefixes and the PR flow, a solo health check drops the
+  team checks. Don't re-sync them.
 - **Two marketplace sources** if you ever want both lanes on one machine.
 
 **Install one lane per repo, not both.** Two lanes in one project means two skills competing for
 "start a feature", and no description wording fixes that reliably. Claude Code scopes plugins per
-project, which is the right place to make the choice once — `dw-init` sets that switch with
-`claude plugin disable`, and `dw-doctor` asserts it held.
-
-## Explicit-only skills
-
-`dw-init` and `dw-setup-precommit` are invoked by name and never auto-trigger — they scaffold a repo
-and install shared tooling, so the model shouldn't reach for them unbidden. Everything else can be
-model-invoked when the task fits.
+project, which is the right place to make the choice once — the scaffolding step sets that switch
+with `claude plugin disable`, and the health check asserts it held.
 
 ## Loops vs persistence — why these skills don't auto-run
 

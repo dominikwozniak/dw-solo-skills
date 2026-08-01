@@ -10,28 +10,9 @@
   "plugins": [
     {
       "name": "dw-solo",
-      "version": "0.2.0",
+      "version": "0.3.0",
       "source": "./plugins/dw-solo",
-      "keywords": [
-        "solo",
-        "personal",
-        "lightweight",
-        "grill",
-        "interview",
-        "shape",
-        "change",
-        "checklist",
-        "workflow",
-        "init",
-        "land",
-        "git",
-        "commit",
-        "doctor",
-        "diagnose",
-        "precommit",
-        "husky",
-        "lint-staged"
-      ],
+      "keywords": ["solo", "personal", "lightweight", "workflow"],
       "category": "workflow",
       "tags": ["solo", "workflow", "lightweight"]
     }

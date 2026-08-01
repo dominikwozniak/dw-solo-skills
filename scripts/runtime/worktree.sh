@@ -9,6 +9,7 @@
 #
 # Subcommands:
 #   worktree.sh create <slug> [base]   worktree + branch <slug> at [base] (default HEAD);
+#                                      copies the .worktreeinclude matches in;
 #                                      prints the worktree's absolute path on stdout
 #   worktree.sh remove <slug>          remove the worktree, delete its branch, prune
 #
@@ -18,6 +19,74 @@
 set -euo pipefail
 
 usage() { echo "usage: worktree.sh {create|remove} <slug> [base]" >&2; }
+
+# Warn rather than copy when a pattern sweeps in more than this many files — an include file is
+# hand-written, and the difference between a config file and a dependency tree is two characters.
+WORKTREE_INCLUDE_WARN_AT=50
+
+# Carry the copy-class files a fresh checkout leaves behind.
+#
+# `git worktree add` checks out tracked state only. Claude Code's own .worktreeinclude handling
+# covers the worktrees *it* creates — `--worktree`, subagent worktrees, desktop — and never
+# `git worktree add`, so this reproduces it for the loop's own worktrees.
+#
+# The rule, verbatim from code.claude.com/docs/en/worktrees.md: copy a file only when it matches a
+# pattern **and** is gitignored. Both halves are computed by git — two `ls-files` runs intersected —
+# so the semantics cannot drift from what `claude -w` does. We never parse gitignore ourselves.
+#
+# The refusals below are hard and independent of what the file says, because the file is
+# hand-written and the failure is destructive rather than annoying: `node_modules/` is
+# regenerate-class (platform-specific, and 394 of this repo's 421 ignored files live there), and
+# `.claude/worktrees/` is where worktrees live — copying it puts worktrees inside a worktree.
+#
+# Filenames containing a newline are not supported: `comm` has no `-z`, and the alternative is
+# reimplementing the matching we deliberately delegate to git.
+copy_worktree_includes() {
+  local src_root="$1" dst_root="$2"
+  local inc="$src_root/.worktreeinclude"
+  [ -f "$inc" ] || return 0
+
+  local candidates
+  candidates="$(
+    comm -12 \
+      <(git -C "$src_root" -c core.quotePath=false ls-files -o -i --exclude-standard | sort) \
+      <(git -C "$src_root" -c core.quotePath=false ls-files -o -i --exclude-from="$inc" | sort)
+  )" || return 0
+  [ -n "$candidates" ] || return 0
+
+  local total
+  total="$(printf '%s\n' "$candidates" | grep -c . || true)"
+  if [ "$total" -gt "$WORKTREE_INCLUDE_WARN_AT" ]; then
+    echo "worktree.sh: .worktreeinclude matches $total files — that looks like a directory tree, not local config. Copying anyway; narrow the patterns if this is wrong." >&2
+  fi
+
+  local copied=0 refused=0 rel
+  while IFS= read -r rel; do
+    [ -n "$rel" ] || continue
+    case "$rel" in
+      node_modules/* | */node_modules/* | .claude/worktrees/* | .git/*)
+        refused=$((refused + 1))
+        continue
+        ;;
+    esac
+    [ -f "$src_root/$rel" ] || continue
+    if mkdir -p "$dst_root/$(dirname "$rel")" 2>/dev/null &&
+      cp -p "$src_root/$rel" "$dst_root/$rel" 2>/dev/null; then
+      copied=$((copied + 1))
+    else
+      echo "worktree.sh: could not copy $rel into the worktree — continuing without it" >&2
+    fi
+    # Fed by heredoc, not a pipe: a pipe would run the loop in a subshell and the counters below
+    # would come back zero.
+  done <<EOF
+$candidates
+EOF
+
+  [ "$refused" -eq 0 ] ||
+    echo "worktree.sh: refused $refused path(s) matched by .worktreeinclude — node_modules/, .claude/worktrees/ and .git are never copied" >&2
+  [ "$copied" -eq 0 ] ||
+    echo "worktree.sh: copied $copied file(s) named by .worktreeinclude" >&2
+}
 
 # In a linked worktree --git-dir is .git/worktrees/<name> while --git-common-dir stays the
 # main .git — the only reliable tell (path comparison breaks on symlinked tmpdirs).
@@ -54,6 +123,10 @@ case "$cmd" in
     fi
     # git's own chatter goes to stderr so stdout stays machine-usable: the path, nothing else.
     git worktree add -b "$slug" "$path" "$base" 1>&2
+    # Everything below is best-effort and reports on stderr: the worktree already exists, and the
+    # `already exists` guards above make a half-created one expensive to retry. A missing include
+    # file is worth a warning, never a failure.
+    copy_worktree_includes "$root" "$path" || true
     printf '%s\n' "$path"
     ;;
   remove)

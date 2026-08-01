@@ -2,7 +2,7 @@
 change: worktreeinclude-support
 branch: worktreeinclude-support
 created: 2026-08-01
-status: shaping # shaping | building | landed
+status: building # shaping | building | landed
 ---
 
 # Change — make a `/dw-start` worktree as usable as the main tree, and make it say when it isn't
@@ -71,7 +71,7 @@ nothing but the path on stdout.
 
 ## Tasks
 
-- [ ] 1. `worktree.sh create` copies `.worktreeinclude` matches — absent file is a silent no-op,
+- [x] 1. `worktree.sh create` copies `.worktreeinclude` matches — absent file is a silent no-op,
       `mkdir -p` for nested patterns, `cp -p` to preserve mode, a failed copy warns without failing
       create. Hard refusals for `node_modules/`, `.claude/worktrees/`, `.git` plus a volume warning.
       Header comment extended. Tests: no-file no-op, ignored+matching copied, tracked+matching

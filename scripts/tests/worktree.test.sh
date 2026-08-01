@@ -114,6 +114,107 @@ else
   note_fail "remove-claude-w-spelling" "branch worktree-gamma survived"
 fi
 
+echo ".worktreeinclude:"
+# A file is copied only when it matches a pattern AND is gitignored — the documented rule. Each
+# case below is one half of that conjunction, plus the refusals, plus the stdout contract.
+printf 'local-probe.txt\nnested/\ntracked-probe.txt\nunlisted.txt\nnode_modules/\n' >"$REPO/.gitignore"
+git -C "$REPO" add .gitignore
+git -C "$REPO" commit -qm "gitignore"
+
+# Gitignored and listed -> copied. Mode 600 must survive.
+echo secret >"$REPO/local-probe.txt"
+chmod 600 "$REPO/local-probe.txt"
+# Gitignored, not listed -> skipped.
+echo nope >"$REPO/unlisted.txt"
+# Listed but TRACKED -> skipped (the checkout already has it).
+echo tracked >"$REPO/tracked-probe.txt"
+git -C "$REPO" add -f tracked-probe.txt
+git -C "$REPO" commit -qm "tracked probe"
+# Nested pattern -> parent dirs created at the destination.
+mkdir -p "$REPO/nested"
+echo deep >"$REPO/nested/deep.txt"
+# Refused regardless of the pattern.
+mkdir -p "$REPO/node_modules/pkg"
+echo dep >"$REPO/node_modules/pkg/index.js"
+
+printf 'local-probe.txt\nnested/**\ntracked-probe.txt\nnode_modules/**\n' >"$REPO/.worktreeinclude"
+
+ERRLOG="$TMP/delta.stderr"
+out=$("$WORKTREE" create delta 2>"$ERRLOG")
+WT="$REPO/.claude/worktrees/delta"
+
+if [ "$out" = "$WT" ]; then
+  note_pass "include-stdout-still-path-only"
+else
+  note_fail "include-stdout-still-path-only" "stdout was '$out'"
+fi
+
+if [ -f "$WT/local-probe.txt" ] && [ "$(cat "$WT/local-probe.txt")" = "secret" ]; then
+  note_pass "include-ignored-and-listed-copied"
+else
+  note_fail "include-ignored-and-listed-copied" "missing or wrong content"
+fi
+
+got_mode="$(ls -l "$WT/local-probe.txt" 2>/dev/null | cut -c1-10)"
+if [ "$got_mode" = "-rw-------" ]; then
+  note_pass "include-mode-preserved (600)"
+else
+  note_fail "include-mode-preserved" "got '$got_mode'"
+fi
+
+if [ -f "$WT/nested/deep.txt" ]; then
+  note_pass "include-nested-pattern-copied"
+else
+  note_fail "include-nested-pattern-copied" "parent dir or file missing"
+fi
+
+if [ ! -e "$WT/unlisted.txt" ]; then
+  note_pass "include-ignored-not-listed-skipped"
+else
+  note_fail "include-ignored-not-listed-skipped" "copied a file no pattern named"
+fi
+
+# Tracked files arrive via the checkout, never the copy — proven by content, since a copy would
+# have overwritten the committed "tracked" with the working-tree value.
+if [ -f "$WT/tracked-probe.txt" ] && [ "$(cat "$WT/tracked-probe.txt")" = "tracked" ]; then
+  note_pass "include-tracked-not-duplicated"
+else
+  note_fail "include-tracked-not-duplicated" "tracked file missing or overwritten"
+fi
+
+if [ ! -e "$WT/node_modules" ]; then
+  note_pass "include-node-modules-refused"
+else
+  note_fail "include-node-modules-refused" "copied node_modules despite the hard refusal"
+fi
+
+# The refusal is silent-by-default's opposite: it has to say so, on stderr, from the same run that
+# did the copying.
+if grep -q "refused 1 path(s) matched by .worktreeinclude" "$ERRLOG"; then
+  note_pass "include-refusal-reported-on-stderr"
+else
+  note_fail "include-refusal-reported-on-stderr" "no refusal line in stderr: $(tr '\n' '|' <"$ERRLOG")"
+fi
+
+# Two, not three: tracked-probe.txt is listed but tracked, so the intersection drops it.
+if grep -q "copied 2 file(s) named by .worktreeinclude" "$ERRLOG"; then
+  note_pass "include-copy-count-reported-on-stderr"
+else
+  note_fail "include-copy-count-reported-on-stderr" "stderr: $(tr '\n' '|' <"$ERRLOG")"
+fi
+
+"$WORKTREE" remove delta >/dev/null 2>&1
+
+# No .worktreeinclude at all -> create behaves exactly as before.
+rm -f "$REPO/.worktreeinclude"
+out=$("$WORKTREE" create epsilon 2>/dev/null)
+if [ "$out" = "$REPO/.claude/worktrees/epsilon" ] && [ ! -e "$REPO/.claude/worktrees/epsilon/local-probe.txt" ]; then
+  note_pass "include-absent-is-a-no-op"
+else
+  note_fail "include-absent-is-a-no-op" "rc/out='$out' or a file was copied anyway"
+fi
+"$WORKTREE" remove epsilon >/dev/null 2>&1
+
 echo "errors (expect non-zero exit):"
 if "$WORKTREE" bogus >/dev/null 2>&1; then note_fail "unknown-subcmd" "expected non-zero"; else note_pass "unknown-subcmd"; fi
 if "$WORKTREE" >/dev/null 2>&1; then note_fail "no-subcmd" "expected non-zero"; else note_pass "no-subcmd"; fi

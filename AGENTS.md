@@ -97,6 +97,15 @@ CI runs those five plus a `trufflehog` secrets scan on every PR and push to `mai
 
 Traps this repo has actually sprung, newest first.
 
+- **A fresh worktree runs no git hooks at all.** `core.hooksPath` is `.husky/_`, which `husky init`
+  generates and gitignores — so a `git worktree add` checkout has `.husky/pre-commit` and no `_/`,
+  git finds no hooks directory, and every commit skips prettier, agnix and the manifest version check
+  **without printing anything**. Run `pnpm install` in the worktree before your first commit;
+  `worktree.sh create` now warns about it on stderr, but the warning is easy to scroll past.
+- **`block-env-access.sh` inspects the whole Bash command, including a commit message.** Writing about
+  `.env` in a commit body blocks the commit. The hook's quoted-prose escape only covers
+  `git commit -m "…"`; a heredoc gives the matcher no quoting to see. Write the message to a file
+  outside the repo and use `git commit -F <path>`.
 - **`pnpm lint` OOMs locally.** `agnix` over the whole tree can die with "terminated abnormally" under
   memory pressure; `scripts/lint.sh` turns that into a hard error rather than a silent pass. Re-run it,
   or lint only the staged paths the way `.husky/pre-commit` does. CI has the headroom.

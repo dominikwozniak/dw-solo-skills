@@ -23,6 +23,9 @@ Terms this repo uses in a specific way. Definitions only, no implementation deta
 - **Claim** — flipping a change doc's `branch: unclaimed` sentinel to a real branch name, committed
   immediately. Done by `dw-start` (after creating the worktree) or offered by `dw-next` (when its
   branch-grep misses). A change shaped on the default branch is unclaimed until then.
+- **Carry class** — which treatment an untracked file gets when a worktree is created: **copy** (local
+  config, via `.worktreeinclude`), **link** (`CLAUDE.local.md`), **regenerate** (`node_modules/`,
+  `.husky/_/` — reported, never carried) or **absent** (caches). Set by [`0003`](docs/decisions/0003-worktree-carry-classes.md).
 - **Explicit-invoke** — a skill with `disable-model-invocation: true`; it fires only when named.
 - **HARD STOP** — a point in a skill where it must stop and wait for a human answer rather than
   proceed on an assumption.

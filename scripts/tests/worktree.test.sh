@@ -263,6 +263,51 @@ fi
 "$WORKTREE" remove theta >/dev/null 2>&1
 mv "$REPO/CLAUDE.local.md.bak" "$REPO/CLAUDE.local.md"
 
+echo "readiness report (the regenerate class):"
+# The report exists because this class fails silently: no node_modules is a loud build error, but
+# no .husky/_ means git finds no hooks and commits skip every gate without a word.
+echo '{"name":"probe"}' >"$REPO/package.json"
+touch "$REPO/pnpm-lock.yaml"
+mkdir -p "$REPO/.husky"
+echo "pnpm exec lint-staged" >"$REPO/.husky/pre-commit"
+git -C "$REPO" add package.json pnpm-lock.yaml .husky/pre-commit
+git -C "$REPO" commit -qm "node project with husky"
+
+RLOG="$TMP/iota.stderr"
+out=$("$WORKTREE" create iota 2>"$RLOG")
+if [ "$out" = "$REPO/.claude/worktrees/iota" ]; then
+  note_pass "readiness-stdout-still-path-only"
+else
+  note_fail "readiness-stdout-still-path-only" "stdout was '$out'"
+fi
+if grep -q "run: pnpm install" "$RLOG"; then
+  note_pass "readiness-names-the-install-command"
+else
+  note_fail "readiness-names-the-install-command" "stderr: $(tr '\n' '|' <"$RLOG")"
+fi
+if grep -q "COMMIT HOOKS ARE INACTIVE" "$RLOG"; then
+  note_pass "readiness-warns-hooks-inactive"
+else
+  note_fail "readiness-warns-hooks-inactive" "stderr: $(tr '\n' '|' <"$RLOG")"
+fi
+"$WORKTREE" remove iota >/dev/null 2>&1
+
+# With .husky/_ present the hook warning must not fire — the report has to stay believable.
+# Committed so the fresh checkout actually has it — in a real repo the install regenerates it.
+mkdir -p "$REPO/.husky/_"
+echo "husky" >"$REPO/.husky/_/h"
+git -C "$REPO" add -f .husky/_/h
+git -C "$REPO" commit -qm "husky internals"
+RLOG2="$TMP/kappa.stderr"
+"$WORKTREE" create kappa 2>"$RLOG2" >/dev/null
+if grep -q "COMMIT HOOKS ARE INACTIVE" "$RLOG2"; then
+  note_fail "readiness-no-false-hook-warning" "warned despite .husky/_ being present"
+else
+  note_pass "readiness-no-false-hook-warning"
+fi
+"$WORKTREE" remove kappa >/dev/null 2>&1
+rm -rf "$REPO/.husky/_"
+
 echo "errors (expect non-zero exit):"
 if "$WORKTREE" bogus >/dev/null 2>&1; then note_fail "unknown-subcmd" "expected non-zero"; else note_pass "unknown-subcmd"; fi
 if "$WORKTREE" >/dev/null 2>&1; then note_fail "no-subcmd" "expected non-zero"; else note_pass "no-subcmd"; fi

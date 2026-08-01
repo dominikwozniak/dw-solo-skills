@@ -80,7 +80,7 @@ nothing but the path on stdout.
 - [x] 2. `create` symlinks `CLAUDE.local.md` from the main tree, idempotently (skip when the target
       already exists, matching the hook's `-e` test). Tests: link made and readable through,
       pre-existing file left alone, absent source is a no-op.
-- [ ] 3. Readiness report on stderr at the end of `create`: what was copied, what was linked, and
+- [x] 3. Readiness report on stderr at the end of `create`: what was copied, what was linked, and
       what must be regenerated — `package.json` present → name the install command; `.husky/` tracked
       with no `.husky/_/` → say plainly that **commit hooks are inactive until you install**. Tests:
       report lands on stderr, stdout stays path-only, the husky line fires only in that state.

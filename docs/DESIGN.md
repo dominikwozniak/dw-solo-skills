@@ -138,6 +138,16 @@ connect them: the shared `CHANGE.md`, and a `**Next:**` pointer at the end of ea
 is a recommendation, not a rail — and `validate-docs.sh` checks it names a skill that actually exists
 in this repo, because a stale pointer at a team-lane skill is a dead end.
 
+## Explicit-only skills
+
+A skill is marked `disable-model-invocation: true` when it acts outward — on the repo's branch
+topology, on the remote, or on a fresh repo's tooling — so the model never reaches for it unbidden;
+you say the name, every time. The cost is deliberate and worth naming: an explicit-only skill is
+invisible to the model, so no other skill can reach it by prose either — anything the loop must be
+able to delegate to stays model-invocable.
+
+Currently: `dw-start` (creates a worktree and branch, and claims a change into it).
+
 ## Why this is a separate repo
 
 This lane started inside [`dw-skills`](https://github.com/dominikwozniak/dw-skills), sharing that

@@ -51,12 +51,16 @@ The plugin installs and validates, but ships no skills yet.
 A task may match several rows — read all that apply. `⭑` = explicit-invoke only: say its name (it
 never auto-fires). The phrases that trigger each skill live in its own `description`, not here.
 
+**Explicit-only skills**: `dw-start`. Marked `⭑` in the router; they never auto-fire — say the
+name. Being invisible to the model, they also can't be reached by other skills' prose.
+
 **The loop** — shape → build → land → ship; grill first when the idea is fuzzy.
 
-| Skill                                  | Task                                                       | What you get                          |
-| -------------------------------------- | ---------------------------------------------------------- | ------------------------------------- |
-| [`dw-grill`](skills/dw-grill/SKILL.md) | Interview a fuzzy idea into decisions — max five questions | shared understanding (writes nothing) |
-| [`dw-shape`](skills/dw-shape/SKILL.md) | Synthesize it into one goal + decisions + task checklist   | `.ai/work/<slug>/CHANGE.md`           |
+| Skill                                      | Task                                                       | What you get                                  |
+| ------------------------------------------ | ---------------------------------------------------------- | --------------------------------------------- |
+| [`dw-grill`](skills/dw-grill/SKILL.md)     | Interview a fuzzy idea into decisions — max five questions | shared understanding (writes nothing)         |
+| [`dw-shape`](skills/dw-shape/SKILL.md)     | Synthesize it into one goal + decisions + task checklist   | `.ai/work/<slug>/CHANGE.md`                   |
+| [`dw-start`](skills/dw-start/SKILL.md) `⭑` | Open a shaped change: worktree + branch + claim            | `.claude/worktrees/<slug>` on branch `<slug>` |
 
 **Anytime**
 

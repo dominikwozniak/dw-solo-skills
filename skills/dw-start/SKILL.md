@@ -67,3 +67,5 @@ Say which change is open where, and what its first task is. For each change stil
 the recipe: **new terminal → `claude -w <slug>`**, run while the main tree is on the default branch
 (the branch will be `worktree-<slug>`, a spelling the loop's claim matching strips) — then
 `dw-next` in that session offers the claim.
+
+**Next:** `dw-next` to build the first task.

@@ -84,3 +84,5 @@ you can't run to think out loud.
 
 **Do not start implementing.** Getting agreement is the whole job here — writing it down is
 `dw-shape`'s, and building it is `dw-next`'s.
+
+**Next:** `dw-shape` to turn this understanding into a `CHANGE.md` with a task list.

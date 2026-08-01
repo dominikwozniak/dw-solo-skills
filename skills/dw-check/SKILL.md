@@ -60,3 +60,5 @@ List the findings with a severity-ordered recommendation and **stop — nothing 
 approval.** On approval, fix the accepted findings in-session and commit the way `dw-git` does —
 related fixes together, unrelated ones apart. Then offer to run again: the second look is the
 point of a gate this cheap.
+
+**Next:** `dw-next` for the next task, or `dw-land` when the boxes are all ticked.

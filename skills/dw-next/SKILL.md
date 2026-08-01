@@ -112,3 +112,5 @@ default.
   one commit per task, and still **stop** before anything irreversible: a migration, a destructive
   data change, a force-push, a deploy, a published release, a deletion you can't undo from git.
   Ask first, every time, even here.
+
+**Next:** `dw-next` again for the following task, `dw-check` for a fast look mid-way, or `dw-land` once the boxes are all ticked.

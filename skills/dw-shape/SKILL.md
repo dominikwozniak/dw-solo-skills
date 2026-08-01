@@ -111,3 +111,5 @@ conversation's assumptions.
 status`) plus Goal · Decisions · Tasks · Anchors · Notes. Keep it lean: this is a note to your
 future self, not documentation. Anything that is genuinely durable knowledge belongs in
 `docs/decisions/` or `CONTEXT.md`, which is what `dw-land` promotes it to.
+
+**Next:** `dw-start` to open the change in its own worktree, `dw-next` to build it right here, or `dw-grill` if the read-back exposed something still undecided.

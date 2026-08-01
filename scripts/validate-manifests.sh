@@ -38,13 +38,13 @@ PLUGIN_DIRS="$(jq -r '.plugins[].source' .claude-plugin/marketplace.json | sed '
 
 echo
 echo "Checking shipped scripts (canon in scripts/runtime/, symlinked into the plugin)..."
-# Shipped scripts live once under scripts/runtime/ and are exposed to the plugin via a
-# git-tracked symlink plugins/dw-solo/scripts/<s>.sh -> ../../../scripts/runtime/<s>.sh. `claude
+# Shipped scripts live once under scripts/runtime/ and are exposed to a plugin via a
+# git-tracked symlink plugins/<p>/scripts/<s>.sh -> ../../../scripts/runtime/<s>.sh. `claude
 # plugin install` dereferences the symlink into a real file in the plugin cache, so the runtime
 # path ${CLAUDE_PLUGIN_ROOT}/scripts/<s>.sh resolves. We assert (1) each canon exists and is
 # executable, and (2) each plugin entry is a symlink that resolves to it — never a real file
 # (a real file would reintroduce the duplication this layout removes).
-RUNTIME_SCRIPTS="slugify.sh"
+RUNTIME_SCRIPTS="slugify.sh worktree.sh"
 for s in $RUNTIME_SCRIPTS; do
   c="scripts/runtime/$s"
   if [ ! -f "$c" ]; then

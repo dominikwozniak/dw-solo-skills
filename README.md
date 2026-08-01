@@ -61,6 +61,7 @@ name. Being invisible to the model, they also can't be reached by other skills' 
 | [`dw-grill`](skills/dw-grill/SKILL.md)     | Interview a fuzzy idea into decisions — max five questions | shared understanding (writes nothing)         |
 | [`dw-shape`](skills/dw-shape/SKILL.md)     | Synthesize it into one goal + decisions + task checklist   | `.ai/work/<slug>/CHANGE.md`                   |
 | [`dw-start`](skills/dw-start/SKILL.md) `⭑` | Open a shaped change: worktree + branch + claim            | `.claude/worktrees/<slug>` on branch `<slug>` |
+| [`dw-next`](skills/dw-next/SKILL.md)       | Resume point _and_ build step (`go` builds and commits)    | code + ticked box + commit                    |
 
 **Anytime**
 

@@ -51,8 +51,8 @@ The plugin installs and validates, but ships no skills yet.
 A task may match several rows — read all that apply. `⭑` = explicit-invoke only: say its name (it
 never auto-fires). The phrases that trigger each skill live in its own `description`, not here.
 
-**Explicit-only skills**: `dw-start`. Marked `⭑` in the router; they never auto-fire — say the
-name. Being invisible to the model, they also can't be reached by other skills' prose.
+**Explicit-only skills**: `dw-start` and `dw-ship`. Marked `⭑` in the router; they never auto-fire
+— say the name. Being invisible to the model, they also can't be reached by other skills' prose.
 
 **The loop** — shape → build → land → ship; grill first when the idea is fuzzy.
 
@@ -64,6 +64,7 @@ name. Being invisible to the model, they also can't be reached by other skills' 
 | [`dw-next`](skills/dw-next/SKILL.md)       | Resume point _and_ build step (`go` builds and commits)    | code + ticked box + commit                    |
 | [`dw-check`](skills/dw-check/SKILL.md)     | Fast optional QA gate — delegate, or two-axis self-review  | findings at `file:line`, fixed in-session     |
 | [`dw-land`](skills/dw-land/SKILL.md)       | One thin verdict, then promote what's durable and clean up | `docs/decisions/` · `CONTEXT.md` · backlog    |
+| [`dw-ship`](skills/dw-ship/SKILL.md) `⭑`   | Push — or PR → squash-merge — then tear the worktree down  | merged default branch, clean tree             |
 
 **Anytime**
 

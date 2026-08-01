@@ -1,6 +1,6 @@
 ---
 change: worktreeinclude-support
-branch: unclaimed
+branch: worktreeinclude-support
 created: 2026-08-01
 status: shaping # shaping | building | landed
 ---

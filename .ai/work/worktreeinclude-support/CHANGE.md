@@ -87,7 +87,7 @@ nothing but the path on stdout.
 - [x] 4. `templates/worktreeinclude.txt` — commented-out examples only, plus a warning comment about
       the refused paths. Wired into `dw-init`: listed in the step-3 gate marked **tracked**, written
       idempotently in step 4.
-- [ ] 5. `skills/dw-start/SKILL.md` step 4 rewritten — the install stops being an offer and becomes a
+- [x] 5. `skills/dw-start/SKILL.md` step 4 rewritten — the install stops being an offer and becomes a
       required step, with the hooks-are-inactive consequence stated; plus a line that the worktree now
       carries `.worktreeinclude` files and `CLAUDE.local.md`. Patch bump for both plugins in
       `.claude-plugin/marketplace.json` and each `plugins/*/.claude-plugin/plugin.json`.

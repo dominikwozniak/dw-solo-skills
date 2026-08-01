@@ -51,6 +51,12 @@ The plugin installs and validates, but ships no skills yet.
 A task may match several rows — read all that apply. `⭑` = explicit-invoke only: say its name (it
 never auto-fires). The phrases that trigger each skill live in its own `description`, not here.
 
+**The loop** — shape → build → land → ship; grill first when the idea is fuzzy.
+
+| Skill                                  | Task                                                       | What you get                          |
+| -------------------------------------- | ---------------------------------------------------------- | ------------------------------------- |
+| [`dw-grill`](skills/dw-grill/SKILL.md) | Interview a fuzzy idea into decisions — max five questions | shared understanding (writes nothing) |
+
 **Anytime**
 
 | Skill                              | Task                                                     | What you get                       |

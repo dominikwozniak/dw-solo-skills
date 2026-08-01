@@ -1,6 +1,6 @@
 ---
 change: pnpm-v11-migration
-branch: unclaimed
+branch: pnpm-v11-migration
 created: 2026-08-01
 status: shaping # shaping | building | landed
 ---

@@ -48,8 +48,14 @@ The plugin installs and validates, but ships no skills yet.
 
 ## ◇ Task router — which skill for which task
 
-_No skills yet._ Each one gets a row here as it lands — the router is CI-enforced, so a skill that
-exists on disk but isn't listed fails `pnpm validate:docs`.
+A task may match several rows — read all that apply. `⭑` = explicit-invoke only: say its name (it
+never auto-fires). The phrases that trigger each skill live in its own `description`, not here.
+
+**Anytime**
+
+| Skill                              | Task                                                     | What you get                       |
+| ---------------------------------- | -------------------------------------------------------- | ---------------------------------- |
+| [`dw-git`](skills/dw-git/SKILL.md) | All git ops — commit / push / PR / sync / branch / stash | commits / PR per `CLAUDE.local.md` |
 
 ## ⚙ How it works — the design in one screen
 

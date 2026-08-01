@@ -13,7 +13,7 @@ while IFS= read -r file; do
   if ! claude plugin validate "$file"; then
     FAILED=1
   fi
-done < <(find . -type f \( -name 'marketplace.json' -o -name 'plugin.json' \) -not -path './node_modules/*' | sort)
+done < <(find . -type f \( -name 'marketplace.json' -o -name 'plugin.json' \) -not -path './node_modules/*' -not -path './.inspirations/*' | sort)
 
 if [ "$FOUND" -eq 0 ]; then
   echo "No manifest files found."

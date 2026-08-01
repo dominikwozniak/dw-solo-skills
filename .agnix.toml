@@ -6,6 +6,9 @@ severity = "Warning"
 exclude = [
     "node_modules/**",
     ".git/**",
+    # Cloned third-party inspiration repos — untracked working material, never
+    # part of this marketplace. Also the reason `agnix .` OOMed locally.
+    ".inspirations/**",
     # Local agent state (gitignored) — not part of the marketplace surface,
     # so agnix doesn't lint the local drops.
     ".claude/**",

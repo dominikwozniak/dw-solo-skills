@@ -8,6 +8,10 @@ node_modules/
 /*.local.md
 /research.md
 
+# Rebuild working material — the brief and the cloned inspiration repos.
+/TASK.md
+/.inspirations/
+
 # >>> dw-init managed block >>>
 # Personal agent memory & local overrides — never committed.
 /CLAUDE.local.md

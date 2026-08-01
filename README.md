@@ -2,15 +2,10 @@
 
 <p align="center">
   <img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-111111?style=flat-square">
-  <img alt="0 skills" src="https://img.shields.io/badge/skills-0-111111?style=flat-square">
-  <img alt="1 plugin" src="https://img.shields.io/badge/plugins-1-111111?style=flat-square">
+  <img alt="10 skills" src="https://img.shields.io/badge/skills-10-111111?style=flat-square">
+  <img alt="2 plugins" src="https://img.shields.io/badge/plugins-2-111111?style=flat-square">
   <img alt="Claude Code plugin" src="https://img.shields.io/badge/Claude_Code-plugin-111111?style=flat-square">
 </p>
-
-> **Status: rebuilding.** The skill set this repo shipped was inherited wholesale from the team lane
-> and has been removed. What remains is the harness — plugin manifests, the symlink canon, the
-> validators, the CI, and the `templates/` payload — so the first new skill is a `SKILL.md` and a
-> symlink, and nothing else. The sections below describe the lane the skills are being designed for.
 
 This is the **thin lane**. If several people read your specs and reviews, you want the fuller
 workflow instead: [**dw-skills**](https://github.com/dominikwozniak/dw-skills) — `dw-spec → dw-plan →
@@ -42,9 +37,16 @@ The _why_ behind each design choice is in [`docs/DESIGN.md`](docs/DESIGN.md).
 ```
 claude plugin marketplace add git@github.com:dominikwozniak/dw-solo-skills.git
 claude plugin install dw-solo
+claude plugin install dw-solo-setup
 ```
 
-The plugin installs and validates, but ships no skills yet.
+Then, in a project of your own: `/dw-init` scaffolds it, `/dw-shape` opens the first change.
+
+> **Cutover from `dw-skills`:** if that marketplace's old `dw-solo` plugin is still installed,
+> uninstall it first — two plugins with the same name from different marketplaces is undocumented
+> behavior. In a solo repo, enable this lane's two plugins and disable the team lane's: `dw-git`,
+> `dw-doctor` and `dw-init` exist in both lanes as deliberately diverging forks, and per-project
+> plugin enablement is what disambiguates them.
 
 ## ◇ Task router — which skill for which task
 
@@ -55,7 +57,16 @@ never auto-fires). The phrases that trigger each skill live in its own `descript
 auto-fire — say the name. Being invisible to the model, they also can't be reached by other skills'
 prose.
 
-**The loop** — shape → build → land → ship; grill first when the idea is fuzzy.
+**The loop** — the mandatory spine is shape → next → ship; everything marked `?` is opt-in.
+
+```
+dw-grill? → dw-shape → dw-start? → dw-next ↺ → dw-check? → dw-land → dw-ship
+  fuzzy      plan it    worktree     build        gate       close     merge
+```
+
+A small serial change never leaves the default branch: shape → next → ship (`dw-ship` runs the
+closing pass itself when the change doc is still there). Parallel changes: shape several on the
+default branch, then one worktree + session each via `dw-start` or `claude -w <slug>`.
 
 | Skill                                      | Task                                                       | What you get                                  |
 | ------------------------------------------ | ---------------------------------------------------------- | --------------------------------------------- |
@@ -108,16 +119,18 @@ the `CLAUDE.local.md` shipped the team loop, the `.ai/` README documented direct
 doesn't have — and every scaffolding run patched those files after copying. Here the templates are
 this lane's own, copied as-is.
 
-The cost, stated plainly: `templates/hooks/` (7 guardrail hooks) and `scripts/runtime/slugify.sh` are
-**vendored copies** of the same files in `dw-skills`. They're byte-identical today, and a fix must be
-applied in both — nothing across the repo boundary can detect drift.
+The cost, stated plainly: `templates/hooks/` (6 guardrail hooks — the team repo's Ruby lint hook is
+deliberately dropped in this Node-only lane) and `scripts/runtime/slugify.sh` are **vendored
+copies** of the same files in `dw-skills`. A fix must be applied in both — nothing across the repo
+boundary can detect drift.
 
 ## ▤ Project structure
 
 ```
 skills/<name>/SKILL.md          canonical skill (edit here)
-plugins/dw-solo/                plugin.json + git-tracked symlinks → ../../../skills/<name>
-scripts/runtime/                shipped scripts, symlinked into the plugin
+plugins/dw-solo/                the loop plugin — git-tracked symlinks → ../../../skills/<name>
+plugins/dw-solo-setup/          the setup plugin — dw-init, dw-doctor, the templates symlink
+scripts/runtime/                shipped scripts (slugify, worktree), symlinked into the owning plugin
 templates/                      payload copied INTO a target project (hooks, settings, CLAUDE.local.md)
 .claude-plugin/marketplace.json makes the repo installable
 docs/DESIGN.md                  design rationale (the "why")

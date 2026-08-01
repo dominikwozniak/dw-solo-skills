@@ -11,8 +11,9 @@ assumes **one reader**, and a change that needs a second reader's trust belongs 
 
 ```
 skills/<name>/SKILL.md           the canon for every skill. EDIT HERE.
-plugins/dw-solo/                 plugin.json + git-tracked symlinks (mode 120000) → the canon
-scripts/runtime/<script>.sh      shipped scripts — symlinked into the plugin
+plugins/dw-solo/                 the loop plugin — plugin.json + symlinks (mode 120000) → the canon
+plugins/dw-solo-setup/           the setup plugin — dw-init, dw-doctor, the templates symlink
+scripts/runtime/<script>.sh      shipped scripts — symlinked into the owning plugin
 scripts/<script>.sh              repo CI tooling, never shipped (validate-*.sh, lint.sh)
 scripts/tests/<script>.test.sh   bash self-tests
 templates/                       payload copied verbatim INTO a target project (hooks, settings.json)
@@ -20,7 +21,8 @@ templates/                       payload copied verbatim INTO a target project (
 ```
 
 **Always edit the canon above; use it instead of any `plugins/…` path**, since every one of those is
-a symlink back to it — `plugins/dw-solo/skills/`, `scripts/` and `templates/` alike.
+a symlink back to it — `plugins/*/skills/`, `scripts/` and `templates/` alike. Every canon skill is
+shipped by exactly one plugin; `validate-manifests.sh` enforces the ownership in both directions.
 
 Skill bodies invoke a shipped script as `${CLAUDE_PLUGIN_ROOT}/scripts/<script>.sh` — install
 dereferences the symlink, so the path resolves. A script used by only **one** skill needs no canon:
@@ -31,40 +33,46 @@ Why it's built this way: [`docs/DESIGN.md`](docs/DESIGN.md), "The symlink canon"
 
 These are **copies**, not references, and nothing can detect drift across the repo boundary:
 
-- `templates/hooks/*.sh` (7 files) — byte-identical to the `dw-skills` canon.
-  `scripts/tests/hooks-in-sync.test.sh` only pins them to _this_ repo's `.claude/hooks/`.
+- `templates/hooks/*.sh` (6 files — the team repo also ships a Ruby lint hook this Node-only lane
+  deliberately drops; don't "re-sync" it back). `scripts/tests/hooks-in-sync.test.sh` only pins them
+  to _this_ repo's `.claude/hooks/`.
 - `scripts/runtime/slugify.sh` — byte-identical.
 
 A skill copied from `dw-skills` is a **fork**, simplified for one reader — expected to diverge, never
-re-synced. There are none right now: the skill set was wiped and is being rebuilt from scratch, so
-`skills/` holds only a placeholder (`skills/.gitkeep`).
+re-synced. Current forks: `dw-grill`, `dw-shape`, `dw-next`, `dw-land`, `dw-git`, `dw-doctor`,
+`dw-init` (which also absorbed the team lane's standalone pre-commit skill). `dw-start`, `dw-check`,
+`dw-ship` and `scripts/runtime/worktree.sh` are this lane's own — they have no upstream.
 
 ## Adding a skill
 
-1. `skills/<name>/SKILL.md` — kebab-case `name` matching the directory, a `description` that is
-   routing signal only, `disable-model-invocation: true` if explicit-invoke only. Shape:
-   [`docs/SKILL-ANATOMY.md`](docs/SKILL-ANATOMY.md) — with `skills/` empty, that file is the only
-   template; write the first skill to it deliberately, and copy a near neighbour after that.
-2. `ln -s ../../../skills/<name> plugins/dw-solo/skills/<name>` and `git add` the symlink.
-3. Bump the plugin's patch version in **both** `.claude-plugin/marketplace.json` and
-   `plugins/dw-solo/.claude-plugin/plugin.json` — keep the two identical.
-4. Name the skill everywhere the docs list skills: the README **task-router** row, a **loop diagram**
-   if it joins the core loop, and — if explicit-invoke — the `⭑` marker plus an explicit-only list in
-   README **and** `docs/DESIGN.md`. Both docs lost their loop diagram and explicit-only list when the
-   skill set was wiped; the first skill that needs one writes it back.
+1. `skills/<name>/SKILL.md` — kebab-case `name` matching the directory (the validators' regex is
+   `dw-[a-z-]+` — lowercase letters and hyphens only, no digits), a `description` that is routing
+   signal only, `disable-model-invocation: true` if explicit-invoke only. Shape:
+   [`docs/SKILL-ANATOMY.md`](docs/SKILL-ANATOMY.md) — copy a near neighbour and keep the section
+   order.
+2. `ln -s ../../../skills/<name> plugins/<plugin>/skills/<name>` in the **owning** plugin and
+   `git add` the symlink — exactly one plugin per skill.
+3. Bump the owning plugin's patch version in **both** `.claude-plugin/marketplace.json` and its
+   `plugin.json` — keep the two identical. One bump covers a train of skills landing together.
+4. Name the skill everywhere the docs list skills: the README **task-router** row, the **loop
+   diagram** in README + `docs/DESIGN.md` if it joins the core loop (honor-system — no validator
+   reads the diagram), and — if explicit-invoke — the `⭑` marker plus the explicit-only lists in
+   README **and** `docs/DESIGN.md`.
 5. End the body with a `**Next:**` line naming a skill that exists **in this repo** — a pointer at a
-   team-lane skill is a dead end here, and `validate:docs` fails it. The very first skill has nothing
-   to point at, so it omits the line; `validate:docs` only checks pointers that exist.
+   team-lane skill is a dead end here, and `validate:docs` fails it. A cycle of new skills lands its
+   `**Next:**` lines in one wiring commit at the end; `validate:docs` only checks pointers that
+   exist.
 6. `pnpm lint && pnpm format && pnpm validate:manifests && pnpm validate:docs`.
 
-Steps 3–5 are CI-enforced. The validators name the exact missing entry — run them rather than
-re-deriving the checklist by hand.
+Steps 2–5 are CI-enforced (bar the loop diagram, and CI checks the versions are _equal_, not that
+they changed). The validators name the exact missing entry — run them rather than re-deriving the
+checklist by hand.
 
 ## Adding a shipped (plugin-level) script
 
 1. Put the real file once at `scripts/runtime/<script>.sh` and `chmod +x` it.
-2. `ln -s ../../../scripts/runtime/<script>.sh plugins/dw-solo/scripts/<script>.sh` and `git add`
-   the symlink (must be mode 120000).
+2. `ln -s ../../../scripts/runtime/<script>.sh plugins/<plugin>/scripts/<script>.sh` in every plugin
+   whose skills invoke it, and `git add` the symlink (must be mode 120000).
 3. Add the basename to `RUNTIME_SCRIPTS` in `scripts/validate-manifests.sh`, plus a
    `scripts/tests/<script>.test.sh` where it has logic worth pinning (anchor it to the repo root via
    `git rev-parse --show-toplevel`).

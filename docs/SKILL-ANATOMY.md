@@ -1,12 +1,8 @@
 # Skill anatomy
 
 Every `skills/<name>/SKILL.md` in this repo follows one shape. It is not arbitrary house style — the
-shape is what makes a skill resumable, groundable, and composable. New skills copy it; reviews check
-against it.
-
-The skill set is being rebuilt from scratch, so there is no canonical example on disk to copy right
-now — this file is the contract until the first new skill lands, and that skill should be written to
-it deliberately.
+shape is what makes a skill resumable, groundable, and composable. New skills copy a near neighbour
+and keep the section order; reviews check against this file.
 
 ## Frontmatter
 
@@ -31,11 +27,12 @@ disable-model-invocation: true # ONLY for explicit-invoke-only skills (see below
     disambiguate against something that isn't installed. Describe the _shape_ you're preferring over
     ("a multi-file spec-and-plan ceremony"), not the skill name.
 - **`argument-hint`** — a short hint string. Read-only skills that take no real argument may omit it.
-- **`disable-model-invocation: true`** — set this _only_ on skills that scaffold a repo or install
-  shared tooling, so the model never reaches for them unbidden. Setting it obliges you to mark the
-  skill `⭑` in the README task-router **and** name it in every doc carrying an explicit-only list;
-  `pnpm validate:docs` enforces the agreement in both directions. There are no explicit-only skills
-  today, so no doc currently carries such a list — the first one to need it adds the section back.
+- **`disable-model-invocation: true`** — set this _only_ on skills that scaffold a repo, install
+  shared tooling, or take an outward-facing/irreversible action (create a worktree and branch, push
+  and merge), so the model never reaches for them unbidden. The cost: an explicit-only skill can't
+  be reached by other skills' prose either. Setting it obliges you to mark the skill `⭑` in the
+  README task-router **and** name it in the explicit-only lists in README and `docs/DESIGN.md`;
+  `pnpm validate:docs` enforces the agreement in both directions.
 
 ## Body order
 

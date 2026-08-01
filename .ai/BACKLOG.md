@@ -4,8 +4,6 @@ Follow-ups and ideas not being worked on now. Newest first, one line each. The b
 pick it up within a month, don't write it. The closing pass parks them here; the shaping step reads
 this when opening the next change and deletes the line it takes.
 
-- Rewrite `templates/CLAUDE.local.md` and `templates/work-README.md` — both still name `dw-shape` /
-  `dw-next` / `dw-land` in prose, which no longer exist. Nothing validates the template payload, so
-  this dangles silently until the new workflow skills land.
-- Decide whether `scripts/runtime/slugify.sh` earns its place — kept through the skill wipe to hold
-  the shipped-script path proven in CI, but it currently has no consumer.
+- [2026-08-01] Delta evals for the skills (the software-mansion pattern: with/without-skill runs,
+  `should_trigger: false` negatives, contains/not_contains assertions) — worth wiring once the skill
+  set stabilizes.

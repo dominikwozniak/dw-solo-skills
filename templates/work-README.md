@@ -9,6 +9,7 @@ active change is and where it stands.
 ```
 work/<slug>/CHANGE.md   the live state of ONE change    (dw-shape writes, dw-next ticks)
                         goal · decisions taken · task checklist · anchors
+                        branch: unclaimed until dw-start / dw-next claims it into a branch
 BACKLOG.md              follow-ups not being done now   (dw-land parks, dw-shape takes)
 ```
 

@@ -5,8 +5,8 @@ agent (and CI) already read it.
 
 ## The rules that matter
 
-- **Edit the canonical file.** A skill lives at `skills/<name>/SKILL.md`. Never edit through the
-  `plugins/dw-solo/skills/<name>` symlink — that path is a git-tracked symlink back to `skills/`.
+- **Edit the canonical file.** A skill lives at `skills/<name>/SKILL.md`. Never edit through a
+  `plugins/<plugin>/skills/<name>` symlink — that path is a git-tracked symlink back to `skills/`.
 - **Keep it thin.** Every skill here assumes **one reader**. Anything that only pays off with a second
   reader belongs in [`dw-skills`](https://github.com/dominikwozniak/dw-skills) instead.
 - **Match the shape.** Every `SKILL.md` follows one anatomy — see

@@ -15,8 +15,13 @@ Context for the agent. Read before starting a task.
 
 ## Workflow
 
-- Loop: `/dw-shape → /dw-next`, then `/dw-land` before the merge. `/dw-grill` first when the idea is fuzzy.
-- One change at a time lives in `.ai/work/<slug>/CHANGE.md` — tracked, and deleted by `/dw-land` at merge.
+- Loop: `/dw-shape → /dw-start → /dw-next` (+ optional `/dw-check`), then `/dw-ship` — it runs
+  `/dw-land` first when the change doc is still there. `/dw-grill` first when the idea is fuzzy.
+  Small serial change: shape → next → ship, no worktree.
+- One change lives in `.ai/work/<slug>/CHANGE.md` — tracked. Shaped on {{DEFAULT_BRANCH}} it starts
+  `branch: unclaimed`; `/dw-start` (or `/dw-next`) claims it. `/dw-land close` deletes it at merge.
+- Parallel changes: shape several, then one worktree + session each — `/dw-start <slug>`, or a new
+  terminal running `claude -w <slug>` (run it while the main tree sits on {{DEFAULT_BRANCH}}).
 - `/dw-next` bare answers "where were we" from disk; `/dw-next go` builds the next task.
 - Durable knowledge is promoted out, not accumulated: decisions → `docs/decisions/`, terms → `CONTEXT.md`, traps → `## Gotchas` in `CLAUDE.md`.
 - Follow-ups and out-of-scope ideas go to `.ai/BACKLOG.md` — `/dw-land` parks them, `/dw-shape` picks the next one up.

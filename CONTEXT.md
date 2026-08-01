@@ -18,7 +18,11 @@ Terms this repo uses in a specific way. Definitions only, no implementation deta
 - **Vendored** — a byte-identical copy of a file whose canon lives in `dw-skills`
   (`templates/hooks/*`, `scripts/runtime/slugify.sh`). Fixes must be applied in both repos.
 - **Fork** — a skill copied from `dw-skills` and deliberately simplified for one reader. Expected to
-  diverge; not re-synced. (None on disk right now — the skill set is being rebuilt from scratch.)
+  diverge; not re-synced. Current forks: `dw-grill`, `dw-shape`, `dw-next`, `dw-land`, `dw-git`,
+  `dw-doctor`, `dw-init`.
+- **Claim** — flipping a change doc's `branch: unclaimed` sentinel to a real branch name, committed
+  immediately. Done by `dw-start` (after creating the worktree) or offered by `dw-next` (when its
+  branch-grep misses). A change shaped on the default branch is unclaimed until then.
 - **Explicit-invoke** — a skill with `disable-model-invocation: true`; it fires only when named.
 - **HARD STOP** — a point in a skill where it must stop and wait for a human answer rather than
   proceed on an assumption.

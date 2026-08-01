@@ -3,9 +3,16 @@
 Why the skills are shaped this way. The [README](../README.md) is the short version; this is the
 _why_ behind the shape.
 
-The skill set is currently being rebuilt from scratch, so this document names **roles** rather than
-skills — "the closing pass", "the resume step". Each constraint below is binding on whatever skill
-ends up filling that role; substitute the real names as they land.
+## The loop
+
+```
+dw-grill? → dw-shape → dw-start? → dw-next ↺ → dw-check? → dw-land → dw-ship
+  fuzzy      plan it    worktree     build        gate       close     merge
+```
+
+`?` marks the opt-in steps. The mandatory spine is `dw-shape → dw-next → dw-ship`; a small serial
+change never leaves the default branch, and `dw-ship` runs the closing pass itself when the change
+doc is still there — so a finished change needs one command.
 
 ## The failure modes these skills target
 
@@ -38,6 +45,23 @@ can't reliably resume.
   archaeology.
 - **Branch reads use `git rev-parse --abbrev-ref HEAD`**, never `git branch --show-current`, which
   returns an empty string on a detached HEAD and silently turns a branch match into a no-match.
+
+## Parallel changes and the claim protocol
+
+**A change shaped on the default branch records the literal sentinel `branch: unclaimed`** — the
+plan-session pattern: shape several changes in one sitting, then build each in its own worktree and
+session. Two claimers, one rule: `dw-start` claims right after creating the worktree, and `dw-next`
+offers a claim when its branch-grep misses (stripping the `worktree-` prefix a `claude -w` session's
+branch carries). A claim is one frontmatter edit — the sentinel flips to the verbatim
+`git rev-parse --abbrev-ref HEAD` — committed **immediately**: `.ai/` is tracked, so an uncommitted
+claim is invisible to every other session. Shaping on a feature branch records the branch verbatim;
+there, shaping and claiming are one step. Any future skill touching `.ai/work/` must respect the
+sentinel.
+
+The worktrees themselves live at `.claude/worktrees/<slug>` on branch `<slug>`
+(`scripts/runtime/worktree.sh` owns create/remove), and the promotion commit the closing pass makes
+lands **on the feature branch**, so a squash-merge carries the durable residue to the default branch
+and post-merge `main` is already clean.
 
 ## Persistent but disposable — and what gets promoted out
 
@@ -115,21 +139,23 @@ what the skill does, how it differs from its nearest sibling, and the phrases th
 Procedure detail belongs in the body, which is paid for once, on invoke. A description that names a
 skill from the _other_ repo is pure noise here, since it isn't installed.
 
-## The symlink canon — one file, one plugin
+## The symlink canon — one file, one owner
 
-**A skill or a shipped script exists once, and the plugin reaches it through git-tracked symlinks.**
-The canon is `skills/<name>/` and `scripts/runtime/<script>.sh`; `plugins/dw-solo/skills/<name>` and
-`plugins/dw-solo/scripts/<script>.sh` are mode-120000 symlinks back to it.
+**A skill or a shipped script exists once, and its owning plugin reaches it through git-tracked
+symlinks.** The canon is `skills/<name>/` and `scripts/runtime/<script>.sh`;
+`plugins/<p>/skills/<name>` and `plugins/<p>/scripts/<script>.sh` are mode-120000 symlinks back to
+it.
 
 This works because `claude plugin install` **dereferences** symlinks — the plugin gets its own real
 copy in the plugin cache. So a skill body invokes a shipped script through the unchanged
 `${CLAUDE_PLUGIN_ROOT}/scripts/<script>.sh` and the path resolves to a real file.
 
-With a single plugin the indirection buys little today. It is kept because the rule it enforces —
-**never edit through a `plugins/…` path** — is absolute, and because `templates/` needs the same
-treatment: `plugins/dw-solo/templates -> ../../templates`, read as
-`${CLAUDE_PLUGIN_ROOT}/templates/…`. `scripts/tests/hooks-in-sync.test.sh` pins this repo's own
-`.claude/hooks/` to that canon, so the hooks you run are the hooks you ship.
+With two plugins the indirection is what keeps ownership explicit: `validate-manifests.sh` enforces
+that every canon skill is shipped by **exactly one** plugin, in both directions. The rule it rests
+on — **never edit through a `plugins/…` path** — is absolute, and `templates/` gets the same
+treatment: `plugins/dw-solo-setup/templates -> ../../templates` (only the scaffolder consumes the
+payload), read as `${CLAUDE_PLUGIN_ROOT}/templates/…`. `scripts/tests/hooks-in-sync.test.sh` pins
+this repo's own `.claude/hooks/` to that canon, so the hooks you run are the hooks you ship.
 
 ## Composable, not chained
 
@@ -162,9 +188,10 @@ work-arounds-in-prose that a separate `templates/` deletes outright.
 
 The costs, stated plainly rather than discovered later:
 
-- **`templates/hooks/` and `slugify.sh` are vendored copies.** Byte-identical today; a fix must be
-  applied in both repos, and nothing across the boundary can detect drift. `hooks-in-sync.test.sh`
-  only pins this repo's `.claude/hooks/` to its own canon.
+- **`templates/hooks/` and `slugify.sh` are vendored copies.** A fix must be applied in both repos,
+  and nothing across the boundary can detect drift. `hooks-in-sync.test.sh` only pins this repo's
+  `.claude/hooks/` to its own canon. One divergence is deliberate, not drift: this Node-only lane
+  ships six of the team repo's seven hooks — the Ruby lint hook is dropped, don't "re-sync" it back.
 - **Skills that exist in both lanes will be forks**, simplified for one reader, and are _meant_ to
   diverge — a solo git skill drops ticket prefixes and the PR flow, a solo health check drops the
   team checks. Don't re-sync them.
@@ -172,8 +199,9 @@ The costs, stated plainly rather than discovered later:
 
 **Install one lane per repo, not both.** Two lanes in one project means two skills competing for
 "start a feature", and no description wording fixes that reliably. Claude Code scopes plugins per
-project, which is the right place to make the choice once — the scaffolding step sets that switch
-with `claude plugin disable`, and the health check asserts it held.
+project, which is the right place to make the choice once: in a solo repo enable this marketplace's
+two plugins and disable the team lane's. `dw-git`, `dw-doctor` and `dw-init` exist in both lanes as
+deliberately diverging forks, and per-project enablement is what disambiguates them.
 
 ## Loops vs persistence — why these skills don't auto-run
 

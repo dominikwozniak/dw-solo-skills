@@ -149,7 +149,19 @@ function bareSkill(value: unknown): string | null {
   return parts[parts.length - 1]
 }
 
-function runTrial(prompt: string, model: string, fixture: string, settings: string): Trial {
+/**
+ * Generous enough that a slow opus run never trips it — observed runs finish in 3–7 turns — and
+ * finite so a `claude` that hangs on a prompt does not park the whole run forever with no output.
+ */
+const TRIAL_TIMEOUT_MS = 10 * 60 * 1000
+
+function runTrial(
+  prompt: string,
+  model: string,
+  fixture: string,
+  settings: string,
+  dirs: string[],
+): Trial {
   const args = [
     "-p",
     prompt,
@@ -166,7 +178,7 @@ function runTrial(prompt: string, model: string, fixture: string, settings: stri
     "Write",
     "Edit",
   ]
-  for (const dir of pluginDirs()) args.push("--plugin-dir", dir)
+  for (const dir of dirs) args.push("--plugin-dir", dir)
 
   const started = Date.now()
   const run = spawnSync("claude", args, {
@@ -175,6 +187,7 @@ function runTrial(prompt: string, model: string, fixture: string, settings: stri
     // 'ignore' rather than inherit: `claude -p` waits 3s for piped stdin otherwise.
     stdio: ["ignore", "pipe", "pipe"],
     maxBuffer: 64 * 1024 * 1024,
+    timeout: TRIAL_TIMEOUT_MS,
   })
   const ms = Date.now() - started
 
@@ -260,16 +273,15 @@ function main(argv: string[]): void {
 
   const jobs = loadJobs(filter, limit, adhoc)
   const runs = jobs.length * trials
+  // Resolved once: the manifest cannot change under a run, and re-reading it per trial only
+  // buys the chance of a mid-run edit making two trials incomparable.
+  const dirs = pluginDirs()
 
   console.log(
     `plan: ${jobs.length} prompt(s) × ${trials} trial(s) = ${runs} run(s) of \`claude -p\``,
   )
   console.log(`model: ${model} (pinned — routing is model-dependent)`)
-  console.log(
-    `plugins: ${pluginDirs()
-      .map((d) => basename(d))
-      .join(", ")} from this worktree`,
-  )
+  console.log(`plugins: ${dirs.map((d) => basename(d)).join(", ")} from this worktree`)
   for (const job of jobs) console.log(`  ${job.owner.padEnd(10)} "${job.prompt}"`)
 
   if (!go) {
@@ -287,7 +299,7 @@ function main(argv: string[]): void {
   for (const job of jobs) {
     process.stdout.write(`\n▸ ${job.owner}  "${job.prompt}"\n`)
     for (let t = 0; t < trials; t++) {
-      const trial = runTrial(job.prompt, model, fixture, settings)
+      const trial = runTrial(job.prompt, model, fixture, settings, dirs)
       job.trials.push(trial)
       spent += trial.costUsd
       const label = trial.skill ?? "(no skill invoked)"

@@ -4,8 +4,7 @@ description: >-
   Scaffold a private/solo repo for the solo loop — `.ai/` (work / backlog / archive),
   `docs/decisions/`, `CONTEXT.md`, `## Commands` + `## Gotchas` in `CLAUDE.md`, the guardrail
   hooks, settings with a derived allow-list, and an optional pre-commit. For a repo where you are
-  the only reader. Explicit-invoke only. Use when setting up one of your own projects, or when
-  someone says "init this project", "set up the solo loop".
+  the only reader. Explicit-invoke only — scaffolding a repo is your call, never the model's.
 argument-hint: "any project context to seed (stack, what it is)"
 disable-model-invocation: true
 ---

@@ -9,23 +9,30 @@ and keep the section order; reviews check against this file.
 ```yaml
 ---
 name: dw-thing # kebab-case, MUST equal the directory name
-description: >- # multi-line; this is what the model matches on
+description: >- # multi-line; the model-invoked shape — see the two modes below
   One sentence on what it does and the artifact it writes. Then the trigger
-  phrases — "Use when …", the things a user says ("shape this", "land this"),
-  or the explicit "dw-thing" invocation. End with a "Prefer this over …"
-  line so the model picks it over an ad-hoc approach.
+  phrases — "Use when …", the things a user says ("shape this", "land this").
+  End with a "Prefer this over …" line so the model picks it over an ad-hoc
+  approach.
 argument-hint: "What the skill expects as $ARGUMENTS" # short, optional for pure read-only skills
 disable-model-invocation: true # ONLY for explicit-invoke-only skills (see below)
 ---
 ```
 
 - **`name`** — kebab-case, equals the directory. Linted.
-- **`description`** — the discovery surface. Pack the trigger phrases here; the model reads this, not
-  the body, to decide whether to fire.
-  - **Never name a skill from another repo here.** Every installed description sits in the context
-    window of every session, so a "prefer this over `dw-spec`" clause costs tokens in every session to
-    disambiguate against something that isn't installed. Describe the _shape_ you're preferring over
-    ("a multi-file spec-and-plan ceremony"), not the skill name.
+- **`description`** — the discovery surface, and **what belongs in it depends on the invocation
+  mode**. The two are not stylistic variants; they have different readers.
+  - **Model-invoked** (no `disable-model-invocation`) — the model reads this, not the body, to decide
+    whether to fire. Pack the trigger phrases here, and end with a "Prefer this over …" line.
+  - **Explicit-invoke** (`disable-model-invocation: true`) — Claude Code **strips this description
+    from the skill listing entirely**: no model ever reads it, and it costs no context. Its reader is
+    you — one line on what the skill does, closing on why the call is yours. Copy `dw-ship`:
+    "Explicit-invoke only — merging is your call, never the model's." Trigger phrases and a
+    "Prefer this over …" line here are dead text, addressed to a reader that never arrives.
+  - **Never name a skill from another repo in a model-invoked description.** Every model-invoked
+    description sits in the context window of every session, so a "prefer this over `dw-spec`" clause
+    costs tokens in every session to disambiguate against something that isn't installed. Describe the
+    _shape_ you're preferring over ("a multi-file spec-and-plan ceremony"), not the skill name.
 - **`argument-hint`** — a short hint string, shown to the user as they type the invocation. Read-only
   skills that take no real argument may omit it (`dw-doctor` is the only one). The catalog follows
   four conventions; a new skill should too:

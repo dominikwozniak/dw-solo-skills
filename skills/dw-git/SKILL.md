@@ -1,10 +1,9 @@
 ---
 name: dw-git
 description: >-
-  One skill for every git operation in this project — commit, push, open PR, sync, branch, stash —
-  applying the repo's own `## Git conventions` from `CLAUDE.local.md` instead of generic defaults.
-  Use for any git intent — committing, pushing, opening a PR, rebasing, branching, stashing — or
-  when someone says "commit", "push", "open PR", "sync with main".
+  One skill for every git operation in this project — commit, push, open PR, sync (rebase), branch,
+  stash — applying the repo's own `## Git conventions` from `CLAUDE.local.md` instead of generic
+  defaults. Use for any git intent, however it's phrased.
 argument-hint: "Which git op? e.g. commit, push, open PR, sync, branch, stash"
 ---
 

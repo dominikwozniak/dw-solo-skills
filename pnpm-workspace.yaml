@@ -12,7 +12,7 @@ allowBuilds:
 
 # Release cooldown: refuse a package version published less than 7 days ago (unit is
 # minutes). The v11 default is 1440 — a day catches most malicious releases; a week
-# catches the rest, and costs nothing on a 7-package tree that changes a few times a year.
+# catches the rest, and costs nothing on an 8-package tree that changes a few times a year.
 minimumReleaseAge: 10080
 # Written out because the v11 release notes and the settings page disagree on the default.
 # `true` = fail resolution outright when no version satisfies the cooldown, instead of

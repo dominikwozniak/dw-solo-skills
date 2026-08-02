@@ -53,7 +53,7 @@ fails on a hand-broken cell.
 - [x] 3. `docs/SKILL-ANATOMY.md` — name `dw-git` in the free-text bullet and sanction the question
       form for free-text-only skills, then replace "no validator catches the drift" with the rule
       check 5 enforces.
-- [ ] 4. `scripts/validate-docs.sh` — check 5, reusing check 3's row lookup: the README row is the
+- [x] 4. `scripts/validate-docs.sh` — check 5, reusing check 3's row lookup: the README row is the
       line that starts with `|` and contains `skills/<name>/SKILL.md`; the Arguments cell is its 4th
       pipe field; the cell is `—` iff the skill has no `argument-hint`; every backticked token that
       isn't `dw-[a-z-]+` must be a substring of the hint. Update the header comment from four checks
@@ -100,3 +100,11 @@ Found while building:
   only Arguments cell in the README containing a `` `dw-*` `` token. Widening it also made prettier
   realign every column of the core-loop table, so task 4's 4th-pipe-field parse must not assume any
   particular column width.
+- Check 5 was exercised against four hand-broken states, not just the green tree: `dw-init`'s hint
+  reverted (cell names `bare`, hint doesn't), `dw-start`'s cell blanked, `dw-doctor` given a cell
+  without a hint, and `dw-doctor` given a hint while its cell stayed `—`. Each produced exactly one
+  error naming the skill. The `dw-*` exemption is load-bearing rather than defensive: `dw-start`'s
+  cell carries `` `dw-shape` `` and its hint does not, so the check would fail the green tree
+  without it.
+- The token loop reads through `< <(…)` rather than a pipe on purpose — a piped `while` runs in a
+  subshell and the accumulated `missing` list would vanish, turning every failure into a silent pass.

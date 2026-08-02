@@ -2,7 +2,7 @@
 change: pnpm-v11-migration
 branch: pnpm-v11-migration
 created: 2026-08-01
-status: shaping # shaping | building | landed
+status: building # shaping | building | landed
 ---
 
 # Change — migrate this repo to pnpm v11 and adopt its supply-chain defaults
@@ -49,7 +49,7 @@ what this one learns, so the four questions under `## Notes` are a deliverable, 
 
 ## Tasks
 
-- [ ] 1. Bump to pnpm 11 and relocate the config — atomic, because a v11 pin with the settings still
+- [x] 1. Bump to pnpm 11 and relocate the config — atomic, because a v11 pin with the settings still
       in `package.json#pnpm` is a broken intermediate state (the field is ignored, `agnix`'s build is
       then unapproved, and `strictDepBuilds: true` fails the install). Run
       `pnpm dlx codemod run pnpm-v10-to-v11`, review the diff by hand, hand-write the remaining
@@ -94,3 +94,24 @@ Four things the research could not settle from pnpm's own docs. Task 2 answers t
    nothing" failure class the doctor exists for.
 4. **Does `minimumReleaseAgeStrict: true` actually hard-fail?** Try adding a package published in the
    last day; it must fail. If it installs, the protection is theatre and the setting name is a lie.
+
+### From task 1 — running the codemod
+
+- **The codemod needs three flags to run unattended.** Bare `pnpm dlx codemod run pnpm-v10-to-v11`
+  dies with "The input device is not a TTY" — it asks to approve its own shell step. The working
+  invocation is `--no-interactive --allow-fs --allow-child-process`. The payload change should ship
+  that spelling, not the one on pnpm's migration page.
+- **Its `--dry-run` is useless here — it reports "Would modify 0 files" and then the real run
+  modifies two.** The work happens in a spawned `node -e`, which the dry-run cannot see. So "review
+  the diff by hand" has to mean _run it on a clean tree and read `git diff`_, which is what happened.
+- **It did more than the task assumed**: it bumped `packageManager` to `pnpm@11.18.0` itself, on top
+  of moving `onlyBuiltDependencies` → `allowBuilds` in a new `pnpm-workspace.yaml`. Only the
+  supply-chain keys and `devEngines` were hand-written.
+- **`packageManager` and `devEngines.packageManager` must state the _same_ version.** A range in
+  `devEngines` (`>=11.0.0 <12.0.0`) against the exact pin in `packageManager` makes every install
+  warn `"packageManager" ... will be ignored`. Both are now pinned to `11.18.0` — two fields to bump
+  together, which is the same paired-version discipline `marketplace.json` / `plugin.json` already
+  carry here. This is a real amendment to the "keep `packageManager`" decision: keeping it is still
+  right, but it is not free.
+- **`pnpm ci` prints `✓ Lockfile passes supply-chain policies`** — the settings are not just parsed,
+  they are enforced at install time and say so.

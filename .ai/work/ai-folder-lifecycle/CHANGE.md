@@ -54,7 +54,7 @@ PRs' docs sit recovered in `.ai/archive/` with `status: landed`; the five-comman
       touches: `dw-next:25,81,104`, `dw-grill:81`, `dw-ship:71,73`, `dw-handoff:19`.
 - [x] 3. Migrate the live backlog — split `.ai/BACKLOG.md` entries (12 by direct count; re-verify)
       into slug-named files under `.ai/backlog/`, `git rm .ai/BACKLOG.md`, one commit.
-- [ ] 4. Backfill the archive for PRs #1 and #2 per the recovery procedure in Decisions; both docs
+- [x] 4. Backfill the archive for PRs #1 and #2 per the recovery procedure in Decisions; both docs
       get `status: landed`, `landed: 2026-08-02`, `pr:` lines.
 - [ ] 5. Payload: `dw-init` + `templates/` — `dw-init` description `:4-5`, writes table `:25-27`,
       write steps `:81-85` (`mkdir -p .ai/work .ai/backlog .ai/archive` + seeds, copy the

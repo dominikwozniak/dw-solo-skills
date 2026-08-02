@@ -115,6 +115,17 @@ CI runs those seven plus a `trufflehog` secrets scan on every PR and push to `ma
 
 Traps this repo has actually sprung, newest first.
 
+- **Rebasing onto a squash-merged `main` resurrects the merged change's own commits.** A squash-merge
+  leaves no shared ancestor, so a branch shaped before it replays that change's `chore: shape …`
+  commit as a new one — re-adding `.ai/work/<slug>/CHANGE.md` for work already archived. No conflict,
+  no warning. After any rebase, diff `main..HEAD` and drop what you didn't write:
+  `git rebase --onto main <stowaway-sha> <branch>`. Check the version bumps in the same pass — the
+  other change may have taken the number yours targets, and `validate-manifests.sh` cannot see it.
+- **Every way to rewind a branch is blocked by `block-dangerous-commands.sh`.** Not just
+  `git reset --hard` — `git branch -f`, `git branch -D`, `git checkout .` and `git restore .` are all
+  in `DANGEROUS_PATTERNS` too, so an agent cannot move a branch backwards at all and must hand the
+  command to you. `git rebase` is not blocked, so prefer `rebase --onto` for anything reachable that
+  way; otherwise expect to run the rewind yourself.
 - **`validate-manifests.sh` checks the two versions are _equal_, not that either moved.** Change a
   shipped file — anything under `templates/` or `scripts/runtime/` — and CI stays green with no bump,
   while every installed consumer keeps the old copy. Nothing else catches it: the add-a-skill

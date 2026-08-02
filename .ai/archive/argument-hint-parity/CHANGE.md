@@ -2,7 +2,8 @@
 change: argument-hint-parity
 branch: argument-hint-parity
 created: 2026-08-02
-status: building # shaping | building | landed
+landed: 2026-08-02
+status: landed # shaping | building | landed
 ---
 
 # Change — make the README Arguments column provable, and fix the three cells that already drifted

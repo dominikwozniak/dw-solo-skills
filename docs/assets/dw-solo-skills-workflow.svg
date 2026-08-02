@@ -1,0 +1,193 @@
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="1400"
+  height="360"
+  viewBox="0 0 1400 360"
+  role="img"
+  aria-labelledby="workflow-title workflow-desc"
+>
+  <title id="workflow-title">The dw-solo-skills workflow</title>
+  <desc id="workflow-desc">
+    A left-to-right workflow from optional dw-grill, through mandatory dw-shape, optional dw-start,
+    iterative dw-next, optional dw-check, mandatory dw-land, and mandatory dw-ship. Dw-next loops
+    until the work is ready to continue.
+  </desc>
+
+  <defs>
+    <marker
+      id="arrow"
+      markerWidth="8"
+      markerHeight="8"
+      refX="7"
+      refY="4"
+      orient="auto"
+      markerUnits="strokeWidth"
+    >
+      <path d="M 0 0 L 8 4 L 0 8 Z" fill="#D78A32" />
+    </marker>
+    <style>
+      svg {
+        color-scheme: light dark;
+      }
+      .sans {
+        font-family: Arial, Helvetica, sans-serif;
+      }
+      .mono {
+        font-family: Menlo, Monaco, monospace;
+      }
+      .connector {
+        fill: none;
+        stroke: #d78a32;
+        stroke-width: 3;
+        stroke-linecap: round;
+        marker-end: url(#arrow);
+      }
+      .mandatory {
+        fill: #111111;
+        stroke: #d78a32;
+        stroke-width: 2;
+      }
+      .optional {
+        fill: #f5f1e8;
+        stroke: #77736d;
+        stroke-width: 2;
+        stroke-dasharray: 7 6;
+      }
+      .skill-light {
+        fill: #f5f1e8;
+        font-size: 21px;
+        font-weight: 700;
+      }
+      .skill-dark {
+        fill: #111111;
+        font-size: 21px;
+        font-weight: 700;
+      }
+      .label-light {
+        fill: #bbb5aa;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 1.5px;
+      }
+      .label-dark {
+        fill: #625f59;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 1.5px;
+      }
+      .caption-light {
+        fill: #bbb5aa;
+        font-size: 14px;
+      }
+      .caption-dark {
+        fill: #625f59;
+        font-size: 14px;
+      }
+      .theme-title {
+        fill: #111111;
+      }
+      .theme-muted {
+        fill: #77736d;
+      }
+      @media (prefers-color-scheme: dark) {
+        .theme-title {
+          fill: #f5f1e8;
+        }
+        .theme-muted {
+          fill: #bbb5aa;
+        }
+      }
+    </style>
+  </defs>
+
+  <g class="sans">
+    <text class="theme-title" x="50" y="48" font-size="24" font-weight="750">THE LOOP</text>
+    <rect x="50" y="64" width="42" height="3" rx="1.5" fill="#D78A32" />
+    <text class="theme-muted" x="108" y="69" font-size="14">
+      mandatory spine with optional entry points and gates
+    </text>
+  </g>
+
+  <g aria-hidden="true">
+    <path class="connector" d="M 210 180 H 230" />
+    <path class="connector" d="M 400 180 H 420" />
+    <path class="connector" d="M 590 180 H 610" />
+    <path class="connector" d="M 780 180 H 800" />
+    <path class="connector" d="M 970 180 H 990" />
+    <path class="connector" d="M 1160 180 H 1180" />
+
+    <path class="connector" d="M 754 126 C 754 76, 646 76, 646 126" />
+    <text
+      x="700"
+      y="72"
+      fill="#D78A32"
+      font-family="Arial, Helvetica, sans-serif"
+      font-size="12"
+      font-weight="700"
+      letter-spacing="1.4"
+      text-anchor="middle"
+    >
+      ITERATE
+    </text>
+  </g>
+
+  <g class="sans">
+    <g>
+      <rect class="optional" x="50" y="126" width="160" height="108" rx="12" />
+      <text class="label-dark" x="68" y="151">OPTIONAL</text>
+      <text class="skill-dark mono" x="68" y="184">dw-grill</text>
+      <text class="caption-dark" x="68" y="211">clarify</text>
+    </g>
+
+    <g>
+      <rect class="mandatory" x="240" y="126" width="160" height="108" rx="12" />
+      <text class="label-light" x="258" y="151">MANDATORY</text>
+      <text class="skill-light mono" x="258" y="184">dw-shape</text>
+      <text class="caption-light" x="258" y="211">plan it</text>
+    </g>
+
+    <g>
+      <rect class="optional" x="430" y="126" width="160" height="108" rx="12" />
+      <text class="label-dark" x="448" y="151">OPTIONAL</text>
+      <text class="skill-dark mono" x="448" y="184">dw-start</text>
+      <text class="caption-dark" x="448" y="211">worktree</text>
+    </g>
+
+    <g>
+      <rect class="mandatory" x="620" y="126" width="160" height="108" rx="12" />
+      <text class="label-light" x="638" y="151">MANDATORY</text>
+      <text class="skill-light mono" x="638" y="184">dw-next</text>
+      <text class="caption-light" x="638" y="211">build</text>
+    </g>
+
+    <g>
+      <rect class="optional" x="810" y="126" width="160" height="108" rx="12" />
+      <text class="label-dark" x="828" y="151">OPTIONAL</text>
+      <text class="skill-dark mono" x="828" y="184">dw-check</text>
+      <text class="caption-dark" x="828" y="211">gate</text>
+    </g>
+
+    <g>
+      <rect class="mandatory" x="1000" y="126" width="160" height="108" rx="12" />
+      <text class="label-light" x="1018" y="151">MANDATORY</text>
+      <text class="skill-light mono" x="1018" y="184">dw-land</text>
+      <text class="caption-light" x="1018" y="211">close</text>
+    </g>
+
+    <g>
+      <rect class="mandatory" x="1190" y="126" width="160" height="108" rx="12" />
+      <text class="label-light" x="1208" y="151">MANDATORY</text>
+      <text class="skill-light mono" x="1208" y="184">dw-ship</text>
+      <text class="caption-light" x="1208" y="211">merge</text>
+    </g>
+
+    <g transform="translate(50 290)">
+      <rect class="mandatory" width="22" height="14" rx="3" />
+      <text class="theme-muted" x="32" y="12" font-size="13">mandatory spine</text>
+      <rect class="optional" x="178" width="22" height="14" rx="3" />
+      <text class="theme-muted" x="210" y="12" font-size="13">optional step</text>
+      <path d="M 330 7 H 370" stroke="#D78A32" stroke-width="3" stroke-linecap="round" />
+      <text class="theme-muted" x="382" y="12" font-size="13">progress</text>
+    </g>
+  </g>
+</svg>

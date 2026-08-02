@@ -10,6 +10,8 @@ active change is and where it stands.
 work/<slug>/CHANGE.md   the live state of ONE change    (dw-shape writes, dw-next ticks)
                         goal · decisions taken · task checklist · anchors
                         branch: unclaimed until dw-start / dw-next claims it into a branch
+work/<slug>/HANDOFF.md  the middle of a task, saved     (dw-handoff writes, dw-next clears)
+                        optional — appears only with the dw-solo-extras plugin installed
 BACKLOG.md              follow-ups not being done now   (dw-land parks, dw-shape takes)
 ```
 
@@ -18,6 +20,9 @@ BACKLOG.md              follow-ups not being done now   (dw-land parks, dw-shape
 - **`work/<slug>/CHANGE.md` is persistent but disposable.** Tracked, so a week-long
   gap and a `/clear` change nothing — and **deleted by `dw-land`** at merge, once
   anything durable has been promoted out.
+- **`work/<slug>/HANDOFF.md` is shorter-lived still.** It describes the middle of one
+  task, so `dw-next` deletes it as soon as that task is ticked. Only ever one at a
+  time; a new handoff overwrites the old.
 - **`BACKLOG.md` survives.** It is the one file here that carries content forward
   between changes.
 

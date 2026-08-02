@@ -30,7 +30,7 @@ worktree.
 - Clean tree (`git status --porcelain`) — leftover work gets committed the way `dw-git` does, or
   deliberately stashed; never shipped around.
 - **Landed first.** If a `CHANGE.md` still matches this branch (the same grep `dw-next` uses), the
-  change hasn't been closed: run `dw-land` now — verdict, approval, `close` — and come back. The
+  change hasn't been closed: run `dw-land` now — verdict, your go, close — and come back. The
   promotion commit has to ride this branch; shipping before it exists strands the durable residue.
 
 ### 2. Pick the path

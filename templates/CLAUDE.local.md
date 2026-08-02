@@ -23,6 +23,9 @@ Context for the agent. Read before starting a task.
 - Parallel changes: shape several, then one worktree + session each — `/dw-start <slug>`, or a new
   terminal running `claude -w <slug>` (run it while the main tree sits on {{DEFAULT_BRANCH}}).
 - `/dw-next` bare answers "where were we" from disk; `/dw-next go` builds the next task.
+- Out of context in the middle of a task: `/dw-handoff` writes `.ai/work/<slug>/HANDOFF.md` and
+  `/dw-next` reads it first next session. Needs the `dw-solo-extras` plugin; between tasks the
+  `CHANGE.md` checklist already covers you.
 - Durable knowledge is promoted out, not accumulated: decisions → `docs/decisions/`, terms → `CONTEXT.md`, traps → `## Gotchas` in `CLAUDE.md`.
 - Follow-ups and out-of-scope ideas go to `.ai/BACKLOG.md` — `/dw-land` parks them, `/dw-shape` picks the next one up.
 

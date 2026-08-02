@@ -78,5 +78,6 @@ These hold across every skill, regardless of section layout:
   closing pass weighs every axis in one go rather than splitting into persona skills — see
   [`DESIGN.md`](DESIGN.md), "One gate, not a skill boundary."
 - **One reader.** This lane assumes you are the only audience. A skill that only pays off with a
-  second reader (a validated status table, a handoff doc, an auditor/writer split) belongs in
-  `dw-skills`, not here.
+  second reader (a validated status table, a session log kept so it can be audited, an auditor/writer
+  split) belongs in `dw-skills`, not here. The test is who reads the output, not what it is called:
+  `dw-handoff` writes to your own next context window, which is why it survives that cut.

@@ -17,6 +17,8 @@ plugins/dw-solo-extras/          the off-loop plugin — dw-handoff
 scripts/runtime/<script>.sh      shipped scripts — symlinked into the owning plugin
 scripts/<script>.sh              repo CI tooling, never shipped (validate-*.sh, lint.sh)
 scripts/tests/<script>.test.sh   bash self-tests
+evals/cases/<name>.json          routing cases — one per model-invocable skill, never shipped
+evals/routing.ts                 the free tier, in CI · evals/trigger.ts is the paid one, by hand
 templates/                       payload copied verbatim INTO a target project (hooks, settings.json)
 .claude-plugin/marketplace.json  makes this repo installable as a plugin source
 ```
@@ -71,7 +73,9 @@ instead of a dated record under `.ai/handoffs/`, so treat the two as unrelated. 
    without it. If the skill is `disable-model-invocation: true`, do **not** add one: routing is never
    the model's decision there, and a case file for it would read as coverage while measuring nothing.
    Shape and conventions: [`evals/README.md`](evals/README.md).
-7. `pnpm lint && pnpm format && pnpm validate:manifests && pnpm validate:docs && pnpm validate:evals`.
+7. `pnpm lint && pnpm format && pnpm validate:manifests && pnpm validate:docs && pnpm validate:evals && pnpm eval:routing`
+   — the last one because a new description shifts every term's idf, so adding a skill can knock an
+   _existing_ one off rank-1 and fail CI's floor without your own case file scoring badly at all.
 
 Steps 2–6 are CI-enforced (bar the loop diagram, and CI checks the versions are _equal_, not that
 they changed). The validators name the exact missing entry — run them rather than re-deriving the

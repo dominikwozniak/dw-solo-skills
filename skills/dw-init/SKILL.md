@@ -5,7 +5,7 @@ description: >-
   `docs/decisions/`, `CONTEXT.md`, `## Commands` + `## Gotchas` in `CLAUDE.md`, the guardrail
   hooks, settings with a derived allow-list, and an optional pre-commit. For a repo where you are
   the only reader. Explicit-invoke only — scaffolding a repo is your call, never the model's.
-argument-hint: "any project context to seed (stack, what it is)"
+argument-hint: "bare detects the stack from disk · any project context to seed"
 disable-model-invocation: true
 ---
 

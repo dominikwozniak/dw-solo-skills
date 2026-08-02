@@ -2,7 +2,7 @@
 change: argument-hint-parity
 branch: argument-hint-parity
 created: 2026-08-02
-status: shaping # shaping | building | landed
+status: building # shaping | building | landed
 ---
 
 # Change — make the README Arguments column provable, and fix the three cells that already drifted
@@ -42,7 +42,7 @@ fails on a hand-broken cell.
 
 ## Tasks
 
-- [ ] 1. Rewrite the three hints so each leads with bare, `·`-separated. `dw-start` →
+- [x] 1. Rewrite the three hints so each leads with bare, `·`-separated. `dw-start` →
       `bare lists the unclaimed changes · <slug> opens that one · a description shapes it first`,
       which also documents the third input path at `skills/dw-start/SKILL.md:31-34` that today exists
       only in the body. `dw-init` → `bare detects the stack from disk · any project context to seed`.
@@ -86,3 +86,13 @@ Verified against the Claude Code 2.1.220 binary before shaping, rather than agai
   here: internal and unadvertised.
 - The token-subset rule was checked by hand against all 11 skills. It fails exactly `dw-init`,
   `dw-handoff` and `dw-start`, and passes the other eight.
+
+Found while building:
+
+- `dw-start`'s new hint line is 104 characters, over `.prettierrc.json`'s `printWidth: 100`, and
+  both prettier and agnix pass anyway — prettier does not fold a long YAML scalar. Leave it; a
+  future session should not "fix" the wrap.
+- **Task 2 is smaller than shaped.** Its stated job was to stop the `dw-start` cell drifting, but
+  task 1 already did that: the cell's two tokens, `bare` and `<slug>`, both appear in the new hint,
+  so check 5 would pass it as it stands. What is left is only adding the third input path
+  (`` · a description → `dw-shape` ``) — completeness, not a drift fix.

@@ -5,7 +5,7 @@ description: >-
   what is applied but uncommitted, and which dead ends are already ruled out — so the next context
   window resumes mid-task instead of re-deriving it. Explicit-invoke only — you are the one who can
   see the session is about to end.
-argument-hint: "what the next session should focus on — optional"
+argument-hint: "bare saves where you are · or name what the next session should focus on"
 disable-model-invocation: true
 ---
 

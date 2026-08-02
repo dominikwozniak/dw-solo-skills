@@ -47,7 +47,7 @@ four or more unrelated scopes, and `.ai/archive/worktreeinclude-support/CHANGE.m
       `.ai/work/<slug>/CHANGE.md`, each complete on its own terms and all `branch: unclaimed`, never
       a stub pointing at a sibling; shared anchors become one ordering sentence in the `## Notes` of
       whichever lands second; on no it stays one change, with the reason recorded as a Decision.
-- [ ] 2. `docs/DESIGN.md` — one bullet beside "One folder per change" (`:42`): one change is one
+- [x] 2. `docs/DESIGN.md` — one bullet beside "One folder per change" (`:42`): one change is one
       independently shippable scope, applied at shape time, and shared anchors are an ordering note
       rather than a dependency field.
 - [ ] 3. Patch-bump `dw-solo` in `plugins/dw-solo/.claude-plugin/plugin.json` and

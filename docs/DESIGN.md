@@ -40,6 +40,12 @@ can't reliably resume.
 - **No shared index file.** A central registry becomes a merge-conflict magnet once tracked. Discovery
   is by directory name + per-file frontmatter, so two branches never fight over one file.
 - **One folder per change** (`.ai/work/<slug>/`) — parallel branches and worktrees don't collide.
+- **And one change is one independently shippable scope** — the question "could each piece land on its
+  own and leave the repo green?", asked at **shape time** rather than discovered mid-build. A request
+  carrying two such scopes is two folders, each complete on its own terms, not one doc with two goals;
+  that is the same test a task gets, one level up. Where two of them touch the same file, that's an
+  **ordering** sentence in the `## Notes` of whichever lands second — never a dependency field, for
+  the reason below: it would be the status column this lane exists to avoid.
 - **Branch-matched resume.** A change doc records its branch; the resume step globs the work dirs,
   matches the current branch, and reports the first unticked box. Deterministic — no scrollback
   archaeology.

@@ -185,3 +185,18 @@ decisions list gestures at** (npm refuses to operate in the repo) **at the price
 `pnpm info`**; `ignore` keeps every pnpm command working but drops the npm guard. Note the repo
 already blocks npm for the _agent_ via `block-non-pnpm.sh`; the guard only adds cover for a human
 typing `npm install` by hand. **Open — needs a decision before this change lands.**
+
+### From task 3 — `pnpm lint` is not a reliable local check in this session
+
+Both workflows now run `pnpm ci` (which is `pnpm clean` + `pnpm install --frozen-lockfile`, so on a
+cold runner it is exactly what they did before, plus the supply-chain verification line). Simulating
+CI locally from a clean tree: `pnpm ci` ✅, `pnpm format` ✅, lint ✅ (0 errors, 8 warnings).
+
+The trap: **`pnpm lint` fails locally for a reason that has nothing to do with the repo.** The `rtk`
+proxy hook rewrites it to `rtk lint`, which is an _ESLint_ wrapper, and this repo has no eslint — so
+it dies with `Command "eslint" not found` while `scripts/lint.sh` is perfectly green. `pnpm format`
+is untouched because rtk has no `format` command. CI has no rtk, so this is local-only noise. When
+verifying lint here, run `bash scripts/lint.sh` (or `node_modules/.bin/agnix .`) directly. Worth
+carrying to `## Gotchas` at land time — a green repo that looks broken is expensive.
+
+CI confirmation itself is still pending: it needs the branch pushed, which has not happened.

@@ -42,7 +42,7 @@ decisions belong in `docs/decisions/`, not in a spec nobody will reopen.
      bisect, a tag checkout): **say so and ask which branch to record.** Never write `HEAD`.
 2. **Don't start a second change on the same claimed branch.** Look for an existing one first:
    `grep -l "^branch: $(git rev-parse --abbrev-ref HEAD)\$" .ai/work/*/CHANGE.md 2>/dev/null`. If one
-   turns up and its `status:` isn't `landed`, **continue that file** — only open a new change for
+   turns up, **continue that file** — only open a new change for
    genuinely separate work. Several `unclaimed` changes side by side are normal: that's the queue,
    not a conflict. When unsure, ask.
 3. **Derive the slug, don't invent it:**

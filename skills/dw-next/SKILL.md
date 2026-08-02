@@ -32,7 +32,7 @@ grep -l "^branch: $(git rev-parse --abbrev-ref HEAD)$" .ai/work/*/CHANGE.md 2>/d
 ```
 
 - **One match** — that's it.
-- **Several** — prefer the one whose `status:` isn't `landed`; if still ambiguous, list them and ask.
+- **Several** — list them and ask.
 - **None — try to claim before pointing anywhere.** In order:
   1. Strip an optional `worktree-` prefix from the branch (the `claude -w` spelling); if the
      remainder equals or contains the slug of a change whose `branch:` is `unclaimed`, offer that
@@ -44,11 +44,11 @@ grep -l "^branch: $(git rev-parse --abbrev-ref HEAD)$" .ai/work/*/CHANGE.md 2>/d
 
   Claiming = flip `branch: unclaimed` to the verbatim `git rev-parse --abbrev-ref HEAD` and commit
   that one edit before building — an uncommitted claim is invisible to every other session. If no
-  unclaimed change fits but exactly one non-`landed` change sits on another branch, say so and
-  offer it — you may simply be on the wrong branch.
+  unclaimed change fits but exactly one change sits on another branch, say so and offer it — you
+  may simply be on the wrong branch.
 
-- **Detached HEAD** (the branch resolves to the literal `HEAD`) — say so, list every `CHANGE.md` with
-  its recorded `branch:`, and ask which one to build. Stop; don't guess.
+- **Detached HEAD** (the branch resolves to the literal `HEAD`) — say so, list every `CHANGE.md`
+  under `.ai/work/` with its recorded `branch:`, and ask which one to build. Stop; don't guess.
 
 ## Workflow
 

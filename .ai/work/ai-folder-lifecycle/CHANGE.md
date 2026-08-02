@@ -65,7 +65,7 @@ PRs' docs sit recovered in `.ai/archive/` with `status: landed`; the five-comman
       — CHANGE.md is _archived_, not deleted; `BACKLOG.md` rows become `backlog/` + `archive/`
       rows. `templates/CLAUDE.local.md:18-30` workflow lines. New template file(s) for the two
       READMEs.
-- [ ] 6. Docs, dead checks, versions — `README.md:30-32,80,111-112`; `docs/DESIGN.md:26,66-84,104`;
+- [x] 6. Docs, dead checks, versions — `README.md:30-32,80,111-112`; `docs/DESIGN.md:26,66-84,104`;
       `CONTEXT.md:11-13`; repo `CLAUDE.local.md:18-29` (same edit as the template; gitignored, edit
       directly). Drop the dead "isn't `landed`" clauses (`dw-next:35,47`, `dw-handoff:32`,
       `dw-shape:44`); update `dw-handoff:73-75` (the `git rm -r` contract line); scope the
@@ -98,3 +98,8 @@ PRs' docs sit recovered in `.ai/archive/` with `status: landed`; the five-comman
 origin 'refs/pull/*/head'` lists pulls 1–3.
 - CI cannot see a `.ai/` lifecycle regression — deliberate (`validate-artifacts.sh:7-10`); rely on
   the five-command gate plus read-back.
+- Task 6: the repo's `CLAUDE.local.md` had to be edited in the **main tree** — this worktree has no
+  symlink because the session entered via `EnterWorktree`, which fires no `SessionStart` (the known
+  gap parked as `.ai/backlog/enterworktree-sessionstart-gap.md`).
+- Task 4: PR #1's land commit **is** `refs/pull/1/head` (`714751e`) — the recovery needed no
+  rev-list walk, just the ref's parent, same shape as PR #2.

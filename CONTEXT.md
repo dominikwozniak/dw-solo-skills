@@ -8,9 +8,12 @@ Terms this repo uses in a specific way. Definitions only, no implementation deta
 - **Canon** — the single real copy of a file. `skills/<name>/` and `scripts/runtime/<s>.sh` are canon;
   everything under `plugins/` is a git-tracked symlink back to it. Never edit through `plugins/…`.
 - **Change** — one unit of work, held in `.ai/work/<slug>/CHANGE.md`. Persistent (tracked, survives a
-  `/clear`) but disposable (deleted at merge).
-- **Promotion** — moving the durable residue out of a `CHANGE.md` before it is deleted: decisions to
-  `docs/decisions/`, terms here, traps to `## Gotchas` in `CLAUDE.md`, follow-ups to `.ai/BACKLOG.md`.
+  `/clear`), archived at merge (`.ai/archive/<slug>/`, `status: landed`).
+- **Promotion** — moving the durable residue out of a `CHANGE.md` before it is archived: decisions to
+  `docs/decisions/`, terms here, traps to `## Gotchas` in `CLAUDE.md`, follow-ups to `.ai/backlog/`
+  (one file per idea).
+- **Archive** — `.ai/archive/<slug>/`: landed change docs kept as history, not guidance. Nothing
+  reads them to decide anything; backlog entries may point at one for its findings.
 - **Task** — one ticked box in a `CHANGE.md`: a thin vertical slice, independently committable, leaving
   the project green. Not a layer ("add all the migrations" is not a task).
 - **Anchor** — a `path/to/file.rb:42` reference in a `CHANGE.md`. Orientation for a fresh session, never

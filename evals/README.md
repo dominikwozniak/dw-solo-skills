@@ -17,14 +17,19 @@ descriptions competing for the same words.
 ## Running it
 
 ```bash
-node evals/routing.ts                       # every case file
+pnpm eval:routing                           # what CI and the pre-push gate run (--min-rank1 67)
+pnpm validate:evals                         # every model-invocable skill has a case file, and back
+node evals/routing.ts                       # report only, no floor enforced
 node evals/routing.ts dw-shape dw-grill     # only these skills
-node evals/routing.ts --top 5               # show more of each ranking
-node evals/routing.ts --min-rank1 67        # fail below a rank-1 floor (the CI form)
+node evals/routing.ts --top 5               # show more of each ranking, and more collision pairs
 ```
 
 No build step and no dependencies — Node strips the types natively. Exit codes: `0` pass, `1` a gate
 failed, `2` bad usage or a malformed case file.
+
+Both live in `.github/workflows/evals-routing.yaml` and in the pre-push gate in `AGENTS.md`. The
+workflow installs nothing: tier 2 has no dependencies and `jq` for the validator is already on the
+runner.
 
 ## Case files
 

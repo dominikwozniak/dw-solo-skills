@@ -163,8 +163,9 @@ const DERIVATIONAL: [string, string][] = [
  * A suffix stripper, not a linguist's stemmer. It exists so `shape` / `shaping` / `shaped` land on
  * one term, and it is wrong in places (`decision` and `decide` never meet). That is tolerable
  * because both the corpus and the query go through this same function: the eval compares documents
- * against each other, so consistency buys more than accuracy would. scripts/tests/ pins the cases
- * that matter, so a change here shows up as a test diff rather than as quiet ranking drift.
+ * against each other, so consistency buys more than accuracy would. What keeps a change here from
+ * drifting quietly is the recorded baseline in evals/README.md plus the --min-rank1 floor CI passes:
+ * touch this function and the numbers move, which is the intended way to find out.
  */
 function stem(word: string): string {
   let w = word

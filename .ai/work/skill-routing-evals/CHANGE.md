@@ -54,7 +54,7 @@ empty directory, n=3, so it is a lead and not a verdict.
       the eval.
 - [x] 3. Collision detection (warn ≥0.5 cosine, error ≥0.75) and the `--min-rank1` ratchet, with the
       measured baseline written into `evals/README.md` so drift is visible.
-- [ ] 4. `scripts/validate-evals.sh` — every `skills/<n>/` has `evals/cases/<n>.json` and back —
+- [x] 4. `scripts/validate-evals.sh` — every `skills/<n>/` has `evals/cases/<n>.json` and back —
       plus `pnpm eval:routing` in the pre-push gate and `.github/workflows/evals-routing.yaml`.
 - [ ] 5. `evals/trigger.ts` — Tier 3-lite: spawn `claude -p`, read the first `Skill` tool call out of
       stream-json, 3 trials, report the distribution. Record the grill/shape verdict in Notes.
@@ -132,6 +132,24 @@ the sentence that commit removed contained the literal phrase "sync **with main*
 retroactively catches a real regression from this repo's own history, which is the premise of the
 change working on the first corpus it was pointed at. Whether to restore that sentence is a
 description decision, not an eval decision — parked, not silently fixed.
+
+### Task 4 — the gate is seven commands now, and the validator is bidirectional both ways
+
+`scripts/validate-evals.sh` derives the model-invocable set from frontmatter rather than hardcoding
+it, so the exemption follows `disable-model-invocation` automatically. Both directions are real
+errors: a model-invocable skill with no case file, **and** a case file for an explicit-invoke skill —
+the second measures nothing and would read as coverage. Verified against all three failure paths, not
+just the happy one.
+
+Deliberately no `scripts/tests/` self-test for it, matching `validate-docs.sh` and
+`validate-manifests.sh`, which have none either — this repo tests shipped runtime scripts and hooks,
+not its own CI validators. `routing.ts` is exercised on every push by the workflow, which is the same
+coverage by a different route. That did mean deleting a claim I had left in `stem()`'s docblock about
+`scripts/tests/` pinning it; the recorded baseline plus `--min-rank1` is what actually catches a
+stemmer change, and the comment now says so.
+
+`pnpm validate:evals` joins the gate alongside `pnpm eval:routing`, so it is seven commands, not the
+six in `AGENTS.md` — task 6 updates the two places that state it.
 
 ### Task 3 — the shaped 0.75 error threshold would not have caught the canonical bad case
 

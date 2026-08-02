@@ -2,7 +2,7 @@
 change: shape-splits-changes
 branch: shape-splits-changes
 created: 2026-08-02
-status: shaping # shaping | building | landed
+status: building # shaping | building | landed
 ---
 
 # Change — teach dw-shape to write N changes when the request carries N shippable scopes
@@ -41,7 +41,7 @@ four or more unrelated scopes, and `.ai/archive/worktreeinclude-support/CHANGE.m
 
 ## Tasks
 
-- [ ] 1. `skills/dw-shape/SKILL.md` — rewrite the **Large** bullet (`:81-84`) to hand off to the test
+- [x] 1. `skills/dw-shape/SKILL.md` — rewrite the **Large** bullet (`:81-84`) to hand off to the test
       instead of pre-answering it, and add the split test as a block closing step 2: the shippability
       question; name the N slugs and what each owns, then ask; on yes write N ×
       `.ai/work/<slug>/CHANGE.md`, each complete on its own terms and all `branch: unclaimed`, never
@@ -77,3 +77,20 @@ four or more unrelated scopes, and `.ai/archive/worktreeinclude-support/CHANGE.m
   one's bump onto whatever landed.
 - These two changes were split by the test this change installs, applied by hand in the `dw-grill`
   session that shaped them — the procedure didn't exist yet.
+- **`argument-hint-parity` has landed** (`6a79cba`, archived), so task 3's conditional is settled:
+  `dw-solo` is at **0.4.7** in both files → bump to **0.4.8**. No rebase of the bump needed.
+- **Task 1 grew two edits the task line didn't name**, both forced by the same file contradicting
+  itself. The intro asserted "It writes **one** `CHANGE.md`" three lines above a procedure for
+  writing N (H1 kept — "one file, then build" is about no-spec-no-plan, not a count); and step 4 said
+  "write `CHANGE.md`" / "commit the file" singular. One sentence each.
+- **The split's branch rule needed a case the task line didn't cover.** "All N `unclaimed`" conflicts
+  with Output location rule 1 (a feature branch is shaping+claiming in one step) and rule 2 (no two
+  changes on one claimed branch). Resolved: on the default branch all N are `unclaimed`; on a claimed
+  branch the one being built records the branch verbatim and siblings go out `unclaimed`.
+- **Deliberately left stale:** the `description` and `README.md:76` still say "one … `CHANGE.md`".
+  Editing a description shifts every term's idf and can knock an unrelated skill off rank-1 in
+  `pnpm eval:routing` — a cost out of proportion to the wording. `dw-land` should park it if it still
+  reads wrong at close.
+- Referents inside the new block are stated, not cited: the skill installs into arbitrary repos, so
+  `CONTEXT.md:17` and `docs/DESIGN.md:85-88` (this repo's anchors) became "the same test step 3
+  applies to a task" and "`.ai/` doesn't get a status column".

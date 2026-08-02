@@ -2,7 +2,8 @@
 change: skill-routing-evals
 branch: skill-routing-evals
 created: 2026-08-02
-status: building # shaping | building | landed
+status: landed # shaping | building | landed
+landed: 2026-08-02
 ---
 
 # Change — routing evals: a free lexical tier in CI, and a paid real-router tier on demand

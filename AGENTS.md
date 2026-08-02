@@ -115,6 +115,12 @@ CI runs those seven plus a `trufflehog` secrets scan on every PR and push to `ma
 
 Traps this repo has actually sprung, newest first.
 
+- **`validate-manifests.sh` checks the two versions are _equal_, not that either moved.** Change a
+  shipped file — anything under `templates/` or `scripts/runtime/` — and CI stays green with no bump,
+  while every installed consumer keeps the old copy. Nothing else catches it: the add-a-skill
+  checklist only fires when a skill is added, and `dw-ship` never mentions versions at all. Bump the
+  owning plugin by hand, in `marketplace.json` and its `plugin.json` together, whenever the diff
+  touches the payload.
 - **A hook fix does not take effect in the worktree session that makes it.** Claude Code resolves
   `.claude/hooks/` from `${CLAUDE_PROJECT_DIR}`, which is the **main tree** — so a worktree session
   keeps firing `main`'s copy of a hook until the branch merges. Fixing `lint-on-edit.sh` on a branch

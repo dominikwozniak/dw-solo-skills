@@ -1,0 +1,33 @@
+{
+  "skill": "dw-check",
+  "note": "dw-check and dw-land both render a verdict over a diff. The whole distinction is timing — mid-build and repeatable versus once at the end, promoting residue — so the negatives put that boundary under load rather than picking distant skills.",
+  "positives": [
+    {
+      "prompt": "give what I have written so far a once-over before I carry on"
+    },
+    {
+      "prompt": "anything wrong with the code I just wrote? point me at the lines"
+    },
+    {
+      "prompt": "quick pass over my diff for correctness and whether it matches how this repo does things"
+    },
+    {
+      "prompt": "sanity-check the work in progress, I am halfway through and want a second opinion"
+    }
+  ],
+  "negatives": [
+    {
+      "prompt": "this change is done — final verdict, then file whatever is worth keeping",
+      "owner": "dw-land",
+      "note": "The timing boundary. Anything mentioning finishing or promoting belongs to dw-land."
+    },
+    {
+      "prompt": "save this with a sensible message and push it",
+      "owner": "dw-git"
+    },
+    {
+      "prompt": "carry on and build the next item on the list",
+      "owner": "dw-next"
+    }
+  ]
+}

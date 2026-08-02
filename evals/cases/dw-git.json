@@ -1,0 +1,36 @@
+{
+  "skill": "dw-git",
+  "note": "dw-git's description is an operation list, which makes it lexically strong on the verbs and lexically blind to intent. The negatives are the three skills that each own a git-adjacent moment without owning the git command itself.",
+  "positives": [
+    {
+      "prompt": "save what I have with a sensible message"
+    },
+    {
+      "prompt": "put this up as a pull request against the default branch"
+    },
+    {
+      "prompt": "bring my branch up to date with main before I carry on"
+    },
+    {
+      "prompt": "park these edits somewhere so I can switch off them for a moment"
+    },
+    {
+      "prompt": "start a new branch for this piece of work"
+    }
+  ],
+  "negatives": [
+    {
+      "prompt": "is this finished and safe to merge, and what should I promote out of it first",
+      "owner": "dw-land",
+      "note": "Merging is the git verb, but the ask is the closing verdict — dw-land runs before the push."
+    },
+    {
+      "prompt": "look over my changes for mistakes before anything else happens",
+      "owner": "dw-check"
+    },
+    {
+      "prompt": "write up what we are about to build as a doc with a task list",
+      "owner": "dw-shape"
+    }
+  ]
+}

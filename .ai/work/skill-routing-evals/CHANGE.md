@@ -48,7 +48,7 @@ empty directory, n=3, so it is a lead and not a verdict.
       `evals/cases/dw-grill.json`: read every `skills/*/SKILL.md` description into a corpus, tokenize,
       stem, TF-IDF, cosine, print the ranking for each positive prompt. This pair is the suspected
       collision, so the slice answers something on its first run.
-- [ ] 2. Fill the remaining case files for the 7 model-invocable skills (`dw-check`, `dw-doctor`,
+- [x] 2. Fill the remaining case files for the 7 model-invocable skills (`dw-check`, `dw-doctor`,
       `dw-git`, `dw-land`, `dw-next`), each with at least 3 positives and 2 negatives carrying
       `owner`. Prompts paraphrase how the ask is really phrased — copying from `description` games
       the eval.
@@ -108,6 +108,30 @@ of it. Whether the real router agrees is task 5's question; the tiers are allowe
 
 Deliberately deferred: gating. The runner reports and exits 0 — `--min-rank1` and collision
 detection are task 3, so this baseline is what the ratchet gets pinned to.
+
+### Task 2 — all seven scored: 16/30 rank-1, and the metric is measuring the wrong thing
+
+Per skill: `dw-grill` 4/4, `dw-doctor` 3/4, `dw-land` 3/4, `dw-check` 2/4, `dw-next` 2/4,
+`dw-shape` 2/5, **`dw-git` 0/5**. Yields 21/21 — no case file's skill ever outranks a named owner,
+so the descriptions are not stealing each other's _negatives_; they are failing to hold their own
+positives.
+
+**The metric counts losses that cannot happen.** Of `dw-git`'s five failures, three are losses to
+`dw-ship` (0.326 on "pull request") and `dw-start` (0.315, 0.327 on "branch") — both
+`disable-model-invocation: true`, so the router can never choose them. Same for `dw-land` and
+`dw-next` losing prompts to `dw-ship`. Rank-1 has to be computed among the model-invocable skills,
+with an explicit-invoke win reported separately as overlap rather than as a routing failure. That
+lands in task 3, before the ratchet is pinned to anything.
+
+**`dw-git` has no synonyms, and the last refactor made it worse.** Two of its prompts score
+literally zero — "save what I have with a sensible message" and "park these edits somewhere" share
+no discriminating term with a description that lists operations (`commit, push, open PR, sync,
+branch, stash`) and never names how anyone actually asks for them. Swapping in the description from
+`44c06c7^` moves "bring my branch up to date with main" from rank 3 to **rank 1** (0.235), because
+the sentence that commit removed contained the literal phrase "sync **with main**". So the eval
+retroactively catches a real regression from this repo's own history, which is the premise of the
+change working on the first corpus it was pointed at. Whether to restore that sentence is a
+description decision, not an eval decision — parked, not silently fixed.
 
 ### Task 1 — three things the first `.ts` file in this repo shook out
 

@@ -1,0 +1,34 @@
+{
+  "skill": "dw-land",
+  "note": "dw-land is the end of the loop and its description names most of the loop's nouns — decisions, gotchas, the backlog, the change doc — which is exactly why task 1 found it stealing dw-shape's writeup prompt. The positives lean on finishing; the negatives on every neighbouring moment that is not finishing.",
+  "positives": [
+    {
+      "prompt": "this change is finished — wrap it up and file whatever is worth keeping"
+    },
+    {
+      "prompt": "am I done here, and what should get promoted into the docs before I forget it"
+    },
+    {
+      "prompt": "close this out and tidy the change doc away"
+    },
+    {
+      "prompt": "one last pass over the whole diff, then put the leftovers where they belong"
+    }
+  ],
+  "negatives": [
+    {
+      "prompt": "I am only halfway through — give me a quick look at what I have so far",
+      "owner": "dw-check",
+      "note": "The timing boundary from the other side. Mid-build is never dw-land."
+    },
+    {
+      "prompt": "push it and open the pull request",
+      "owner": "dw-git"
+    },
+    {
+      "prompt": "record the goal and the steps for a feature I have not started yet",
+      "owner": "dw-shape",
+      "note": "Task 1 measured dw-land beating dw-shape on a writeup prompt, so this asserts the fix."
+    }
+  ]
+}

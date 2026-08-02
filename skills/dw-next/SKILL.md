@@ -22,7 +22,7 @@ Everything comes from disk. Never reconstruct state from the conversation — th
 
 Reads `.ai/work/<slug>/CHANGE.md` (written by `dw-shape`), plus a `HANDOFF.md` beside it when a
 session ended mid-task and left one. Writes code, ticks that file's checkboxes, appends to its Notes,
-clears a handoff it has consumed, and commits — plus a line in `.ai/BACKLOG.md` for an idea that
+clears a handoff it has consumed, and commits — plus a file in `.ai/backlog/` for an idea that
 belongs to a different change. `.ai/` is tracked in git.
 
 Find the active change by branch, not by guessing:
@@ -32,7 +32,7 @@ grep -l "^branch: $(git rev-parse --abbrev-ref HEAD)$" .ai/work/*/CHANGE.md 2>/d
 ```
 
 - **One match** — that's it.
-- **Several** — prefer the one whose `status:` isn't `landed`; if still ambiguous, list them and ask.
+- **Several** — list them and ask.
 - **None — try to claim before pointing anywhere.** In order:
   1. Strip an optional `worktree-` prefix from the branch (the `claude -w` spelling); if the
      remainder equals or contains the slug of a change whose `branch:` is `unclaimed`, offer that
@@ -44,11 +44,11 @@ grep -l "^branch: $(git rev-parse --abbrev-ref HEAD)$" .ai/work/*/CHANGE.md 2>/d
 
   Claiming = flip `branch: unclaimed` to the verbatim `git rev-parse --abbrev-ref HEAD` and commit
   that one edit before building — an uncommitted claim is invisible to every other session. If no
-  unclaimed change fits but exactly one non-`landed` change sits on another branch, say so and
-  offer it — you may simply be on the wrong branch.
+  unclaimed change fits but exactly one change sits on another branch, say so and offer it — you
+  may simply be on the wrong branch.
 
-- **Detached HEAD** (the branch resolves to the literal `HEAD`) — say so, list every `CHANGE.md` with
-  its recorded `branch:`, and ask which one to build. Stop; don't guess.
+- **Detached HEAD** (the branch resolves to the literal `HEAD`) — say so, list every `CHANGE.md`
+  under `.ai/work/` with its recorded `branch:`, and ask which one to build. Stop; don't guess.
 
 ## Workflow
 
@@ -78,8 +78,8 @@ One task per invocation unless the mode says otherwise.
 
 - **Narrow and complete.** A vertical slice through whatever layers it needs, not a whole layer.
   Resist widening scope mid-task; a second task is free, a sprawling commit is not. An idea that
-  belongs to a **different change** isn't a task here at all — it's one dated line in `.ai/BACKLOG.md`,
-  which is how you drop it without losing it.
+  belongs to a **different change** isn't a task here at all — it's one small file in
+  `.ai/backlog/` (an H1 plus `created:`), which is how you drop it without losing it.
 - **Test the way the project does.** Read the test command from `CLAUDE.md` / `CLAUDE.local.md` /
   `AGENTS.md`, else the manifests. Where the project has a real test suite and the task has a
   meaningful assertion, write the failing test first and make it pass — where it genuinely doesn't
@@ -101,7 +101,7 @@ One task per invocation unless the mode says otherwise.
   the task you just finished, so leaving it behind strands the next session on a state that is gone.
   Anything in it worth keeping goes to Notes first.
 - Commit it the way `dw-git` does — the conventions live there, this skill doesn't restate them.
-  Stage by name, never `git add -A`. One task, one commit; a `.ai/BACKLOG.md` line added while
+  Stage by name, never `git add -A`. One task, one commit; a `.ai/backlog/` file added while
   building ships in that same commit.
 
 ### 5. Report and stop

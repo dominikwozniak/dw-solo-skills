@@ -27,10 +27,10 @@ smallest weight that still works:
   anything is written.
 - **The process outweighs the change** — one artifact instead of spec + plan + notes, one gated pass
   instead of five auditors and a separate writer.
-- **A private repo rots** — the change doc is deleted at merge, but what's durable is **promoted**
-  first: decisions to `docs/decisions/`, terms to `CONTEXT.md`, traps to `## Gotchas` in `CLAUDE.md`,
-  follow-ups to `.ai/BACKLOG.md`. Without that step you accumulate stale specs and lose the decisions
-  worth keeping.
+- **A private repo rots** — the change doc is archived at merge (`.ai/archive/`), and what's durable
+  is **promoted** first: decisions to `docs/decisions/`, terms to `CONTEXT.md`, traps to `## Gotchas`
+  in `CLAUDE.md`, follow-ups to `.ai/backlog/`. Without that step you accumulate stale specs and lose
+  the decisions worth keeping.
 - **Commits drift from your conventions** — the repo's own `## Git conventions` are applied instead
   of generic defaults.
 
@@ -70,15 +70,15 @@ A small serial change never leaves the default branch: shape → next → ship (
 closing pass itself when the change doc is still there). Parallel changes: shape several on the
 default branch, then one worktree + session each via `dw-start` or `claude -w <slug>`.
 
-| Skill                                      | Task                                                       | What you get                                  |
-| ------------------------------------------ | ---------------------------------------------------------- | --------------------------------------------- |
-| [`dw-grill`](skills/dw-grill/SKILL.md)     | Interview a fuzzy idea into decisions — max five questions | shared understanding (writes nothing)         |
-| [`dw-shape`](skills/dw-shape/SKILL.md)     | Synthesize it into one goal + decisions + task checklist   | `.ai/work/<slug>/CHANGE.md`                   |
-| [`dw-start`](skills/dw-start/SKILL.md) `⭑` | Open a shaped change: worktree + branch + claim            | `.claude/worktrees/<slug>` on branch `<slug>` |
-| [`dw-next`](skills/dw-next/SKILL.md)       | Resume point _and_ build step (`go` builds and commits)    | code + ticked box + commit                    |
-| [`dw-check`](skills/dw-check/SKILL.md)     | Fast optional QA gate — delegate, or two-axis self-review  | findings at `file:line`, fixed in-session     |
-| [`dw-land`](skills/dw-land/SKILL.md)       | One thin verdict, then promote what's durable and clean up | `docs/decisions/` · `CONTEXT.md` · backlog    |
-| [`dw-ship`](skills/dw-ship/SKILL.md) `⭑`   | Push — or PR → squash-merge — then tear the worktree down  | merged default branch, clean tree             |
+| Skill                                      | Task                                                       | What you get                                                |
+| ------------------------------------------ | ---------------------------------------------------------- | ----------------------------------------------------------- |
+| [`dw-grill`](skills/dw-grill/SKILL.md)     | Interview a fuzzy idea into decisions — max five questions | shared understanding (writes nothing)                       |
+| [`dw-shape`](skills/dw-shape/SKILL.md)     | Synthesize it into one goal + decisions + task checklist   | `.ai/work/<slug>/CHANGE.md`                                 |
+| [`dw-start`](skills/dw-start/SKILL.md) `⭑` | Open a shaped change: worktree + branch + claim            | `.claude/worktrees/<slug>` on branch `<slug>`               |
+| [`dw-next`](skills/dw-next/SKILL.md)       | Resume point _and_ build step (`go` builds and commits)    | code + ticked box + commit                                  |
+| [`dw-check`](skills/dw-check/SKILL.md)     | Fast optional QA gate — delegate, or two-axis self-review  | findings at `file:line`, fixed in-session                   |
+| [`dw-land`](skills/dw-land/SKILL.md)       | One thin verdict, then promote what's durable and archive  | `docs/decisions/` · `CONTEXT.md` · backlog · `.ai/archive/` |
+| [`dw-ship`](skills/dw-ship/SKILL.md) `⭑`   | Push — or PR → squash-merge — then tear the worktree down  | merged default branch, clean tree                           |
 
 **Anytime**
 
@@ -108,8 +108,9 @@ Full rationale in [`docs/DESIGN.md`](docs/DESIGN.md).
   `.claude/commands/` glue layer.
 - **`.ai/` is tracked, one folder per change, no central index.** A registry becomes a merge-conflict
   magnet once tracked; discovery is by directory name + frontmatter, matched to the git branch.
-- **Persistent but disposable.** The change doc is tracked so a `/clear` changes nothing, and deleted
-  at merge so the repo doesn't accumulate stale specs. What's genuinely durable is promoted out.
+- **Persistent, then archived.** The change doc is tracked so a `/clear` changes nothing, and moved
+  to `.ai/archive/` at merge so `work/` doesn't accumulate stale specs — a squash merge would
+  otherwise erase its worked state from history. What's genuinely durable is still promoted out.
 - **One gate, not a skill boundary.** The fuller workflow separates read-only auditors from the one
   writer so an auditor can't under-report what it couldn't fix. Here you read every finding yourself,
   so a single pass reports first and mutates only after explicit approval.

@@ -19,7 +19,8 @@ Context for the agent. Read before starting a task.
   `/dw-land` first when the change doc is still there. `/dw-grill` first when the idea is fuzzy.
   Small serial change: shape → next → ship, no worktree.
 - One change lives in `.ai/work/<slug>/CHANGE.md` — tracked. Shaped on {{DEFAULT_BRANCH}} it starts
-  `branch: unclaimed`; `/dw-start` (or `/dw-next`) claims it. `/dw-land close` deletes it at merge.
+  `branch: unclaimed`; `/dw-start` (or `/dw-next`) claims it. `/dw-land close` archives it to
+  `.ai/archive/<slug>/` at merge (`status: landed`).
 - Parallel changes: shape several, then one worktree + session each — `/dw-start <slug>`, or a new
   terminal running `claude -w <slug>` (run it while the main tree sits on {{DEFAULT_BRANCH}}).
 - `/dw-next` bare answers "where were we" from disk; `/dw-next go` builds the next task.
@@ -27,7 +28,7 @@ Context for the agent. Read before starting a task.
   `/dw-next` reads it first next session. Needs the `dw-solo-extras` plugin; between tasks the
   `CHANGE.md` checklist already covers you.
 - Durable knowledge is promoted out, not accumulated: decisions → `docs/decisions/`, terms → `CONTEXT.md`, traps → `## Gotchas` in `CLAUDE.md`.
-- Follow-ups and out-of-scope ideas go to `.ai/BACKLOG.md` — `/dw-land` parks them, `/dw-shape` picks the next one up.
+- Follow-ups and out-of-scope ideas go to `.ai/backlog/` (one file per idea) — `/dw-land` parks them, `/dw-shape` picks the next one up.
 
 ## Tools active in this session
 

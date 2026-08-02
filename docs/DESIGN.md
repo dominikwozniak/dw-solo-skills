@@ -16,14 +16,14 @@ doc is still there — so a finished change needs one command.
 
 ## The failure modes these skills target
 
-| Failure mode                              | Design answer                                                   |
-| ----------------------------------------- | --------------------------------------------------------------- |
-| Context dies on `/clear`                  | The change persists as a tracked `.ai/` file, not in context    |
-| Agent runs on a wrong assumption          | A bounded interview surfaces decisions before code              |
-| "Done" is claimed but never proven        | The closing pass checks ticked boxes against what actually runs |
-| One skill grows into a do-everything blob | One skill, one job — they compose through `.ai/`, not chains    |
-| The process outweighs the change          | One file and one pass, not three artifacts and five audits      |
-| A private repo accumulates and forgets    | The closing pass deletes the doc but promotes the durable parts |
+| Failure mode                              | Design answer                                                    |
+| ----------------------------------------- | ---------------------------------------------------------------- |
+| Context dies on `/clear`                  | The change persists as a tracked `.ai/` file, not in context     |
+| Agent runs on a wrong assumption          | A bounded interview surfaces decisions before code               |
+| "Done" is claimed but never proven        | The closing pass checks ticked boxes against what actually runs  |
+| One skill grows into a do-everything blob | One skill, one job — they compose through `.ai/`, not chains     |
+| The process outweighs the change          | One file and one pass, not three artifacts and five audits       |
+| A private repo accumulates and forgets    | The closing pass archives the doc and promotes the durable parts |
 
 ## Persistence lives in the skill, not a wrapper
 
@@ -63,27 +63,30 @@ The worktrees themselves live at `.claude/worktrees/<slug>` on branch `<slug>`
 lands **on the feature branch**, so a squash-merge carries the durable residue to the default branch
 and post-merge `main` is already clean.
 
-## Persistent but disposable — and what gets promoted out
+## Persistent, then archived — and what gets promoted out
 
-**The change doc is tracked so a gap costs nothing, and deleted at merge so the repo doesn't rot.**
-These two ideas are usually conflated; splitting them is the point of the closing pass's second
-phase.
+**The change doc is tracked so a gap costs nothing, and archived at merge
+(`.ai/archive/<slug>/`, `status: landed`) so `work/` doesn't rot** — while the worked state
+survives the squash merge that would otherwise erase it from history. These two ideas are usually
+conflated; splitting them is the point of the closing pass's second phase.
 
-What is genuinely durable is **promoted out** to four targets before the doc is deleted:
+What is genuinely durable is **promoted out** to four targets before the doc is archived:
 
 | Target                      | What goes there             | Why that one                                        |
 | --------------------------- | --------------------------- | --------------------------------------------------- |
 | `docs/decisions/`           | hard-to-reverse decisions   | needs the reasoning, not just the outcome           |
 | `CONTEXT.md`                | domain terms, glossary only | a term you'd have to re-derive every session        |
 | `## Gotchas` in `CLAUDE.md` | traps that cost real time   | **auto-loaded** — the next session reads it unasked |
-| `.ai/BACKLOG.md`            | ordinary follow-ups         | clears none of the above bars, still real           |
+| `.ai/backlog/<slug>.md`     | ordinary follow-ups         | clears none of the above bars, still real           |
 
 Without that closing step a private repo accumulates stale specs _and_ loses the decisions worth
 keeping — the one failure a thin lane would otherwise introduce.
 
 The backlog is the fourth target because the other three each have a high bar, and an ordinary
-follow-up clears none of them. It stays a flat, unvalidated list on purpose: the moment it grows a
-status column it is the validated plan this lane exists to avoid.
+follow-up clears none of them. Each entry stays one minimal file (`created:` plus an H1),
+unvalidated on purpose: the moment it grows a status column it is the validated plan this lane
+exists to avoid. The archive is deliberately **not** a fifth target: it is history, not guidance —
+the doc moves there whole, and nothing reads it to decide anything.
 
 ## One gate, not a skill boundary
 

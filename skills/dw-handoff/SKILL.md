@@ -29,11 +29,11 @@ grep -l "^branch: $(git rev-parse --abbrev-ref HEAD)$" .ai/work/*/CHANGE.md 2>/d
 ```
 
 - **One match** — write beside it.
-- **Several** — prefer the one whose `status:` isn't `landed`; if still ambiguous, list them and ask.
+- **Several** — list them and ask.
 - **None** — **stop and write nothing.** A handoff needs a change to attach to; say so and point at
   `dw-shape`. An exploratory session with nothing shaped yet is what that skill is for.
-- **Detached HEAD** (the branch resolves to the literal `HEAD`) — say so, list every `CHANGE.md` with
-  its recorded `branch:`, and ask which one this belongs to.
+- **Detached HEAD** (the branch resolves to the literal `HEAD`) — say so, list every `CHANGE.md`
+  under `.ai/work/` with its recorded `branch:`, and ask which one this belongs to.
 
 **One live handoff per change.** An existing `HANDOFF.md` is overwritten, never appended to — a
 second handoff describes a newer moment, and keeping both leaves the next session guessing which one
@@ -71,8 +71,9 @@ who knows whether it matches the session, and correcting it now is far cheaper t
 wrong one.
 
 On confirmation, commit it the way `dw-git` does, staged by name. Committing is load-bearing, not
-hygiene: `dw-land` clears the change with `git rm -r .ai/work/<slug>/`, which only sweeps tracked
-files, and a worktree opened by `dw-start` checks out committed state only.
+hygiene: `dw-land` clears a leftover `HANDOFF.md` with `git rm` before archiving the change — and
+`git rm` only sweeps tracked files — while a worktree opened by `dw-start` checks out committed
+state only.
 
 ### 4. Hand over
 

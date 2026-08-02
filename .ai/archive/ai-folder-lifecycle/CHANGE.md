@@ -1,8 +1,10 @@
 ---
 change: ai-folder-lifecycle
-branch: unclaimed
+branch: ai-folder-lifecycle
 created: 2026-08-02
-status: shaping # shaping | building | landed
+status: landed # shaping | building | landed
+landed: 2026-08-02
+pr: "#4"
 ---
 
 # Change — .ai lifecycle: archive landed changes, per-file backlog, backfill closed PRs
@@ -42,21 +44,21 @@ PRs' docs sit recovered in `.ai/archive/` with `status: landed`; the five-comman
 
 ## Tasks
 
-- [ ] 1. `dw-land` archives instead of deletes — description `:6`, reads/writes `:24-28`, phase 3
+- [x] 1. `dw-land` archives instead of deletes — description `:6`, reads/writes `:24-28`, phase 3
       `:82-87` ("Drop the scaffolding" → "Archive the scaffolding": `git rm` a leftover
       `HANDOFF.md`, `git mv` to `.ai/archive/<slug>/`, flip `status: landed`, add `landed:` +
       `pr:`, commit promotion+archive together). Add `.ai/archive/README.md` ("history, not
       guidance", ~3 lines) to this repo.
-- [ ] 2. Backlog goes per-file — `dw-land:77-81` (Promote the follow-ups → create
+- [x] 2. Backlog goes per-file — `dw-land:77-81` (Promote the follow-ups → create
       `.ai/backlog/<slug>.md` via `slugify.sh`, file shape per Decisions); `dw-shape:63-65`
       (read the dir as prior context) and `:95-96,100` ("delete that line" → `git mv` the file as
       the `CHANGE.md` seed, same commit); add `.ai/backlog/README.md` with the convention. Prose
       touches: `dw-next:25,81,104`, `dw-grill:81`, `dw-ship:71,73`, `dw-handoff:19`.
-- [ ] 3. Migrate the live backlog — split `.ai/BACKLOG.md` entries (12 by direct count; re-verify)
+- [x] 3. Migrate the live backlog — split `.ai/BACKLOG.md` entries (12 by direct count; re-verify)
       into slug-named files under `.ai/backlog/`, `git rm .ai/BACKLOG.md`, one commit.
-- [ ] 4. Backfill the archive for PRs #1 and #2 per the recovery procedure in Decisions; both docs
+- [x] 4. Backfill the archive for PRs #1 and #2 per the recovery procedure in Decisions; both docs
       get `status: landed`, `landed: 2026-08-02`, `pr:` lines.
-- [ ] 5. Payload: `dw-init` + `templates/` — `dw-init` description `:4-5`, writes table `:25-27`,
+- [x] 5. Payload: `dw-init` + `templates/` — `dw-init` description `:4-5`, writes table `:25-27`,
       write steps `:81-85` (`mkdir -p .ai/work .ai/backlog .ai/archive` + seeds, copy the
       backlog/archive READMEs the way `work-README.md` is consumed at `:82`), replace the verbatim
       `BACKLOG.md` block `:132-149` with the per-file convention (keep the spirit of `:147-149`:
@@ -65,7 +67,7 @@ PRs' docs sit recovered in `.ai/archive/` with `status: landed`; the five-comman
       — CHANGE.md is _archived_, not deleted; `BACKLOG.md` rows become `backlog/` + `archive/`
       rows. `templates/CLAUDE.local.md:18-30` workflow lines. New template file(s) for the two
       READMEs.
-- [ ] 6. Docs, dead checks, versions — `README.md:30-32,80,111-112`; `docs/DESIGN.md:26,66-84,104`;
+- [x] 6. Docs, dead checks, versions — `README.md:30-32,80,111-112`; `docs/DESIGN.md:26,66-84,104`;
       `CONTEXT.md:11-13`; repo `CLAUDE.local.md:18-29` (same edit as the template; gitignored, edit
       directly). Drop the dead "isn't `landed`" clauses (`dw-next:35,47`, `dw-handoff:32`,
       `dw-shape:44`); update `dw-handoff:73-75` (the `git rm -r` contract line); scope the
@@ -98,3 +100,8 @@ PRs' docs sit recovered in `.ai/archive/` with `status: landed`; the five-comman
 origin 'refs/pull/*/head'` lists pulls 1–3.
 - CI cannot see a `.ai/` lifecycle regression — deliberate (`validate-artifacts.sh:7-10`); rely on
   the five-command gate plus read-back.
+- Task 6: the repo's `CLAUDE.local.md` had to be edited in the **main tree** — this worktree has no
+  symlink because the session entered via `EnterWorktree`, which fires no `SessionStart` (the known
+  gap parked as `.ai/backlog/enterworktree-sessionstart-gap.md`).
+- Task 4: PR #1's land commit **is** `refs/pull/1/head` (`714751e`) — the recovery needed no
+  rev-list walk, just the ref's parent, same shape as PR #2.

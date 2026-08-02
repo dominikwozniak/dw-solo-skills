@@ -4,7 +4,7 @@ description: >-
   Open a shaped change for building: create its worktree and branch, enter it, and claim the change
   by writing the branch into its `CHANGE.md`. Bare lists what's unclaimed. Explicit-invoke only —
   creating branch topology is your call, never the model's.
-argument-hint: "which change — a slug from .ai/work/, or bare to list the unclaimed ones"
+argument-hint: "bare lists the unclaimed changes · <slug> opens that one · a description shapes it first"
 disable-model-invocation: true
 ---
 

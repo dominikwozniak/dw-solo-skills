@@ -45,10 +45,15 @@ disable-model-invocation: true # ONLY for explicit-invoke-only skills (see below
     `dw-shape <request>`.
   - **The hint states bare first and separates options with `·`**, saying what each mode _does_
     rather than just naming it — see `dw-next`, whose hint reads
-    `bare to report status · go to build the next task · all to keep going`.
+    `bare to report status · go to build the next task · all to keep going`. **A skill whose whole
+    argument is free text asks a question instead** — it has no bare mode and no mode words, so there
+    is nothing to lead with and nothing to separate. `dw-git`, `dw-grill` and `dw-shape` are the three;
+    the question form is the convention for that shape, not a lapse from this one.
 
-  The hint is canon; the **Arguments** cell in the README task-router mirrors it. Change one and you
-  change the other in the same commit — no validator catches the drift.
+  The hint is canon; the **Arguments** cell in the README task-router condenses it. `validate:docs`
+  check 5 holds the two together: every backticked token in the cell must appear verbatim in the
+  hint, and the cell is `—` exactly when the skill has no hint. A token naming another skill
+  (`dw-*`) is a link, not an argument, and is exempt.
 
 - **`disable-model-invocation: true`** — set this _only_ on skills that scaffold a repo, install
   shared tooling, or take an outward-facing/irreversible action (create a worktree and branch, push

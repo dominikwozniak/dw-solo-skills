@@ -2,12 +2,14 @@
 # validate-docs.sh — guard the docs ↔ skills contract that AGENTS.md's add-a-skill checklist
 # otherwise keeps by hand. CI already validates manifests but never the prose, so a skill added /
 # renamed / removed — or an explicit-invoke flag flipped — can ship with the docs silently out of
-# sync. Four mechanical, no-judgement checks:
+# sync. Five mechanical, no-judgement checks:
 #   1. no dead skill links   — every skills/<x>/SKILL.md linked in README exists on disk
 #   2. no undocumented skill — every skills/<x>/ on disk is linked in the README task-router
 #   3. explicit-invoke sync  — a skill's `disable-model-invocation: true` <=> it is marked `⭑` in
 #                              the task-router AND named in EVERY doc that carries an explicit list
 #   4. no stale Next: target — every `**Next:**` pointer names a skill that exists on disk
+#   5. arguments agree     — every backticked token in a README Arguments cell appears in that
+#                            skill's `argument-hint`; the cell is `—` iff the skill has no hint
 #
 # Check 3 iterates EXPLICIT_LIST_DOCS rather than hardcoding two files: in the upstream repo this
 # check covered README + DESIGN only, and docs/WORKFLOWS.md drifted (it listed 5 of 7 explicit
@@ -139,6 +141,56 @@ for d in skills/*/; do
       FAILED=1
     fi
   done
+done
+
+# --- check 5: README Arguments cell agrees with argument-hint ------------------
+echo
+echo "Checking each README Arguments cell against its skill's argument-hint..."
+# The hint is canon and the cell condenses it, so the two can never be string-equal — which is why
+# this was left to the honour system until the column actually rotted. What IS checkable is
+# containment: a backticked token in the cell (`bare`, `go`, `<slug>`) names a real argument, so it
+# must appear verbatim in the hint. A backticked skill name is a link, not an argument, and is
+# exempt. Rows are matched on a leading `|` so prose quoting a SKILL.md path cannot pose as one.
+for name in $disk_skills; do
+  row="$(grep -E "^\|.*skills/$name/SKILL\.md" "$README" | head -n1)"
+  [ -n "$row" ] || continue # check 2 already reported the missing row
+  cell="$(printf '%s\n' "$row" | awk -F'|' '{print $4}' | sed 's/^[[:space:]]*//; s/[[:space:]]*$//')"
+  hint="$(sed -n 's/^argument-hint:[[:space:]]*//p' "skills/$name/SKILL.md" | head -n1 |
+    sed 's/^"\(.*\)"$/\1/; s/^'\''\(.*\)'\''$/\1/')"
+
+  if [ -z "$cell" ]; then
+    echo "::error::$name has an empty Arguments cell in $README"
+    FAILED=1
+    continue
+  fi
+  if [ -z "$hint" ]; then
+    if [ "$cell" = "—" ]; then
+      echo "OK  $name takes no argument, cell is —"
+    else
+      echo "::error::$name has no argument-hint, so its $README Arguments cell must be \`—\`, not \"$cell\""
+      FAILED=1
+    fi
+    continue
+  fi
+  if [ "$cell" = "—" ]; then
+    echo "::error::$name has an argument-hint but its $README Arguments cell is \`—\`"
+    FAILED=1
+    continue
+  fi
+
+  missing=""
+  while IFS= read -r tok; do
+    [ -n "$tok" ] || continue
+    case "$tok" in dw-*) continue ;; esac
+    case "$hint" in *"$tok"*) ;; *) missing="$missing \`$tok\`" ;; esac
+  done < <(printf '%s\n' "$cell" | grep -oE '`[^`]+`' | tr -d '`')
+
+  if [ -n "$missing" ]; then
+    echo "::error::$name: $README Arguments cell names$missing, absent from its argument-hint \"$hint\""
+    FAILED=1
+  else
+    echo "OK  $name cell agrees with its hint"
+  fi
 done
 
 echo

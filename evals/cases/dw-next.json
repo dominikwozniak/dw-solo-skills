@@ -1,0 +1,33 @@
+{
+  "skill": "dw-next",
+  "note": "dw-next carries \"on disk\", \"task\" and \"change\" — the vocabulary task 1 caught it taking from dw-shape. Its own positives are the resume question and the build-the-next-thing instruction, kept as paraphrases so the eval is not just matching the description back to itself.",
+  "positives": [
+    {
+      "prompt": "where did we leave off on this"
+    },
+    {
+      "prompt": "carry on with the next thing and commit it when it works"
+    },
+    {
+      "prompt": "what is still unticked on the change I am in the middle of"
+    },
+    {
+      "prompt": "pick this back up — I have been away a week and lost the thread"
+    }
+  ],
+  "negatives": [
+    {
+      "prompt": "turn this idea into a change doc before any of it gets built",
+      "owner": "dw-shape",
+      "note": "The inverse of task 1's finding, where dw-next took a checklist-on-disk prompt off dw-shape."
+    },
+    {
+      "prompt": "is it finished and ready to merge",
+      "owner": "dw-land"
+    },
+    {
+      "prompt": "look over what I have built so far for mistakes",
+      "owner": "dw-check"
+    }
+  ]
+}

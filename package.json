@@ -2,6 +2,7 @@
   "name": "dw-solo-skills",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "description": "The thin lane — Claude Code skills for repos only you read, distributed as an installable plugin marketplace.",
   "packageManager": "pnpm@11.18.0",
   "scripts": {
@@ -12,6 +13,8 @@
     "validate:manifests": "scripts/validate-manifests.sh",
     "validate:artifacts": "scripts/validate-artifacts.sh",
     "validate:docs": "scripts/validate-docs.sh",
+    "validate:evals": "scripts/validate-evals.sh",
+    "eval:routing": "node evals/routing.ts --min-rank1 67",
     "prepare": "husky"
   },
   "devDependencies": {

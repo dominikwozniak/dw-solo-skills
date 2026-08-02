@@ -30,5 +30,10 @@ Terms this repo uses in a specific way. Definitions only, no implementation deta
   config, via `.worktreeinclude`), **link** (`CLAUDE.local.md`), **regenerate** (`node_modules/`,
   `.husky/_/` — reported, never carried) or **absent** (caches). Set by [`0003`](docs/decisions/0003-worktree-carry-classes.md).
 - **Explicit-invoke** — a skill with `disable-model-invocation: true`; it fires only when named.
+- **Case file** — `evals/cases/<skill>.json`: prompts that should route to a skill (**positives**) and
+  near-miss prompts that should not (**negatives**, each naming the `owner` that should win instead).
+  One per model-invocable skill, none for an explicit-invoke one.
+- **Shadowed** — a positive prompt where an explicit-invoke skill scores higher than the skill under
+  test. Reported as overlap, never counted as a routing failure: the model is never offered it.
 - **HARD STOP** — a point in a skill where it must stop and wait for a human answer rather than
   proceed on an assumption.

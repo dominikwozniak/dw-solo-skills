@@ -1,0 +1,33 @@
+{
+  "skill": "dw-doctor",
+  "note": "The word \"check\" belongs to two skills — \"check my setup\" is the environment, \"check this\" is the diff — so the first negative is deliberately a prompt built around that shared verb.",
+  "positives": [
+    {
+      "prompt": "my guardrails do not seem to be firing, work out what is missing"
+    },
+    {
+      "prompt": "I just cloned this repo — is my environment actually set up to work on it"
+    },
+    {
+      "prompt": "some tool the hooks depend on is not installed and I cannot tell which, give me the install line"
+    },
+    {
+      "prompt": "will the pre-commit gate in here really run, or is it silently skipping"
+    }
+  ],
+  "negatives": [
+    {
+      "prompt": "check over the change I have built so far and tell me if it is sound",
+      "owner": "dw-check",
+      "note": "Same verb, different object. This is the pair most likely to drift into each other."
+    },
+    {
+      "prompt": "walk me through what is left on this change",
+      "owner": "dw-next"
+    },
+    {
+      "prompt": "rebase me onto the default branch",
+      "owner": "dw-git"
+    }
+  ]
+}

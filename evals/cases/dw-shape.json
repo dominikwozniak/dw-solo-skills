@@ -1,0 +1,37 @@
+{
+  "skill": "dw-shape",
+  "note": "The first positive is the reconnaissance prompt kept verbatim — dw-grill fired 3/3 on it in a real headless run, so this case file exists to reproduce that lead. Everything else paraphrases: copying the description's own trigger phrases would score the eval against itself.",
+  "positives": [
+    {
+      "prompt": "shape a change that adds a CSV export",
+      "note": "The recon prompt. Contains dw-shape's documented trigger verb and still lost to dw-grill under the real router."
+    },
+    {
+      "prompt": "I want to add rate limiting to the API — get the goal and the steps written down before I touch code"
+    },
+    {
+      "prompt": "turn what we just decided into a task checklist on disk so I can pick it up next week"
+    },
+    {
+      "prompt": "write up the auth-provider migration as a change doc with the decisions we settled on"
+    },
+    {
+      "prompt": "I know exactly what I want to build here, record it somewhere durable and give me a checklist"
+    }
+  ],
+  "negatives": [
+    {
+      "prompt": "poke holes in this idea before I commit to building any of it",
+      "owner": "dw-grill",
+      "note": "The mirror of the recon case — an unshaped idea belongs to the interview, not the writeup."
+    },
+    {
+      "prompt": "stage what I have and open a pull request against main",
+      "owner": "dw-git"
+    },
+    {
+      "prompt": "what was I working on last week and what is left to do",
+      "owner": "dw-next"
+    }
+  ]
+}

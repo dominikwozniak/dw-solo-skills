@@ -2,7 +2,8 @@
 created: 2026-08-01
 ---
 
-# Delta evals for the skills
+# Behavioural evals — with/without runs graded on the artifact
 
-The software-mansion pattern: with/without-skill runs, `should_trigger: false` negatives,
-contains/not_contains assertions — worth wiring once the skill set stabilizes.
+Routing is taken by the `skill-routing-evals` change. What's left is the paid tier: run a prompt with
+and without the plugin against a real fixture repo and grade the resulting `CHANGE.md` against
+`expectations[]` — whether a skill still earns its lines once the model improves.

@@ -24,7 +24,7 @@ durable layer is the only thing working for you.
 Reads the diff against the default branch, and `.ai/work/<slug>/CHANGE.md` (found by branch, the same
 way `dw-next` finds it — by land time the change is always claimed). Writes to four **tracked,
 durable** places — `docs/decisions/<NNNN>-<slug>.md`, `CONTEXT.md`, the `## Gotchas` section of
-`CLAUDE.md`, and `.ai/BACKLOG.md` — and then moves the `CHANGE.md` scaffolding to
+`CLAUDE.md`, and `.ai/backlog/` (one file per follow-up) — and then moves the `CHANGE.md` scaffolding to
 `.ai/archive/<slug>/`, flipping its `status:` to `landed`. `.ai/` is tracked in git; this is the one
 skill that takes something out of `work/` on purpose.
 
@@ -55,7 +55,7 @@ ground it, don't report it.**
   than ratifying it; where a cheap check settles it, run the project's own command.
 
 Close with one line — **ready to merge**, **ready with follow-ups** (name them; each becomes a
-backlog line in phase 3, and an unnamed follow-up vanishes into the archive unread), or **not
+backlog file in phase 3, and an unnamed follow-up vanishes into the archive unread), or **not
 ready** and why —
 then **stop.** You've graded the work; the user decides what happens next.
 
@@ -77,8 +77,11 @@ fine, I guess"; wait for a plain one — and only then:
   decision records: **not every surprise.** A gotchas list that logs every small confusion teaches
   you to stop reading it.
 - **Promote the follow-ups.** Every follow-up named in the verdict, plus anything deliberately left
-  out, becomes one dated line in `.ai/BACKLOG.md` — newest first, `- [YYYY-MM-DD] what and why`.
-  Create the file with a bare `# Backlog` heading if the repo predates the scaffold. Same bar as
+  out, becomes one file `.ai/backlog/<slug>.md` — slug from
+  `bash "${CLAUDE_PLUGIN_ROOT}/scripts/slugify.sh" slug "<the follow-up>"`, frontmatter
+  `created: YYYY-MM-DD` plus `source: <this change's slug>`, an H1 saying what-and-why in one
+  line, at most ~3 lines of context. Findings go by pointer to `.ai/archive/<slug>` — never
+  inlined. Create the dir with its `README.md` if the repo predates the scaffold. Same bar as
   gotchas — **if you wouldn't pick it up within a month, don't write it** — and zero is a normal
   answer.
 - **Archive the scaffolding.** `git rm` a leftover `HANDOFF.md` first — it described the middle of

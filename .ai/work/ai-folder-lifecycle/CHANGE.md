@@ -47,7 +47,7 @@ PRs' docs sit recovered in `.ai/archive/` with `status: landed`; the five-comman
       `HANDOFF.md`, `git mv` to `.ai/archive/<slug>/`, flip `status: landed`, add `landed:` +
       `pr:`, commit promotion+archive together). Add `.ai/archive/README.md` ("history, not
       guidance", ~3 lines) to this repo.
-- [ ] 2. Backlog goes per-file — `dw-land:77-81` (Promote the follow-ups → create
+- [x] 2. Backlog goes per-file — `dw-land:77-81` (Promote the follow-ups → create
       `.ai/backlog/<slug>.md` via `slugify.sh`, file shape per Decisions); `dw-shape:63-65`
       (read the dir as prior context) and `:95-96,100` ("delete that line" → `git mv` the file as
       the `CHANGE.md` seed, same commit); add `.ai/backlog/README.md` with the convention. Prose

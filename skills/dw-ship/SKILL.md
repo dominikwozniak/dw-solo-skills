@@ -68,6 +68,6 @@ feature branch with no worktree: `git switch <default-branch>`, `git pull`, `git
 ### 5. Report
 
 Say what merged and where, and what was torn down. If landing parked follow-ups in
-`.ai/BACKLOG.md`, the next `dw-shape` reads them — that's the loop closing.
+`.ai/backlog/`, the next `dw-shape` reads them — that's the loop closing.
 
 **Next:** `dw-shape` for the next change — the backlog is where it starts.

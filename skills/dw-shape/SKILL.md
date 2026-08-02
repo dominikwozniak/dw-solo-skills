@@ -23,7 +23,8 @@ itself.
 
 Write to `.ai/work/<slug>/CHANGE.md`. `.ai/` is tracked in git, so the file survives a `/clear` and a
 week-long gap between sessions — but this one is **working scaffolding, not a deliverable**:
-`dw-land` deletes it at merge after promoting anything durable out of it. That split is deliberate;
+`dw-land` archives it to `.ai/archive/<slug>/` at merge after promoting anything durable out of it.
+That split is deliberate;
 decisions belong in `docs/decisions/`, not in a spec nobody will reopen.
 
 1. **Resolve the branch first — it is the key every other solo skill uses.**
@@ -60,10 +61,10 @@ decisions belong in `docs/decisions/`, not in a spec nobody will reopen.
   seen.
 - `CONTEXT.md` and `docs/decisions/` if the project has them — a term already defined or a decision
   already taken is not up for re-litigation, and reusing the established word is free.
-- `.ai/BACKLOG.md` if the project has one — `dw-land` parks follow-ups there. A line that matches this
-  request is **prior context, not a fresh idea**: read it before shaping, and mention it if the request
-  is narrower than what was parked. Neighbouring lines are also candidates, but only offer them; never
-  widen the change on your own.
+- `.ai/backlog/` if the project has one — `dw-land` parks follow-ups there, one file per idea. An
+  entry that matches this request is **prior context, not a fresh idea**: read it before shaping, and
+  mention it if the request is narrower than what was parked. Neighbouring entries are also
+  candidates, but only offer them; never widen the change on your own.
 - The **real sibling patterns** this change should follow. Confirm each with Read or grep; these
   become the anchors.
 
@@ -91,14 +92,15 @@ obviously doable before task 2, do it. Dependencies here are there to help you p
 
 ### 4. Write the file, check it back, commit it
 
-Write `CHANGE.md` from the shape in `references/CHANGE.md`. If this change takes a line from
-`.ai/BACKLOG.md`, **delete that line** — live work must not also sit in the backlog, or the next
-`dw-shape` offers you what you're already building. Then read the goal and the task list back to the
+Write `CHANGE.md` from the shape in `references/CHANGE.md`. If this change takes an entry from
+`.ai/backlog/`, **`git mv` that file to `.ai/work/<slug>/CHANGE.md`** and expand it in place — the
+entry is the seed, and live work must not also sit in the backlog, or the next `dw-shape` offers you
+what you're already building; keep its slug unless the change outgrew it. Then read the goal and the task list back to the
 user in a few lines and ask whether the breakdown is right — wrong granularity is much cheaper to fix
 now than after two commits. **Wait for that confirmation before anything else.**
 
-On confirmation, **commit the file** — the way `dw-git` does, staged by name, the `.ai/BACKLOG.md`
-edit in the same commit. This is load-bearing, not hygiene: a worktree checks out committed state
+On confirmation, **commit the file** — the way `dw-git` does, staged by name, the backlog-file move
+in the same commit. This is load-bearing, not hygiene: a worktree checks out committed state
 only, so an uncommitted `CHANGE.md` never reaches the session that would build it.
 
 For anything beyond small, prefer a **fresh session per change** — the file you just committed is

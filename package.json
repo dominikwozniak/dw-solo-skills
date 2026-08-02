@@ -27,7 +27,7 @@
     "packageManager": {
       "name": "pnpm",
       "version": "11.18.0",
-      "onFail": "download"
+      "onFail": "error"
     }
   }
 }

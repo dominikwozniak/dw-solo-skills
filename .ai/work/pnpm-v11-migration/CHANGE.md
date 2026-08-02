@@ -46,6 +46,12 @@ what this one learns, so the four questions under `## Notes` are a deliverable, 
 - **`pnpm/only-allow` is not adopted** — the package was archived in April 2026 and its own README
   points at `devEngines.packageManager` instead. (`https://pnpm.io/only-allow-pnpm` still recommends
   it; that page is stale.)
+- **`devEngines.packageManager.onFail: "error"`**, decided during task 2 once the trade-off was
+  measured rather than assumed. `error` is what makes the field the `only-allow` replacement the
+  bullet above promises: npm refuses to operate in this repo. It is paid for in exactly two
+  commands — `pnpm view` and `pnpm info`, which delegate to npm and so hit npm's own `devEngines`
+  validation. Everything else is native and unaffected, CI does not read the field at the pinned
+  action SHA, and the workaround for those two is to run them from any other directory.
 
 ## Tasks
 
@@ -184,7 +190,10 @@ The trade is therefore narrow and real: **`error` gives the `pnpm/only-allow` re
 decisions list gestures at** (npm refuses to operate in the repo) **at the price of `pnpm view` and
 `pnpm info`**; `ignore` keeps every pnpm command working but drops the npm guard. Note the repo
 already blocks npm for the _agent_ via `block-non-pnpm.sh`; the guard only adds cover for a human
-typing `npm install` by hand. **Open — needs a decision before this change lands.**
+typing `npm install` by hand. **Resolved: `error`** — see the last bullet under `## Decisions`. The
+guard is the point of the field; two read-only commands with a one-directory workaround is a fair
+price. Carry the whole table into `pnpm-v11-payload`, because a repo that _does_ lean on `pnpm view`
+should be given `ignore` instead — this is a per-repo call, not a universal default.
 
 ### From task 3 — `pnpm lint` is not a reliable local check in this session
 

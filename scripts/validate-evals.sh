@@ -5,7 +5,7 @@
 #   1. no unevaluated skill  — every model-invocable skills/<x>/ has evals/cases/<x>.json
 #   2. no orphan case file   — every evals/cases/<x>.json has a skills/<x>/ that is model-invocable
 #   3. case files are shaped — declared skill matches the filename, and the prompt/owner minimums hold
-#   4. owners are real       — every negative's `owner` names a skill on disk
+#   4. owners are routable   — every negative's `owner` names a model-invocable skill on disk
 #
 # Check 1 skips `disable-model-invocation: true` skills on purpose: routing is never the model's
 # decision there, so there is no routing to assert. Check 2 is the other half of that — a case file
@@ -91,6 +91,8 @@ echo "Checking case files are shaped and their owners exist..."
 for f in "$CASES_DIR"/*.json; do
   [ -f "$f" ] || continue
   name="$(basename "$f" .json)"
+  # Per file, so one bad case file does not silence the OK line for every file after it.
+  file_ok=1
 
   if ! jq -e . "$f" >/dev/null 2>&1; then
     echo "::error::$f is not valid JSON"
@@ -102,6 +104,7 @@ for f in "$CASES_DIR"/*.json; do
   if [ "$declared" != "$name" ]; then
     echo "::error::$f declares skill \"$declared\" but the filename says \"$name\""
     FAILED=1
+    file_ok=0
   fi
 
   n_pos="$(jq -r '(.positives // []) | length' "$f")"
@@ -109,39 +112,53 @@ for f in "$CASES_DIR"/*.json; do
   if [ "$n_pos" -lt "$MIN_POSITIVES" ]; then
     echo "::error::$f has $n_pos positives, needs at least $MIN_POSITIVES"
     FAILED=1
+    file_ok=0
   fi
   if [ "$n_neg" -lt "$MIN_NEGATIVES" ]; then
     echo "::error::$f has $n_neg negatives, needs at least $MIN_NEGATIVES"
     FAILED=1
+    file_ok=0
   fi
 
   # An empty or missing prompt scores zero against everything and reads as a passing case.
   if [ "$(jq -r '[(.positives // [])[] | select((.prompt // "") == "")] | length' "$f")" != "0" ]; then
     echo "::error::$f has a positive with no prompt"
     FAILED=1
+    file_ok=0
   fi
   if [ "$(jq -r '[(.negatives // [])[] | select((.prompt // "") == "")] | length' "$f")" != "0" ]; then
     echo "::error::$f has a negative with no prompt"
     FAILED=1
+    file_ok=0
   fi
 
   missing_owner="$(jq -r '[(.negatives // [])[] | select((.owner // "") == "")] | length' "$f")"
   if [ "$missing_owner" != "0" ]; then
     echo "::error::$f has $missing_owner negative(s) with no owner"
     FAILED=1
+    file_ok=0
   fi
 
   for owner in $(jq -r '(.negatives // [])[] | .owner // empty' "$f" | sort -u); do
     if ! in_list "$owner" "$disk_skills"; then
       echo "::error::$f names owner \"$owner\", which is not a skill in this repo"
       FAILED=1
+      file_ok=0
     elif [ "$owner" = "$name" ]; then
       echo "::error::$f names itself as the owner of one of its negatives"
       FAILED=1
+      file_ok=0
+    elif ! in_list "$owner" "$invocable"; then
+      # The mirror of check 2. "Does not outrank dw-ship" is not an assertion — the model is never
+      # offered dw-ship, so the negative passes or fails for reasons routing cannot act on.
+      echo "::error::$f names owner \"$owner\", which is disable-model-invocation — a negative"
+      echo "::error::  cannot assert anything against a skill the model is never offered"
+      FAILED=1
+      file_ok=0
     fi
   done
 
-  [ "$FAILED" -eq 0 ] && echo "OK  $(basename "$f") ($n_pos positives, $n_neg negatives)"
+  [ "$file_ok" -eq 1 ] && echo "OK  $(basename "$f") ($n_pos positives, $n_neg negatives)"
 done
 
 echo

@@ -1,8 +1,8 @@
 ---
 change: skill-arguments-reference
-branch: unclaimed
+branch: main
 created: 2026-08-02
-status: shaping # shaping | building | landed
+status: building # shaping | building | landed
 ---
 
 # Change — document each skill's arguments in the README router, and the conventions behind them
@@ -30,12 +30,12 @@ skill should follow and keep.
 
 ## Tasks
 
-- [ ] 1. README: add an `Arguments` column to all four router tables (loop `:73-81`, anytime
+- [x] 1. README: add an `Arguments` column to all four router tables (loop `:73-81`, anytime
       `:85-87`, off-loop `:91-93`, setup `:97-100`), each cell condensed from that skill's
       `argument-hint` (`bare · go · all` style; `—` for dw-doctor, which takes none). Extend step 4
       of "Adding a skill" (`CLAUDE.md:60` and the synced `AGENTS.md` copy) so a new skill also
       fills its Arguments cell.
-- [ ] 2. `docs/SKILL-ANATOMY.md`: expand the `argument-hint` bullet (`:29`) into the conventions
+- [x] 2. `docs/SKILL-ANATOMY.md`: expand the `argument-hint` bullet (`:29`) into the conventions
       from Decisions, plus the maintenance rule — the hint is canon, the README cell mirrors it,
       change both in the same commit.
 
@@ -44,13 +44,12 @@ skill should follow and keep.
 - `skills/*/SKILL.md` `argument-hint` lines — 10 skills carry one; `dw-doctor` has none.
 - `README.md:73-81,85-87,91-93,97-100` — the four router tables getting the column.
 - `docs/SKILL-ANATOMY.md:17,29` — the field's current, author-facing description.
-- `CLAUDE.md:60` (= `AGENTS.md`, separate synced file, same edit) — the add-a-skill checklist step
-  that names every doc site a new skill must touch.
+- `AGENTS.md:60` — the add-a-skill checklist step that names every doc site a new skill must touch.
+  `CLAUDE.md` is a **symlink** to it, not a synced copy: one edit covers both.
 - `scripts/validate-docs.sh:1-16` — the validator deliberately not extended (see Decisions).
 
 ## Notes
 
-- Shaped on the claimed branch `ai-folder-lifecycle` (the main tree was unavailable to this
-  session), so `branch: unclaimed` rides that PR: the change becomes claimable from `main` only
-  after it merges. Both changes touch the README router table — building this one after
-  `ai-folder-lifecycle` lands avoids the overlap.
+- Shaped on the claimed branch `ai-folder-lifecycle` and held back because both changes touch the
+  README router table. That one landed in `a8dc056` (#4); the overlap is gone and the anchors above
+  survived the merge unmoved, so this builds serially on `main`.

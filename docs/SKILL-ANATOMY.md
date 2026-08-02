@@ -26,7 +26,23 @@ disable-model-invocation: true # ONLY for explicit-invoke-only skills (see below
     window of every session, so a "prefer this over `dw-spec`" clause costs tokens in every session to
     disambiguate against something that isn't installed. Describe the _shape_ you're preferring over
     ("a multi-file spec-and-plan ceremony"), not the skill name.
-- **`argument-hint`** — a short hint string. Read-only skills that take no real argument may omit it.
+- **`argument-hint`** — a short hint string, shown to the user as they type the invocation. Read-only
+  skills that take no real argument may omit it (`dw-doctor` is the only one). The catalog follows
+  four conventions; a new skill should too:
+  - **Bare is the safe default.** With no argument a skill reports, lists, or gives a verdict — it
+    never takes the outward-facing step. `dw-next` bare says where the change stands, `dw-land` bare
+    gives the verdict and waits, `dw-start` bare lists the unclaimed changes.
+  - **A single lowercase word switches mode** — `go`, `all`, `close`, `pr`. One word, no flags, no
+    punctuation; the word is the whole argument.
+  - **Free text narrows the focus** instead of switching mode — `dw-check <path>`, `dw-grill <idea>`,
+    `dw-shape <request>`.
+  - **The hint states bare first and separates options with `·`**, saying what each mode _does_
+    rather than just naming it — see `dw-next`, whose hint reads
+    `bare to report status · go to build the next task · all to keep going`.
+
+  The hint is canon; the **Arguments** cell in the README task-router mirrors it. Change one and you
+  change the other in the same commit — no validator catches the drift.
+
 - **`disable-model-invocation: true`** — set this _only_ on skills that scaffold a repo, install
   shared tooling, or take an outward-facing/irreversible action (create a worktree and branch, push
   and merge), so the model never reaches for them unbidden. The cost: an explicit-only skill can't

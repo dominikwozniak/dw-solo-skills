@@ -70,34 +70,34 @@ A small serial change never leaves the default branch: shape → next → ship (
 closing pass itself when the change doc is still there). Parallel changes: shape several on the
 default branch, then one worktree + session each via `dw-start` or `claude -w <slug>`.
 
-| Skill                                      | Task                                                       | What you get                                                |
-| ------------------------------------------ | ---------------------------------------------------------- | ----------------------------------------------------------- |
-| [`dw-grill`](skills/dw-grill/SKILL.md)     | Interview a fuzzy idea into decisions — max five questions | shared understanding (writes nothing)                       |
-| [`dw-shape`](skills/dw-shape/SKILL.md)     | Synthesize it into one goal + decisions + task checklist   | `.ai/work/<slug>/CHANGE.md`                                 |
-| [`dw-start`](skills/dw-start/SKILL.md) `⭑` | Open a shaped change: worktree + branch + claim            | `.claude/worktrees/<slug>` on branch `<slug>`               |
-| [`dw-next`](skills/dw-next/SKILL.md)       | Resume point _and_ build step (`go` builds and commits)    | code + ticked box + commit                                  |
-| [`dw-check`](skills/dw-check/SKILL.md)     | Fast optional QA gate — delegate, or two-axis self-review  | findings at `file:line`, fixed in-session                   |
-| [`dw-land`](skills/dw-land/SKILL.md)       | One thin verdict, then promote what's durable and archive  | `docs/decisions/` · `CONTEXT.md` · backlog · `.ai/archive/` |
-| [`dw-ship`](skills/dw-ship/SKILL.md) `⭑`   | Push — or PR → squash-merge — then tear the worktree down  | merged default branch, clean tree                           |
+| Skill                                      | Task                                                       | Arguments                         | What you get                                                |
+| ------------------------------------------ | ---------------------------------------------------------- | --------------------------------- | ----------------------------------------------------------- |
+| [`dw-grill`](skills/dw-grill/SKILL.md)     | Interview a fuzzy idea into decisions — max five questions | the idea to grill                 | shared understanding (writes nothing)                       |
+| [`dw-shape`](skills/dw-shape/SKILL.md)     | Synthesize it into one goal + decisions + task checklist   | the change to shape               | `.ai/work/<slug>/CHANGE.md`                                 |
+| [`dw-start`](skills/dw-start/SKILL.md) `⭑` | Open a shaped change: worktree + branch + claim            | `bare` lists unclaimed · `<slug>` | `.claude/worktrees/<slug>` on branch `<slug>`               |
+| [`dw-next`](skills/dw-next/SKILL.md)       | Resume point _and_ build step (`go` builds and commits)    | `bare` · `go` · `all`             | code + ticked box + commit                                  |
+| [`dw-check`](skills/dw-check/SKILL.md)     | Fast optional QA gate — delegate, or two-axis self-review  | `bare` · a path or topic          | findings at `file:line`, fixed in-session                   |
+| [`dw-land`](skills/dw-land/SKILL.md)       | One thin verdict, then promote what's durable and archive  | `bare` · `close`                  | `docs/decisions/` · `CONTEXT.md` · backlog · `.ai/archive/` |
+| [`dw-ship`](skills/dw-ship/SKILL.md) `⭑`   | Push — or PR → squash-merge — then tear the worktree down  | `bare` · `pr`                     | merged default branch, clean tree                           |
 
 **Anytime**
 
-| Skill                              | Task                                                     | What you get                       |
-| ---------------------------------- | -------------------------------------------------------- | ---------------------------------- |
-| [`dw-git`](skills/dw-git/SKILL.md) | All git ops — commit / push / PR / sync / branch / stash | commits / PR per `CLAUDE.local.md` |
+| Skill                              | Task                                                     | Arguments                           | What you get                       |
+| ---------------------------------- | -------------------------------------------------------- | ----------------------------------- | ---------------------------------- |
+| [`dw-git`](skills/dw-git/SKILL.md) | All git ops — commit / push / PR / sync / branch / stash | which op — `commit`, `push`, `pr` … | commits / PR per `CLAUDE.local.md` |
 
 **Off-loop** — the `dw-solo-extras` plugin; reached for when a session ends before the task does.
 
-| Skill                                          | Task                                                           | What you get                 |
-| ---------------------------------------------- | -------------------------------------------------------------- | ---------------------------- |
-| [`dw-handoff`](skills/dw-handoff/SKILL.md) `⭑` | Compact the session mid-task — where you are, what's ruled out | `.ai/work/<slug>/HANDOFF.md` |
+| Skill                                          | Task                                                           | Arguments                     | What you get                 |
+| ---------------------------------------------- | -------------------------------------------------------------- | ----------------------------- | ---------------------------- |
+| [`dw-handoff`](skills/dw-handoff/SKILL.md) `⭑` | Compact the session mid-task — where you are, what's ruled out | `bare` · next session's focus | `.ai/work/<slug>/HANDOFF.md` |
 
 **Setup** — the `dw-solo-setup` plugin; run once per repo.
 
-| Skill                                    | Task                                                  | What you get                             |
-| ---------------------------------------- | ----------------------------------------------------- | ---------------------------------------- |
-| [`dw-init`](skills/dw-init/SKILL.md) `⭑` | Scaffold a solo repo: `.ai/`, hooks, settings, memory | tracked scaffold (+ optional pre-commit) |
-| [`dw-doctor`](skills/dw-doctor/SKILL.md) | Diagnose tools, hooks, `.ai/` sanity (read-only)      | health report + copy-paste fixes         |
+| Skill                                    | Task                                                  | Arguments                        | What you get                             |
+| ---------------------------------------- | ----------------------------------------------------- | -------------------------------- | ---------------------------------------- |
+| [`dw-init`](skills/dw-init/SKILL.md) `⭑` | Scaffold a solo repo: `.ai/`, hooks, settings, memory | `bare` · project context to seed | tracked scaffold (+ optional pre-commit) |
+| [`dw-doctor`](skills/dw-doctor/SKILL.md) | Diagnose tools, hooks, `.ai/` sanity (read-only)      | —                                | health report + copy-paste fixes         |
 
 ## ⚙ How it works — the design in one screen
 

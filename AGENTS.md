@@ -57,10 +57,11 @@ instead of a dated record under `.ai/handoffs/`, so treat the two as unrelated. 
    `git add` the symlink — exactly one plugin per skill.
 3. Bump the owning plugin's patch version in **both** `.claude-plugin/marketplace.json` and its
    `plugin.json` — keep the two identical. One bump covers a train of skills landing together.
-4. Name the skill everywhere the docs list skills: the README **task-router** row, the **loop
-   diagram** in README + `docs/DESIGN.md` if it joins the core loop (honor-system — no validator
-   reads the diagram), and — if explicit-invoke — the `⭑` marker plus the explicit-only lists in
-   README **and** `docs/DESIGN.md`.
+4. Name the skill everywhere the docs list skills: the README **task-router** row — including its
+   **Arguments** cell, condensed from the skill's own `argument-hint` (`—` if it takes none) — the
+   **loop diagram** in README + `docs/DESIGN.md` if it joins the core loop (honor-system — no
+   validator reads the diagram), and — if explicit-invoke — the `⭑` marker plus the explicit-only
+   lists in README **and** `docs/DESIGN.md`.
 5. End the body with a `**Next:**` line naming a skill that exists **in this repo** — a pointer at a
    team-lane skill is a dead end here, and `validate:docs` fails it. A cycle of new skills lands its
    `**Next:**` lines in one wiring commit at the end; `validate:docs` only checks pointers that

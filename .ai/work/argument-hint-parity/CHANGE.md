@@ -1,6 +1,6 @@
 ---
 change: argument-hint-parity
-branch: unclaimed
+branch: argument-hint-parity
 created: 2026-08-02
 status: shaping # shaping | building | landed
 ---

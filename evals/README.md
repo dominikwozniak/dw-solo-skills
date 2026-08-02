@@ -113,12 +113,17 @@ promote, decisions, merge — is correctly rejected, but note _which_ gate does 
 | signal               | before | after |
 | -------------------- | ------ | ----- |
 | rank-1               | 67%    | 57%   |
-| negatives stolen     | 0      | 3     |
+| negatives failing    | 0      | 3     |
 | `dw-check ↔ dw-land` | 0.071  | 0.686 |
 
 The collision leaps almost tenfold and still lands under the 0.75 error threshold — it only warns.
 **The negative-prompt gate is what actually fails the run.** So keep negatives in every case file;
 the cosine error threshold alone would have let this through.
+
+The row says "failing" rather than "stolen" because gate 2 was added after this run was recorded:
+broadening a description raises the document frequency of the terms it absorbs, which lowers their
+idf, so some of those three negatives now collapse to zero on both sides and are reported as
+asserting nothing rather than as thefts. Three negatives break either way — only the label moved.
 
 ## Tier 3 — asking the real router
 

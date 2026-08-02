@@ -47,7 +47,7 @@ fails on a hand-broken cell.
       which also documents the third input path at `skills/dw-start/SKILL.md:31-34` that today exists
       only in the body. `dw-init` → `bare detects the stack from disk · any project context to seed`.
       `dw-handoff` → `bare saves where you are · or name what the next session should focus on`.
-- [ ] 2. `README.md` task-router — `dw-start`'s Arguments cell becomes
+- [x] 2. `README.md` task-router — `dw-start`'s Arguments cell becomes
       `` `bare` lists unclaimed · `<slug>` · a description → `dw-shape` ``. The `dw-init` and
       `dw-handoff` cells stay as they are; task 1 is what makes them true.
 - [ ] 3. `docs/SKILL-ANATOMY.md` — name `dw-git` in the free-text bullet and sanction the question
@@ -96,3 +96,7 @@ Found while building:
   task 1 already did that: the cell's two tokens, `bare` and `<slug>`, both appear in the new hint,
   so check 5 would pass it as it stands. What is left is only adding the third input path
   (`` · a description → `dw-shape` ``) — completeness, not a drift fix.
+- The skill-link exemption now has a live case to test check 5 against: the `dw-start` row is the
+  only Arguments cell in the README containing a `` `dw-*` `` token. Widening it also made prettier
+  realign every column of the core-loop table, so task 4's 4th-pipe-field parse must not assume any
+  particular column width.

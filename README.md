@@ -58,10 +58,13 @@ by other skills' prose.
 
 **The loop** — the mandatory spine is shape → next → ship; everything marked `?` is opt-in.
 
-```
-dw-grill? → dw-shape → dw-start? → dw-next ↺ → dw-check? → dw-land → dw-ship
-  fuzzy      plan it    worktree     build        gate       close     merge
-```
+<p align="center">
+  <img
+    src="docs/assets/dw-solo-skills-workflow.svg"
+    alt="Workflow: optional dw-grill, dw-shape, optional dw-start, iterative dw-next, optional dw-check, dw-land, then dw-ship"
+    width="100%"
+  >
+</p>
 
 A small serial change never leaves the default branch: shape → next → ship (`dw-ship` runs the
 closing pass itself when the change doc is still there). Parallel changes: shape several on the

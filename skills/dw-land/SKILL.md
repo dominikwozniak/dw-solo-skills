@@ -81,13 +81,16 @@ fine, I guess"; wait for a plain one — and only then:
   `bash "${CLAUDE_PLUGIN_ROOT}/scripts/slugify.sh" slug "<the follow-up>"`, frontmatter
   `created: YYYY-MM-DD` plus `source: <this change's slug>`, an H1 saying what-and-why in one
   line, at most ~3 lines of context. Findings go by pointer to `.ai/archive/<slug>` — never
-  inlined. Create the dir with its `README.md` if the repo predates the scaffold. Same bar as
+  inlined. If `.ai/backlog/<slug>.md` already exists, merge into it or re-slug with a more
+  specific description — **never overwrite it silently**; the existing entry is queued work.
+  Create the dir with its `README.md` if the repo predates the scaffold. Same bar as
   gotchas — **if you wouldn't pick it up within a month, don't write it** — and zero is a normal
   answer.
 - **Archive the scaffolding.** `git rm` a leftover `HANDOFF.md` first — it described the middle of
   a task, and post-merge it is noise — then `git mv .ai/work/<slug>/ .ai/archive/<slug>/` and, in
   the moved `CHANGE.md`, flip `status:` to `landed` and add `landed: YYYY-MM-DD` plus `pr: "#<n>"`
-  when there is one. The archive is history, not guidance — nothing reads it to decide anything
+  when there is one. If `.ai/archive/<slug>/` already exists, stop and pick a suffixed destination
+  (`<slug>-2`) — `git mv` into an existing directory silently nests the folder inside it. The archive is history, not guidance — nothing reads it to decide anything
   (`.ai/archive/README.md` says so; create it from that one line if the repo predates the
   scaffold). If something in the doc still feels too valuable to bury, that is the signal it
   belonged in a record, a gotcha, or the backlog — promote it first, then archive.

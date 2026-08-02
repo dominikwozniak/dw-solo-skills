@@ -84,7 +84,8 @@ is light.
 - `.ai/README.md` — copy `${CLAUDE_PLUGIN_ROOT}/templates/work-README.md` verbatim. It states the
   lifecycle a reader gets wrong: a `CHANGE.md` leaves `work/` at merge — archived, never deleted.
 - `.ai/backlog/README.md` and `.ai/archive/README.md` — copy
-  `${CLAUDE_PLUGIN_ROOT}/templates/backlog-README.md` and `templates/archive-README.md` verbatim.
+  `${CLAUDE_PLUGIN_ROOT}/templates/backlog-README.md` and
+  `${CLAUDE_PLUGIN_ROOT}/templates/archive-README.md` verbatim.
   **Existing entries in either dir are left alone** — they carry real content from earlier changes.
   A legacy single-file `.ai/BACKLOG.md`, if present, is named at the gate: offer to split it into
   per-file entries, never clobber or silently keep it.

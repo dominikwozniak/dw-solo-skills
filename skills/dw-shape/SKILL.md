@@ -48,7 +48,9 @@ decisions belong in `docs/decisions/`, not in a spec nobody will reopen.
 3. **Derive the slug, don't invent it:**
    `bash "${CLAUDE_PLUGIN_ROOT}/scripts/slugify.sh" slug "<short description>"`. Same script the
    whole catalog uses, so casing never drifts. (`${CLAUDE_PLUGIN_ROOT}` is the env var Claude Code
-   substitutes to this plugin's install dir.)
+   substitutes to this plugin's install dir.) A slug already present in `.ai/work/` **or
+   `.ai/archive/`** is taken — the land-time `git mv` would nest into the existing archive folder —
+   so make the description more specific and re-derive.
 
 ## Workflow
 
@@ -93,9 +95,10 @@ obviously doable before task 2, do it. Dependencies here are there to help you p
 ### 4. Write the file, check it back, commit it
 
 Write `CHANGE.md` from the shape in `references/CHANGE.md`. If this change takes an entry from
-`.ai/backlog/`, **`git mv` that file to `.ai/work/<slug>/CHANGE.md`** and expand it in place — the
-entry is the seed, and live work must not also sit in the backlog, or the next `dw-shape` offers you
-what you're already building; keep its slug unless the change outgrew it. Then read the goal and the task list back to the
+`.ai/backlog/`, create the folder first (`mkdir -p .ai/work/<slug>` — `git mv` won't), then
+**`git mv` the file to `.ai/work/<slug>/CHANGE.md`** and expand it in place — the entry is the
+seed, and live work must not also sit in the backlog, or the next `dw-shape` offers you what
+you're already building; keep its slug unless the change outgrew it. Then read the goal and the task list back to the
 user in a few lines and ask whether the breakdown is right — wrong granularity is much cheaper to fix
 now than after two commits. **Wait for that confirmation before anything else.**
 

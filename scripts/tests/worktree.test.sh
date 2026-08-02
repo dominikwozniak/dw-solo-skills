@@ -114,6 +114,208 @@ else
   note_fail "remove-claude-w-spelling" "branch worktree-gamma survived"
 fi
 
+echo ".worktreeinclude:"
+# A file is copied only when it matches a pattern AND is gitignored — the documented rule. Each
+# case below is one half of that conjunction, plus the refusals, plus the stdout contract.
+printf 'local-probe.txt\nnested/\ntracked-probe.txt\nunlisted.txt\nnode_modules/\n' >"$REPO/.gitignore"
+git -C "$REPO" add .gitignore
+git -C "$REPO" commit -qm "gitignore"
+
+# Gitignored and listed -> copied. Mode 600 must survive.
+echo secret >"$REPO/local-probe.txt"
+chmod 600 "$REPO/local-probe.txt"
+# Gitignored, not listed -> skipped.
+echo nope >"$REPO/unlisted.txt"
+# Listed but TRACKED -> skipped (the checkout already has it).
+echo tracked >"$REPO/tracked-probe.txt"
+git -C "$REPO" add -f tracked-probe.txt
+git -C "$REPO" commit -qm "tracked probe"
+# Nested pattern -> parent dirs created at the destination.
+mkdir -p "$REPO/nested"
+echo deep >"$REPO/nested/deep.txt"
+# Refused regardless of the pattern.
+mkdir -p "$REPO/node_modules/pkg"
+echo dep >"$REPO/node_modules/pkg/index.js"
+
+printf 'local-probe.txt\nnested/**\ntracked-probe.txt\nnode_modules/**\n' >"$REPO/.worktreeinclude"
+
+ERRLOG="$TMP/delta.stderr"
+out=$("$WORKTREE" create delta 2>"$ERRLOG")
+WT="$REPO/.claude/worktrees/delta"
+
+if [ "$out" = "$WT" ]; then
+  note_pass "include-stdout-still-path-only"
+else
+  note_fail "include-stdout-still-path-only" "stdout was '$out'"
+fi
+
+if [ -f "$WT/local-probe.txt" ] && [ "$(cat "$WT/local-probe.txt")" = "secret" ]; then
+  note_pass "include-ignored-and-listed-copied"
+else
+  note_fail "include-ignored-and-listed-copied" "missing or wrong content"
+fi
+
+got_mode="$(ls -l "$WT/local-probe.txt" 2>/dev/null | cut -c1-10)"
+if [ "$got_mode" = "-rw-------" ]; then
+  note_pass "include-mode-preserved (600)"
+else
+  note_fail "include-mode-preserved" "got '$got_mode'"
+fi
+
+if [ -f "$WT/nested/deep.txt" ]; then
+  note_pass "include-nested-pattern-copied"
+else
+  note_fail "include-nested-pattern-copied" "parent dir or file missing"
+fi
+
+if [ ! -e "$WT/unlisted.txt" ]; then
+  note_pass "include-ignored-not-listed-skipped"
+else
+  note_fail "include-ignored-not-listed-skipped" "copied a file no pattern named"
+fi
+
+# Tracked files arrive via the checkout, never the copy — proven by content, since a copy would
+# have overwritten the committed "tracked" with the working-tree value.
+if [ -f "$WT/tracked-probe.txt" ] && [ "$(cat "$WT/tracked-probe.txt")" = "tracked" ]; then
+  note_pass "include-tracked-not-duplicated"
+else
+  note_fail "include-tracked-not-duplicated" "tracked file missing or overwritten"
+fi
+
+if [ ! -e "$WT/node_modules" ]; then
+  note_pass "include-node-modules-refused"
+else
+  note_fail "include-node-modules-refused" "copied node_modules despite the hard refusal"
+fi
+
+# The refusal is silent-by-default's opposite: it has to say so, on stderr, from the same run that
+# did the copying.
+if grep -q "refused 1 path(s) matched by .worktreeinclude" "$ERRLOG"; then
+  note_pass "include-refusal-reported-on-stderr"
+else
+  note_fail "include-refusal-reported-on-stderr" "no refusal line in stderr: $(tr '\n' '|' <"$ERRLOG")"
+fi
+
+# The volume warning counts post-refusal, so a pattern whose bulk is refused must not trip it —
+# otherwise it cries wolf on every repo with node_modules and stops being read.
+if grep -q "files to copy" "$ERRLOG"; then
+  note_fail "include-volume-warning-counts-after-refusals" "warned about files it was going to refuse"
+else
+  note_pass "include-volume-warning-counts-after-refusals"
+fi
+
+# Two, not three: tracked-probe.txt is listed but tracked, so the intersection drops it.
+if grep -q "copied 2 file(s) named by .worktreeinclude" "$ERRLOG"; then
+  note_pass "include-copy-count-reported-on-stderr"
+else
+  note_fail "include-copy-count-reported-on-stderr" "stderr: $(tr '\n' '|' <"$ERRLOG")"
+fi
+
+"$WORKTREE" remove delta >/dev/null 2>&1
+
+# No .worktreeinclude at all -> create behaves exactly as before.
+rm -f "$REPO/.worktreeinclude"
+out=$("$WORKTREE" create epsilon 2>/dev/null)
+if [ "$out" = "$REPO/.claude/worktrees/epsilon" ] && [ ! -e "$REPO/.claude/worktrees/epsilon/local-probe.txt" ]; then
+  note_pass "include-absent-is-a-no-op"
+else
+  note_fail "include-absent-is-a-no-op" "rc/out='$out' or a file was copied anyway"
+fi
+"$WORKTREE" remove epsilon >/dev/null 2>&1
+
+echo "CLAUDE.local.md (link-class, not copy-class):"
+echo "conventions" >"$REPO/CLAUDE.local.md"
+
+"$WORKTREE" create zeta >/dev/null 2>&1
+ZETA="$REPO/.claude/worktrees/zeta"
+if [ -L "$ZETA/CLAUDE.local.md" ] && [ "$(cat "$ZETA/CLAUDE.local.md")" = "conventions" ]; then
+  note_pass "local-memory-linked (symlink, reads through)"
+else
+  note_fail "local-memory-linked" "not a symlink, or content unreadable"
+fi
+
+# One source of truth: an edit in the worktree must land in the main tree, which a copy would not do.
+echo "edited" >"$ZETA/CLAUDE.local.md"
+if [ "$(cat "$REPO/CLAUDE.local.md")" = "edited" ]; then
+  note_pass "local-memory-edits-propagate"
+else
+  note_fail "local-memory-edits-propagate" "main tree still: $(cat "$REPO/CLAUDE.local.md")"
+fi
+echo "conventions" >"$REPO/CLAUDE.local.md"
+"$WORKTREE" remove zeta >/dev/null 2>&1
+
+# A real file already at the destination must be left alone. Reachable through the public interface
+# by tracking the file: then the checkout puts a real one there before the link step runs. Same `-e`
+# guard that lets this compose with the SessionStart hook.
+git -C "$REPO" add -f CLAUDE.local.md
+git -C "$REPO" commit -qm "track local memory"
+"$WORKTREE" create eta >/dev/null 2>&1
+ETA="$REPO/.claude/worktrees/eta"
+if [ ! -L "$ETA/CLAUDE.local.md" ] && [ -f "$ETA/CLAUDE.local.md" ]; then
+  note_pass "local-memory-existing-file-left-alone"
+else
+  note_fail "local-memory-existing-file-left-alone" "clobbered a real file with a link"
+fi
+"$WORKTREE" remove eta >/dev/null 2>&1
+git -C "$REPO" rm -q --cached CLAUDE.local.md
+git -C "$REPO" commit -qm "untrack local memory"
+
+# Absent source -> nothing to link, and create still succeeds.
+mv "$REPO/CLAUDE.local.md" "$REPO/CLAUDE.local.md.bak"
+out=$("$WORKTREE" create theta 2>/dev/null)
+if [ "$out" = "$REPO/.claude/worktrees/theta" ] && [ ! -e "$REPO/.claude/worktrees/theta/CLAUDE.local.md" ]; then
+  note_pass "local-memory-absent-is-a-no-op"
+else
+  note_fail "local-memory-absent-is-a-no-op" "out='$out' or a stray link appeared"
+fi
+"$WORKTREE" remove theta >/dev/null 2>&1
+mv "$REPO/CLAUDE.local.md.bak" "$REPO/CLAUDE.local.md"
+
+echo "readiness report (the regenerate class):"
+# The report exists because this class fails silently: no node_modules is a loud build error, but
+# no .husky/_ means git finds no hooks and commits skip every gate without a word.
+echo '{"name":"probe"}' >"$REPO/package.json"
+touch "$REPO/pnpm-lock.yaml"
+mkdir -p "$REPO/.husky"
+echo "pnpm exec lint-staged" >"$REPO/.husky/pre-commit"
+git -C "$REPO" add package.json pnpm-lock.yaml .husky/pre-commit
+git -C "$REPO" commit -qm "node project with husky"
+
+RLOG="$TMP/iota.stderr"
+out=$("$WORKTREE" create iota 2>"$RLOG")
+if [ "$out" = "$REPO/.claude/worktrees/iota" ]; then
+  note_pass "readiness-stdout-still-path-only"
+else
+  note_fail "readiness-stdout-still-path-only" "stdout was '$out'"
+fi
+if grep -q "run: pnpm install" "$RLOG"; then
+  note_pass "readiness-names-the-install-command"
+else
+  note_fail "readiness-names-the-install-command" "stderr: $(tr '\n' '|' <"$RLOG")"
+fi
+if grep -q "COMMIT HOOKS ARE INACTIVE" "$RLOG"; then
+  note_pass "readiness-warns-hooks-inactive"
+else
+  note_fail "readiness-warns-hooks-inactive" "stderr: $(tr '\n' '|' <"$RLOG")"
+fi
+"$WORKTREE" remove iota >/dev/null 2>&1
+
+# With .husky/_ present the hook warning must not fire — the report has to stay believable.
+# Committed so the fresh checkout actually has it — in a real repo the install regenerates it.
+mkdir -p "$REPO/.husky/_"
+echo "husky" >"$REPO/.husky/_/h"
+git -C "$REPO" add -f .husky/_/h
+git -C "$REPO" commit -qm "husky internals"
+RLOG2="$TMP/kappa.stderr"
+"$WORKTREE" create kappa 2>"$RLOG2" >/dev/null
+if grep -q "COMMIT HOOKS ARE INACTIVE" "$RLOG2"; then
+  note_fail "readiness-no-false-hook-warning" "warned despite .husky/_ being present"
+else
+  note_pass "readiness-no-false-hook-warning"
+fi
+"$WORKTREE" remove kappa >/dev/null 2>&1
+rm -rf "$REPO/.husky/_"
+
 echo "errors (expect non-zero exit):"
 if "$WORKTREE" bogus >/dev/null 2>&1; then note_fail "unknown-subcmd" "expected non-zero"; else note_pass "unknown-subcmd"; fi
 if "$WORKTREE" >/dev/null 2>&1; then note_fail "no-subcmd" "expected non-zero"; else note_pass "no-subcmd"; fi

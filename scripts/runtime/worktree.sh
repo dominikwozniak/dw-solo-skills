@@ -9,15 +9,175 @@
 #
 # Subcommands:
 #   worktree.sh create <slug> [base]   worktree + branch <slug> at [base] (default HEAD);
+#                                      copies the .worktreeinclude matches in, links
+#                                      CLAUDE.local.md, reports what still needs installing;
 #                                      prints the worktree's absolute path on stdout
 #   worktree.sh remove <slug>          remove the worktree, delete its branch, prune
+#
+# Everything create does past `git worktree add` is best-effort and speaks only on stderr, so
+# stdout stays the path and nothing else — dw-start parses it.
 #
 # remove uses `git branch -D`: after a squash-merge the branch tip is never an ancestor of
 # the default branch, so `-d` would always refuse. Never `--force` on the worktree itself —
 # a dirty worktree must refuse, and surfacing git's own error is the feature.
 set -euo pipefail
+# The include matching below sorts two file lists and intersects them with `comm`; all three have to
+# agree on collation. Every other script here that compares text pins it the same way.
+export LC_ALL=C
 
 usage() { echo "usage: worktree.sh {create|remove} <slug> [base]" >&2; }
+
+# Warn rather than copy when a pattern sweeps in more than this many files — an include file is
+# hand-written, and the difference between a config file and a dependency tree is two characters.
+WORKTREE_INCLUDE_WARN_AT=50
+
+# Carry the copy-class files a fresh checkout leaves behind.
+#
+# `git worktree add` checks out tracked state only. Claude Code's own .worktreeinclude handling
+# covers the worktrees *it* creates — `--worktree`, subagent worktrees, desktop — and never
+# `git worktree add`, so this reproduces it for the loop's own worktrees.
+#
+# The rule, verbatim from code.claude.com/docs/en/worktrees.md: copy a file only when it matches a
+# pattern **and** is gitignored. Both halves are computed by git — two `ls-files` runs intersected —
+# so the semantics cannot drift from what `claude -w` does. We never parse gitignore ourselves.
+#
+# The refusals below are hard and independent of what the file says, because the file is
+# hand-written and the failure is destructive rather than annoying: `node_modules/` is
+# regenerate-class (platform-specific, and 394 of this repo's 421 ignored files live there), and
+# `.claude/worktrees/` is where worktrees live — copying it puts worktrees inside a worktree.
+#
+# Filenames containing a newline are not supported: `comm` has no `-z`, and the alternative is
+# reimplementing the matching we deliberately delegate to git.
+copy_worktree_includes() {
+  local src_root="$1" dst_root="$2"
+  local inc="$src_root/.worktreeinclude"
+  [ -f "$inc" ] || return 0
+
+  local candidates
+  candidates="$(
+    comm -12 \
+      <(git -C "$src_root" -c core.quotePath=false ls-files -o -i --exclude-standard | sort) \
+      <(git -C "$src_root" -c core.quotePath=false ls-files -o -i --exclude-from="$inc" | sort)
+  )" || return 0
+  [ -n "$candidates" ] || return 0
+
+  # Refusals first, so the volume warning below counts what will actually be copied. Warning about
+  # 395 files and then copying 1 of them teaches you to ignore the warning.
+  local keep="" refused=0 rel
+  while IFS= read -r rel; do
+    [ -n "$rel" ] || continue
+    case "$rel" in
+      node_modules/* | */node_modules/* | .claude/worktrees/* | .git/*)
+        refused=$((refused + 1))
+        continue
+        ;;
+    esac
+    keep="$keep$rel
+"
+    # Fed by heredoc, not a pipe: a pipe would run the loop in a subshell and the counters would
+    # come back zero.
+  done <<EOF
+$candidates
+EOF
+
+  local total
+  total="$(printf '%s' "$keep" | grep -c . || true)"
+  if [ "$total" -gt "$WORKTREE_INCLUDE_WARN_AT" ]; then
+    echo "worktree.sh: .worktreeinclude names $total files to copy — that looks like a directory tree, not local config. Copying anyway; narrow the patterns if this is wrong." >&2
+  fi
+
+  local copied=0
+  while IFS= read -r rel; do
+    [ -n "$rel" ] || continue
+    [ -f "$src_root/$rel" ] || continue
+    if mkdir -p "$dst_root/$(dirname "$rel")" 2>/dev/null &&
+      cp -p "$src_root/$rel" "$dst_root/$rel" 2>/dev/null; then
+      copied=$((copied + 1))
+    else
+      echo "worktree.sh: could not copy $rel into the worktree — continuing without it" >&2
+    fi
+  done <<EOF
+$keep
+EOF
+
+  [ "$refused" -eq 0 ] ||
+    echo "worktree.sh: refused $refused path(s) matched by .worktreeinclude — node_modules/, .claude/worktrees/ and .git are never copied" >&2
+  [ "$copied" -eq 0 ] ||
+    echo "worktree.sh: copied $copied file(s) named by .worktreeinclude" >&2
+}
+
+# Personal agent memory is link-class, not copy-class: one source of truth, so an edit in either
+# tree is visible in both. That is `link-local-memory.sh`'s argument, and it stays the right one.
+#
+# The hook cannot cover this path, though. It runs on SessionStart, which fires for `claude -w`
+# (the session starts *in* the worktree) but not for a session that enters a worktree mid-flight —
+# `/dw-start`'s route. Creating the link here has no session lifecycle to miss. Both sides test for
+# an existing entry first, so they compose rather than race.
+#
+# Absolute target, matching the hook: a relative one would break the moment the worktree moves.
+link_local_memory() {
+  local src_root="$1" dst_root="$2"
+  local src="$src_root/CLAUDE.local.md"
+  [ -f "$src" ] || return 0
+  # -e, not -f: a link the hook already made counts as present.
+  if [ -e "$dst_root/CLAUDE.local.md" ]; then
+    return 0
+  fi
+  if ln -s "$src" "$dst_root/CLAUDE.local.md" 2>/dev/null; then
+    echo "worktree.sh: linked CLAUDE.local.md from the main tree — it carries the git conventions and the lint/typecheck commands" >&2
+  else
+    echo "worktree.sh: could not link CLAUDE.local.md into the worktree — the agent will fall back to generic git conventions" >&2
+  fi
+}
+
+# Name what the worktree still hasn't got. Copy and link are handled above; the third class —
+# installed dependencies and the tooling generated from them — must be *regenerated*, never copied,
+# so the only honest thing this script can do is say so.
+#
+# The husky line is the one that matters. `core.hooksPath` is repo-level config shared with every
+# worktree, but husky generates `.husky/_/` and gitignores it, so a fresh worktree has the hook
+# scripts and no directory for git to find. Git then runs no hooks at all and says nothing: commits
+# silently skip formatting, linting and whatever else the pre-commit gate was holding. That is worse
+# than a failed build, because it produces bad commits instead of errors.
+#
+# Detection is from what the repo declares, never a hardcoded stack, and this reports only — a
+# worktree that exists and warns beats one that refused to finish.
+# Newline-delimited string rather than an array: macOS ships bash 3.2, where expanding an empty
+# array under `set -u` is an error, and the rest of this script stays 3.2-safe too.
+report_readiness() {
+  local dst_root="$1"
+  local missing=""
+
+  if [ -f "$dst_root/package.json" ] && [ ! -d "$dst_root/node_modules" ]; then
+    if [ -f "$dst_root/pnpm-lock.yaml" ]; then
+      missing="$missing  - dependencies — run: pnpm install
+"
+    elif [ -f "$dst_root/yarn.lock" ]; then
+      missing="$missing  - dependencies — run: yarn install
+"
+    elif [ -f "$dst_root/bun.lockb" ] || [ -f "$dst_root/bun.lock" ]; then
+      missing="$missing  - dependencies — run: bun install
+"
+    elif [ -f "$dst_root/package-lock.json" ]; then
+      missing="$missing  - dependencies — run: npm install
+"
+    else
+      missing="$missing  - dependencies — run your project's install command
+"
+    fi
+  fi
+
+  # Self-contained on purpose: the install line above is conditional, so pointing at it would
+  # dangle exactly when this warning matters most.
+  if [ -d "$dst_root/.husky" ] && [ ! -d "$dst_root/.husky/_" ]; then
+    missing="$missing  - COMMIT HOOKS ARE INACTIVE — .husky/_/ is generated by your install command and gitignored, so git finds no hooks here and every commit skips the pre-commit gate silently. Install before you commit.
+"
+  fi
+
+  [ -n "$missing" ] || return 0
+  echo "worktree.sh: this worktree still needs:" >&2
+  printf '%s' "$missing" >&2
+}
 
 # In a linked worktree --git-dir is .git/worktrees/<name> while --git-common-dir stays the
 # main .git — the only reliable tell (path comparison breaks on symlinked tmpdirs).
@@ -54,6 +214,12 @@ case "$cmd" in
     fi
     # git's own chatter goes to stderr so stdout stays machine-usable: the path, nothing else.
     git worktree add -b "$slug" "$path" "$base" 1>&2
+    # Everything below is best-effort and reports on stderr: the worktree already exists, and the
+    # `already exists` guards above make a half-created one expensive to retry. A missing include
+    # file is worth a warning, never a failure.
+    copy_worktree_includes "$root" "$path" || true
+    link_local_memory "$root" "$path" || true
+    report_readiness "$path" || true
     printf '%s\n' "$path"
     ;;
   remove)

@@ -2,7 +2,8 @@
 change: ai-folder-lifecycle
 branch: ai-folder-lifecycle
 created: 2026-08-02
-status: building # shaping | building | landed
+status: landed # shaping | building | landed
+landed: 2026-08-02
 ---
 
 # Change — .ai lifecycle: archive landed changes, per-file backlog, backfill closed PRs

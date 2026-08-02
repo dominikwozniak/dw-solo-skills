@@ -1,6 +1,6 @@
 ---
 change: shape-splits-changes
-branch: unclaimed
+branch: shape-splits-changes
 created: 2026-08-02
 status: shaping # shaping | building | landed
 ---

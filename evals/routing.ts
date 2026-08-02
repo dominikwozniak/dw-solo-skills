@@ -50,6 +50,12 @@ type Index = {
   names: string[]
   idf: Map<string, number>
   vectors: Map<string, Vector>
+  /**
+   * `disable-model-invocation: true` skills. They stay in the corpus — they compete for the same
+   * words and belong in the collision scan — but the model is never offered them, so one of them
+   * outranking a skill is overlap to report, not a routing failure to count.
+   */
+  explicit: Set<string>
 }
 
 type Ranked = { skill: string; score: number }
@@ -284,7 +290,36 @@ function buildIndex(docs: SkillDoc[]): Index {
   const vectors = new Map<string, Vector>()
   for (const [name, list] of tokens) vectors.set(name, weigh(list, idf))
 
-  return { names: docs.map((doc) => doc.name), idf, vectors }
+  return {
+    names: docs.map((doc) => doc.name),
+    idf,
+    vectors,
+    explicit: new Set(docs.filter((doc) => doc.explicit).map((doc) => doc.name)),
+  }
+}
+
+const COLLIDE_WARN = 0.5
+const COLLIDE_ERROR = 0.75
+
+type Collision = { a: string; b: string; score: number }
+
+/**
+ * Every pair of descriptions scored against each other. Two skills that read as near-duplicates to
+ * TF-IDF read as near-duplicates to whatever picks between them, so this is the check that does not
+ * depend on anyone having written a case prompt for the overlap yet.
+ */
+function findCollisions(index: Index): Collision[] {
+  const found: Collision[] = []
+  for (let i = 0; i < index.names.length; i++) {
+    for (let j = i + 1; j < index.names.length; j++) {
+      const a = index.names[i]
+      const b = index.names[j]
+      const score = cosine(index.vectors.get(a) ?? new Map(), index.vectors.get(b) ?? new Map())
+      found.push({ a, b, score })
+    }
+  }
+  found.sort((x, y) => y.score - x.score || x.a.localeCompare(y.a) || x.b.localeCompare(y.b))
+  return found
 }
 
 /** Both sides are L2-normalised, so the dot product already is the cosine. */
@@ -360,7 +395,15 @@ function others(ranked: Ranked[], skip: string, top: number): string {
   return rest.map((entry) => `${entry.skill} ${fmt(entry.score)}`).join(" · ")
 }
 
-type Tally = { skill: string; rank1: number; positives: number; negOk: number; negatives: number }
+type Tally = {
+  skill: string
+  rank1: number
+  positives: number
+  negOk: number
+  negatives: number
+  /** Positives where an explicit-invoke skill scored higher. Reported, never counted as a failure. */
+  shadowed: number
+}
 
 function report(cases: CaseFile[], index: Index, top: number): Tally[] {
   const tallies: Tally[] = []
@@ -375,15 +418,19 @@ function report(cases: CaseFile[], index: Index, top: number): Tally[] {
       positives: entry.positives.length,
       negOk: 0,
       negatives: entry.negatives.length,
+      shadowed: 0,
     }
 
     console.log(`\n▸ ${entry.skill}`)
 
     for (const positive of entry.positives) {
       const ranked = rank(index, positive.prompt)
-      const position = ranked.findIndex((r) => r.skill === entry.skill) + 1
-      const own = ranked[position - 1]
-      const winner = ranked[0]
+      // Rank among the skills the model is actually offered. An explicit-invoke skill cannot be
+      // chosen, so letting one occupy first place would fail a prompt over an impossible loss.
+      const field = ranked.filter((entry_) => !index.explicit.has(entry_.skill))
+      const position = field.findIndex((r) => r.skill === entry.skill) + 1
+      const own = field[position - 1]
+      const winner = field[0]
 
       if (own.score === 0) {
         // Every ranking below is meaningless when the prompt shares no discriminating term with
@@ -396,10 +443,17 @@ function report(cases: CaseFile[], index: Index, top: number): Tally[] {
       if (position === 1) {
         tally.rank1++
         console.log(`  ✓ rank 1  ${fmt(own.score)}  "${positive.prompt}"`)
-        console.log(`      └ then ${others(ranked, entry.skill, top - 1)}`)
+        console.log(`      └ then ${others(field, entry.skill, top - 1)}`)
       } else {
         console.log(`  ✗ rank ${position}  ${fmt(own.score)}  "${positive.prompt}"`)
         console.log(`      └ lost to ${winner.skill} ${fmt(winner.score)}`)
+      }
+
+      const shadows = ranked.filter((r) => index.explicit.has(r.skill) && r.score > own.score)
+      if (shadows.length > 0) {
+        tally.shadowed++
+        const listed = shadows.map((r) => `${r.skill} ${fmt(r.score)}`).join(" · ")
+        console.log(`      ⓘ explicit-invoke scores higher: ${listed} — overlap, not routable`)
       }
     }
 
@@ -432,37 +486,69 @@ function report(cases: CaseFile[], index: Index, top: number): Tally[] {
   return tallies
 }
 
-function summarise(tallies: Tally[], corpusSize: number, scored: number): void {
-  const width = Math.max(...tallies.map((t) => t.skill.length), 5)
-  console.log(`\n${"skill".padEnd(width)}  rank-1   yields`)
-  console.log(`${"-".repeat(width)}  -------  -------`)
+type Totals = { rank1: number; positives: number; negOk: number; negatives: number; pct: number }
 
-  let rank1 = 0
-  let positives = 0
-  let negOk = 0
-  let negatives = 0
+function summarise(tallies: Tally[], corpusSize: number, scored: number): Totals {
+  const width = Math.max(...tallies.map((t) => t.skill.length), 5)
+  console.log(`\n${"skill".padEnd(width)}  rank-1   yields   shadowed`)
+  console.log(`${"-".repeat(width)}  -------  -------  --------`)
+
+  const totals: Totals = { rank1: 0, positives: 0, negOk: 0, negatives: 0, pct: 0 }
   for (const tally of tallies) {
-    rank1 += tally.rank1
-    positives += tally.positives
-    negOk += tally.negOk
-    negatives += tally.negatives
+    totals.rank1 += tally.rank1
+    totals.positives += tally.positives
+    totals.negOk += tally.negOk
+    totals.negatives += tally.negatives
     const a = `${tally.rank1}/${tally.positives}`
     const b = `${tally.negOk}/${tally.negatives}`
-    console.log(`${tally.skill.padEnd(width)}  ${a.padEnd(7)}  ${b}`)
+    console.log(`${tally.skill.padEnd(width)}  ${a.padEnd(7)}  ${b.padEnd(7)}  ${tally.shadowed}`)
   }
 
-  const pct = positives === 0 ? 0 : Math.round((rank1 / positives) * 100)
-  console.log(`${"-".repeat(width)}  -------  -------`)
+  totals.pct = totals.positives === 0 ? 0 : Math.round((totals.rank1 / totals.positives) * 100)
+  console.log(`${"-".repeat(width)}  -------  -------  --------`)
+  const head = `${totals.rank1}/${totals.positives}`
+  console.log(`${"TOTAL".padEnd(width)}  ${head.padEnd(7)}  ${totals.negOk}/${totals.negatives}`)
+  console.log(`\nrank-1 ${totals.pct}% · ${scored} of ${corpusSize} skills have case files`)
+  return totals
+}
+
+/**
+ * Prints the closest pairs whether or not they breach anything. A bare "none above 0.5" tells you
+ * nothing about how much headroom is left, and headroom is the thing worth watching: the number
+ * creeping from 0.2 to 0.4 across a few commits is the early warning the thresholds only catch late.
+ */
+function reportCollisions(index: Index, show: number): number {
+  const found = findCollisions(index)
+  const breaching = found.filter((pair) => pair.score >= COLLIDE_WARN)
+  const listed = breaching.length > 0 ? breaching : found.slice(0, show)
+
   console.log(
-    `${"TOTAL".padEnd(width)}  ${`${rank1}/${positives}`.padEnd(7)}  ${negOk}/${negatives}`,
+    `\ndescription pairs, closest first (warn ≥${COLLIDE_WARN}, error ≥${COLLIDE_ERROR}):`,
   )
-  console.log(`\nrank-1 ${pct}% · ${scored} of ${corpusSize} skills have case files`)
+  let errors = 0
+  for (const pair of listed) {
+    let mark = "  ok  "
+    if (pair.score >= COLLIDE_ERROR) {
+      mark = "✗ error"
+      errors++
+    } else if (pair.score >= COLLIDE_WARN) {
+      mark = "· warn "
+    }
+    console.log(`  ${mark}  ${fmt(pair.score)}  ${pair.a} ↔ ${pair.b}`)
+  }
+  if (breaching.length === 0) {
+    console.log(`  nothing at or above ${COLLIDE_WARN} — ${found.length} pairs scanned`)
+  }
+  return errors
 }
 
 // --- entry point -------------------------------------------------------------
 
+const USAGE = "usage: node evals/routing.ts [--top <n>] [--min-rank1 <percent>] [skill...]"
+
 function main(argv: string[]): void {
   let top = 3
+  let minRank1: number | null = null
   const filter: string[] = []
 
   for (let i = 0; i < argv.length; i++) {
@@ -471,11 +557,17 @@ function main(argv: string[]): void {
       const value = Number(argv[++i])
       if (!Number.isInteger(value) || value < 1) fail("--top needs a positive integer")
       top = value
+    } else if (arg === "--min-rank1") {
+      const value = Number(argv[++i])
+      if (!Number.isFinite(value) || value < 0 || value > 100) {
+        fail("--min-rank1 needs a percentage between 0 and 100")
+      }
+      minRank1 = value
     } else if (arg === "-h" || arg === "--help") {
-      console.log("usage: node evals/routing.ts [--top <n>] [skill...]")
+      console.log(USAGE)
       return
     } else if (arg.startsWith("-")) {
-      fail(`unknown flag ${arg}`)
+      fail(`unknown flag ${arg}\n${USAGE}`)
     } else {
       filter.push(arg)
     }
@@ -485,14 +577,36 @@ function main(argv: string[]): void {
   const index = buildIndex(docs)
   const cases = loadCases(filter)
 
-  const explicit = docs.filter((doc) => doc.explicit).map((doc) => doc.name)
-  console.log(
-    `corpus: ${docs.length} skills (${explicit.length} explicit-invoke, scored against but`,
-  )
-  console.log(`        never expected to win: ${explicit.join(", ")})`)
+  const explicit = [...index.explicit]
+  console.log(`corpus: ${docs.length} skills · ${explicit.length} explicit-invoke, in the`)
+  console.log(`        collision scan but never ranked against: ${explicit.join(", ")}`)
 
   const tallies = report(cases, index, top)
-  summarise(tallies, docs.length, cases.length)
+  const totals = summarise(tallies, docs.length, cases.length)
+  // Always the whole corpus, even when `skill...` narrowed the prompts: a collision is a property
+  // of the descriptions, and scanning only the filtered pairs would hide the one you did not name.
+  const collisionErrors = reportCollisions(index, top)
+
+  const problems: string[] = []
+  const steals = totals.negatives - totals.negOk
+  if (steals > 0) {
+    problems.push(`${steals} negative prompt(s) rank their own skill at or above the named owner`)
+  }
+  if (collisionErrors > 0) {
+    problems.push(`${collisionErrors} description pair(s) at or above ${COLLIDE_ERROR} cosine`)
+  }
+  if (minRank1 !== null && totals.pct < minRank1) {
+    problems.push(`rank-1 ${totals.pct}% is below the --min-rank1 floor of ${minRank1}%`)
+  }
+
+  console.log()
+  if (problems.length === 0) {
+    console.log("routing eval passed.")
+    return
+  }
+  for (const problem of problems) console.error(`::error::${problem}`)
+  console.error("routing eval FAILED.")
+  process.exit(1)
 }
 
 main(process.argv.slice(2))

@@ -52,7 +52,7 @@ empty directory, n=3, so it is a lead and not a verdict.
       `dw-git`, `dw-land`, `dw-next`), each with at least 3 positives and 2 negatives carrying
       `owner`. Prompts paraphrase how the ask is really phrased — copying from `description` games
       the eval.
-- [ ] 3. Collision detection (warn ≥0.5 cosine, error ≥0.75) and the `--min-rank1` ratchet, with the
+- [x] 3. Collision detection (warn ≥0.5 cosine, error ≥0.75) and the `--min-rank1` ratchet, with the
       measured baseline written into `evals/README.md` so drift is visible.
 - [ ] 4. `scripts/validate-evals.sh` — every `skills/<n>/` has `evals/cases/<n>.json` and back —
       plus `pnpm eval:routing` in the pre-push gate and `.github/workflows/evals-routing.yaml`.
@@ -132,6 +132,27 @@ the sentence that commit removed contained the literal phrase "sync **with main*
 retroactively catches a real regression from this repo's own history, which is the premise of the
 change working on the first corpus it was pointed at. Whether to restore that sentence is a
 description decision, not an eval decision — parked, not silently fixed.
+
+### Task 3 — the shaped 0.75 error threshold would not have caught the canonical bad case
+
+The acceptance criterion passes: broadening `dw-check` to eat `dw-land`'s vocabulary is rejected,
+exit 1. But **the collision threshold is not what rejects it.** Three signals move — rank-1 67% →
+57%, negatives stolen 0 → 3, and `dw-check ↔ dw-land` cosine 0.071 → 0.686 — and 0.686 is only the
+warn tier. What fails the run is the negative-prompt gate.
+
+So the decided thresholds (warn ≥0.5, error ≥0.75) are kept, but they are a tripwire for something
+far more blatant than the case the change was designed around, and they are not the gate to rely on.
+The whole 55-pair baseline sits at 0.206 and below. Two consequences, both recorded in
+`evals/README.md`: every case file must carry negatives, and the collision section prints the closest
+pairs on every run whether or not anything breaches, so the creep is visible instead of silent.
+
+Not changed unilaterally — lowering the error threshold to ~0.5 would make the cosine check
+load-bearing, but that is a shaped decision and mine to flag, not to overwrite.
+
+Metric correction from task 2 applied: rank-1 is now computed among model-invocable skills only, and
+an explicit-invoke skill scoring higher is reported in a `shadowed` column instead. That moved the
+baseline 16/30 → **20/30 (67%)** with no description touched — `dw-git` 0/5 → 2/5, `dw-land` 3/4 →
+4/4, `dw-shape` 2/5 → 3/5. The ratchet is pinned at that measured 67%.
 
 ### Task 1 — three things the first `.ts` file in this repo shook out
 

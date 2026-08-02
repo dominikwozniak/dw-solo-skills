@@ -64,7 +64,7 @@ what this one learns, so the four questions under `## Notes` are a deliverable, 
       `rm -rf node_modules && pnpm ci` succeeds cold and `node_modules/.bin/agnix` is executable.
 - [x] 2. Answer the four open questions under `## Notes` and write the results there — they are the
       input to `pnpm-v11-payload`, and `dw-doctor` check D1's value depends directly on the third one.
-- [ ] 3. Switch both Node workflows to `pnpm ci` (`agnix-lint.yaml:26`, `format-check.yaml:26`) and
+- [x] 3. Switch both Node workflows to `pnpm ci` (`agnix-lint.yaml:26`, `format-check.yaml:26`) and
       confirm they pass on the migrated lockfile — v11 hard-fails in CI on an incompatible lockfile,
       so this is where that shows up if anywhere.
 
@@ -208,9 +208,24 @@ is untouched because rtk has no `format` command. CI has no rtk, so this is loca
 verifying lint here, run `bash scripts/lint.sh` (or `node_modules/.bin/agnix .`) directly. Worth
 carrying to `## Gotchas` at land time — a green repo that looks broken is expensive.
 
-**CI confirmation is still open, and pushing the branch was not enough.** Every workflow here fires
-on `pull_request:` or `push: branches: [main]` only — a feature-branch push triggers nothing, and
-`gh run list --branch pnpm-v11-migration` is empty after the push. There is no `workflow_dispatch`
-to fall back on. So the only way to see `pnpm ci` run on a real runner is to open the PR, which is
-`dw-ship`'s step, not this one's. Task 3 stays unticked until that run is green: v11 hard-fails CI
-on an incompatible lockfile, and this repo's CI has never once installed under v11.
+**Pushing the branch confirmed nothing — only the PR did.** Every workflow here fires on
+`pull_request:` or `push: branches: [main]`, so a feature-branch push triggers nothing at all and
+there is no `workflow_dispatch` to fall back on. Task 3 could therefore only close after the PR
+existed, which inverts `dw-ship`'s stated order (land, then PR). Worth carrying to the backlog: a
+change whose done-condition is "CI passes" cannot be landed before it is shipped.
+
+Confirmed on PR #2, both Node workflows green, from the `agnix lint` run's log:
+
+```
+✓ Lockfile passes supply-chain policies (8 entries in 434ms)
+.../agnix@0.33.2 postinstall: Downloading agnix v0.33.2 for linux-x64...
+.../agnix@0.33.2 postinstall: agnix installed successfully
+Content-addressable store is at: /home/runner/setup-pnpm/node_modules/.bin/store/v11
+```
+
+That single log covers the whole goal: v11 resolved through `packageManager` (store `v11`), the
+lockfile passed policy verification on a cold runner, and `allowBuilds` let `agnix`'s postinstall run
+under `strictDepBuilds` — the one build in the tree. `Format check` passed the same way. The other
+three workflows did not run, correctly: their `paths:` filters cover `scripts/tests/**`,
+`skills/**/SKILL.md`, `**/plugin.json` and similar, none of which this change touches. All three were
+run locally instead, green.

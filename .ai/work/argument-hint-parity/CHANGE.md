@@ -50,7 +50,7 @@ fails on a hand-broken cell.
 - [x] 2. `README.md` task-router — `dw-start`'s Arguments cell becomes
       `` `bare` lists unclaimed · `<slug>` · a description → `dw-shape` ``. The `dw-init` and
       `dw-handoff` cells stay as they are; task 1 is what makes them true.
-- [ ] 3. `docs/SKILL-ANATOMY.md` — name `dw-git` in the free-text bullet and sanction the question
+- [x] 3. `docs/SKILL-ANATOMY.md` — name `dw-git` in the free-text bullet and sanction the question
       form for free-text-only skills, then replace "no validator catches the drift" with the rule
       check 5 enforces.
 - [ ] 4. `scripts/validate-docs.sh` — check 5, reusing check 3's row lookup: the README row is the

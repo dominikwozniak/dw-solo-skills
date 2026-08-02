@@ -66,9 +66,14 @@ instead of a dated record under `.ai/handoffs/`, so treat the two as unrelated. 
    team-lane skill is a dead end here, and `validate:docs` fails it. A cycle of new skills lands its
    `**Next:**` lines in one wiring commit at the end; `validate:docs` only checks pointers that
    exist.
-6. `pnpm lint && pnpm format && pnpm validate:manifests && pnpm validate:docs`.
+6. **If the skill is model-invocable**, add `evals/cases/<name>.json` — at least 3 positives and 2
+   negatives, each negative naming the `owner` that should win instead. `validate:evals` fails
+   without it. If the skill is `disable-model-invocation: true`, do **not** add one: routing is never
+   the model's decision there, and a case file for it would read as coverage while measuring nothing.
+   Shape and conventions: [`evals/README.md`](evals/README.md).
+7. `pnpm lint && pnpm format && pnpm validate:manifests && pnpm validate:docs && pnpm validate:evals`.
 
-Steps 2–5 are CI-enforced (bar the loop diagram, and CI checks the versions are _equal_, not that
+Steps 2–6 are CI-enforced (bar the loop diagram, and CI checks the versions are _equal_, not that
 they changed). The validators name the exact missing entry — run them rather than re-deriving the
 checklist by hand.
 
@@ -83,24 +88,43 @@ checklist by hand.
 
 ## Commands
 
-This repo is Markdown / JSON / Shell — there is no build step and no typecheck.
+This repo is Markdown / JSON / Shell plus a little dependency-free TypeScript under `evals/` — there
+is no build step and no typecheck. Node runs the `.ts` files directly.
 
 - **Test**: `pnpm validate:artifacts` (the bash self-tests in `scripts/tests/`)
 - **Lint**: `pnpm lint`
 - **Format**: `pnpm format` (check) · `pnpm format:fix` (write)
+- **Routing evals**: `pnpm eval:routing` (free, deterministic) · `pnpm validate:evals` (the
+  skills ↔ case-files contract). The paid tier is `node evals/trigger.ts`, run by hand and never in
+  CI — it spends subscription quota and does nothing without `--go`. See
+  [`evals/README.md`](evals/README.md).
 
 ## Before you push
 
 ```bash
-pnpm lint && pnpm format && pnpm validate:manifests && pnpm validate:artifacts && pnpm validate:docs
+pnpm lint && pnpm format && pnpm validate:manifests && pnpm validate:artifacts && pnpm validate:docs && pnpm validate:evals && pnpm eval:routing
 ```
 
-CI runs those five plus a `trufflehog` secrets scan on every PR and push to `main`.
+CI runs those seven plus a `trufflehog` secrets scan on every PR and push to `main`.
 
 ## Gotchas
 
 Traps this repo has actually sprung, newest first.
 
+- **A hook fix does not take effect in the worktree session that makes it.** Claude Code resolves
+  `.claude/hooks/` from `${CLAUDE_PROJECT_DIR}`, which is the **main tree** — so a worktree session
+  keeps firing `main`'s copy of a hook until the branch merges. Fixing `lint-on-edit.sh` on a branch
+  and watching it fail identically on the next edit is not the fix failing; it is a different file
+  running. Verify the fix by invoking the worktree copy directly with a synthetic payload.
+- **`.lintstagedrc.json`'s glob and `prettier --check .` disagree by construction.** Prettier checks
+  every file it understands; lint-staged only formats the extensions listed. A new file type is
+  therefore unformatted at commit and rejected at push, which reads as a lint failure in a green repo.
+  Adding `evals/*.ts` needed `ts` in that glob. Add the extension when you add the first file of a
+  kind.
+- **`evals/*.ts` must never get the executable bit.** `lint-on-edit.sh` `eval`s its resolved lint
+  command against the file path; the pre-fix version resolved to a bare space and executed the target.
+  Fixed and pinned by `scripts/tests/lint-on-edit.test.sh`, but `main`'s copy stays broken until this
+  merges (see above), so a `chmod +x` on a `.ts` file would still run it.
 - **`CLAUDE.md` is a symlink to `AGENTS.md`, not a synced copy.** Edit `AGENTS.md` — Claude Code's
   `Edit` tool refuses to write through a symlink, and a change doc that treats them as two files
   schedules the same edit twice. There is one file; `## Gotchas`, the add-a-skill checklist and the

@@ -58,7 +58,7 @@ empty directory, n=3, so it is a lead and not a verdict.
       plus `pnpm eval:routing` in the pre-push gate and `.github/workflows/evals-routing.yaml`.
 - [x] 5. `evals/trigger.ts` — Tier 3-lite: spawn `claude -p`, read the first `Skill` tool call out of
       stream-json, 3 trials, report the distribution. Record the grill/shape verdict in Notes.
-- [ ] 6. Docs wiring: `## Commands`, `## Gotchas` and the add-a-skill checklist in `AGENTS.md`, plus
+- [x] 6. Docs wiring: `## Commands`, `## Gotchas` and the add-a-skill checklist in `AGENTS.md`, plus
       `## Project specifics` in `CLAUDE.local.md`. (`.ai/backlog/delta-evals.md` was already narrowed
       in the shaping commit — live work must not also sit in the backlog.)
 
@@ -132,6 +132,24 @@ the sentence that commit removed contained the literal phrase "sync **with main*
 retroactively catches a real regression from this repo's own history, which is the premise of the
 change working on the first corpus it was pointed at. Whether to restore that sentence is a
 description decision, not an eval decision — parked, not silently fixed.
+
+### Task 6 — `CLAUDE.local.md` is gitignored, so half this task is not in the diff
+
+The `## Project specifics` and `## Hooks installed` edits went to the main tree's real file — the
+worktree copy is a symlink `worktree.sh` created, and Claude Code's `Edit` refuses to write through
+one, so it needs the resolved path. Being gitignored, none of it appears in the commit; the tracked
+half is `AGENTS.md`.
+
+`lint-on-edit.sh`'s entry there said "**Inert in this repo** — there are no such files here". That is
+now false, which is the sort of line that rots silently, so it is rewritten rather than appended to.
+
+Three `## Gotchas` entries added, all sprung during this change: hooks resolving from
+`${CLAUDE_PROJECT_DIR}` so a worktree keeps running `main`'s copy; `.lintstagedrc.json`'s glob
+disagreeing with `prettier --check .` by construction; and never `chmod +x` an `evals/*.ts` while
+`main` still has the pre-fix hook.
+
+The add-a-skill checklist grew a step 6 for the case file and renumbered the gate to step 7 — and the
+gate itself is seven commands in three places now (`AGENTS.md` twice, `CLAUDE.local.md` once).
 
 ### Task 5 — verdict: the grill/shape lead is a haiku artifact, and opus routes it correctly
 

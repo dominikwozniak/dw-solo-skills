@@ -208,4 +208,9 @@ is untouched because rtk has no `format` command. CI has no rtk, so this is loca
 verifying lint here, run `bash scripts/lint.sh` (or `node_modules/.bin/agnix .`) directly. Worth
 carrying to `## Gotchas` at land time — a green repo that looks broken is expensive.
 
-CI confirmation itself is still pending: it needs the branch pushed, which has not happened.
+**CI confirmation is still open, and pushing the branch was not enough.** Every workflow here fires
+on `pull_request:` or `push: branches: [main]` only — a feature-branch push triggers nothing, and
+`gh run list --branch pnpm-v11-migration` is empty after the push. There is no `workflow_dispatch`
+to fall back on. So the only way to see `pnpm ci` run on a real runner is to open the PR, which is
+`dw-ship`'s step, not this one's. Task 3 stays unticked until that run is green: v11 hard-fails CI
+on an incompatible lockfile, and this repo's CI has never once installed under v11.

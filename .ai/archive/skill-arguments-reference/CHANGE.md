@@ -2,7 +2,8 @@
 change: skill-arguments-reference
 branch: main
 created: 2026-08-02
-status: building # shaping | building | landed
+status: landed # shaping | building | landed
+landed: 2026-08-02
 ---
 
 # Change — document each skill's arguments in the README router, and the conventions behind them

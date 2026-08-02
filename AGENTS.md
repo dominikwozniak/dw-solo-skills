@@ -101,6 +101,10 @@ CI runs those five plus a `trufflehog` secrets scan on every PR and push to `mai
 
 Traps this repo has actually sprung, newest first.
 
+- **`CLAUDE.md` is a symlink to `AGENTS.md`, not a synced copy.** Edit `AGENTS.md` — Claude Code's
+  `Edit` tool refuses to write through a symlink, and a change doc that treats them as two files
+  schedules the same edit twice. There is one file; `## Gotchas`, the add-a-skill checklist and the
+  layout rules all live in it.
 - **`pnpm lint` can be hijacked before it reaches `scripts/lint.sh`.** With the `rtk` proxy hook
   active, `pnpm lint` is rewritten to `rtk lint` — an _ESLint_ wrapper — and dies with
   `Command "eslint" not found` while the repo is perfectly green. `pnpm format` is unaffected (rtk has

@@ -82,9 +82,9 @@ default branch, then one worktree + session each via `dw-start` or `claude -w <s
 
 **Anytime**
 
-| Skill                              | Task                                                     | Arguments                           | What you get                       |
-| ---------------------------------- | -------------------------------------------------------- | ----------------------------------- | ---------------------------------- |
-| [`dw-git`](skills/dw-git/SKILL.md) | All git ops — commit / push / PR / sync / branch / stash | which op — `commit`, `push`, `pr` … | commits / PR per `CLAUDE.local.md` |
+| Skill                              | Task                                                     | Arguments                              | What you get                       |
+| ---------------------------------- | -------------------------------------------------------- | -------------------------------------- | ---------------------------------- |
+| [`dw-git`](skills/dw-git/SKILL.md) | All git ops — commit / push / PR / sync / branch / stash | which git op — commit, push, open PR … | commits / PR per `CLAUDE.local.md` |
 
 **Off-loop** — the `dw-solo-extras` plugin; reached for when a session ends before the task does.
 

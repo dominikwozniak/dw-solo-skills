@@ -58,7 +58,7 @@ fails on a hand-broken cell.
       pipe field; the cell is `—` iff the skill has no `argument-hint`; every backticked token that
       isn't `dw-[a-z-]+` must be a substring of the hint. Update the header comment from four checks
       to five.
-- [ ] 5. Patch-bump each plugin that owns an edited skill body, in `plugin.json` **and**
+- [x] 5. Patch-bump each plugin that owns an edited skill body, in `plugin.json` **and**
       `.claude-plugin/marketplace.json`: `dw-solo` 0.4.6 → 0.4.7 (`dw-start`), `dw-solo-setup`
       0.1.4 → 0.1.5 (`dw-init`), `dw-solo-extras` 0.1.1 → 0.1.2 (`dw-handoff`).
 

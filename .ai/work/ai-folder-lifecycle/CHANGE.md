@@ -56,7 +56,7 @@ PRs' docs sit recovered in `.ai/archive/` with `status: landed`; the five-comman
       into slug-named files under `.ai/backlog/`, `git rm .ai/BACKLOG.md`, one commit.
 - [x] 4. Backfill the archive for PRs #1 and #2 per the recovery procedure in Decisions; both docs
       get `status: landed`, `landed: 2026-08-02`, `pr:` lines.
-- [ ] 5. Payload: `dw-init` + `templates/` — `dw-init` description `:4-5`, writes table `:25-27`,
+- [x] 5. Payload: `dw-init` + `templates/` — `dw-init` description `:4-5`, writes table `:25-27`,
       write steps `:81-85` (`mkdir -p .ai/work .ai/backlog .ai/archive` + seeds, copy the
       backlog/archive READMEs the way `work-README.md` is consumed at `:82`), replace the verbatim
       `BACKLOG.md` block `:132-149` with the per-file convention (keep the spirit of `:147-149`:

@@ -1,7 +1,7 @@
 ---
 name: dw-init
 description: >-
-  Scaffold a private/solo repo for the solo loop — `.ai/work/`, `.ai/BACKLOG.md`,
+  Scaffold a private/solo repo for the solo loop — `.ai/` (work / backlog / archive),
   `docs/decisions/`, `CONTEXT.md`, `## Commands` + `## Gotchas` in `CLAUDE.md`, the guardrail
   hooks, settings with a derived allow-list, and an optional pre-commit. For a repo where you are
   the only reader. Explicit-invoke only. Use when setting up one of your own projects, or when
@@ -24,7 +24,8 @@ handoffs, no status tables.
 | -------------------------------- | ------------------ | -------------------------------------------------------------- |
 | `.ai/work/`                      | **tracked**        | one folder per change (`dw-shape` writes `CHANGE.md`)          |
 | `.ai/README.md`                  | **tracked**        | what `.ai/` is and who owns it                                 |
-| `.ai/BACKLOG.md`                 | **tracked**        | follow-ups and parked ideas, between changes                   |
+| `.ai/backlog/` + its `README.md` | **tracked**        | one file per follow-up, between changes                        |
+| `.ai/archive/` + its `README.md` | **tracked**        | landed change docs — history, not guidance                     |
 | `docs/decisions/`                | **tracked**        | durable decision records (`dw-land` promotes here)             |
 | `CONTEXT.md`                     | **tracked**        | the project's glossary — terms only                            |
 | `CLAUDE.md`                      | **tracked**        | `## Commands` + `## Gotchas` — `dw-land` appends to the latter |
@@ -78,11 +79,15 @@ is light.
 
 ### 4. Write
 
-- `mkdir -p .ai/work docs/decisions` and seed each with `.gitkeep`.
+- `mkdir -p .ai/work .ai/backlog .ai/archive docs/decisions`; seed `.ai/work` and `docs/decisions`
+  with `.gitkeep` (the other two get READMEs).
 - `.ai/README.md` — copy `${CLAUDE_PLUGIN_ROOT}/templates/work-README.md` verbatim. It states the
-  one asymmetry a reader gets wrong: `CHANGE.md` does not survive a merge, `BACKLOG.md` does.
-- `.ai/BACKLOG.md` — if absent, write the shape below. **If it exists, leave it alone** — it is the
-  one file here that carries real content from earlier changes, and clobbering it loses queued work.
+  lifecycle a reader gets wrong: a `CHANGE.md` leaves `work/` at merge — archived, never deleted.
+- `.ai/backlog/README.md` and `.ai/archive/README.md` — copy
+  `${CLAUDE_PLUGIN_ROOT}/templates/backlog-README.md` and `templates/archive-README.md` verbatim.
+  **Existing entries in either dir are left alone** — they carry real content from earlier changes.
+  A legacy single-file `.ai/BACKLOG.md`, if present, is named at the gate: offer to split it into
+  per-file entries, never clobber or silently keep it.
 - `CONTEXT.md` — if absent, create it with a one-line purpose statement (this project's glossary;
   terms only, no implementation detail) and nothing else. If it exists, leave it alone.
 - `${CLAUDE_PLUGIN_ROOT}/templates/settings.json` → `.claude/settings.json`; **prune** the hook
@@ -129,24 +134,15 @@ an entry that could match `git commit`, `git push`, anything in the template's `
 anything touching `.env`. Adding write or network commands here is not a speed optimisation; it
 removes the gate the rest of the lane is built around.
 
-The `.ai/BACKLOG.md` to write — this is the **whole file**, verbatim:
+**Seed `.ai/backlog/` and `.ai/archive/` with their READMEs and nothing else** — no example entry,
+no `TODO`, nothing standing in for one. On the next read a placeholder is indistinguishable from
+real queued work, and a backlog you have to first decide isn't real is one you stop opening.
+Entries arrive later, one `<slug>.md` each: frontmatter `created: YYYY-MM-DD` (optional `source:`),
+an H1 saying what-and-why in one line, at most ~3 lines of context.
 
-```markdown
-# Backlog
-
-Follow-ups and ideas not being worked on now. Newest first, one line each. The bar: if you would not
-pick it up within a month, don't write it. `dw-land` parks them here when it closes a change;
-`dw-shape` reads this when opening the next one and deletes the line it takes.
-```
-
-**Seed it with no entries** — no example line, no `TODO`, nothing standing in for one. On the next
-read a placeholder is indistinguishable from real queued work, and a backlog you have to first
-decide isn't real is one you stop opening. Entries arrive later, one line each, in the form
-`- [YYYY-MM-DD] what it is and why it matters`.
-
-Keep it exactly this flat. It has **no status column, no priority, no frontmatter** on purpose: the
-moment it grows a schema it is the validated plan this lane exists to avoid — and nothing validates
-it, deliberately.
+Keep entries exactly that minimal. They have **no status and no priority** on purpose: the moment
+the backlog grows a schema it is the validated plan this lane exists to avoid — and nothing
+validates it, deliberately.
 
 ### 5. Optional — wire the pre-commit
 

@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "description": "The thin lane — Claude Code skills for repos only you read, distributed as an installable plugin marketplace.",
-  "packageManager": "pnpm@10.14.0",
+  "packageManager": "pnpm@11.18.0",
   "scripts": {
     "lint": "scripts/lint.sh",
     "lint:fix": "agnix --fix .",
@@ -23,9 +23,11 @@
   "engines": {
     "node": ">=24.16.0"
   },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "agnix"
-    ]
+  "devEngines": {
+    "packageManager": {
+      "name": "pnpm",
+      "version": "11.18.0",
+      "onFail": "error"
+    }
   }
 }

@@ -4,6 +4,24 @@ Follow-ups and ideas not being worked on now. Newest first, one line each. The b
 pick it up within a month, don't write it. The closing pass parks them here; the shaping step reads
 this when opening the next change and deletes the line it takes.
 
+- [2026-08-02] `pnpm-v11-payload` — teach `templates/`, `dw-init` and `dw-doctor` the pnpm 11 setup
+  this repo now runs. Two measured findings drive it, both in PR #2: pnpm's warning about an orphaned
+  `package.json#pnpm` block names **only** keys on its own relocation list (a second, equally dead key
+  in the same block went unmentioned), so doctor check D1 must flag the block's existence rather than
+  trust the warning; and `lockfileVersion` still reads `'9.0'` under v11 while the contents are no
+  longer v10-compatible, so detect a migrated lockfile via `packageManagerDependencies`, not the
+  version field. Also: `doctor.sh:99-113` still advises `corepack enable`, wrong under v11.
+- [2026-08-02] Bump `pnpm/action-setup` past v4 in both workflows. The pinned SHA predates
+  `devEngines` support and reads only `packageManager`; newer versions read `devEngines` and give it
+  priority. Bumping retires the duplicated-version hazard and would let `packageManager` be dropped.
+- [2026-08-02] Loop friction, run 2 (`dw-ship`/`dw-land`): a task whose done-condition is "CI passes"
+  cannot be proven before the PR exists, so it cannot be landed before it is shipped — the reverse of
+  the order `dw-ship` states. Workflows here only trigger on `pull_request` or a push to `main`, and
+  there is no `workflow_dispatch`. Either the skills should name the PR-first path, or CI should gain
+  a manual trigger.
+- [2026-08-02] Decide `.nvmrc` / `engines.node` versus `devEngines.runtime`, parked deliberately by
+  the pnpm 11 migration: CI pins Node via `node-version-file: .nvmrc`, and `onFail: "download"` would
+  have pnpm fetch its own Node.
 - [2026-08-02] An "optional companions" section in `dw-doctor`'s `doctor.sh`: WARN-tier (never
   FAIL) checks for `codex` on PATH + the `openai-codex` plugin dir (fix: `/codex:setup`), `ctx7`
   (fix: `pnpm add -g ctx7`), and `rtk` (fix: https://github.com/rtk-ai/rtk) — accelerators the

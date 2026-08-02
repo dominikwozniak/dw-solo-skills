@@ -1,0 +1,24 @@
+# pnpm settings. Under v11 this file — not `.npmrc`, not `package.json#pnpm` — is where
+# configuration lives: "Only auth and registry settings are read from .npmrc files."
+# No `packages:` key on purpose; omitting it means the root package is the whole workspace.
+
+# Which dependencies may run install scripts. Replaces v10's `onlyBuiltDependencies`.
+# Everything unlisted is denied, and under v11's `strictDepBuilds` default a denied build
+# fails the install rather than warning. `agnix` is the one package here with a build
+# script (`postinstall: node install.js`), and `scripts/lint.sh` calls the binary it
+# writes by relative path — so this single entry is the whole blast radius.
+allowBuilds:
+  agnix: true
+
+# Release cooldown: refuse a package version published less than 7 days ago (unit is
+# minutes). The v11 default is 1440 — a day catches most malicious releases; a week
+# catches the rest, and costs nothing on an 8-package tree that changes a few times a year.
+minimumReleaseAge: 10080
+# Written out because the v11 release notes and the settings page disagree on the default.
+# `true` = fail resolution outright when no version satisfies the cooldown, instead of
+# silently falling back to an older one. Escape hatch is `minimumReleaseAgeExclude`.
+minimumReleaseAgeStrict: true
+
+# Opt-in (default `off`): refuse a package whose trust evidence has regressed since its
+# previous release. A package *losing* provenance is exactly the signal worth failing on.
+trustPolicy: no-downgrade

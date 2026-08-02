@@ -100,6 +100,21 @@ CI runs those five plus a `trufflehog` secrets scan on every PR and push to `mai
 
 Traps this repo has actually sprung, newest first.
 
+- **`pnpm lint` can be hijacked before it reaches `scripts/lint.sh`.** With the `rtk` proxy hook
+  active, `pnpm lint` is rewritten to `rtk lint` — an _ESLint_ wrapper — and dies with
+  `Command "eslint" not found` while the repo is perfectly green. `pnpm format` is unaffected (rtk has
+  no `format` command), which makes it look like a real lint failure. Verify with
+  `bash scripts/lint.sh` or `node_modules/.bin/agnix .` directly. CI has no rtk.
+- **`pnpm view` and `pnpm info` are broken here on purpose.** They delegate to npm, and
+  `devEngines.packageManager.onFail: "error"` in `package.json` makes npm refuse to run in this repo
+  — which is the point: it is the `pnpm/only-allow` replacement, now that the package is archived.
+  The error is `EBADDEVENGINES ... does not match "npm"`. Everything else (`ci`, `dlx`, `outdated`,
+  `audit`, `why`, `licenses`, `list`) is native and fine. To look a package up, run it from any other
+  directory. Flip `onFail` to `ignore` if the guard ever costs more than it saves.
+- **`packageManager` and `devEngines.packageManager` must state the same version.** Both say
+  `11.18.0`; bump them together. If they diverge, pnpm warns once and _ignores_ `packageManager`,
+  while CI's pinned `pnpm/action-setup` (v4 — it predates `devEngines` support) reads **only**
+  `packageManager`. The result is local and CI silently running different pnpm versions.
 - **A fresh worktree runs no git hooks at all.** `core.hooksPath` is `.husky/_`, which `husky init`
   generates and gitignores — so a `git worktree add` checkout has `.husky/pre-commit` and no `_/`,
   git finds no hooks directory, and every commit skips prettier, agnix and the manifest version check

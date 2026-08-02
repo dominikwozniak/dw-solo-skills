@@ -1,6 +1,6 @@
 ---
 change: ai-folder-lifecycle
-branch: unclaimed
+branch: ai-folder-lifecycle
 created: 2026-08-02
 status: shaping # shaping | building | landed
 ---

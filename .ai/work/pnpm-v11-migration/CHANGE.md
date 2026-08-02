@@ -56,7 +56,7 @@ what this one learns, so the four questions under `## Notes` are a deliverable, 
       supply-chain keys, delete the `pnpm` block from `package.json`, add
       `devEngines.packageManager`. Commit the regenerated lockfile in the same commit. Green when
       `rm -rf node_modules && pnpm ci` succeeds cold and `node_modules/.bin/agnix` is executable.
-- [ ] 2. Answer the four open questions under `## Notes` and write the results there — they are the
+- [x] 2. Answer the four open questions under `## Notes` and write the results there — they are the
       input to `pnpm-v11-payload`, and `dw-doctor` check D1's value depends directly on the third one.
 - [ ] 3. Switch both Node workflows to `pnpm ci` (`agnix-lint.yaml:26`, `format-check.yaml:26`) and
       confirm they pass on the migrated lockfile — v11 hard-fails in CI on an incompatible lockfile,
@@ -83,17 +83,56 @@ what this one learns, so the four questions under `## Notes` are a deliverable, 
 
 ## Notes
 
-Four things the research could not settle from pnpm's own docs. Task 2 answers them here.
+Four things the research could not settle from pnpm's own docs. All four are answered below, each
+measured on this repo under pnpm 11.18.0 rather than read off a page. These are the input to
+`pnpm-v11-payload`.
 
-1. **Does `lockfileVersion` change in v11?** Docs are silent; the `'9.0'` value seen elsewhere comes
-   from a third-party issue thread. Check the regenerated lockfile directly.
-2. **Does `pnpm/action-setup` read `devEngines.packageManager`?** If it does, `packageManager` is
-   redundant and can be dropped later.
-3. **Does pnpm warn when it ignores `package.json#pnpm`, or is it silent?** Undocumented. If silent,
-   `dw-doctor` check D1 goes from useful to necessary — that is the whole "config present, does
-   nothing" failure class the doctor exists for.
-4. **Does `minimumReleaseAgeStrict: true` actually hard-fail?** Try adding a package published in the
-   last day; it must fail. If it installs, the protection is theatre and the setting name is a lie.
+**1. Does `lockfileVersion` change in v11? — No, and that is the trap.** It stays `'9.0'`, the same
+string v10 wrote. The _contents_ are not compatible though: v11 adds a `---` document marker, drops
+the `settings:` block (`autoInstallPeers`, `excludeLinksFromLockfile`) and adds two new per-importer
+keys, `configDependencies: {}` and `packageManagerDependencies:` (which records the resolved pnpm
+version — 11.18.0 here — once `devEngines.packageManager` exists). So the version field cannot be
+used to detect a v11 lockfile; `packageManagerDependencies` or the `---` marker can.
+
+**2. Does `pnpm/action-setup` read `devEngines.packageManager`? — Yes, but not at the SHA we pin.**
+On `main` it reads it and gives it _priority_ over `packageManager` (`src/install-pnpm/run.ts:157-161`,
+"devEngines.packageManager takes priority over packageManager, matching pnpm's getWantedPackageManager
+logic"). The SHA both workflows pin — `b906aff`, tagged v4 — contains no `devEngines` string at all;
+it reads `packageManager` and nothing else. **So `packageManager` is load-bearing in CI today** and
+dropping it would break both workflows until the action pin is bumped past v4. The change's decision
+to keep it is confirmed, for a sharper reason than the one it was made on.
+
+**3. Does pnpm warn when it ignores `package.json#pnpm`? — It warns, but only about keys it
+recognises.** Injecting `pnpm: { onlyBuiltDependencies: [], minimumReleaseAge: 1 }` produced exactly
+one line:
+
+```
+[WARN] The "pnpm" field in package.json is no longer read by pnpm. The following keys were
+ignored: "pnpm.onlyBuiltDependencies". See https://pnpm.io/settings for the new home of each setting.
+```
+
+`pnpm.minimumReleaseAge` was ignored just as completely — `pnpm config get minimumReleaseAge` still
+returned `10080` — and was **not named**. Both settings were inert (`agnix` built anyway despite
+`onlyBuiltDependencies: []`). So the warning enumerates only keys on pnpm's known-relocation list; a
+`pnpm` block holding anything else is dropped in total silence. **`dw-doctor` check D1 is therefore
+necessary, not merely useful** — and it must flag the presence of the `pnpm` block itself, not trust
+pnpm's warning to enumerate what is being lost.
+
+**4. Does `minimumReleaseAgeStrict: true` actually hard-fail? — Yes, and the fallback path is the
+one to understand.** Three measurements against `rollup`, whose 4.62.4 was 1.08 days old:
+
+- `pnpm add -D rollup` (strict `true`) **succeeded** and installed `4.62.2`, printing
+  `(4.62.4 is available)`. Strict never fired because a version _older_ than the cutoff existed. The
+  cooldown still did its job — silently, by downgrading.
+- `pnpm add -D rollup@4.62.4` (strict `true`) **refused**, listing every offending package with its
+  publish time and the computed cutoff, and left `package.json` untouched. No satisfying version
+  exists for an exact fresh pin, so this is the path where strict decides.
+- The same command with strict `false` **installed 4.62.4**, writing `"rollup": "4.62.4"` into
+  `devDependencies`.
+
+The protection is real and the setting name is honest. Worth carrying into the payload: the common
+case is a _silent downgrade_, not a failure, so "install succeeded" is not evidence the cooldown is
+off.
 
 ### From task 1 — running the codemod
 
@@ -115,3 +154,34 @@ Four things the research could not settle from pnpm's own docs. Task 2 answers t
   right, but it is not free.
 - **`pnpm ci` prints `✓ Lockfile passes supply-chain policies`** — the settings are not just parsed,
   they are enforced at install time and say so.
+
+### From task 2 — `devEngines.packageManager` breaks `pnpm view` / `pnpm info`
+
+Found while trying to answer question 4, because the tool used to look up publish dates stopped
+working. `pnpm view` and `pnpm info` delegate to npm, and **npm validates `devEngines.packageManager`
+and refuses to run when the required name is not `npm`**:
+
+```
+npm error EBADDEVENGINES Invalid name "pnpm" does not match "npm" for "packageManager"
+npm error EBADDEVENGINES   required: { name: 'pnpm', version: '11.18.0', onFail: 'download' }
+```
+
+Measured, by sweeping `onFail` and by testing each subcommand:
+
+| `onFail`   | `pnpm view` / `pnpm info` | plain `npm` blocked? |
+| ---------- | ------------------------- | -------------------- |
+| `download` | broken                    | yes                  |
+| `error`    | broken                    | yes                  |
+| `warn`     | broken                    | yes                  |
+| `ignore`   | **works**                 | **no**               |
+
+`outdated`, `audit`, `why`, `licenses list` and `list` are native and unaffected — the blast radius is
+exactly the two npm-delegated commands. `onFail: ignore` still leaves pnpm self-managing its own
+version (pinning both fields to `11.17.0` made `pnpm --version` report `11.17.0`), so `ignore` costs
+nothing on that front.
+
+The trade is therefore narrow and real: **`error` gives the `pnpm/only-allow` replacement the
+decisions list gestures at** (npm refuses to operate in the repo) **at the price of `pnpm view` and
+`pnpm info`**; `ignore` keeps every pnpm command working but drops the npm guard. Note the repo
+already blocks npm for the _agent_ via `block-non-pnpm.sh`; the guard only adds cover for a human
+typing `npm install` by hand. **Open — needs a decision before this change lands.**

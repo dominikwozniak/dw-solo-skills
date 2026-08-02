@@ -2,7 +2,7 @@
 change: ai-folder-lifecycle
 branch: ai-folder-lifecycle
 created: 2026-08-02
-status: shaping # shaping | building | landed
+status: building # shaping | building | landed
 ---
 
 # Change — .ai lifecycle: archive landed changes, per-file backlog, backfill closed PRs
@@ -42,7 +42,7 @@ PRs' docs sit recovered in `.ai/archive/` with `status: landed`; the five-comman
 
 ## Tasks
 
-- [ ] 1. `dw-land` archives instead of deletes — description `:6`, reads/writes `:24-28`, phase 3
+- [x] 1. `dw-land` archives instead of deletes — description `:6`, reads/writes `:24-28`, phase 3
       `:82-87` ("Drop the scaffolding" → "Archive the scaffolding": `git rm` a leftover
       `HANDOFF.md`, `git mv` to `.ai/archive/<slug>/`, flip `status: landed`, add `landed:` +
       `pr:`, commit promotion+archive together). Add `.ai/archive/README.md` ("history, not

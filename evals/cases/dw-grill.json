@@ -1,0 +1,33 @@
+{
+  "skill": "dw-grill",
+  "note": "The other half of the suspected collision. dw-grill's territory is the idea that is not yet a decision; the moment the decisions exist the ask belongs to dw-shape, so the negatives here lean on that boundary.",
+  "positives": [
+    {
+      "prompt": "I have a vague notion about caching this and I am not even sure it is worth doing — think it through with me"
+    },
+    {
+      "prompt": "interview me about this until the requirements are actually clear"
+    },
+    {
+      "prompt": "I cannot pick between two approaches here, ask me the hard questions first"
+    },
+    {
+      "prompt": "this could be read two different ways — work out which one I actually mean before anything gets written"
+    }
+  ],
+  "negatives": [
+    {
+      "prompt": "the decisions are made, put the change doc on disk with a task list",
+      "owner": "dw-shape",
+      "note": "The direct inverse of dw-shape's recon positive. If dw-grill wins this one too, the collision is asymmetric and the fix belongs in dw-grill's description."
+    },
+    {
+      "prompt": "look over the diff I have so far and tell me what is wrong with it",
+      "owner": "dw-check"
+    },
+    {
+      "prompt": "is this finished and safe to merge",
+      "owner": "dw-land"
+    }
+  ]
+}

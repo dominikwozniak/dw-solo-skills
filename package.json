@@ -2,6 +2,7 @@
   "name": "dw-solo-skills",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "description": "The thin lane — Claude Code skills for repos only you read, distributed as an installable plugin marketplace.",
   "packageManager": "pnpm@11.18.0",
   "scripts": {

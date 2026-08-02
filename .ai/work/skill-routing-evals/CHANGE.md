@@ -2,7 +2,7 @@
 change: skill-routing-evals
 branch: skill-routing-evals
 created: 2026-08-02
-status: shaping # shaping | building | landed
+status: building # shaping | building | landed
 ---
 
 # Change — routing evals: a free lexical tier in CI, and a paid real-router tier on demand
@@ -44,7 +44,7 @@ empty directory, n=3, so it is a lead and not a verdict.
 
 ## Tasks
 
-- [ ] 1. `evals/routing.ts` end to end on two case files — `evals/cases/dw-shape.json` and
+- [x] 1. `evals/routing.ts` end to end on two case files — `evals/cases/dw-shape.json` and
       `evals/cases/dw-grill.json`: read every `skills/*/SKILL.md` description into a corpus, tokenize,
       stem, TF-IDF, cosine, print the ranking for each positive prompt. This pair is the suspected
       collision, so the slice answers something on its first run.
@@ -93,3 +93,32 @@ Verified against the live CLI rather than docs, before shaping:
 - `agnix eval` is a dead end: it grades agnix's own lint rules (`AS-`, `MCP-`), not skills.
 - `--disallowedTools Write Edit` is fine for observing a trigger but wrong for behavioural evals —
   the agent narrates instead of acting. Relevant when the parked tier is picked up.
+
+### Task 1 — the first run does not reproduce the grill/shape lead, and finds a bigger problem
+
+Baseline on the two case files: `dw-grill` 4/4 rank-1, `dw-shape` **2/5**, yields 6/6.
+
+`dw-grill` is not the thief in the lexical tier. On the recon prompt `shape a change that adds a CSV
+export`, `dw-grill` places third (0.137); the winner is **`dw-start`** at 0.198 vs `dw-shape`'s
+0.188, because "Open a **shaped** change for building" stems to the same term as "shape". The other
+two losses go to `dw-next` (0.307 on "task checklist on disk" — `dw-next` owns "disk" and "task")
+and `dw-land` (0.224 on "change doc with the decisions" — `dw-land` owns "decisions"). So
+`dw-shape`'s vocabulary is contested three ways and the pair the reconnaissance flagged is the least
+of it. Whether the real router agrees is task 5's question; the tiers are allowed to disagree.
+
+Deliberately deferred: gating. The runner reports and exits 0 — `--min-rank1` and collision
+detection are task 3, so this baseline is what the ratchet gets pinned to.
+
+### Task 1 — three things the first `.ts` file in this repo shook out
+
+- **`lint-on-edit.sh` executed the file it was asked to lint** — fixed in its own commit (129a875)
+  with a self-test. `sed -E` with `\s` fails on BSD sed, the "command" resolved to a single space,
+  which is not empty, and `eval " \"$file\""` ran the target. Silent exit 0 when the file is
+  executable. Vendored from `dw-skills`, so `.ai/backlog/lint-on-edit-upstream-fix.md` carries it.
+- **A hook fix does not take effect in the worktree session that makes it.** Claude Code resolves
+  hooks from `${CLAUDE_PROJECT_DIR}`, which is the **main tree** — still on `main`, still holding the
+  old hook. Every `.ts` edit for the rest of this change will print the old hook's "Permission
+  denied". Harmless only because `evals/*.ts` is not executable; do not `chmod +x` it.
+- **`.lintstagedrc.json` did not cover `*.ts`**, so pre-commit would not format TypeScript while
+  `pnpm format` in the pre-push gate would fail on it. Added `ts`, plus `"type": "module"` in
+  `package.json` — without it Node reparses every `.ts` and warns on stderr.

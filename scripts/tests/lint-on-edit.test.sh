@@ -1,0 +1,118 @@
+#!/usr/bin/env bash
+# Self-test for the lint-on-edit.sh hook template: pins how the project's lint command is read out
+# of CLAUDE.local.md, and — the case that actually bit — that the hook NEVER executes the file it
+# was asked to lint.
+#
+# The bug this locks down: the original extractor used `\s` inside `sed -E`, which BSD sed (macOS)
+# does not implement. `:\s*` matched the colon and nothing else, so the captured "command" was a
+# single space. A space is not empty, so the `[[ -z ]]` guard passed it through and
+# `eval " \"$file_path\""` ran the edited file as a program. On a non-executable .ts that surfaced
+# as a confusing "Permission denied"; on anything with the executable bit it would have run.
+#
+# Run standalone (`bash scripts/tests/lint-on-edit.test.sh`) or via scripts/validate-artifacts.sh.
+# Exit 0 iff every case matches. bash 3.2 safe.
+set -uo pipefail
+export LC_ALL=C
+
+command -v jq >/dev/null || { echo "SKIP: jq missing (hooks no-op without it)"; exit 0; }
+
+ROOT="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
+HOOK="$ROOT/templates/hooks/lint-on-edit.sh"
+
+PASS=0
+FAIL=0
+note_pass() { PASS=$((PASS + 1)); echo "  ✓ $1"; }
+note_fail() { FAIL=$((FAIL + 1)); echo "  ✗ $1 — $2"; }
+
+WORK="$(mktemp -d)"
+trap 'rm -rf "$WORK"' EXIT
+
+# fixture <lint-line> — a throwaway git repo holding a CLAUDE.local.md with the given line (pass
+# the empty string for no CLAUDE.local.md at all), an EXECUTABLE target.ts that leaves a sentinel
+# behind if it is ever run, and a fake linter that records the arguments it was handed.
+# Echoes the repo path.
+fixture() {
+  local dir
+  dir="$WORK/repo.$RANDOM$RANDOM"
+  mkdir -p "$dir"
+  git -C "$dir" init --quiet
+  if [ -n "${1:-}" ]; then
+    printf '## Project specifics\n\n%s\n' "$1" >"$dir/CLAUDE.local.md"
+  fi
+  # Executable on purpose: if the hook ever execs the target, the sentinel proves it.
+  printf '#!/bin/sh\ntouch "$(dirname "$0")/EXECUTED"\n' >"$dir/target.ts"
+  chmod +x "$dir/target.ts"
+  printf '#!/bin/sh\nprintf "%%s\\n" "$@" >>"$(dirname "$0")/lint-args"\nexit "${FAKE_LINT_RC:-0}"\n' \
+    >"$dir/fake-lint.sh"
+  chmod +x "$dir/fake-lint.sh"
+  printf '%s\n' "$dir"
+}
+
+# run <repo> [file] — feed the hook a Write event for the target and echo its exit code.
+run() {
+  local dir="$1" target="${2:-target.ts}" rc
+  jq -n --arg t "Write" --arg p "$dir/$target" '{tool_name:$t,tool_input:{file_path:$p}}' \
+    | bash "$HOOK" >/dev/null 2>&1
+  rc=$?
+  printf '%s\n' "$rc"
+}
+
+# expect_rc <name> <want> <got>
+expect_rc() {
+  if [ "$2" = "$3" ]; then note_pass "$1"; else note_fail "$1" "want exit $2, got $3"; fi
+}
+
+# never_executed <name> <repo> — the sentinel must be absent.
+never_executed() {
+  if [ -e "$2/EXECUTED" ]; then
+    note_fail "$1" "the hook EXECUTED the edited file"
+  else
+    note_pass "$1"
+  fi
+}
+
+echo "resolves a backticked command and hands it the file:"
+repo="$(fixture '- **Lint command**: `./fake-lint.sh` (notes after it are ignored)')"
+expect_rc "backticked-exit-0" 0 "$(run "$repo")"
+if [ -f "$repo/lint-args" ] && grep -q "target.ts" "$repo/lint-args"; then
+  note_pass "backticked-received-path"
+else
+  note_fail "backticked-received-path" "fake linter was not called with the file path"
+fi
+never_executed "backticked-no-exec" "$repo"
+
+echo "resolves an un-backticked command (freshly scaffolded style):"
+repo="$(fixture '- **Lint command**: ./fake-lint.sh')"
+expect_rc "bare-exit-0" 0 "$(run "$repo")"
+if [ -f "$repo/lint-args" ]; then note_pass "bare-invoked"; else note_fail "bare-invoked" "not called"; fi
+
+echo "a failing linter becomes exit 2 so the model self-corrects:"
+repo="$(fixture '- **Lint command**: `env FAKE_LINT_RC=1 ./fake-lint.sh`')"
+expect_rc "failing-lint-exit-2" 2 "$(run "$repo")"
+
+echo "no-ops instead of executing the file (the regression):"
+repo="$(fixture '- **Lint command**:')"
+expect_rc "empty-value-exit-0" 0 "$(run "$repo")"
+never_executed "empty-value-no-exec" "$repo"
+
+repo="$(fixture '- **Lint command**: {{LINT_COMMAND}}')"
+expect_rc "placeholder-exit-0" 0 "$(run "$repo")"
+never_executed "placeholder-no-exec" "$repo"
+
+repo="$(fixture '')"
+expect_rc "no-memory-file-exit-0" 0 "$(run "$repo")"
+never_executed "no-memory-file-no-exec" "$repo"
+
+echo "ignores files it does not lint:"
+repo="$(fixture '- **Lint command**: `./fake-lint.sh`')"
+printf 'text\n' >"$repo/notes.md"
+expect_rc "md-ignored" 0 "$(run "$repo" "notes.md")"
+if [ -f "$repo/lint-args" ]; then
+  note_fail "md-not-linted" "linter ran on a .md file"
+else
+  note_pass "md-not-linted"
+fi
+
+echo
+echo "lint-on-edit self-test: $PASS passed, $FAIL failed"
+[ "$FAIL" -eq 0 ]

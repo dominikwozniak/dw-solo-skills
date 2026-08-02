@@ -27,10 +27,21 @@ esac
 repo_root="$(git -C "$(dirname "$file_path")" rev-parse --show-toplevel 2>/dev/null)" || exit 0
 cd "$repo_root" || exit 0
 
+# Pull the command out of the "- **Lint command**: `pnpm lint`" line. Deliberately free of `\s`:
+# BSD sed (macOS) does not implement it in ERE, and the previous version's `:\s*` matched the
+# literal colon and then nothing, capturing a single space. A space is not empty, so it sailed
+# through the -n guard below and `eval " \"$file_path\""` EXECUTED the edited file instead of
+# linting it — harmless on a non-executable .ts, not harmless in general.
 resolve_lint_cmd() {
   if [[ -f "CLAUDE.local.md" ]]; then
-    local from_md
-    from_md=$(grep -E "^\s*[-*]?\s*\*\*?Lint command\*\*?:" CLAUDE.local.md | sed -E 's/.*Lint command\*?\*?:\s*`?([^`]+)`?.*/\1/' | head -n1)
+    local line from_md
+    line=$(grep -E '^[[:space:]]*[-*]?[[:space:]]*\*{0,2}Lint command\*{0,2}:' CLAUDE.local.md | head -n1)
+    # The first backticked span is the command — that is how the line is written. A freshly
+    # scaffolded CLAUDE.local.md has the bare `{{LINT_COMMAND}}` placeholder and no backticks,
+    # so fall back to the rest of the line and let the placeholder check reject it.
+    from_md=$(printf '%s\n' "$line" | sed -n 's/.*Lint command[*]*:[^`]*`\([^`]*\)`.*/\1/p')
+    [[ -z "$from_md" ]] && from_md=$(printf '%s\n' "$line" | sed 's/.*Lint command[*]*://')
+    from_md=$(printf '%s' "$from_md" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
     if [[ -n "$from_md" && "$from_md" != "{{LINT_COMMAND}}" ]]; then
       echo "$from_md"
       return
@@ -48,7 +59,8 @@ resolve_lint_cmd() {
 }
 
 cmd=$(resolve_lint_cmd)
-[[ -z "$cmd" ]] && exit 0
+# Blank-safe, not just empty-safe: a whitespace-only command would `eval` into running the file.
+[[ "$cmd" =~ [^[:space:]] ]] || exit 0
 
 if ! output=$(eval "$cmd \"$file_path\"" 2>&1); then
   {

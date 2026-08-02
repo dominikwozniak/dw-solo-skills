@@ -20,9 +20,10 @@ Everything comes from disk. Never reconstruct state from the conversation — th
 
 ## What it reads and writes
 
-Reads `.ai/work/<slug>/CHANGE.md` (written by `dw-shape`). Writes code, ticks that file's checkboxes,
-appends to its Notes, and commits — plus a line in `.ai/BACKLOG.md` for an idea that belongs to a
-different change. `.ai/` is tracked in git.
+Reads `.ai/work/<slug>/CHANGE.md` (written by `dw-shape`), plus a `HANDOFF.md` beside it when a
+session ended mid-task and left one. Writes code, ticks that file's checkboxes, appends to its Notes,
+clears a handoff it has consumed, and commits — plus a line in `.ai/BACKLOG.md` for an idea that
+belongs to a different change. `.ai/` is tracked in git.
 
 Find the active change by branch, not by guessing:
 
@@ -55,6 +56,10 @@ grep -l "^branch: $(git rev-parse --abbrev-ref HEAD)$" .ai/work/*/CHANGE.md 2>/d
 
 Whatever the mode, start by stating from the file: the **goal** in one line, which tasks are done,
 what the **next unchecked task** is, and anything in Notes that changes how to approach it.
+
+When a `HANDOFF.md` sits beside it, read that one **first** and lead the report with it: a previous
+session stopped in the middle of a task, and the approaches it ruled out are exactly the work you
+would otherwise repeat. Having no such file is the ordinary case and needs no comment.
 
 If called bare, stop here. That is the whole resume path, and it is deliberately cheap.
 
@@ -92,6 +97,9 @@ One task per invocation unless the mode says otherwise.
   still `shaping`.
 - Append to Notes only what a future session would actually need: a surprise, a dead end, a decision
   taken while building. Not a narration of what the diff already shows.
+- **Clear a `HANDOFF.md` you consumed** — `git rm` it in this same commit. It described the middle of
+  the task you just finished, so leaving it behind strands the next session on a state that is gone.
+  Anything in it worth keeping goes to Notes first.
 - Commit it the way `dw-git` does — the conventions live there, this skill doesn't restate them.
   Stage by name, never `git add -A`. One task, one commit; a `.ai/BACKLOG.md` line added while
   building ships in that same commit.

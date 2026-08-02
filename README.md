@@ -1,9 +1,13 @@
+<p align="center">
+  <img src="docs/assets/dw-solo-skills-hero-v2.png" alt="dw-solo-skills — a persistent workflow from idea to merge" width="100%">
+</p>
+
 <p align="center"><strong>A persistent workflow for Claude Code, sized for repos only you read.</strong></p>
 
 <p align="center">
   <img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-111111?style=flat-square">
-  <img alt="10 skills" src="https://img.shields.io/badge/skills-10-111111?style=flat-square">
-  <img alt="2 plugins" src="https://img.shields.io/badge/plugins-2-111111?style=flat-square">
+  <img alt="11 skills" src="https://img.shields.io/badge/skills-11-111111?style=flat-square">
+  <img alt="3 plugins" src="https://img.shields.io/badge/plugins-3-111111?style=flat-square">
   <img alt="Claude Code plugin" src="https://img.shields.io/badge/Claude_Code-plugin-111111?style=flat-square">
 </p>
 
@@ -38,6 +42,7 @@ The _why_ behind each design choice is in [`docs/DESIGN.md`](docs/DESIGN.md).
 claude plugin marketplace add dominikwozniak/dw-solo-skills
 claude plugin install dw-solo
 claude plugin install dw-solo-setup
+claude plugin install dw-solo-extras   # optional — off-loop skills
 ```
 
 Then, in a project of your own: `/dw-init` scaffolds it, `/dw-shape` opens the first change.
@@ -47,9 +52,9 @@ Then, in a project of your own: `/dw-init` scaffolds it, `/dw-shape` opens the f
 A task may match several rows — read all that apply. `⭑` = explicit-invoke only: say its name (it
 never auto-fires). The phrases that trigger each skill live in its own `description`, not here.
 
-**Explicit-only skills**: `dw-start`, `dw-ship` and `dw-init`. Marked `⭑` in the router; they never
-auto-fire — say the name. Being invisible to the model, they also can't be reached by other skills'
-prose.
+**Explicit-only skills**: `dw-start`, `dw-ship`, `dw-init` and `dw-handoff`. Marked `⭑` in the
+router; they never auto-fire — say the name. Being invisible to the model, they also can't be reached
+by other skills' prose.
 
 **The loop** — the mandatory spine is shape → next → ship; everything marked `?` is opt-in.
 
@@ -77,6 +82,12 @@ default branch, then one worktree + session each via `dw-start` or `claude -w <s
 | Skill                              | Task                                                     | What you get                       |
 | ---------------------------------- | -------------------------------------------------------- | ---------------------------------- |
 | [`dw-git`](skills/dw-git/SKILL.md) | All git ops — commit / push / PR / sync / branch / stash | commits / PR per `CLAUDE.local.md` |
+
+**Off-loop** — the `dw-solo-extras` plugin; reached for when a session ends before the task does.
+
+| Skill                                          | Task                                                           | What you get                 |
+| ---------------------------------------------- | -------------------------------------------------------------- | ---------------------------- |
+| [`dw-handoff`](skills/dw-handoff/SKILL.md) `⭑` | Compact the session mid-task — where you are, what's ruled out | `.ai/work/<slug>/HANDOFF.md` |
 
 **Setup** — the `dw-solo-setup` plugin; run once per repo.
 

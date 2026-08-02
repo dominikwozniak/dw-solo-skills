@@ -98,7 +98,12 @@ Two more things this lane drops, and why that's safe:
 - **The validated status table.** A plan's SHA column and immutable step ids exist so a second reader
   can trust the record. A checklist has no invariants that can break silently, which is why nothing
   here validates `.ai/work/` — see `scripts/validate-artifacts.sh`.
-- **Handoffs.** There is no one to hand off to. `.ai/handoffs/` is deliberately never created.
+- **Handoffs as a durable record.** `.ai/handoffs/` is still deliberately never created: a dated,
+  accumulating log of past sessions exists so a **second reader** can audit how the work went, and
+  there is none. What survives that cut is the volatile middle of a task — which `dw-handoff` writes
+  as a single overwritten `HANDOFF.md` **inside the change's own folder**, and which `dw-next` clears
+  the moment that task lands. Handing off to your next context window is a different problem from
+  handing off to a colleague, and only the second one needed the directory.
 
 ## Technology-agnostic by construction
 
@@ -150,7 +155,8 @@ This works because `claude plugin install` **dereferences** symlinks — the plu
 copy in the plugin cache. So a skill body invokes a shipped script through the unchanged
 `${CLAUDE_PLUGIN_ROOT}/scripts/<script>.sh` and the path resolves to a real file.
 
-With two plugins the indirection is what keeps ownership explicit: `validate-manifests.sh` enforces
+Across the three plugins the indirection is what keeps ownership explicit: `validate-manifests.sh`
+enforces
 that every canon skill is shipped by **exactly one** plugin, in both directions. The rule it rests
 on — **never edit through a `plugins/…` path** — is absolute, and `templates/` gets the same
 treatment: `plugins/dw-solo-setup/templates -> ../../templates` (only the scaffolder consumes the
@@ -166,15 +172,17 @@ in this repo, because a stale pointer at a team-lane skill is a dead end.
 
 ## Explicit-only skills
 
-A skill is marked `disable-model-invocation: true` when it acts outward — on the repo's branch
-topology, on the remote, or on a fresh repo's tooling — so the model never reaches for it unbidden;
-you say the name, every time. The cost is deliberate and worth naming: an explicit-only skill is
-invisible to the model, so no other skill can reach it by prose either — anything the loop must be
-able to delegate to stays model-invocable.
+A skill is marked `disable-model-invocation: true` for either of two reasons. It **acts outward** — on
+the repo's branch topology, on the remote, or on a fresh repo's tooling — so the model never reaches
+for it unbidden. Or **only you can see its moment has come**, in which case a model left to guess
+fires it at the wrong time or not at all. Both mean you say the name, every time. The cost is
+deliberate and worth naming: an explicit-only skill is invisible to the model, so no other skill can
+reach it by prose either — anything the loop must be able to delegate to stays model-invocable.
 
 Currently: `dw-start` (creates a worktree and branch, and claims a change into it), `dw-ship`
-(pushes, merges, and deletes the worktree and branch — the one irreversible step in the loop), and
-`dw-init` (scaffolds a repo and installs shared tooling).
+(pushes, merges, and deletes the worktree and branch — the one irreversible step in the loop),
+`dw-init` (scaffolds a repo and installs shared tooling), and `dw-handoff` (writes the mid-task
+handoff — nothing in the session tells the model it is about to end; you are the one who knows).
 
 ## Why this is a separate repo
 

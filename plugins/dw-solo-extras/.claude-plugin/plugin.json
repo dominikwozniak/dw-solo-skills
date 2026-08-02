@@ -1,0 +1,9 @@
+{
+  "name": "dw-solo-extras",
+  "version": "0.1.0",
+  "description": "Off-loop skills for the solo lane — reached for when a session ends before the task does, not on the way from shape to ship. Today that is one: compact the live session into a handoff the next context window resumes from, mid-task. Install alongside dw-solo, whose change folder these write into.",
+  "author": {
+    "name": "Dominik Wozniak"
+  },
+  "skills": "./skills"
+}

@@ -13,6 +13,7 @@ assumes **one reader**, and a change that needs a second reader's trust belongs 
 skills/<name>/SKILL.md           the canon for every skill. EDIT HERE.
 plugins/dw-solo/                 the loop plugin — plugin.json + symlinks (mode 120000) → the canon
 plugins/dw-solo-setup/           the setup plugin — dw-init, dw-doctor, the templates symlink
+plugins/dw-solo-extras/          the off-loop plugin — dw-handoff
 scripts/runtime/<script>.sh      shipped scripts — symlinked into the owning plugin
 scripts/<script>.sh              repo CI tooling, never shipped (validate-*.sh, lint.sh)
 scripts/tests/<script>.test.sh   bash self-tests
@@ -40,8 +41,10 @@ These are **copies**, not references, and nothing can detect drift across the re
 
 A skill copied from `dw-skills` is a **fork**, simplified for one reader — expected to diverge, never
 re-synced. Current forks: `dw-grill`, `dw-shape`, `dw-next`, `dw-land`, `dw-git`, `dw-doctor`,
-`dw-init` (which also absorbed the team lane's standalone pre-commit skill). `dw-start`, `dw-check`,
-`dw-ship` and `scripts/runtime/worktree.sh` are this lane's own — they have no upstream.
+`dw-init` (which also absorbed the team lane's standalone pre-commit skill), and `dw-handoff` — which
+shares only the team skill's name: it writes one overwritten `HANDOFF.md` inside the change folder
+instead of a dated record under `.ai/handoffs/`, so treat the two as unrelated. `dw-start`,
+`dw-check`, `dw-ship` and `scripts/runtime/worktree.sh` are this lane's own — they have no upstream.
 
 ## Adding a skill
 

@@ -48,7 +48,8 @@ worktree.
 1. Push with an upstream: `git push -u origin <branch>`.
 2. Open the PR with `gh pr create`, title and body built the way `dw-git` builds them.
 3. **HARD STOP — the PR link is the moment to look.** Merging is irreversible in a way pushing
-   isn't; wait for an explicit go.
+   isn't; wait for an explicit go. If the change skipped `dw-check`, this is the last moment for a
+   second pair of eyes — suggest typing `/codex:review --wait`, or run `dw-check`, before the go.
 4. On approval: `gh pr merge --squash`.
 
 ### 4. Clean up

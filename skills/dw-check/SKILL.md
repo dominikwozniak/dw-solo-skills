@@ -36,10 +36,15 @@ is trying to do, not against taste.
 
 ### 2. Delegate when a fast reviewer is installed
 
-If the session has a fast review command from another installed plugin — a codex review, or any
-reviewer that takes a diff and returns findings — offer it first: it reads the same diff, costs
-little, and its findings fold into the report below. When nothing of the kind is installed, move
-on without comment; this skill never depends on one being there.
+The preferred fast reviewer is `/codex:review` from the `openai-codex` plugin. It is
+user-invoke-only — this skill cannot run it — so ask for it by name: have the user type
+`/codex:review --wait`, wait for the findings to land in the conversation, and fold them into the
+report below; it reads the same diff and costs little. If codex is installed but not ready,
+`/codex:setup` is the fix — it checks the CLI and auth.
+
+Any other installed reviewer that takes a diff and returns findings folds in the same way. When
+nothing of the kind is installed, move on without comment; this skill never depends on one being
+there.
 
 ### 3. Two axes, judged separately
 

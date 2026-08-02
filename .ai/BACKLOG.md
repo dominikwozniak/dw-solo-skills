@@ -4,6 +4,14 @@ Follow-ups and ideas not being worked on now. Newest first, one line each. The b
 pick it up within a month, don't write it. The closing pass parks them here; the shaping step reads
 this when opening the next change and deletes the line it takes.
 
+- [2026-08-02] An "optional companions" section in `dw-doctor`'s `doctor.sh`: WARN-tier (never
+  FAIL) checks for `codex` on PATH + the `openai-codex` plugin dir (fix: `/codex:setup`), `ctx7`
+  (fix: `pnpm add -g ctx7`), and `rtk` (fix: https://github.com/rtk-ai/rtk) — accelerators the
+  loop now names, not guardrails. Cap codex depth at pointing to `/codex:setup`; never probe auth.
+- [2026-08-02] `validate-manifests.sh` can't see a version collision: it checks marketplace.json and
+  plugin.json are **equal**, never that the version grew. Two parallel changes both bumping `dw-solo`
+  0.4.0 → 0.4.1 auto-merged with no conflict and no warning — caught by hand on 2026-08-02. Compare
+  against the version on the default branch instead.
 - [2026-08-01] Fix `block-env-access.sh` so a commit message naming a dotenv file isn't blocked: the
   quoted-prose escape only survives `-m "…"`, not a heredoc. **Vendored from `dw-skills`** — apply the
   fix in both repos, and extend `scripts/tests/block-env-access.test.sh` with the heredoc case.

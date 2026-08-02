@@ -50,7 +50,7 @@ four or more unrelated scopes, and `.ai/archive/worktreeinclude-support/CHANGE.m
 - [x] 2. `docs/DESIGN.md` — one bullet beside "One folder per change" (`:42`): one change is one
       independently shippable scope, applied at shape time, and shared anchors are an ordering note
       rather than a dependency field.
-- [ ] 3. Patch-bump `dw-solo` in `plugins/dw-solo/.claude-plugin/plugin.json` and
+- [x] 3. Patch-bump `dw-solo` in `plugins/dw-solo/.claude-plugin/plugin.json` and
       `.claude-plugin/marketplace.json` — 0.4.7 → 0.4.8 if `argument-hint-parity` landed first, else
       0.4.6 → 0.4.7.
 

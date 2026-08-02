@@ -1,6 +1,6 @@
 ---
 change: skill-routing-evals
-branch: unclaimed
+branch: skill-routing-evals
 created: 2026-08-02
 status: shaping # shaping | building | landed
 ---

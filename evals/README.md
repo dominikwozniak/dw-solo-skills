@@ -117,6 +117,51 @@ The collision leaps almost tenfold and still lands under the 0.75 error threshol
 **The negative-prompt gate is what actually fails the run.** So keep negatives in every case file;
 the cosine error threshold alone would have let this through.
 
+## Tier 3 — asking the real router
+
+```bash
+node evals/trigger.ts                             # plan only: what it would run, and nothing else
+node evals/trigger.ts --go --trials 3 dw-shape    # actually run it
+node evals/trigger.ts --go --model haiku dw-git   # same prompts, a different router
+node evals/trigger.ts --go --prompt "..."          # an ad-hoc prompt, no case file needed
+```
+
+It spawns real `claude -p` runs against a throwaway fixture, reads the first `Skill` tool call out of
+the stream-json, and reports the distribution. **It does nothing without `--go`** — the plan and a
+cost line print first, because this is the tier that spends quota. Never in CI, never in the gate.
+
+Three things it gets right that are easy to get wrong:
+
+- **All three plugin directories are loaded**, from the marketplace manifest rather than a hardcoded
+  one. The 11 skills span `dw-solo`, `dw-solo-setup` (`dw-doctor`, `dw-init`) and `dw-solo-extras`
+  (`dw-handoff`). Loading only `dw-solo` removes three skills from the router's choices and quietly
+  invalidates any verdict about a near neighbour.
+- **Every globally enabled plugin is switched off**, read from `~/.claude/settings.json`. Otherwise
+  the cache-installed copy of this same marketplace loads _alongside_ `--plugin-dir` and every skill
+  appears twice, while unrelated plugins add their own skills to the pool.
+- **The fixture is not an empty directory** — `git init`, an empty `.ai/work/` and a stub `CLAUDE.md`,
+  because several descriptions key off cues a real project has.
+
+### Recorded verdict — 2026-08-02
+
+The reconnaissance that motivated this change saw `dw-grill` fire 3/3 on `shape a change that adds a
+CSV export`, a prompt containing `dw-shape`'s own trigger verb. Under identical conditions through
+this tool, with only the model changed:
+
+| model   | first `Skill` call | turns | cost    |
+| ------- | ------------------ | ----- | ------- |
+| `haiku` | **`dw-grill`** ✗   | 3     | $0.0247 |
+| `opus`  | **`dw-shape`** ✓   | 7     | $0.2722 |
+
+**The grill/shape collision is a haiku artifact, not a live misroute.** The loop runs opus, and opus
+routes it correctly. `dw-grill`'s own positive also went to `dw-grill` on opus. n=1 per cell — enough
+to kill the lead, not enough to be a distribution; re-run with `--trials 3` before trusting either
+cell further.
+
+Worth keeping in view: tier 2 also declined to reproduce the lead, but for a different reason — it put
+`dw-start` first, not `dw-grill`. Two tiers disagreeing with the same reconnaissance in two different
+ways is the expected shape, not a bug in either.
+
 ## Caveats
 
 - The stemmer is a suffix stripper, not a linguist's. `shape`/`shaping`/`shaped` conflate;

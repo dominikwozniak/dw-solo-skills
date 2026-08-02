@@ -56,7 +56,7 @@ empty directory, n=3, so it is a lead and not a verdict.
       measured baseline written into `evals/README.md` so drift is visible.
 - [x] 4. `scripts/validate-evals.sh` — every `skills/<n>/` has `evals/cases/<n>.json` and back —
       plus `pnpm eval:routing` in the pre-push gate and `.github/workflows/evals-routing.yaml`.
-- [ ] 5. `evals/trigger.ts` — Tier 3-lite: spawn `claude -p`, read the first `Skill` tool call out of
+- [x] 5. `evals/trigger.ts` — Tier 3-lite: spawn `claude -p`, read the first `Skill` tool call out of
       stream-json, 3 trials, report the distribution. Record the grill/shape verdict in Notes.
 - [ ] 6. Docs wiring: `## Commands`, `## Gotchas` and the add-a-skill checklist in `AGENTS.md`, plus
       `## Project specifics` in `CLAUDE.local.md`. (`.ai/backlog/delta-evals.md` was already narrowed
@@ -132,6 +132,36 @@ the sentence that commit removed contained the literal phrase "sync **with main*
 retroactively catches a real regression from this repo's own history, which is the premise of the
 change working on the first corpus it was pointed at. Whether to restore that sentence is a
 description decision, not an eval decision — parked, not silently fixed.
+
+### Task 5 — verdict: the grill/shape lead is a haiku artifact, and opus routes it correctly
+
+Identical conditions through `evals/trigger.ts`, only the model changed:
+
+| model   | first `Skill` call on `shape a change that adds a CSV export` | turns | cost    |
+| ------- | ------------------------------------------------------------- | ----- | ------- |
+| `haiku` | **`dw-grill`** ✗                                              | 3     | $0.0247 |
+| `opus`  | **`dw-shape`** ✓                                              | 7     | $0.2722 |
+
+`dw-grill`'s own positive also routed to `dw-grill` on opus. **n=1 per cell** — the user opted for one
+trial, so this kills the lead but is not a distribution. The change's Goal asked whether `dw-grill`
+really outranks `dw-shape`: on the model the loop actually runs, no.
+
+So no description needs changing on account of the reconnaissance. What the reconnaissance actually
+found was a haiku-vs-opus difference, which the original run could not see because it only had haiku.
+
+Three fixture details the shaping did not capture, all now in `evals/README.md`:
+
+- **All three plugin dirs must load.** `--plugin-dir plugins/dw-solo` alone drops `dw-doctor`,
+  `dw-init` and `dw-handoff` — the 11 skills span three plugins. My own first probe had this bug.
+- **Suppressing only the two `dw-solo*` plugins is not enough.** `dw-personal-context` still loaded
+  and put its own skills in the pool; the tool now reads every key from `~/.claude/settings.json` and
+  disables all of them.
+- **`--max-turns` is not in this CLI's `--help`** (2.1.220), contrary to the shaping note. Not needed:
+  runs complete on their own in 3–7 turns, and the `result` event is the only reliable source of cost
+  (`usage` on `assistant` events reports 10 input tokens, which is not the real figure).
+
+Cost: $0.59 for the whole task including probes. My pre-run estimate of $0.60–0.85 per opus run was
+~2.5× too high; the real figure is ~$0.26.
 
 ### Task 4 — the gate is seven commands now, and the validator is bidirectional both ways
 

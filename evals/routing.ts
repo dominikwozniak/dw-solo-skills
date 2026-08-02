@@ -402,6 +402,8 @@ type Tally = {
   positives: number
   negOk: number
   negatives: number
+  /** Negatives where neither side scored at all. Its own failure, because "steals" would misname it. */
+  negBlank: number
   /** Positives where an explicit-invoke skill scored higher. Reported, never counted as a failure. */
   shadowed: number
 }
@@ -413,12 +415,22 @@ function report(cases: CaseFile[], index: Index, top: number): Tally[] {
     if (!index.vectors.has(entry.skill)) {
       fail(`evals/cases/${entry.skill}.json has no matching skills/${entry.skill}/SKILL.md`)
     }
+    // Same rejection validate-evals.sh makes, made again here so a bare `node evals/routing.ts`
+    // says it too. Without this the skill is absent from the ranked field below and the lookup
+    // walks off the front of the array.
+    if (index.explicit.has(entry.skill)) {
+      fail(
+        `evals/cases/${entry.skill}.json exists but skills/${entry.skill}/ is ` +
+          "disable-model-invocation — routing is never the model's decision there",
+      )
+    }
     const tally: Tally = {
       skill: entry.skill,
       rank1: 0,
       positives: entry.positives.length,
       negOk: 0,
       negatives: entry.negatives.length,
+      negBlank: 0,
       shadowed: 0,
     }
 
@@ -467,6 +479,17 @@ function report(cases: CaseFile[], index: Index, top: number): Tally[] {
           `evals/cases/${entry.skill}.json names owner "${negative.owner}", which is not a skill`,
         )
       }
+      if (mine === 0 && owner.score === 0) {
+        // The positives above refuse to read a ranking out of a prompt that discriminates nothing;
+        // a negative deserves the same. `0 < 0` is false, so without this the prompt fails the run
+        // as a theft — pointing the author at a description that is not the problem.
+        tally.negBlank++
+        console.log(`  ✗ no signal    "${negative.prompt}"`)
+        console.log(
+          `      └ neither ${entry.skill} nor ${negative.owner} scores — nothing asserted`,
+        )
+        continue
+      }
       // The bar is only that this skill does not outrank the owner. Whether the owner takes rank 1
       // outright is that owner's own case file to assert.
       if (mine < owner.score) {
@@ -487,19 +510,27 @@ function report(cases: CaseFile[], index: Index, top: number): Tally[] {
   return tallies
 }
 
-type Totals = { rank1: number; positives: number; negOk: number; negatives: number; pct: number }
+type Totals = {
+  rank1: number
+  positives: number
+  negOk: number
+  negatives: number
+  negBlank: number
+  pct: number
+}
 
 function summarise(tallies: Tally[], corpusSize: number, scored: number): Totals {
   const width = Math.max(...tallies.map((t) => t.skill.length), 5)
   console.log(`\n${"skill".padEnd(width)}  rank-1   yields   shadowed`)
   console.log(`${"-".repeat(width)}  -------  -------  --------`)
 
-  const totals: Totals = { rank1: 0, positives: 0, negOk: 0, negatives: 0, pct: 0 }
+  const totals: Totals = { rank1: 0, positives: 0, negOk: 0, negatives: 0, negBlank: 0, pct: 0 }
   for (const tally of tallies) {
     totals.rank1 += tally.rank1
     totals.positives += tally.positives
     totals.negOk += tally.negOk
     totals.negatives += tally.negatives
+    totals.negBlank += tally.negBlank
     const a = `${tally.rank1}/${tally.positives}`
     const b = `${tally.negOk}/${tally.negatives}`
     console.log(`${tally.skill.padEnd(width)}  ${a.padEnd(7)}  ${b.padEnd(7)}  ${tally.shadowed}`)
@@ -589,9 +620,14 @@ function main(argv: string[]): void {
   const collisionErrors = reportCollisions(index, top)
 
   const problems: string[] = []
-  const steals = totals.negatives - totals.negOk
+  const steals = totals.negatives - totals.negOk - totals.negBlank
   if (steals > 0) {
     problems.push(`${steals} negative prompt(s) rank their own skill at or above the named owner`)
+  }
+  if (totals.negBlank > 0) {
+    problems.push(
+      `${totals.negBlank} negative prompt(s) score zero on both sides — they assert nothing`,
+    )
   }
   if (collisionErrors > 0) {
     problems.push(`${collisionErrors} description pair(s) at or above ${COLLIDE_ERROR} cosine`)

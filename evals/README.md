@@ -60,10 +60,13 @@ or at a diff. Distant pairs pass without telling anyone anything.
 
 1. **A negative that steals** — the case file's own skill ranks at or above the named owner. Always
    an error. In practice this is the gate that fires first.
-2. **A description pair at or above 0.75 cosine** (warn from 0.50). Whole-corpus, always scanned in
+2. **A negative where neither side scores** — a separate error, not a theft. `0 ≥ 0` is true, so
+   without its own case the run would fail this as the skill outranking the owner and point you at a
+   description that is not the problem. Rewrite the prompt until one side moves.
+3. **A description pair at or above 0.75 cosine** (warn from 0.50). Whole-corpus, always scanned in
    full even when you narrow to one skill — a collision is a property of the descriptions, and
    scanning only the pairs you named would hide the one you did not.
-3. **`--min-rank1 <percent>`** — the ratchet. Absent, rank-1 is reported and never enforced.
+4. **`--min-rank1 <percent>`** — the ratchet. Absent, rank-1 is reported and never enforced.
 
 **Rank-1 is computed only among skills the model can actually be offered.** An explicit-invoke skill
 scoring higher is reported on its own `shadowed` column as overlap, not counted as a failure —

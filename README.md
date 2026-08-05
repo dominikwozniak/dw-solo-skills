@@ -76,7 +76,7 @@ default branch, then one worktree + session each via `dw-start` or `claude -w <s
 | [`dw-shape`](skills/dw-shape/SKILL.md)     | Synthesize it into one goal + decisions + task checklist   | the change to shape                                            | `.ai/work/<slug>/CHANGE.md`                                 |
 | [`dw-start`](skills/dw-start/SKILL.md) `⭑` | Open a shaped change: worktree + branch + claim            | `bare` lists unclaimed · `<slug>` · a description → `dw-shape` | `.claude/worktrees/<slug>` on branch `<slug>`               |
 | [`dw-next`](skills/dw-next/SKILL.md)       | Resume point _and_ build step (`go` builds and commits)    | `bare` · `go` · `all`                                          | code + ticked box + commit                                  |
-| [`dw-check`](skills/dw-check/SKILL.md)     | Fast optional QA gate — delegate, or two-axis self-review  | `bare` · a path or topic                                       | findings at `file:line`, fixed in-session                   |
+| [`dw-check`](skills/dw-check/SKILL.md)     | Fast optional QA gate — delegate, or two-axis self-review  | `bare` · `codex` · a path or topic                             | findings at `file:line`, fixed in-session                   |
 | [`dw-land`](skills/dw-land/SKILL.md)       | One thin verdict, then promote what's durable and archive  | `bare` · `close`                                               | `docs/decisions/` · `CONTEXT.md` · backlog · `.ai/archive/` |
 | [`dw-ship`](skills/dw-ship/SKILL.md) `⭑`   | Push — or PR → squash-merge — then tear the worktree down  | `bare` · `pr`                                                  | merged default branch, clean tree                           |
 

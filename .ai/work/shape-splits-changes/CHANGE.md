@@ -38,6 +38,18 @@ four or more unrelated scopes, and `.ai/archive/worktreeinclude-support/CHANGE.m
   was left out to a Decision or the backlog. Naming the split in both places would put the judgement
   where it can't act on it.
 - **N, not two** — the existing cap is arbitrary; the test yields however many it yields.
+- **Tasks 4-5 are a deliberate scope override, not an oversight.** They were flagged as a separate
+  scope — zero file overlap with tasks 1-3, and this change's own Goal cites "Absorbed into this
+  change" as the failure it exists to prevent — and folded in anyway on an explicit call. Recorded so
+  the close reads it as a decision. The irony is the point, not a mistake to fix retroactively.
+- **A mode word, not a flag** — `docs/SKILL-ANATOMY.md:42` states the convention ("one word, no
+  flags, no punctuation"), so `codex`, never `--codex`.
+- **Delegation fires only on that word; bare stays silent.** Today `dw-check:39-43` asks the user to
+  type `/codex:review` on _every_ run, gated on nothing. The `argument-hint` is the advertisement —
+  it's shown as you type — so bare doesn't need to nag.
+- **Name the path the agent can actually run.** `/codex:review` is `disable-model-invocation: true`
+  (`commands/review.md:4`), `codex:rescue` is not. Naming only the unrunnable one is what produced
+  the nagging.
 
 ## Tasks
 
@@ -53,6 +65,14 @@ four or more unrelated scopes, and `.ai/archive/worktreeinclude-support/CHANGE.m
 - [x] 3. Patch-bump `dw-solo` in `plugins/dw-solo/.claude-plugin/plugin.json` and
       `.claude-plugin/marketplace.json` — 0.4.7 → 0.4.8 if `argument-hint-parity` landed first, else
       0.4.6 → 0.4.7.
+- [x] 4. `skills/dw-check/SKILL.md` + `README.md:79` — gate `### 2.` (`:37-47`) on a `codex` mode
+      word instead of asking every run; name both paths and which is which (`codex:rescue` the agent
+      runs itself, `/codex:review --wait` the user types); keep the `/codex:setup` pointer and the
+      "any other reviewer folds in the same way" clause; bake in verbatim-then-verify. `argument-hint`
+      gains `codex`, README Arguments cell in the same commit (check 5).
+- [ ] 5. `skills/dw-land/SKILL.md` + `README.md:80` — the same `codex` word wired into the verdict
+      step (`:43`) as one sentence, added to `## Modes` (`:104-116`), `argument-hint` and README cell
+      together.
 
 ## Anchors
 

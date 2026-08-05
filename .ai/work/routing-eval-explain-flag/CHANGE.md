@@ -1,6 +1,6 @@
 ---
 change: routing-eval-explain-flag
-branch: unclaimed
+branch: routing-eval-explain-flag
 created: 2026-08-05
 status: shaping # shaping | building | landed
 ---

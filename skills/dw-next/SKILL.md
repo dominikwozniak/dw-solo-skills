@@ -23,7 +23,8 @@ Everything comes from disk. Never reconstruct state from the conversation — th
 Reads `.ai/work/<slug>/CHANGE.md` (written by `dw-shape`), plus a `HANDOFF.md` beside it when a
 session ended mid-task and left one. Writes code, ticks that file's checkboxes, appends to its Notes,
 clears a handoff it has consumed, and commits — plus a file in `.ai/backlog/` for an idea that
-belongs to a different change. `.ai/` is tracked in git.
+belongs to a different change. `.ai/` is tracked in git. Also reads `CONTEXT.md` if the project has
+one, for the terms the code being written should be named in.
 
 Find the active change by branch, not by guessing:
 
@@ -86,6 +87,11 @@ One task per invocation unless the mode says otherwise.
   (a config change, a copy edit), say so instead of fabricating a test to look rigorous.
 - **Follow the anchors.** The patterns `dw-shape` recorded are the local convention; match them
   rather than importing a generic shape.
+- **Use the project's words.** When naming anything a reader will meet — a function, a type, a
+  route, a column — take the term from `CONTEXT.md` if it is defined there. A synonym invented at
+  the keyboard is a second name for one thing, and it costs a translation on every later read. When
+  the task genuinely introduces a term the glossary doesn't have, use it and say so: `dw-land`
+  promotes it at the end.
 - **Leave it green — run the tests, and only the tests.** Lint and typecheck are **hook-owned** in this
   lane: `lint-on-edit` fires on every Write/Edit, `typecheck-on-stop` at the end of the turn. Re-running
   them here would repeat a full pass per task for nothing. The test suite has no hook, so that one is

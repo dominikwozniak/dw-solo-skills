@@ -43,7 +43,7 @@ names things with terms already in it — and says so when it coins a new one.
 - [x] 2. `dw-grill` `## What it reads` — add a second paragraph: read `CONTEXT.md` before the first
       question, because this is where words get coined and a second name for a thing that has one is
       the drift the glossary exists to stop.
-- [ ] 3. `dw-next` — declare the read in `## What it reads and writes`, and add a
+- [x] 3. `dw-next` — declare the read in `## What it reads and writes`, and add a
       **"Use the project's words."** bullet directly after **"Follow the anchors."** in `### 3`,
       closing with the pointer that `dw-land` promotes a genuinely new term at the end.
 - [ ] 4. Bump `dw-solo` `0.4.8 → 0.4.9` in both manifests (identical values), then run the full gate.

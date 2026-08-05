@@ -22,6 +22,7 @@ pnpm validate:evals                         # every model-invocable skill has a 
 node evals/routing.ts                       # report only, no floor enforced
 node evals/routing.ts dw-shape dw-grill     # only these skills
 node evals/routing.ts --top 5               # show more of each ranking, and more collision pairs
+node evals/routing.ts --explain "<prompt>"  # score one prompt out loud instead of running the eval
 ```
 
 No build step and no dependencies — Node strips the types natively. Exit codes: `0` pass, `1` a gate
@@ -30,6 +31,83 @@ failed, `2` bad usage or a malformed case file.
 Both live in `.github/workflows/evals-routing.yaml` and in the pre-push gate in `AGENTS.md`. The
 workflow installs nothing: tier 2 has no dependencies and `jq` for the validator is already on the
 runner.
+
+## How the scoring works
+
+`--explain` prints the arithmetic behind one prompt instead of a pass/fail line. Take
+`shape a change that adds a CSV export` — the prompt tier 3 caught `dw-grill` on, and the one tier 2
+answers `dw-start` to:
+
+```bash
+node evals/routing.ts --explain "shape a change that adds a CSV export" --top 4
+```
+
+**Stage 1, words to stems.** Each word is lowercased, split on non-alphanumerics and put through the
+suffix stripper. `shape → shap`, `change → chang`, `adds → add`. `that` is a stopword; `a` is dropped
+for being shorter than two characters, before the stopword list is ever consulted. Five stems survive.
+
+**Stage 2, stems to weights.** Surviving is not the same as counting. Only two of the five appear in
+any description at all:
+
+| term     | idf   | query weight | why                                     |
+| -------- | ----- | ------------ | --------------------------------------- |
+| `shap`   | 1.299 | 0.906        | in 3 of 11 descriptions — discriminates |
+| `chang`  | 0.606 | 0.423        | in 6 of 11 — common, so worth less      |
+| `add`    | —     | —            | in no description                       |
+| `csv`    | —     | —            | in no description                       |
+| `export` | —     | —            | in no description                       |
+
+The domain nouns carry nothing: no skill description mentions CSVs, and it would be a bug if one did.
+The whole ranking turns on `shap` and `chang`. A term in _every_ description gets `log(11/11) = 0` and
+drops out the same way — that is the boilerplate filter, done arithmetically.
+
+**Stage 3, weights to a score.** Each skill's score is the dot product of the two normalised vectors,
+so it decomposes term by term:
+
+```
+  1  dw-start  0.198  (explicit-invoke, never ranked)
+       shap    0.906 × 0.150 = 0.136
+       chang   0.423 × 0.147 = 0.062
+
+  2  dw-shape  0.188
+       shap    0.906 × 0.170 = 0.154
+       chang   0.423 × 0.079 = 0.034
+
+  3  dw-grill  0.083
+       shap    0.906 × 0.092 = 0.083
+
+  4  dw-land   0.051
+       chang   0.423 × 0.121 = 0.051
+```
+
+Read the two-horse race: `dw-shape` owns `shap` more strongly (0.170 against 0.150) and loses anyway,
+because `dw-start` also carries `chang` about twice as prominently (0.147 against 0.079). The margin
+is 0.010 — a hundredth of a point, decided by the one word neither skill is really about.
+`dw-start` is explicit-invoke, so this is the `shadowed` column rather than a failure — but the
+mechanism is what an actual theft looks like too.
+
+That is also the answer to a question the pass/fail report cannot settle: when a prompt scores zero
+everywhere, is the description too narrow or is the prompt full of words no description uses? For
+`save what I have with a sensible message`, `--explain` says `sav`, `sens` and `messag` are each in no
+description — so it is the first, and `dw-git` is the skill to widen.
+
+### Reading `routing.ts`
+
+Banner comments split the file, top to bottom. Each section depends only on the ones above it:
+
+- **frontmatter** — `parseFrontmatter`, four keys out of a `SKILL.md`. Deliberately not a YAML parser.
+- **tokenizing** — `stem` is the suffix stripper; `classify` is the keep-or-drop rule for one word;
+  `tokenize` is `classify` plus a filter. Changing any of them moves every number in this file.
+- **corpus and index** — `buildCorpus` reads `name` + `description` and nothing else; `weigh` does
+  sublinear tf × idf, L2-normalised; `buildIndex` turns the corpus into one vector per skill.
+- **scoring** — `cosine` is a dot product because both sides are already normalised; `rank` scores a
+  prompt against every skill; `findCollisions` scores every description pair against every other.
+- **case files** — `loadCases`, which also rejects a malformed or misnamed one.
+- **reporting** — `report` walks the positives and negatives, `summarise` prints the table,
+  `reportCollisions` the pairs. This is where the gates are decided.
+- **explain** — `explain`, the `--explain` output. It calls the functions above and does no arithmetic
+  of its own beyond multiplying the two weights it prints.
+- **entry point** — `main` parses flags and picks between the eval and `explain`.
 
 ## Case files
 
@@ -137,6 +215,10 @@ node evals/trigger.ts --go --prompt "..."          # an ad-hoc prompt, no case f
 It spawns real `claude -p` runs against a throwaway fixture, reads the first `Skill` tool call out of
 the stream-json, and reports the distribution. **It does nothing without `--go`** — the plan and a
 cost line print first, because this is the tier that spends quota. Never in CI, never in the gate.
+
+**No `ANTHROPIC_API_KEY` is needed or wanted.** `claude -p` inherits your existing subscription login,
+so the cost line is quota, not a bill — which is also why this tier cannot run in CI, where there is
+no login to inherit.
 
 Three things it gets right that are easy to get wrong:
 

@@ -45,7 +45,7 @@ with `dw-start`.
       weight per kept stem, and the top-N skills with per-stem contributions. Capture a normal run
       before starting and diff after — byte-identical. The two Goal prompts print the expected
       stories.
-- [ ] 2. `evals/README.md`: a "How the scoring works" walkthrough tracing the CSV-export prompt with
+- [x] 2. `evals/README.md`: a "How the scoring works" walkthrough tracing the CSV-export prompt with
       real numbers from task 1's output, a ~10-line reading map of `routing.ts`, the `--explain`
       usage line in "Running it", and an explicit "no `ANTHROPIC_API_KEY` — runs on the subscription
       login" line in the tier 3 section.
@@ -83,3 +83,10 @@ with `dw-start`.
   the eval reports rather than fails.
 - A one-letter word reports `dropped — shorter than 2 characters`, not `stopword`, because the length
   guard precedes the stopword lookup. Accurate, and worth not "fixing".
+- Task 2: the README diff is purely additive (82 insertions, 0 deletions), so the measured baseline
+  section is provably untouched. The reading map names sections and functions but deliberately carries
+  **no line numbers** — they would rot on the next edit to `routing.ts`, and the banner comments are
+  greppable.
+- Inverting idf confirms the walkthrough's df claims: `shap` 1.299 → df 3, `chang` 0.606 → df 6, out
+  of 11 descriptions. `trigger.ts` names no env var at all, which is what makes the new
+  "no `ANTHROPIC_API_KEY`" line true — it inherits the login through `spawn`.

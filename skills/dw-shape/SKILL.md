@@ -11,8 +11,8 @@ argument-hint: "What change are we shaping?"
 
 # dw-shape — one file, then build
 
-The solo lane's whole planning step. It writes **one** `CHANGE.md`: enough to survive a week away
-from the project and a `/clear`, and no more. There is no separate spec, no separate plan, no status
+The solo lane's whole planning step. It writes one `CHANGE.md` per change — enough to survive a week
+away from the project and a `/clear`, and no more. There is no separate spec, no separate plan, no status
 table with commit SHAs — those earn their keep when other people read them, and here nobody does.
 
 This skill does **not** interview you. If the idea is still fuzzy, run `dw-grill` first and come back
@@ -50,7 +50,9 @@ decisions belong in `docs/decisions/`, not in a spec nobody will reopen.
    whole catalog uses, so casing never drifts. (`${CLAUDE_PLUGIN_ROOT}` is the env var Claude Code
    substitutes to this plugin's install dir.) A slug already present in `.ai/work/` **or
    `.ai/archive/`** is taken — the land-time `git mv` would nest into the existing archive folder —
-   so make the description more specific and re-derive.
+   so make the description more specific and re-derive. A split — the count test in Workflow `### 2.`
+   below — derives several at once; check those against each other as well as against disk, since a
+   sibling isn't written yet to be found.
 
 ## Workflow
 
@@ -70,7 +72,7 @@ decisions belong in `docs/decisions/`, not in a spec nobody will reopen.
 - The **real sibling patterns** this change should follow. Confirm each with Read or grep; these
   become the anchors.
 
-### 2. Size it, then match the depth to the size
+### 2. Size it, match the depth, then count the scopes
 
 Judge the change honestly, then write accordingly — this is the step that keeps the lane light:
 
@@ -78,10 +80,42 @@ Judge the change honestly, then write accordingly — this is the step that keep
   Decisions and Anchors entirely. Do not manufacture ceremony for a rename.
 - **Normal** (a few files, one seam): a goal, the decisions actually taken, three to six tasks,
   the anchors.
-- **Large** (touches several layers, or you can't see the end): still one file — but say plainly that
-  it's large and offer to cut it down to the first genuinely shippable piece, or to split it into
-  two shaped changes that can land separately. A change you can't finish is worse than a smaller
-  one you can.
+- **Large** (touches several layers, or you can't see the end): say plainly that it's large, and
+  offer to cut it down to the first genuinely shippable piece. If the size comes from _more than one
+  scope_ rather than one deep one, that's the split test below, not a sizing call. A change you can't
+  finish is worse than a smaller one you can.
+
+**Then ask whether it is one change at all.** Sizing is about depth; this is about count, and a
+request that arrives as one sentence is often two pieces of work.
+
+- **The test is independent shippability**: could each piece land on its own and leave the repo
+  green? That is the same test step 3 applies to a task, raised one level — so this adds a rule, not
+  a new vocabulary.
+- **Not "do they touch different files."** Nearly every change in a repo touches its README and its
+  manifest, so a shared-file test would almost never fire, and when it did it would be wrong. File
+  overlap is an ordering fact, not a merging one.
+- **N, not two.** The test yields however many it yields.
+- **If it's N ≥ 2, name them before writing anything** — the N slugs and the one scope each owns, in
+  a few lines — **then ask.** HARD STOP: splitting is the user's call, and this is where it's made.
+  Ask it once, here — step 4's read-back still runs, and confirms the result rather than this
+  decision.
+- **On yes, write N × `.ai/work/<slug>/CHANGE.md`**, each complete on its own terms — and **sized on
+  its own terms too**: run the ladder above once per scope, so a small sibling gets a goal and two
+  checkboxes while a normal one gets the decisions and anchors. Splitting is not a licence to
+  manufacture ceremony N times. **Never a stub pointing at a sibling:** a change that can't be built
+  without reading another one isn't independently shippable, which means the test just failed.
+  - On the **default branch**, all N record `branch: unclaimed` — the plan-session queue, built later
+    one worktree and session at a time.
+  - On a **claimed branch**, ask which of the N is the one being built here: that one records the
+    branch verbatim, every sibling records `unclaimed`. **Unless the branch already carries a change**
+    (Output location, item 2) — then all N record `unclaimed`, because two changes never claim one
+    branch, and this one is already spoken for.
+- **A shared anchor is an ordering fact, not a dependency.** Where two of the N touch the same file,
+  put one sentence in the `## Notes` of whichever should land second, saying what it waits on and
+  why. Never a frontmatter field — `.ai/` doesn't get a status column, and prose is enough for one
+  reader.
+- **On no, it stays one change** — and the reason goes in `## Decisions`, so the next session reads
+  the answer instead of re-opening the question.
 
 ### 3. Cut the tasks as thin vertical slices
 
@@ -102,9 +136,16 @@ you're already building; keep its slug unless the change outgrew it. Then read t
 user in a few lines and ask whether the breakdown is right — wrong granularity is much cheaper to fix
 now than after two commits. **Wait for that confirmation before anything else.**
 
+A split from the count test in step 2 writes each of its N files from that same shape, sized
+individually, and reads all N back together —
+one pass, not one per change. Where the split grew out of a single `.ai/backlog/` entry, that entry
+still seeds **one** change, not N: `git mv` it into whichever of them inherits its subject, and write
+the siblings fresh.
+
 On confirmation, **commit the file** — the way `dw-git` does, staged by name, the backlog-file move
-in the same commit. This is load-bearing, not hygiene: a worktree checks out committed state
-only, so an uncommitted `CHANGE.md` never reaches the session that would build it.
+in the same commit. A split commits its N files together too: shaping them was one act. This is
+load-bearing, not hygiene: a worktree checks out committed state only, so an uncommitted `CHANGE.md`
+never reaches the session that would build it.
 
 For anything beyond small, prefer a **fresh session per change** — the file you just committed is
 the handoff, and a build that starts clean reads it from disk instead of inheriting this

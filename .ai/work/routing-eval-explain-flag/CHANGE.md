@@ -49,7 +49,7 @@ with `dw-start`.
       real numbers from task 1's output, a ~10-line reading map of `routing.ts`, the `--explain`
       usage line in "Running it", and an explicit "no `ANTHROPIC_API_KEY` — runs on the subscription
       login" line in the tier 3 section.
-- [ ] 3. Park the follow-up: `.ai/backlog/stemmer-derivational-audit.md` — run `--explain` over all
+- [x] 3. Park the follow-up: `.ai/backlog/stemmer-derivational-audit.md` — run `--explain` over all
       case prompts; if no ranking depends on a `DERIVATIONAL` mapping, replace the table with a
       minimal strip (`s`/`ing`/`ed`/`e`) and re-pin baseline + `--min-rank1`. Then the full pre-push
       gate.
@@ -90,3 +90,8 @@ with `dw-start`.
 - Inverting idf confirms the walkthrough's df claims: `shap` 1.299 → df 3, `chang` 0.606 → df 6, out
   of 11 descriptions. `trigger.ts` names no env var at all, which is what makes the new
   "no `ANTHROPIC_API_KEY`" line true — it inherits the login through `spawn`.
+- Task 3: **no plugin version bump for this change.** The whole diff is `evals/` plus `.ai/`, and
+  neither ships — the bump rule in `## Gotchas` fires on `templates/` or `scripts/runtime/` only.
+- Full gate green: lint (0 errors, 50 pre-existing warnings), format, manifests, artifacts, docs,
+  evals, `eval:routing` (rank-1 67%, 55 pairs, nothing above 0.5). Run lint as `bash scripts/lint.sh`
+  — the rtk hook rewrites the `pnpm lint` spelling into an ESLint wrapper that fails on a green repo.

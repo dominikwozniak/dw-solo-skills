@@ -107,6 +107,11 @@ four or more unrelated scopes, and `.ai/archive/worktreeinclude-support/CHANGE.m
   with Output location rule 1 (a feature branch is shaping+claiming in one step) and rule 2 (no two
   changes on one claimed branch). Resolved: on the default branch all N are `unclaimed`; on a claimed
   branch the one being built records the branch verbatim and siblings go out `unclaimed`.
+- **`dw-check`'s description _was_ safe to fix, `dw-shape`'s still isn't tested.** Gating delegation
+  falsified "when one is available", so it became "when asked for one" — and `pnpm eval:routing` came
+  back at exactly the documented baseline (`evals/README.md:78`: rank-1 20/30 = 67%, yields 21/21).
+  So the idf fear is testable in about ten seconds, not a reason to leave prose wrong; the rule is
+  run the eval, don't assume. The `dw-shape` wording below is still untested and still parked.
 - **Deliberately left stale:** the `description` and `README.md:76` still say "one … `CHANGE.md`".
   Editing a description shifts every term's idf and can knock an unrelated skill off rank-1 in
   `pnpm eval:routing` — a cost out of proportion to the wording. `dw-land` should park it if it still

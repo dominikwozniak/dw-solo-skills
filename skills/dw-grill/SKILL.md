@@ -68,9 +68,9 @@ Always state which option you'd pick and why — a recommendation to react to is
 blank prompt, and disagreement is more informative than invention.
 
 **Write the question in ASD-STE100 Simplified Technical English** — short active sentences, one word
-with one meaning, no term you haven't already defined here. The register applies to the questions
-only, never to what `dw-shape` writes down: a question that gets misread is a question answered
-wrong, and the wrong answer arrives sounding just as certain as the right one.
+with one meaning, no term this conversation or `CONTEXT.md` hasn't already defined. The register
+applies to the questions only, never to what `dw-shape` writes down: a question that gets misread is
+a question answered wrong, and the wrong answer arrives sounding just as certain as the right one.
 
 Then **wait.** Don't answer your own question and move on.
 

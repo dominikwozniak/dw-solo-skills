@@ -2,7 +2,8 @@
 change: shape-splits-changes
 branch: shape-splits-changes
 created: 2026-08-02
-status: building # shaping | building | landed
+landed: 2026-08-05
+status: landed # shaping | building | landed
 ---
 
 # Change — teach dw-shape to write N changes when the request carries N shippable scopes

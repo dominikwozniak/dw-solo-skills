@@ -115,6 +115,22 @@ CI runs those seven plus a `trufflehog` secrets scan on every PR and push to `ma
 
 Traps this repo has actually sprung, newest first.
 
+- **The skill you are running is not the skill you are editing.** Claude Code serves
+  `~/.claude/plugins/cache/dw-solo-skills/dw-solo/<version>/`, which only changes on reinstall — so a
+  session can review, invoke and reason about a body several versions behind the canon it is editing,
+  with nothing announcing the gap. It cost a whole review pass here: `dw-check` ran from 0.4.0 while
+  the canon said something materially different, and the discrepancy read as a missing feature. Two
+  consequences: **never debug a skill by its behaviour in the session that edits it** — invoke the
+  canon's text by hand instead — and treat every canon skill edit as **unexercised** until a
+  post-reinstall run, because no test asserts skill body content by design.
+- **`dw-land` is not a review pass, and the sentence saying so is easy to walk past.** Both
+  `skills/dw-land/SKILL.md:14-15` ("a last look, **not a review pipeline**") and
+  `skills/dw-check/SKILL.md:16` ("not a bottleneck this skill duplicates") forbid giving the closing
+  verdict its own reviewer — and it was built anyway, three lines below the first of them, then
+  reverted. Review delegation belongs to `dw-check`; the verdict's whole light layer is those two
+  lines of prose. The general lesson, worth more than the instance: **a constraint written as an intro
+  sentence does not act like a constraint** — if a boundary between two skills is load-bearing, put it
+  in the step or in `docs/DESIGN.md`, not in the paragraph that sets the tone.
 - **Rebasing onto a squash-merged `main` resurrects the merged change's own commits.** A squash-merge
   leaves no shared ancestor, so a branch shaped before it replays that change's `chore: shape …`
   commit as a new one — re-adding `.ai/work/<slug>/CHANGE.md` for work already archived. No conflict,

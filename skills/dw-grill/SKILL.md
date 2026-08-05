@@ -23,6 +23,10 @@ which `dw-shape` then turns into a durable artifact.
 The conversation, plus whatever it can verify in the repo. The subject may arrive as `$ARGUMENTS`;
 otherwise it's whatever is being discussed. It writes no files.
 
+Read `CONTEXT.md` before the first question if the project has one. An interview is where words get
+coined, and a second name for a thing that already has one is exactly the drift a glossary exists to
+stop — so ask in the terms already defined there.
+
 ## Workflow
 
 ### 1. Separate facts from decisions

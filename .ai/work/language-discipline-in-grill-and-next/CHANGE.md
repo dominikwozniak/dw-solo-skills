@@ -40,7 +40,7 @@ names things with terms already in it — and says so when it coins a new one.
       `Then **wait.**`: **"Write the question in ASD-STE100 Simplified Technical English"** plus the
       gloss (short active sentences, one word with one meaning, no undefined term) and the reason
       (a question misread is a question answered wrong).
-- [ ] 2. `dw-grill` `## What it reads` — add a second paragraph: read `CONTEXT.md` before the first
+- [x] 2. `dw-grill` `## What it reads` — add a second paragraph: read `CONTEXT.md` before the first
       question, because this is where words get coined and a second name for a thing that has one is
       the drift the glossary exists to stop.
 - [ ] 3. `dw-next` — declare the read in `## What it reads and writes`, and add a

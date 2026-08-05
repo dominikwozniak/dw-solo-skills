@@ -70,7 +70,7 @@ four or more unrelated scopes, and `.ai/archive/worktreeinclude-support/CHANGE.m
       runs itself, `/codex:review --wait` the user types); keep the `/codex:setup` pointer and the
       "any other reviewer folds in the same way" clause; bake in verbatim-then-verify. `argument-hint`
       gains `codex`, README Arguments cell in the same commit (check 5).
-- [ ] 5. `skills/dw-land/SKILL.md` + `README.md:80` — the same `codex` word wired into the verdict
+- [x] 5. `skills/dw-land/SKILL.md` + `README.md:80` — the same `codex` word wired into the verdict
       step (`:43`) as one sentence, added to `## Modes` (`:104-116`), `argument-hint` and README cell
       together.
 

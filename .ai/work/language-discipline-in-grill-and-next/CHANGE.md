@@ -1,6 +1,6 @@
 ---
 change: language-discipline-in-grill-and-next
-branch: unclaimed
+branch: language-discipline-in-grill-and-next
 created: 2026-08-05
 status: shaping # shaping | building | landed
 ---

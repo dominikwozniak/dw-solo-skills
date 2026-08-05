@@ -50,6 +50,13 @@ four or more unrelated scopes, and `.ai/archive/worktreeinclude-support/CHANGE.m
 - **Name the path the agent can actually run.** `/codex:review` is `disable-model-invocation: true`
   (`commands/review.md:4`), `codex:rescue` is not. Naming only the unrunnable one is what produced
   the nagging.
+- **Rejected: a `codex` mode on `dw-land` too** — built, then reverted. Both skills already state the
+  boundary in their own intros, and the new paragraph landed three lines below the sentence forbidding
+  it: `skills/dw-land/SKILL.md:14-15` ("a last look, **not a review pipeline**; if the change deserved
+  scrutiny mid-build, `dw-check` already gave it") and `skills/dw-check/SKILL.md:16` ("the closing pass
+  stays a thin last look, **not a bottleneck this skill duplicates**"). The verdict's light layer is
+  those two lines of prose, already present; a delegation path made `dw-land` a second `dw-check`.
+  Delegation belongs to the skill whose whole job is the review pass.
 
 ## Tasks
 
@@ -70,9 +77,10 @@ four or more unrelated scopes, and `.ai/archive/worktreeinclude-support/CHANGE.m
       runs itself, `/codex:review --wait` the user types); keep the `/codex:setup` pointer and the
       "any other reviewer folds in the same way" clause; bake in verbatim-then-verify. `argument-hint`
       gains `codex`, README Arguments cell in the same commit (check 5).
-- [x] 5. `skills/dw-land/SKILL.md` + `README.md:80` — the same `codex` word wired into the verdict
-      step (`:43`) as one sentence, added to `## Modes` (`:104-116`), `argument-hint` and README cell
-      together.
+- [x] 5. ~~`skills/dw-land/SKILL.md` + `README.md:80` — the same `codex` word wired into the verdict
+      step.~~ Built in `cc9f25e`, **rejected and reverted** by task 6; see Decisions.
+- [x] 6. Revert task 5 — `skills/dw-land/SKILL.md` and `README.md:80` back to their `537894d` bytes,
+      and park the `dw-ship` push-path gap found on the way in `.ai/backlog/`.
 
 ## Anchors
 
@@ -107,6 +115,12 @@ four or more unrelated scopes, and `.ai/archive/worktreeinclude-support/CHANGE.m
   with Output location rule 1 (a feature branch is shaping+claiming in one step) and rule 2 (no two
   changes on one claimed branch). Resolved: on the default branch all N are `unclaimed`; on a claimed
   branch the one being built records the branch verbatim and siblings go out `unclaimed`.
+- **A constraint written as an intro sentence doesn't act like a constraint.** `dw-land:14-15` and
+  `dw-check:16` both forbid exactly what task 5 did, and I had read both files in this session before
+  building it. They read as scene-setting prose, three lines above the procedure, so nothing in the
+  editing path tripped over them. If a boundary between two skills is load-bearing, it needs to sit
+  where the work happens — in the step, or in `docs/DESIGN.md` where a reviewer looks for rules — not
+  only in the paragraph that establishes tone.
 - **`dw-check`'s description _was_ safe to fix, `dw-shape`'s still isn't tested.** Gating delegation
   falsified "when one is available", so it became "when asked for one" — and `pnpm eval:routing` came
   back at exactly the documented baseline (`evals/README.md:78`: rank-1 20/30 = 67%, yields 21/21).

@@ -6,7 +6,7 @@ description: >-
   `CONTEXT.md`, `## Gotchas` and the backlog, and archive the change doc. Use when a change is
   finished, or when someone says "land this", "wrap this up", "is this ready to merge", "close this
   out". Prefer this over merging and letting the change doc rot.
-argument-hint: "bare for the verdict — your go closes it · codex delegates the pass first · close to trust the diff and close at once"
+argument-hint: "bare for the verdict — your go closes it · close to trust the diff and close at once"
 ---
 
 # dw-land — one thin verdict, then keep what's worth keeping
@@ -44,12 +44,6 @@ skill that takes something out of `work/` on purpose.
 
 One thin pass, all four together, every finding at a real `file:line` you opened — **if you can't
 ground it, don't report it.**
-
-**On `codex`**, hand the diff to an outside reviewer before grading it, exactly the way `dw-check`
-step 2 does — including verifying each returned finding against the file, since a delegated finding
-earns no exemption from the grounding rule above. Bare doesn't delegate: this is the last look before
-the doc is archived, so the choice to spend a second opinion here is yours to make, not one to be
-talked into.
 
 - **Correct?** Does it do what the goal said — including the edge case, the error path, the empty
   input?
@@ -115,8 +109,6 @@ is the default.
 - **bare** — the verdict, then **stop**. An unambiguous go in the conversation — "close", "close
   it", "go" — runs phase 3 in this same invocation; never send the user back for a second slash
   command. A hedged reply is not a go.
-- **`codex`** — delegate the verdict pass to an outside reviewer first, then grade as usual and
-  **stop** like bare. It buys a second opinion, not a shortcut: nothing closes without a go.
 - **`close`** — the trust shortcut: the user already trusts the diff, so state the verdict in one
   line and close without waiting for a go. One exception: a verdict that comes out **not ready**
   stops here too — report it and wait; closing over it takes an explicit word from a user who has

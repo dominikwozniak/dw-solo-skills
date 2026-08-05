@@ -90,8 +90,8 @@ One task per invocation unless the mode says otherwise.
 - **Use the project's words.** When naming anything a reader will meet — a function, a type, a
   route, a column — take the term from `CONTEXT.md` if it is defined there. A synonym invented at
   the keyboard is a second name for one thing, and it costs a translation on every later read. When
-  the task genuinely introduces a term the glossary doesn't have, use it and say so: `dw-land`
-  promotes it at the end.
+  the task genuinely introduces a term the glossary doesn't have, use it and put it in Notes below —
+  that is the line `dw-land` reads to promote it at the end.
 - **Leave it green — run the tests, and only the tests.** Lint and typecheck are **hook-owned** in this
   lane: `lint-on-edit` fires on every Write/Edit, `typecheck-on-stop` at the end of the turn. Re-running
   them here would repeat a full pass per task for nothing. The test suite has no hook, so that one is
@@ -102,7 +102,7 @@ One task per invocation unless the mode says otherwise.
 - Flip the task's `- [ ]` to `- [x]` in `CHANGE.md`, and set frontmatter `status: building` if it's
   still `shaping`.
 - Append to Notes only what a future session would actually need: a surprise, a dead end, a decision
-  taken while building. Not a narration of what the diff already shows.
+  taken while building, a term this task had to coin. Not a narration of what the diff already shows.
 - **Clear a `HANDOFF.md` you consumed** — `git rm` it in this same commit. It described the middle of
   the task you just finished, so leaving it behind strands the next session on a state that is gone.
   Anything in it worth keeping goes to Notes first.

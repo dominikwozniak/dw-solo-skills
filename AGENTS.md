@@ -115,6 +115,13 @@ CI runs those seven plus a `trufflehog` secrets scan on every PR and push to `ma
 
 Traps this repo has actually sprung, newest first.
 
+- **A worktree-isolated session refuses compound shell, and it reads as a permission problem.** Every
+  `dw-start` session lands in one, and there the harness rejects any Bash call it cannot statically
+  prove stays inside the worktree — `cmd; cmd` chains with a redirect, a `../../..` path, a heredoc.
+  It cost three retries in one session before the pattern was obvious. Issue plain separate commands,
+  and write a commit message to a file outside the repo and use `git commit -F <path>` (which the
+  `.env`-in-a-message gotcha below wants anyway). This is not the dangerous-command hook — the message
+  names the worktree, not a blocked pattern.
 - **The skill you are running is not the skill you are editing.** Claude Code serves
   `~/.claude/plugins/cache/dw-solo-skills/dw-solo/<version>/`, which only changes on reinstall — so a
   session can review, invoke and reason about a body several versions behind the canon it is editing,

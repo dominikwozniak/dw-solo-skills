@@ -2,7 +2,8 @@
 change: routing-eval-explain-flag
 branch: routing-eval-explain-flag
 created: 2026-08-05
-status: building # shaping | building | landed
+landed: 2026-08-05
+status: landed # shaping | building | landed
 ---
 
 # Change — `--explain` makes routing.ts show its scoring, and the README walks one prompt through it

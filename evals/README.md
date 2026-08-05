@@ -76,7 +76,7 @@ so it decomposes term by term:
   3  dw-grill  0.083
        shap    0.906 × 0.092 = 0.083
 
-  4  dw-land   0.051
+  4  dw-land  0.051
        chang   0.423 × 0.121 = 0.051
 ```
 

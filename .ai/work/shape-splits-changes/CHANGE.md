@@ -105,3 +105,16 @@ four or more unrelated scopes, and `.ai/archive/worktreeinclude-support/CHANGE.m
   rather than the split question. Restated as "ask it once, here". Worth remembering that a HARD STOP
   which defers to a later gate has to name which question it's suppressing.
 - The 0.4.8 bump covers the review fixes too — it hasn't shipped, so no second bump.
+- **A third pass (codex) found the seams the first two didn't look at.** Both of my passes checked the
+  new block against itself and against step 4. What they missed was its interaction with the **sizing
+  ladder** and with the **pre-workflow `Output location` items** — and all three remaining defects
+  lived exactly there. Worth generalising: when a block is added to a step, the thing to review is
+  every _other_ step that block now changes the meaning of, not the block.
+  - The ladder never re-ran per scope, so mandating "goal, decisions, tasks and anchors" on each of
+    the N contradicted the Small rule's "skip Decisions and Anchors entirely" — the split was forcing
+    the exact ceremony step 2 exists to prevent. Now sized per scope.
+  - A split on a branch that **already** carries a change double-claimed it: opening a new change
+    there is permitted for genuinely separate work, and the claimed-branch rule then handed the branch
+    to one of the N. Now all N go out `unclaimed` in that case.
+  - "step 2" was ambiguous the whole time — `Output location` has an item 2 and `## Workflow` has a
+    `### 2.`. Anything referring to a step across those two sections has to say which.

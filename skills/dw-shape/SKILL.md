@@ -50,8 +50,9 @@ decisions belong in `docs/decisions/`, not in a spec nobody will reopen.
    whole catalog uses, so casing never drifts. (`${CLAUDE_PLUGIN_ROOT}` is the env var Claude Code
    substitutes to this plugin's install dir.) A slug already present in `.ai/work/` **or
    `.ai/archive/`** is taken — the land-time `git mv` would nest into the existing archive folder —
-   so make the description more specific and re-derive. Deriving several at once (a split, step 2):
-   check them against each other too, since a sibling isn't on disk yet to be found.
+   so make the description more specific and re-derive. A split — the count test in Workflow `### 2.`
+   below — derives several at once; check those against each other as well as against disk, since a
+   sibling isn't written yet to be found.
 
 ## Workflow
 
@@ -98,13 +99,17 @@ request that arrives as one sentence is often two pieces of work.
   a few lines — **then ask.** HARD STOP: splitting is the user's call, and this is where it's made.
   Ask it once, here — step 4's read-back still runs, and confirms the result rather than this
   decision.
-- **On yes, write N × `.ai/work/<slug>/CHANGE.md`**, each complete on its own terms — its own goal,
-  decisions, tasks and anchors. **Never a stub pointing at a sibling:** a change that can't be built
+- **On yes, write N × `.ai/work/<slug>/CHANGE.md`**, each complete on its own terms — and **sized on
+  its own terms too**: run the ladder above once per scope, so a small sibling gets a goal and two
+  checkboxes while a normal one gets the decisions and anchors. Splitting is not a licence to
+  manufacture ceremony N times. **Never a stub pointing at a sibling:** a change that can't be built
   without reading another one isn't independently shippable, which means the test just failed.
   - On the **default branch**, all N record `branch: unclaimed` — the plan-session queue, built later
     one worktree and session at a time.
   - On a **claimed branch**, ask which of the N is the one being built here: that one records the
-    branch verbatim, every sibling records `unclaimed`. Two changes never claim one branch.
+    branch verbatim, every sibling records `unclaimed`. **Unless the branch already carries a change**
+    (Output location, item 2) — then all N record `unclaimed`, because two changes never claim one
+    branch, and this one is already spoken for.
 - **A shared anchor is an ordering fact, not a dependency.** Where two of the N touch the same file,
   put one sentence in the `## Notes` of whichever should land second, saying what it waits on and
   why. Never a frontmatter field — `.ai/` doesn't get a status column, and prose is enough for one
@@ -131,7 +136,8 @@ you're already building; keep its slug unless the change outgrew it. Then read t
 user in a few lines and ask whether the breakdown is right — wrong granularity is much cheaper to fix
 now than after two commits. **Wait for that confirmation before anything else.**
 
-A split from step 2 writes each of its N files from that same shape and reads all N back together —
+A split from the count test in step 2 writes each of its N files from that same shape, sized
+individually, and reads all N back together —
 one pass, not one per change. Where the split grew out of a single `.ai/backlog/` entry, that entry
 still seeds **one** change, not N: `git mv` it into whichever of them inherits its subject, and write
 the siblings fresh.

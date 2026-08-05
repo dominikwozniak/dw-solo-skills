@@ -46,7 +46,7 @@ names things with terms already in it — and says so when it coins a new one.
 - [x] 3. `dw-next` — declare the read in `## What it reads and writes`, and add a
       **"Use the project's words."** bullet directly after **"Follow the anchors."** in `### 3`,
       closing with the pointer that `dw-land` promotes a genuinely new term at the end.
-- [ ] 4. Bump `dw-solo` `0.4.8 → 0.4.9` in both manifests (identical values), then run the full gate.
+- [x] 4. Bump `dw-solo` `0.4.8 → 0.4.9` in both manifests (identical values), then run the full gate.
 
 ## Anchors
 

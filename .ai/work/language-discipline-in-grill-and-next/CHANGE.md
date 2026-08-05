@@ -2,7 +2,7 @@
 change: language-discipline-in-grill-and-next
 branch: language-discipline-in-grill-and-next
 created: 2026-08-05
-status: shaping # shaping | building | landed
+status: building # shaping | building | landed
 ---
 
 # Change — a language discipline for the loop: plain register when it asks, established terms when it names
@@ -36,7 +36,7 @@ names things with terms already in it — and says so when it coins a new one.
 
 ## Tasks
 
-- [ ] 1. `dw-grill` `### 3` — add the register rule after the "five words" paragraph, before
+- [x] 1. `dw-grill` `### 3` — add the register rule after the "five words" paragraph, before
       `Then **wait.**`: **"Write the question in ASD-STE100 Simplified Technical English"** plus the
       gloss (short active sentences, one word with one meaning, no undefined term) and the reason
       (a question misread is a question answered wrong).

@@ -50,7 +50,8 @@ decisions belong in `docs/decisions/`, not in a spec nobody will reopen.
    whole catalog uses, so casing never drifts. (`${CLAUDE_PLUGIN_ROOT}` is the env var Claude Code
    substitutes to this plugin's install dir.) A slug already present in `.ai/work/` **or
    `.ai/archive/`** is taken — the land-time `git mv` would nest into the existing archive folder —
-   so make the description more specific and re-derive.
+   so make the description more specific and re-derive. Deriving several at once (a split, step 2):
+   check them against each other too, since a sibling isn't on disk yet to be found.
 
 ## Workflow
 
@@ -70,7 +71,7 @@ decisions belong in `docs/decisions/`, not in a spec nobody will reopen.
 - The **real sibling patterns** this change should follow. Confirm each with Read or grep; these
   become the anchors.
 
-### 2. Size it, then match the depth to the size
+### 2. Size it, match the depth, then count the scopes
 
 Judge the change honestly, then write accordingly — this is the step that keeps the lane light:
 
@@ -95,7 +96,8 @@ request that arrives as one sentence is often two pieces of work.
 - **N, not two.** The test yields however many it yields.
 - **If it's N ≥ 2, name them before writing anything** — the N slugs and the one scope each owns, in
   a few lines — **then ask.** HARD STOP: splitting is the user's call, and this is where it's made.
-  Step 4's read-back confirms the result, so don't ask twice.
+  Ask it once, here — step 4's read-back still runs, and confirms the result rather than this
+  decision.
 - **On yes, write N × `.ai/work/<slug>/CHANGE.md`**, each complete on its own terms — its own goal,
   decisions, tasks and anchors. **Never a stub pointing at a sibling:** a change that can't be built
   without reading another one isn't independently shippable, which means the test just failed.
@@ -130,7 +132,9 @@ user in a few lines and ask whether the breakdown is right — wrong granularity
 now than after two commits. **Wait for that confirmation before anything else.**
 
 A split from step 2 writes each of its N files from that same shape and reads all N back together —
-one pass, not one per change.
+one pass, not one per change. Where the split grew out of a single `.ai/backlog/` entry, that entry
+still seeds **one** change, not N: `git mv` it into whichever of them inherits its subject, and write
+the siblings fresh.
 
 On confirmation, **commit the file** — the way `dw-git` does, staged by name, the backlog-file move
 in the same commit. A split commits its N files together too: shaping them was one act. This is

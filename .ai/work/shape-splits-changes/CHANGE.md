@@ -94,3 +94,14 @@ four or more unrelated scopes, and `.ai/archive/worktreeinclude-support/CHANGE.m
 - Referents inside the new block are stated, not cited: the skill installs into arbitrary repos, so
   `CONTEXT.md:17` and `docs/DESIGN.md:85-88` (this repo's anchors) became "the same test step 3
   applies to a task" and "`.ai/` doesn't get a status column".
+- **`dw-check` found two real gaps where the split meets the pre-existing procedure**, both now
+  closed. Step 4's backlog path is singular by construction (`git mv` **the file**, keep **its**
+  slug) — a split seeded by one `.ai/backlog/` entry had no rule for which of the N receives the
+  move; it seeds one, siblings are written fresh. And the slug-collision check tests against disk,
+  which can't see a sibling being derived in the same breath. Both are consequences of writing N
+  where the skill assumed 1; anything else added later that writes N should be read against these
+  two spots first.
+- Wording that misfired on the first pass: "don't ask twice" read as cancelling step 4's read-back
+  rather than the split question. Restated as "ask it once, here". Worth remembering that a HARD STOP
+  which defers to a later gate has to name which question it's suppressing.
+- The 0.4.8 bump covers the review fixes too — it hasn't shipped, so no second bump.

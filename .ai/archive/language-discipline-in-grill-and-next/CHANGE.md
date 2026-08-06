@@ -1,8 +1,9 @@
 ---
 change: language-discipline-in-grill-and-next
-branch: unclaimed
+branch: language-discipline-in-grill-and-next
 created: 2026-08-05
-status: shaping # shaping | building | landed
+status: landed # shaping | building | landed
+landed: 2026-08-06
 ---
 
 # Change — a language discipline for the loop: plain register when it asks, established terms when it names
@@ -36,17 +37,17 @@ names things with terms already in it — and says so when it coins a new one.
 
 ## Tasks
 
-- [ ] 1. `dw-grill` `### 3` — add the register rule after the "five words" paragraph, before
+- [x] 1. `dw-grill` `### 3` — add the register rule after the "five words" paragraph, before
       `Then **wait.**`: **"Write the question in ASD-STE100 Simplified Technical English"** plus the
       gloss (short active sentences, one word with one meaning, no undefined term) and the reason
       (a question misread is a question answered wrong).
-- [ ] 2. `dw-grill` `## What it reads` — add a second paragraph: read `CONTEXT.md` before the first
+- [x] 2. `dw-grill` `## What it reads` — add a second paragraph: read `CONTEXT.md` before the first
       question, because this is where words get coined and a second name for a thing that has one is
       the drift the glossary exists to stop.
-- [ ] 3. `dw-next` — declare the read in `## What it reads and writes`, and add a
+- [x] 3. `dw-next` — declare the read in `## What it reads and writes`, and add a
       **"Use the project's words."** bullet directly after **"Follow the anchors."** in `### 3`,
       closing with the pointer that `dw-land` promotes a genuinely new term at the end.
-- [ ] 4. Bump `dw-solo` `0.4.8 → 0.4.9` in both manifests (identical values), then run the full gate.
+- [x] 4. Bump `dw-solo` `0.4.8 → 0.4.9` in both manifests (identical values), then run the full gate.
 
 ## Anchors
 

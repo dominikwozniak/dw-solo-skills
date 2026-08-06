@@ -23,6 +23,10 @@ which `dw-shape` then turns into a durable artifact.
 The conversation, plus whatever it can verify in the repo. The subject may arrive as `$ARGUMENTS`;
 otherwise it's whatever is being discussed. It writes no files.
 
+Read `CONTEXT.md` before the first question if the project has one. An interview is where words get
+coined, and a second name for a thing that already has one is exactly the drift a glossary exists to
+stop — so ask in the terms already defined there.
+
 ## Workflow
 
 ### 1. Separate facts from decisions
@@ -62,6 +66,11 @@ the first and silence on the rest.
 Each question should be answerable as **two to five mutually exclusive options**, or in five words.
 Always state which option you'd pick and why — a recommendation to react to is far easier than a
 blank prompt, and disagreement is more informative than invention.
+
+**Write the question in ASD-STE100 Simplified Technical English** — short active sentences, one word
+with one meaning, no term this conversation or `CONTEXT.md` hasn't already defined. The register
+applies to the questions only, never to what `dw-shape` writes down: a question that gets misread is
+a question answered wrong, and the wrong answer arrives sounding just as certain as the right one.
 
 Then **wait.** Don't answer your own question and move on.
 

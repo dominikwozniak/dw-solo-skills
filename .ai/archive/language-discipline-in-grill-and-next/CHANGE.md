@@ -2,7 +2,8 @@
 change: language-discipline-in-grill-and-next
 branch: language-discipline-in-grill-and-next
 created: 2026-08-05
-status: building # shaping | building | landed
+status: landed # shaping | building | landed
+landed: 2026-08-06
 ---
 
 # Change — a language discipline for the loop: plain register when it asks, established terms when it names

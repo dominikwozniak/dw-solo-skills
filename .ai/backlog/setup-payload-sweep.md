@@ -16,7 +16,10 @@ it — `validate-manifests.sh` cannot see a missing bump (`## Gotchas`).
   the skills route to (`dw-check:45-61`, `dw-ship:52`); local accelerators like `ctx7` and `rtk` stay
   out, since no skill names them and `doctor.sh` runs on a consumer's machine.
 - `templates/CLAUDE.local.md:61` offers `CONTEXT.md` inside parenthetical prose, so a scaffolded repo
-  can end up with a glossary nothing points at. Three skills read that file now — state the pointer.
+  can end up with a glossary nothing points at. **Count the readers before doing this one**: the
+  premise was three skills reading that file, and the `routing-eval-explain-flag` branch removes the
+  instruction from `dw-grill` and `dw-next` and deletes this very entry on its own branch. If nothing
+  reads the glossary once that lands, the bullet goes with it.
 - While both scripts are open, give them the self-tests they have never had: `doctor.sh` is 261 lines
   and the only script that runs on someone else's machine. Taken off `shell-test-sweep`.
 

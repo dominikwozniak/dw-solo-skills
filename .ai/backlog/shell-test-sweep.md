@@ -2,10 +2,9 @@
 created: 2026-08-01
 ---
 
-# Test sweep for the untested shell
+# Self-tests for `block-non-pnpm.sh` and `link-local-memory.sh`
 
-`doctor.sh` (261 lines, and the only script that runs on someone else's machine), `block-non-pnpm`,
-`link-local-memory`, `typecheck-on-stop`, plus fixtures for `validate-docs.sh` and
-`validate-manifests.sh` — `717f1e5` is proof a validator can pass silently while broken.
-`lint-on-edit` came off this list: `scripts/tests/lint-on-edit.test.sh` landed in
-`skill-routing-evals`.
+What is left of a wider sweep: the other four targets moved to the bundles that already open those
+files — `doctor.sh` and `typecheck-on-stop.sh` to `setup-payload-sweep`, the two validator fixtures to
+`validator-blind-spots` — and `lint-on-edit` got its test in `skill-routing-evals`. These two hooks
+are untested and nothing else is going to touch them.

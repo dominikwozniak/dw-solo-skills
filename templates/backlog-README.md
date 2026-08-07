@@ -8,4 +8,8 @@ change that parked it), an H1 saying what-and-why in one line, at most ~3 lines 
 Findings go by pointer to `.ai/archive/<slug>` — never inlined. No status, no priority, and
 nothing validates these files, deliberately.
 
+One exception to the three lines: an entry may **bundle** several small fixes as a bullet list when
+they ship together — same version bump, same gate run, one PR. Say in the lead sentence what makes
+them one change, and keep each bullet to what a session needs to find the code.
+
 The bar: if you would not pick it up within a month, don't write it.

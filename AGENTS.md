@@ -118,10 +118,11 @@ Traps this repo has actually sprung, newest first.
 - **A backlog entry checked only against the working tree is not checked.** This repo habitually
   keeps finished branches unmerged, so one can already be resolved with nothing in `main` saying so —
   the 2026-08-07 prune called two entries unimplemented for exactly that reason. Sweep every ref
-  first: `git for-each-ref --format='%(refname:short)' refs/heads` into
-  `git diff --name-only main...<ref>`, and read the whole file list — a branch that _adds_ backlog
-  entries is invisible to any per-entry check. Generally: **a claim about what this repo does is
-  scoped to the ref you checked.**
+  first — `git for-each-ref --format='%(refname:short)' refs/heads refs/remotes` into
+  `git diff --name-only main...<ref>`; `refs/heads` alone currently misses seven branches that exist
+  only on the remote. Read the whole file list, not a grep for what the entry cites: a branch that
+  _adds_ backlog entries is invisible to any per-entry check. Generally: **a claim about what this
+  repo does is scoped to the ref you checked.**
 - **The skill you are running is not the skill you are editing.** Claude Code serves
   `~/.claude/plugins/cache/dw-solo-skills/dw-solo/<version>/`, which only changes on reinstall — so a
   session can review, invoke and reason about a body several versions behind the canon it is editing,

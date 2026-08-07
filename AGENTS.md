@@ -115,15 +115,13 @@ CI runs those seven plus a `trufflehog` secrets scan on every PR and push to `ma
 
 Traps this repo has actually sprung, newest first.
 
-- **A backlog entry verified against the working tree is not verified.** A finished-but-unmerged
-  branch can already have resolved it, and nothing you can see from `main` says so. The 2026-08-07
-  prune reported "no entry is implemented" twice — grepping every cited file, correctly, from a
-  branch off `main` — while `routing-eval-explain-flag` sat finished in a worktree having deleted one
-  of those entries outright and removed the skill lines another one described. Run
-  `bash scripts/runtime/backlog-audit.sh` first: it diffs every local branch and worktree against the
-  default branch and names the overlaps. The general shape is worth more than the instance — **a
-  claim about what this repo does is scoped to the ref you checked**, and this repo habitually keeps
-  several finished branches unmerged.
+- **A backlog entry checked only against the working tree is not checked.** This repo habitually
+  keeps finished branches unmerged, so one can already be resolved with nothing in `main` saying so —
+  the 2026-08-07 prune called two entries unimplemented for exactly that reason. Sweep every ref
+  first: `git for-each-ref --format='%(refname:short)' refs/heads` into
+  `git diff --name-only main...<ref>`, and read the whole file list — a branch that _adds_ backlog
+  entries is invisible to any per-entry check. Generally: **a claim about what this repo does is
+  scoped to the ref you checked.**
 - **The skill you are running is not the skill you are editing.** Claude Code serves
   `~/.claude/plugins/cache/dw-solo-skills/dw-solo/<version>/`, which only changes on reinstall — so a
   session can review, invoke and reason about a body several versions behind the canon it is editing,

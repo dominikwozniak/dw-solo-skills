@@ -85,7 +85,10 @@ fine, I guess"; wait for a plain one — and only then:
   specific description — **never overwrite it silently**; the existing entry is queued work.
   Create the dir with its `README.md` if the repo predates the scaffold. Same bar as
   gotchas — **if you wouldn't pick it up within a month, don't write it** — and zero is a normal
-  answer.
+  answer. **If the backlog passes ~15 entries as you add to it, say so** and offer
+  `bash "${CLAUDE_PLUGIN_ROOT}/scripts/backlog-audit.sh"` — a read-only report naming each entry's
+  age, its dead citations, and any other branch that already touches what it describes. Parking is
+  the only moment anyone is looking at that directory; pruning it is not this skill's job.
 - **Archive the scaffolding.** `git rm` a leftover `HANDOFF.md` first — it described the middle of
   a task, and post-merge it is noise — then `git mv .ai/work/<slug>/ .ai/archive/<slug>/` and, in
   the moved `CHANGE.md`, flip `status:` to `landed` and add `landed: YYYY-MM-DD` plus `pr: "#<n>"`

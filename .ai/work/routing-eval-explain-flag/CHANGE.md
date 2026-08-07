@@ -62,8 +62,9 @@ with `dw-start`.
 - `evals/README.md:17-32` — the "Running it" block the new usage line joins; `:129-151` — the tier 3
   section that gets the explicit no-token line.
 - `evals/README.md:76-92` — the measured baseline; must read the same after this change.
-- `.ai/backlog/echoing-eval-positives.md`, `.ai/backlog/delta-evals.md` — parked neighbours,
-  deliberately not widened into this change.
+- `.ai/backlog/routing-baseline-remeasure.md` — the parked neighbour, deliberately not widened into
+  this change. It absorbed `echoing-eval-positives` and `dw-git-description-synonyms` in the
+  2026-08-07 backlog prune, which also dropped `delta-evals`.
 
 ## Notes
 

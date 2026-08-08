@@ -131,7 +131,8 @@ is the default.
 
 ## References
 
-- `references/decision-record.md` — the shape for `docs/decisions/<NNNN>-<slug>.md`, plus the test
-  for whether a decision deserves a record at all. Read it before promoting.
+- `references/decision-record.md` — the shape for `docs/decisions/<NNNN>-<slug>.md`, the test for
+  whether a decision deserves a record at all, and how a record is superseded rather than rewritten.
+  Read it before promoting.
 
 **Next:** `dw-ship` to push and merge, or `dw-shape` for the next change.

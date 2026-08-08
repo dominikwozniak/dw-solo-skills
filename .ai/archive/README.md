@@ -8,8 +8,8 @@ date, the closed-unmerged `pr:` if there was one, and a `## Why rejected` sectio
 part of such a doc worth keeping. An idea rejected before it was ever shaped is written straight
 here, having never passed through `.ai/work/`.
 
-**History, not guidance** — nothing browses this folder to decide anything; the durable layer lives
-in `docs/decisions/`, `CONTEXT.md` and `## Gotchas` in `CLAUDE.md`. The one thing that does read it
-reads **slug names, not prose**: `dw-shape` treats a slug already here as taken, so a rejection filed
-under its own slug stops the same idea being shaped twice. Backlog entries may point here for a
-change's findings (its `## Notes`).
+**History, not guidance** — nothing browses this folder for advice; the durable layer lives in
+`docs/decisions/`, `CONTEXT.md` and `## Gotchas` in `CLAUDE.md`. It is reached by **exact slug**,
+never read in general: `dw-shape` treats a slug already here as taken, and when that doc is
+`status: rejected` it reads the `## Why rejected` and stops, so the same idea is not shaped twice.
+Backlog entries may point here for a change's findings (its `## Notes`).

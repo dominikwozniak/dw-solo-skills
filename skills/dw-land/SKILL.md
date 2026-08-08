@@ -89,21 +89,23 @@ fine, I guess"; wait for a plain one — and only then:
 - **Archive the scaffolding.** `git rm` a leftover `HANDOFF.md` first — it described the middle of
   a task, and post-merge it is noise — then `git mv .ai/work/<slug>/ .ai/archive/<slug>/` and, in
   the moved `CHANGE.md`, flip `status:` to `landed` and add `landed: YYYY-MM-DD` plus `pr: "#<n>"`
-  when there is one. In `reject` mode the move is the same, but `status:` becomes `rejected`, the
-  stamp is `rejected: YYYY-MM-DD`, and `pr:` names the **closed, unmerged** PR when there was one;
-  the doc must carry a `## Why rejected` section — what was tried, what killed it, and what would
-  have to change to revisit — because that section is the only reason the folder is kept. An idea
-  turned down before it was ever shaped has no `.ai/work/<slug>/` to move: write
-  `.ai/archive/<slug>/CHANGE.md` directly, with the same frontmatter and that one section, and pick
-  the slug the way `dw-shape` does so it collides with a future re-shape.
-  If `.ai/archive/<slug>/` already exists, stop and pick a suffixed destination
-  (`<slug>-2`) — `git mv` into an existing directory silently nests the folder inside it. The archive is history, not guidance — nothing reads it to decide anything
-  (`.ai/archive/README.md` says so; create it from that one line if the repo predates the
-  scaffold). If something in the doc still feels too valuable to bury, that is the signal it
-  belonged in a record, a gotcha, or the backlog — promote it first, then archive.
+  when there is one. `reject` moves the same way but stamps `status: rejected` and
+  `rejected: YYYY-MM-DD`, `pr:` naming the **closed, unmerged** PR, and the doc must carry a
+  `## Why rejected` — what was tried, what killed it, what would justify revisiting. An idea turned
+  down before it was ever shaped has nothing to move: write `.ai/archive/<slug>/CHANGE.md` directly,
+  slug derived the way `dw-shape` does so a re-shape collides with it. If `.ai/archive/<slug>/`
+  already exists, stop and pick a suffixed destination (`<slug>-2`) — `git mv` into an existing
+  directory silently nests the folder inside it. `.ai/archive/README.md` states the convention;
+  create it from that one line if the repo predates the scaffold. If something in the doc still
+  feels too valuable to bury, that is the signal it belonged in a record, a gotcha, or the
+  backlog — promote it first, then archive.
 - **Commit** the promotion and the archive move together, the way `dw-git` does — **on the branch you
   are on.** In a worktree that means the feature branch: the promotion rides the PR, the
   squash-merge carries it to the default branch, and post-merge `main` is already clean.
+  **`reject` is the exception**, because nothing will be merged: a record committed to the rejected
+  branch dies with it, and the only way to save it would be shipping the code it rejects. Commit the
+  archive and the promotion on a **short branch off the default one** instead, and open a PR for
+  that — the rejected branch is then deleted without taking the reasoning with it.
 
 Then report what was promoted, what was parked, and what was archived — and stop. This skill
 deliberately does not push or open anything: shipping is a decision, and it belongs to `dw-ship`.
@@ -120,12 +122,10 @@ is the default.
   line and close without waiting for a go. One exception: a verdict that comes out **not ready**
   stops here too — report it and wait; closing over it takes an explicit word from a user who has
   seen it. Never close blind.
-- **`reject`** — the idea was turned down. Skip the verdict: there is no diff worth judging, or one
-  about to be discarded. Run the promotion step unchanged — a rejection still leaves follow-ups and
-  gotchas worth keeping — then archive with the rejected terminal state below. **Ask for the reason
-  if it isn't already in the conversation, and refuse to write the doc without one**: an archived
-  rejection whose `## Why rejected` is empty costs a folder and teaches nothing, which is the exact
-  failure this mode exists to prevent.
+- **`reject`** — the idea was turned down. Skip the verdict; there is no diff worth judging. Promote
+  as usual — a rejection still leaves follow-ups worth keeping — then archive as `rejected`. **Refuse
+  to write the doc without a reason**: an empty `## Why rejected` costs a folder and teaches nothing,
+  which is the whole failure this mode exists to prevent.
 
 ## References
 

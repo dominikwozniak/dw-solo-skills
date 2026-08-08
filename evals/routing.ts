@@ -14,6 +14,7 @@
 //   node evals/routing.ts                 every case file under evals/cases/
 //   node evals/routing.ts dw-shape        only these skills
 //   node evals/routing.ts --top 5         how many ranked skills to show per prompt
+//   node evals/routing.ts --explain "…"   score one prompt out loud instead of running the eval
 //
 // No build step: Node strips the types natively (>=22.18; this repo pins 24 in .nvmrc). That is
 // also the constraint on the syntax here — erasable constructs only, so no enum, no parameter
@@ -206,16 +207,36 @@ function stem(word: string): string {
   return w
 }
 
-function tokenize(text: string): string[] {
-  const out: string[] = []
-  const words = text
+function splitWords(text: string): string[] {
+  return text
     .toLowerCase()
     .replace(/['’]/g, "")
     .split(/[^a-z0-9]+/)
-  for (const word of words) {
-    if (word.length < 2 || STOPWORDS.has(word)) continue
-    const stemmed = stem(word)
-    if (stemmed.length >= 2 && !STOPWORDS.has(stemmed)) out.push(stemmed)
+}
+
+/** Why a raw word did or did not become a query term. Only --explain reads the fate. */
+type Fate = "kept" | "short" | "stopword" | "stem-stopword"
+
+type Classified = { word: string; stem: string; fate: Fate }
+
+/**
+ * The keep-or-drop rule for one word, stated once. `tokenize` is this function plus a filter, so the
+ * explanation --explain prints cannot describe a rule the eval does not actually apply.
+ */
+function classify(word: string): Classified {
+  if (word.length < 2) return { word, stem: "", fate: "short" }
+  if (STOPWORDS.has(word)) return { word, stem: "", fate: "stopword" }
+  const stemmed = stem(word)
+  if (stemmed.length < 2) return { word, stem: stemmed, fate: "short" }
+  if (STOPWORDS.has(stemmed)) return { word, stem: stemmed, fate: "stem-stopword" }
+  return { word, stem: stemmed, fate: "kept" }
+}
+
+function tokenize(text: string): string[] {
+  const out: string[] = []
+  for (const word of splitWords(text)) {
+    const classified = classify(word)
+    if (classified.fate === "kept") out.push(classified.stem)
   }
   return out
 }
@@ -574,13 +595,118 @@ function reportCollisions(index: Index, show: number): number {
   return errors
 }
 
+// --- explain -----------------------------------------------------------------
+
+const FATE_LABEL: Record<Fate, string> = {
+  kept: "kept",
+  short: "dropped — shorter than 2 characters",
+  stopword: "dropped — stopword",
+  "stem-stopword": "dropped — stems to a stopword",
+}
+
+/**
+ * One prompt, scored out loud. It answers the question the pass/fail report cannot: *why* this
+ * ranking — which words survived tokenizing, which surviving stems carry any signal at all, and how
+ * much each one contributed to each skill's score.
+ *
+ * It calls the same tokenize / classify / weigh / cosine / rank the eval calls and does no arithmetic
+ * of its own beyond multiplying the two weights it prints. An explanation that computed the score a
+ * second way would eventually explain something the eval no longer does.
+ */
+function explain(index: Index, prompt: string, top: number): void {
+  const classified = splitWords(prompt)
+    .filter((word) => word !== "")
+    .map(classify)
+
+  console.log(`\nprompt: "${prompt}"`)
+
+  if (classified.length === 0) {
+    console.log("\n  no words — nothing to score")
+    return
+  }
+
+  const wordWidth = Math.max(...classified.map((entry) => entry.word.length), 4)
+  const stemWidth = Math.max(...classified.map((entry) => entry.stem.length), 4)
+  console.log(`\n${"word".padEnd(wordWidth)}  ${"stem".padEnd(stemWidth)}  fate`)
+  for (const entry of classified) {
+    const shown = entry.stem === "" ? "—" : entry.stem
+    console.log(
+      `${entry.word.padEnd(wordWidth)}  ${shown.padEnd(stemWidth)}  ${FATE_LABEL[entry.fate]}`,
+    )
+  }
+
+  const tokens = classified.filter((entry) => entry.fate === "kept").map((entry) => entry.stem)
+  const query = weigh(tokens, index.idf)
+
+  // First-appearance order, not sorted: reading it beside the prompt is the point.
+  const counts = new Map<string, number>()
+  for (const token of tokens) counts.set(token, (counts.get(token) ?? 0) + 1)
+
+  const termWidth = Math.max(...[...counts.keys()].map((term) => term.length), 4)
+  console.log(
+    `\n${"term".padEnd(termWidth)}  count  idf     weight  ` +
+      `(idf = log(${index.names.length}/df), weight is L2-normalised)`,
+  )
+  for (const [term, count] of counts) {
+    const idf = index.idf.get(term)
+    const weight = query.get(term)
+    let tail: string
+    if (idf === undefined) tail = "—       —       in no description — out of vocabulary"
+    else if (weight === undefined) tail = `${fmt(idf)}   —       in every description — idf 0`
+    else tail = `${fmt(idf)}   ${fmt(weight)}`
+    console.log(`${term.padEnd(termWidth)}  ${String(count).padEnd(5)}  ${tail}`)
+  }
+
+  if (query.size === 0) {
+    console.log(
+      "\nno term carries signal — every skill scores 0 and the ranking would be alphabetical",
+    )
+    return
+  }
+
+  console.log(
+    `\ntop ${top} of ${index.names.length} skills — contribution = query weight × skill weight:`,
+  )
+  const ranked = rank(index, prompt)
+    .filter((entry) => entry.score > 0)
+    .slice(0, top)
+  if (ranked.length === 0) {
+    console.log("  nothing scored above 0")
+    return
+  }
+  for (let i = 0; i < ranked.length; i++) {
+    const entry = ranked[i]
+    const marker = index.explicit.has(entry.skill) ? "  (explicit-invoke, never ranked)" : ""
+    console.log(`\n  ${i + 1}  ${entry.skill}  ${fmt(entry.score)}${marker}`)
+    const vector = index.vectors.get(entry.skill) ?? new Map<string, number>()
+    const parts: { term: string; weight: number; doc: number; product: number }[] = []
+    for (const [term, weight] of query) {
+      const doc = vector.get(term)
+      if (doc === undefined) continue
+      parts.push({ term, weight, doc, product: weight * doc })
+    }
+    parts.sort((a, b) => b.product - a.product || a.term.localeCompare(b.term))
+    if (parts.length === 0) {
+      console.log("       no shared term")
+      continue
+    }
+    for (const part of parts) {
+      console.log(
+        `       ${part.term.padEnd(termWidth)}  ${fmt(part.weight)} × ${fmt(part.doc)} = ${fmt(part.product)}`,
+      )
+    }
+  }
+}
+
 // --- entry point -------------------------------------------------------------
 
-const USAGE = "usage: node evals/routing.ts [--top <n>] [--min-rank1 <percent>] [skill...]"
+const USAGE =
+  "usage: node evals/routing.ts [--top <n>] [--min-rank1 <percent>] [--explain <prompt>] [skill...]"
 
 function main(argv: string[]): void {
   let top = 3
   let minRank1: number | null = null
+  let explainPrompt: string | null = null
   const filter: string[] = []
 
   for (let i = 0; i < argv.length; i++) {
@@ -595,6 +721,10 @@ function main(argv: string[]): void {
         fail("--min-rank1 needs a percentage between 0 and 100")
       }
       minRank1 = value
+    } else if (arg === "--explain") {
+      const value = argv[++i]
+      if (value === undefined || value.trim() === "") fail("--explain needs a prompt")
+      explainPrompt = value
     } else if (arg === "-h" || arg === "--help") {
       console.log(USAGE)
       return
@@ -607,6 +737,16 @@ function main(argv: string[]): void {
 
   const docs = buildCorpus()
   const index = buildIndex(docs)
+
+  if (explainPrompt !== null) {
+    // The whole corpus, always: idf is a property of every description, so narrowing to a filter
+    // would print weights the eval never uses.
+    if (filter.length > 0) fail("--explain scores against the whole corpus — drop the skill filter")
+    console.log(`corpus: ${docs.length} skills`)
+    explain(index, explainPrompt, top)
+    return
+  }
+
   const cases = loadCases(filter)
 
   const explicit = [...index.explicit]

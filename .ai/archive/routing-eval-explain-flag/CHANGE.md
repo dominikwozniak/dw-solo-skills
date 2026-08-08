@@ -1,8 +1,9 @@
 ---
 change: routing-eval-explain-flag
-branch: unclaimed
+branch: routing-eval-explain-flag
 created: 2026-08-05
-status: shaping # shaping | building | landed
+landed: 2026-08-05
+status: landed # shaping | building | landed
 ---
 
 # Change — `--explain` makes routing.ts show its scoring, and the README walks one prompt through it
@@ -40,16 +41,16 @@ with `dw-start`.
 
 ## Tasks
 
-- [ ] 1. `--explain "<prompt>"` end-to-end in `evals/routing.ts`: arg parsing beside
+- [x] 1. `--explain "<prompt>"` end-to-end in `evals/routing.ts`: arg parsing beside
       `--top`/`--min-rank1`, plus one report function printing the token→stem fates, idf and query
       weight per kept stem, and the top-N skills with per-stem contributions. Capture a normal run
       before starting and diff after — byte-identical. The two Goal prompts print the expected
       stories.
-- [ ] 2. `evals/README.md`: a "How the scoring works" walkthrough tracing the CSV-export prompt with
+- [x] 2. `evals/README.md`: a "How the scoring works" walkthrough tracing the CSV-export prompt with
       real numbers from task 1's output, a ~10-line reading map of `routing.ts`, the `--explain`
       usage line in "Running it", and an explicit "no `ANTHROPIC_API_KEY` — runs on the subscription
       login" line in the tier 3 section.
-- [ ] 3. Park the follow-up: `.ai/backlog/stemmer-derivational-audit.md` — run `--explain` over all
+- [x] 3. Park the follow-up: `.ai/backlog/stemmer-derivational-audit.md` — run `--explain` over all
       case prompts; if no ranking depends on a `DERIVATIONAL` mapping, replace the table with a
       minimal strip (`s`/`ing`/`ed`/`e`) and re-pin baseline + `--min-rank1`. Then the full pre-push
       gate.
@@ -72,3 +73,26 @@ with `dw-start`.
   rerun if it dies. Never `chmod +x` an `evals/*.ts` file.
 - Shaped from the approved plan at `~/.claude/plans/nie-podobaja-mi-sie-peppy-hollerith.md`
   (grill interview, 2026-08-05).
+- Task 1: printing a token's _fate_ needed a per-word rule the old `tokenize` kept inline, so it was
+  split into `splitWords` + `classify` (one `Classified` per word) with `tokenize` now being
+  `classify` plus a filter. That is deliberate — the alternative was `--explain` re-deriving the
+  keep/drop conditions and drifting from them. Byte-identical output confirmed by diff.
+- Numbers task 2 needs, from `--explain "shape a change that adds a CSV export" --top 4`: `shap` idf
+  1.299 / weight 0.906, `chang` idf 0.606 / weight 0.423, and `add`/`csv`/`export` all out of
+  vocabulary. Ranking `dw-start` 0.198 > `dw-shape` 0.188 > `dw-grill` 0.083 > `dw-land` 0.051 — the
+  collision is `dw-start`'s "shaped change" wording, and it is exactly the shadowed-by-explicit case
+  the eval reports rather than fails.
+- A one-letter word reports `dropped — shorter than 2 characters`, not `stopword`, because the length
+  guard precedes the stopword lookup. Accurate, and worth not "fixing".
+- Task 2: the README diff is purely additive (82 insertions, 0 deletions), so the measured baseline
+  section is provably untouched. The reading map names sections and functions but deliberately carries
+  **no line numbers** — they would rot on the next edit to `routing.ts`, and the banner comments are
+  greppable.
+- Inverting idf confirms the walkthrough's df claims: `shap` 1.299 → df 3, `chang` 0.606 → df 6, out
+  of 11 descriptions. `trigger.ts` names no env var at all, which is what makes the new
+  "no `ANTHROPIC_API_KEY`" line true — it inherits the login through `spawn`.
+- Task 3: **no plugin version bump for this change.** The whole diff is `evals/` plus `.ai/`, and
+  neither ships — the bump rule in `## Gotchas` fires on `templates/` or `scripts/runtime/` only.
+- Full gate green: lint (0 errors, 50 pre-existing warnings), format, manifests, artifacts, docs,
+  evals, `eval:routing` (rank-1 67%, 55 pairs, nothing above 0.5). Run lint as `bash scripts/lint.sh`
+  — the rtk hook rewrites the `pnpm lint` spelling into an ESLint wrapper that fails on a green repo.

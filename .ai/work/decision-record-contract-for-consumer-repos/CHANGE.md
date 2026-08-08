@@ -49,7 +49,7 @@ tells a session to flip an old record rather than only ever appending a new one.
       superseded records. Then `skills/dw-land/SKILL.md:67-71` — one appended sentence, no new
       bullet, and fix `or` → **all three** in the same breath (`:70`, the drift bullet below). Bump
       `dw-solo` 0.4.10 → 0.4.11 in both manifest files.
-- [ ] 3. `docs/decisions/README.md` — the dogfood copy, hand-written, mirroring the template.
+- [x] 3. `docs/decisions/README.md` — the dogfood copy, hand-written, mirroring the template.
 
 ## Anchors
 
@@ -71,6 +71,12 @@ tells a session to flip an old record rather than only ever appending a new one.
 
 ## Notes
 
+- **Candidate `## Gotchas` line for `dw-land`**: the contract now exists in three places that no
+  validator ties together — `templates/decisions-README.md` (payload),
+  `skills/dw-land/references/decision-record.md` (the canon the loop reads), and
+  `docs/decisions/README.md` (dogfood). The dogfood copy says so in its own second paragraph, which
+  is the only thing pointing a reader at the other two. Same shape as the vendored-from-`dw-skills`
+  trap, but inside one repo.
 - **The consumed bullet has moved since shaping.** `.ai/backlog/skill-and-docs-drift.md` is gone —
   it was already promoted to `.ai/work/skill-and-docs-drift/CHANGE.md`, still `unclaimed`. So at
   close, `dw-land` drops the first bullet from **that change doc**, not from a backlog entry. Task 2

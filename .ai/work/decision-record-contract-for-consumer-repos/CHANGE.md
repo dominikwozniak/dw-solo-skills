@@ -43,7 +43,7 @@ tells a session to flip an old record rather than only ever appending a new one.
       README to the verbatim-copy bullet, existing records left alone. Bump `dw-solo-setup`
       0.1.8 → 0.1.9 in `.claude-plugin/marketplace.json` **and**
       `plugins/dw-solo-setup/.claude-plugin/plugin.json`, identical.
-- [ ] 2. `skills/dw-land/references/decision-record.md` — replace the two-line `:22-24` paragraph
+- [x] 2. `skills/dw-land/references/decision-record.md` — replace the two-line `:22-24` paragraph
       with a short `## Superseding` section: never rewrite, flip `status`, reciprocal `supersedes:` /
       `superseded-by:`, **`dw-land` is what flips the old record**, and readers do **not** skip
       superseded records. Then `skills/dw-land/SKILL.md:67-71` — one appended sentence, no new
@@ -71,6 +71,10 @@ tells a session to flip an old record rather than only ever appending a new one.
 
 ## Notes
 
+- **The consumed bullet has moved since shaping.** `.ai/backlog/skill-and-docs-drift.md` is gone —
+  it was already promoted to `.ai/work/skill-and-docs-drift/CHANGE.md`, still `unclaimed`. So at
+  close, `dw-land` drops the first bullet from **that change doc**, not from a backlog entry. Task 2
+  resolved it here; whoever claims that change must not fix the same sentence twice.
 - **Consumes one bullet from `.ai/backlog/skill-and-docs-drift.md`** — the first, `dw-land/SKILL.md:68-70`
   writing the bar as "or" against `decision-record.md:9`'s "all three". Folded in because it is the
   same sentence task 2 edits and the shipped README states "all three". `dw-land` should drop that

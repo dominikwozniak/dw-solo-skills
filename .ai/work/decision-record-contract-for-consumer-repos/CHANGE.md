@@ -1,6 +1,6 @@
 ---
 change: decision-record-contract-for-consumer-repos
-branch: unclaimed
+branch: decision-record-contract-for-consumer-repos
 created: 2026-08-08
 status: shaping # shaping | building | landed
 ---

@@ -50,7 +50,10 @@ decisions belong in `docs/decisions/`, not in a spec nobody will reopen.
    whole catalog uses, so casing never drifts. (`${CLAUDE_PLUGIN_ROOT}` is the env var Claude Code
    substitutes to this plugin's install dir.) A slug already present in `.ai/work/` **or
    `.ai/archive/`** is taken — the land-time `git mv` would nest into the existing archive folder —
-   so make the description more specific and re-derive. A split — the count test in Workflow `### 2.`
+   so make the description more specific and re-derive. **One exception, and it is the point of the
+   check:** if the archived doc reads `status: rejected`, this idea was already tried and turned
+   down — read its `## Why rejected` and say what it found **before** re-deriving. Renaming around a
+   rejection is how the work gets done twice. A split — the count test in Workflow `### 2.`
    below — derives several at once; check those against each other as well as against disk, since a
    sibling isn't written yet to be found.
 

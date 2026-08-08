@@ -6,7 +6,7 @@ description: >-
   `CONTEXT.md`, `## Gotchas` and the backlog, and archive the change doc. Use when a change is
   finished, or when someone says "land this", "wrap this up", "is this ready to merge", "close this
   out". Prefer this over merging and letting the change doc rot.
-argument-hint: "bare for the verdict — your go closes it · close to trust the diff and close at once"
+argument-hint: "bare for the verdict — your go closes it · close to trust the diff and close at once · reject to archive a turned-down idea with its reason"
 ---
 
 # dw-land — one thin verdict, then keep what's worth keeping
@@ -89,7 +89,14 @@ fine, I guess"; wait for a plain one — and only then:
 - **Archive the scaffolding.** `git rm` a leftover `HANDOFF.md` first — it described the middle of
   a task, and post-merge it is noise — then `git mv .ai/work/<slug>/ .ai/archive/<slug>/` and, in
   the moved `CHANGE.md`, flip `status:` to `landed` and add `landed: YYYY-MM-DD` plus `pr: "#<n>"`
-  when there is one. If `.ai/archive/<slug>/` already exists, stop and pick a suffixed destination
+  when there is one. In `reject` mode the move is the same, but `status:` becomes `rejected`, the
+  stamp is `rejected: YYYY-MM-DD`, and `pr:` names the **closed, unmerged** PR when there was one;
+  the doc must carry a `## Why rejected` section — what was tried, what killed it, and what would
+  have to change to revisit — because that section is the only reason the folder is kept. An idea
+  turned down before it was ever shaped has no `.ai/work/<slug>/` to move: write
+  `.ai/archive/<slug>/CHANGE.md` directly, with the same frontmatter and that one section, and pick
+  the slug the way `dw-shape` does so it collides with a future re-shape.
+  If `.ai/archive/<slug>/` already exists, stop and pick a suffixed destination
   (`<slug>-2`) — `git mv` into an existing directory silently nests the folder inside it. The archive is history, not guidance — nothing reads it to decide anything
   (`.ai/archive/README.md` says so; create it from that one line if the repo predates the
   scaffold). If something in the doc still feels too valuable to bury, that is the signal it
@@ -113,6 +120,12 @@ is the default.
   line and close without waiting for a go. One exception: a verdict that comes out **not ready**
   stops here too — report it and wait; closing over it takes an explicit word from a user who has
   seen it. Never close blind.
+- **`reject`** — the idea was turned down. Skip the verdict: there is no diff worth judging, or one
+  about to be discarded. Run the promotion step unchanged — a rejection still leaves follow-ups and
+  gotchas worth keeping — then archive with the rejected terminal state below. **Ask for the reason
+  if it isn't already in the conversation, and refuse to write the doc without one**: an archived
+  rejection whose `## Why rejected` is empty costs a folder and teaches nothing, which is the exact
+  failure this mode exists to prevent.
 
 ## References
 

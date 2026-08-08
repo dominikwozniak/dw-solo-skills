@@ -47,10 +47,13 @@ decisions belong in `docs/decisions/`, not in a spec nobody will reopen.
    not a conflict. When unsure, ask.
 3. **Derive the slug, don't invent it:**
    `bash "${CLAUDE_PLUGIN_ROOT}/scripts/slugify.sh" slug "<short description>"`. Same script the
-   whole catalog uses, so casing never drifts. (`${CLAUDE_PLUGIN_ROOT}` is the env var Claude Code
-   substitutes to this plugin's install dir.) A slug already present in `.ai/work/` **or
+   whole catalog uses, so casing never drifts. A slug already present in `.ai/work/` **or
    `.ai/archive/`** is taken — the land-time `git mv` would nest into the existing archive folder —
-   so make the description more specific and re-derive. A split — the count test in Workflow `### 2.`
+   so make the description more specific and re-derive — **unless the archived doc reads
+   `status: rejected`**, which means this idea was already tried and dropped. Then **stop**: report
+   what its `## Why rejected` found and what it said would justify revisiting, and shape only if the
+   user says that has changed. Re-deriving a slug around a rejection is how the work gets done
+   twice. A split — the count test in Workflow `### 2.`
    below — derives several at once; check those against each other as well as against disk, since a
    sibling isn't written yet to be found.
 

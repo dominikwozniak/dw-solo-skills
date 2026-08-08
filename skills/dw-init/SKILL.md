@@ -19,21 +19,21 @@ handoffs, no status tables.
 
 ## What it writes
 
-| Path                             | Tracked?           | Purpose                                                        |
-| -------------------------------- | ------------------ | -------------------------------------------------------------- |
-| `.ai/work/`                      | **tracked**        | one folder per change (`dw-shape` writes `CHANGE.md`)          |
-| `.ai/README.md`                  | **tracked**        | what `.ai/` is and who owns it                                 |
-| `.ai/backlog/` + its `README.md` | **tracked**        | one file per follow-up, between changes                        |
-| `.ai/archive/` + its `README.md` | **tracked**        | landed change docs — history, not guidance                     |
-| `docs/decisions/`                | **tracked**        | durable decision records (`dw-land` promotes here)             |
-| `CONTEXT.md`                     | **tracked**        | the project's glossary — terms only                            |
-| `CLAUDE.md`                      | **tracked**        | `## Commands` + `## Gotchas` — `dw-land` appends to the latter |
-| `.claude/settings.json`          | **tracked**        | permissions (ask + deny + derived allow) and hook wiring       |
-| `.claude/hooks/*.sh`             | **tracked**        | the guardrail scripts those settings reference                 |
-| `CLAUDE.local.md`                | personal / ignored | your commands, git conventions, and the loop                   |
-| `.worktreeinclude`               | **tracked**        | gitignored files a fresh worktree should carry in              |
-| `.gitignore`                     | tracked            | a managed marker block for the personal files                  |
-| `.husky/` + `.lintstagedrc.json` | tracked, optional  | the pre-commit twin of the hooks — only when opted in          |
+| Path                                | Tracked?           | Purpose                                                        |
+| ----------------------------------- | ------------------ | -------------------------------------------------------------- |
+| `.ai/work/`                         | **tracked**        | one folder per change (`dw-shape` writes `CHANGE.md`)          |
+| `.ai/README.md`                     | **tracked**        | what `.ai/` is and who owns it                                 |
+| `.ai/backlog/` + its `README.md`    | **tracked**        | one file per follow-up, between changes                        |
+| `.ai/archive/` + its `README.md`    | **tracked**        | landed change docs — history, not guidance                     |
+| `docs/decisions/` + its `README.md` | **tracked**        | durable decision records (`dw-land` promotes here)             |
+| `CONTEXT.md`                        | **tracked**        | the project's glossary — terms only                            |
+| `CLAUDE.md`                         | **tracked**        | `## Commands` + `## Gotchas` — `dw-land` appends to the latter |
+| `.claude/settings.json`             | **tracked**        | permissions (ask + deny + derived allow) and hook wiring       |
+| `.claude/hooks/*.sh`                | **tracked**        | the guardrail scripts those settings reference                 |
+| `CLAUDE.local.md`                   | personal / ignored | your commands, git conventions, and the loop                   |
+| `.worktreeinclude`                  | **tracked**        | gitignored files a fresh worktree should carry in              |
+| `.gitignore`                        | tracked            | a managed marker block for the personal files                  |
+| `.husky/` + `.lintstagedrc.json`    | tracked, optional  | the pre-commit twin of the hooks — only when opted in          |
 
 Deliberately absent: `.ai/verify/` and `.ai/handoffs/` — the solo lane has one thin closing pass
 that writes no artifact, and no one to hand off to.
@@ -78,14 +78,18 @@ is light.
 
 ### 4. Write
 
-- `mkdir -p .ai/work .ai/backlog .ai/archive docs/decisions`; seed `.ai/work` and `docs/decisions`
-  with `.gitkeep` (the other two get READMEs).
+- `mkdir -p .ai/work .ai/backlog .ai/archive docs/decisions`; seed `.ai/work` with `.gitkeep` (the
+  other three get READMEs).
 - `.ai/README.md` — copy `${CLAUDE_PLUGIN_ROOT}/templates/work-README.md` verbatim. It states the
   lifecycle a reader gets wrong: a `CHANGE.md` leaves `work/` at merge — archived, never deleted.
-- `.ai/backlog/README.md` and `.ai/archive/README.md` — copy
-  `${CLAUDE_PLUGIN_ROOT}/templates/backlog-README.md` and
-  `${CLAUDE_PLUGIN_ROOT}/templates/archive-README.md` verbatim.
-  **Existing entries in either dir are left alone** — they carry real content from earlier changes.
+- `.ai/backlog/README.md`, `.ai/archive/README.md` and `docs/decisions/README.md` — copy
+  `${CLAUDE_PLUGIN_ROOT}/templates/backlog-README.md`,
+  `${CLAUDE_PLUGIN_ROOT}/templates/archive-README.md` and
+  `${CLAUDE_PLUGIN_ROOT}/templates/decisions-README.md` verbatim. The last one is the record
+  contract — the bar, the numbering, and how to supersede — which otherwise lives only in the
+  plugin.
+  **Existing entries in any of the three dirs are left alone** — they carry real content from
+  earlier changes.
   A legacy single-file `.ai/BACKLOG.md`, if present, is named at the gate: offer to split it into
   per-file entries, never clobber or silently keep it.
 - `CONTEXT.md` — if absent, create it with a one-line purpose statement (this project's glossary;

@@ -2,7 +2,7 @@
 change: decision-record-contract-for-consumer-repos
 branch: decision-record-contract-for-consumer-repos
 created: 2026-08-08
-status: shaping # shaping | building | landed
+status: building # shaping | building | landed
 ---
 
 # Change — `docs/decisions/` ships its own contract, and supersession becomes a thing a skill does
@@ -35,7 +35,7 @@ tells a session to flip an old record rather than only ever appending a new one.
 
 ## Tasks
 
-- [ ] 1. `templates/decisions-README.md` (new, ~25-35 lines, voice of `templates/backlog-README.md`):
+- [x] 1. `templates/decisions-README.md` (new, ~25-35 lines, voice of `templates/backlog-README.md`):
       the bar (all three, zero records is the correct number), the shape (`<NNNN>-<slug>.md`, next in
       sequence, never renumbered; frontmatter; the four H2s) as condensed prose not a second fenced
       template, superseding, and one "not here" line pointing at `CONTEXT.md` and `## Gotchas`.
@@ -84,3 +84,7 @@ tells a session to flip an old record rather than only ever appending a new one.
   `pnpm lint && pnpm format && pnpm validate:manifests && pnpm validate:artifacts && pnpm validate:docs && pnpm validate:evals && pnpm eval:routing`.
   No new skill and no `description` change, so `eval:routing` should be unmoved; a shift means
   something else drifted.
+- Task 1 also had to touch `dw-init:28` — the scaffold table enumerates seeded READMEs per row
+  (`.ai/backlog/` + its `README.md`), so `docs/decisions/` needed the same treatment; prettier
+  realigns the whole table when that cell grows. `:163` (tracked/ignored) names the directory only
+  and needed nothing.

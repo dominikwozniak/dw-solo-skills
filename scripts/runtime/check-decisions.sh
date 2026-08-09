@@ -37,16 +37,26 @@ ERRORS=0
 err() { ERRORS=$((ERRORS + 1)); printf 'error: %s\n' "$1"; }
 warn() { printf 'warn: %s\n' "$1"; }
 
+# A directory that cannot be listed leaves the glob below unexpanded, which is indistinguishable
+# from an empty folder — and "no records" is legal here, so it would exit 0 as if clean. Say so
+# instead: an unread folder is not a checked folder.
+if [ ! -r "$DIR" ] || [ ! -x "$DIR" ]; then
+  err "docs/decisions/ exists but cannot be listed — its records went unchecked (fix the directory permissions)."
+  exit 1
+fi
+
 # frontmatter <path> — the block between the leading `---` and the next one, on stdout.
-# Non-zero when the file does not open with one, or never closes it.
+# Non-zero when the file does not open with one, or never closes it. CR is dropped first: a
+# CRLF record is well-formed, and matching `---\r` against `---` would call it frontmatter-less.
+# Stripping here covers field() too, which only ever sees this function's output.
 frontmatter() {
-  awk '
+  tr -d '\r' <"$1" | awk '
     NR == 1 && $0 != "---" { exit 1 }
     NR == 1 { next }
     /^---[[:space:]]*$/ { closed = 1; exit }
     { print }
     END { if (!closed) exit 1 }
-  ' "$1"
+  '
 }
 
 # field <frontmatter> <name> — the value of `name:`, empty when absent. Values may carry a
@@ -71,21 +81,34 @@ for path in "$DIR"/*.md; do
   entry=$(basename "$path")
   [ "$entry" = "README.md" ] && continue
 
+  # A leading four-digit number is enough to claim a slot, even when the rest of the name is
+  # wrong: 0002-Bad-Slug.md is a badly named record, not a missing 0002.
   case "$entry" in
     [0-9][0-9][0-9][0-9]-*.md) number="${entry%%-*}" ;;
     *) number="" ;;
   esac
+
+  if [ -n "$number" ]; then
+    case "$SEEN" in
+      *" $number "*)
+        err "docs/decisions/$entry reuses number $number, already taken by another record — numbers are never reused."
+        continue
+        ;;
+    esac
+    # Register the moment the filename yields a number — BEFORE anything below can skip this
+    # record. Contiguity and superseded-by both ask "does a record with this number exist", and a
+    # file sitting right there answers yes however broken it is. Registering later let one
+    # malformed record fabricate a missing-number gap and a dangling pointer on top of the real
+    # finding, sending you after two problems that were never there.
+    SEEN="$SEEN$number "
+    NUMBERS="$NUMBERS$number
+"
+  fi
+
   if [ -z "$number" ] || ! printf '%s' "$entry" | grep -qE '^[0-9]{4}-[a-z0-9]+(-[a-z0-9]+)*\.md$'; then
     err "docs/decisions/$entry is not named <NNNN>-<kebab-slug>.md — the number is what orders these and what superseded-by points at."
     continue
   fi
-
-  case "$SEEN" in
-    *" $number "*)
-      err "docs/decisions/$entry reuses number $number, already taken by another record — numbers are never reused."
-      continue
-      ;;
-  esac
 
   if ! fm=$(frontmatter "$path"); then
     err "docs/decisions/$entry has no frontmatter — decision, status and date are required."
@@ -103,9 +126,6 @@ for path in "$DIR"/*.md; do
   [ "$status" = "active" ] || [ "$status" = "superseded" ] ||
     err "docs/decisions/$entry has status \"${status:-(missing)}\" — it must be active or superseded."
 
-  SEEN="$SEEN$number "
-  NUMBERS="$NUMBERS$number
-"
   ENTRIES[${#ENTRIES[@]}]="$entry"
   STATUSES[${#STATUSES[@]}]="$status"
   SUPBYS[${#SUPBYS[@]}]="$(field "$fm" "superseded-by")"

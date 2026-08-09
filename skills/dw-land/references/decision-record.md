@@ -1,4 +1,4 @@
-# Decision records — the shape, and the bar
+# Decision records — the bar, the shape, and how one is replaced
 
 `docs/decisions/<NNNN>-<slug>.md`, numbered next in sequence (`0001-`, `0002-`, …). Tracked, durable,
 and read by `dw-shape` and `dw-land` on every later change — which is exactly why the bar for writing
@@ -18,10 +18,6 @@ Write a record only if **all three** hold:
 If any of the three fails, don't write one. Most changes produce **zero** records, and that is the
 correct number. A `docs/decisions/` folder full of "chose the obvious library" entries is worse than
 an empty one, because it teaches you to stop reading it.
-
-**Never rewrite a record.** When a decision is replaced, mark the old one `superseded` and link
-forward to the new one — the reason a settled choice was reopened is often the most useful thing in
-the folder.
 
 ## The shape
 
@@ -54,6 +50,21 @@ the extra read per request, but can't be revoked". This is the part your future 
 
 The concrete trigger that should reopen this. A number, an event, a threshold — not "periodically".
 ```
+
+## Superseding
+
+**Never rewrite a record**, and never delete one. When a decision is replaced, the replacement is a
+new record at the next number, and the old one is edited in exactly two fields: `status: superseded`
+and `superseded-by: <NNNN>`. The new record carries `supersedes: <NNNN>` pointing back. Numbers are
+never reused and never renumbered — the old record's number is what the pointers are made of.
+
+**`dw-land` is what flips the old record.** Promoting a decision means checking `docs/decisions/`
+for one this change reopens, and writing both halves of the link in the same pass. A new record that
+contradicts an old one without saying so leaves the folder holding two live answers to the same
+question, and no way to tell which is current.
+
+Superseded records are **not** skipped on a read. Why a settled choice was reopened is often the
+most useful thing in the folder — that is the whole reason the old one stays.
 
 ## Glossary lines vs decision records
 

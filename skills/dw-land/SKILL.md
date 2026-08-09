@@ -67,8 +67,10 @@ fine, I guess"; wait for a plain one — and only then:
 - **Promote the decisions.** Anything from Decisions or Notes that a future session would need and
   couldn't re-derive from the code becomes `docs/decisions/<NNNN>-<slug>.md`, numbered next in
   sequence, from the shape in `references/decision-record.md`. Be strict: a decision earns a record
-  only if it was **hard to reverse, surprising, or had a real trade-off**. Most changes produce
-  **zero** records, and that's the correct number.
+  only if it was **hard to reverse, surprising, and a real trade-off** — all three, not any one of
+  them. Most changes produce **zero** records, and that's the correct number. When a record here
+  replaces an older one, flip that one to `status: superseded` with `superseded-by:` in the same
+  pass — the reference says how, and nothing else in the loop does it.
 - **Promote the vocabulary.** Any new domain term this change introduced or sharpened goes into
   `CONTEXT.md` as a glossary line. Terms only — no implementation detail. Create the file if it
   doesn't exist.
@@ -129,7 +131,8 @@ is the default.
 
 ## References
 
-- `references/decision-record.md` — the shape for `docs/decisions/<NNNN>-<slug>.md`, plus the test
-  for whether a decision deserves a record at all. Read it before promoting.
+- `references/decision-record.md` — the shape for `docs/decisions/<NNNN>-<slug>.md`, the test for
+  whether a decision deserves a record at all, and how a record is superseded rather than rewritten.
+  Read it before promoting.
 
 **Next:** `dw-ship` to push and merge, or `dw-shape` for the next change.

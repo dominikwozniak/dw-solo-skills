@@ -20,6 +20,10 @@ it — `validate-manifests.sh` cannot see a missing bump (`## Gotchas`).
   premise was three skills reading that file, and the `routing-eval-explain-flag` branch removes the
   instruction from `dw-grill` and `dw-next` and deletes this very entry on its own branch. If nothing
   reads the glossary once that lands, the bullet goes with it.
+- `dw-init:81` stopped seeding `docs/decisions/.gitkeep` (it gets a README now) but nothing removes an
+  existing one, so a repo scaffolded at 0.1.8 and re-run at 0.1.9 keeps a redundant `.gitkeep` beside
+  the README. One clause in the same bullet. Detail:
+  `.ai/archive/decision-record-contract-for-consumer-repos`.
 - While both scripts are open, give them the self-tests they have never had: `doctor.sh` is 261 lines
   and the only script that runs on someone else's machine. Taken off `shell-test-sweep`.
 

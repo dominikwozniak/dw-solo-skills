@@ -16,5 +16,10 @@ files are already open — `717f1e5` is proof a validator can pass silently whil
   number and auto-merged, twice on 2026-08-02, caught by hand) and a shipped-payload change under
   `templates/` or `scripts/runtime/` that merges green with no bump. Needing a base ref may put it in
   CI rather than the validator. Detail: `.ai/archive/skill-routing-evals`.
+- The decision-record contract now states itself in three files nothing ties together:
+  `templates/decisions-README.md`, `skills/dw-land/references/decision-record.md` and
+  `docs/decisions/README.md`. They are deliberately not byte-identical, so no diff can check them —
+  the cheap version asserts each states the bar as **all three**, which is the clause that has
+  already drifted once. Detail: `.ai/archive/decision-record-contract-for-consumer-repos`.
 - Fixtures for both validators, taken off `shell-test-sweep` — write them here, where the behaviour
   being pinned is the behaviour being changed.

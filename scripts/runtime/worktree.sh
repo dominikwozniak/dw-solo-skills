@@ -18,8 +18,10 @@
 # stdout stays the path and nothing else — dw-start parses it.
 #
 # remove uses `git branch -D`: after a squash-merge the branch tip is never an ancestor of
-# the default branch, so `-d` would always refuse. Never `--force` on the worktree itself —
-# a dirty worktree must refuse, and surfacing git's own error is the feature.
+# the default branch, so `-d` would always refuse. On the worktree itself `--force` is reached for
+# in exactly one case — git refuses outright once a submodule is checked out there — and only after
+# remove_worktree has checked cleanliness itself, because that flag waives the dirty check too.
+# A dirty worktree must still refuse; surfacing git's own error is the feature.
 set -euo pipefail
 # The include matching below sorts two file lists and intersects them with `comm`; all three have to
 # agree on collation. Every other script here that compares text pins it the same way.
@@ -192,6 +194,39 @@ main_root() {
   (cd "$common/.." && pwd -P)
 }
 
+# Remove the worktree, keeping git's dirty-worktree refusal intact.
+#
+# `git worktree remove` refuses outright once a submodule is checked out in the worktree —
+# cleanliness does not enter into it, so the plain call can never tear that worktree down. A gitlink
+# in the index alone is harmless: `worktree add` leaves submodules empty and removal still works.
+# The refusal starts the moment someone runs `submodule update --init` there, which is exactly what
+# a repo keeping reference checkouts as submodules needs before it can build anything.
+#
+# `--force` lifts that refusal, but it lifts the dirty-worktree one in the same breath, so reaching
+# for it unconditionally would silently delete uncommitted work. Hence: plain call first, and
+# `--force` only for the submodule refusal, gated on a cleanliness check we make ourselves.
+#
+# Matching git's English stderr is safe because this script exports LC_ALL=C above.
+remove_worktree() {
+  local path="$1" err rc
+  err="$(git worktree remove "$path" 2>&1)" && return 0
+  rc=$?
+
+  case "$err" in
+    *submodule*)
+      if [ -n "$(git -C "$path" status --porcelain 2>/dev/null)" ]; then
+        echo "worktree.sh: $path has uncommitted changes — commit, stash or delete them first" >&2
+        return 1
+      fi
+      git worktree remove --force "$path"
+      ;;
+    *)
+      printf '%s\n' "$err" >&2
+      return "$rc"
+      ;;
+  esac
+}
+
 cmd="${1:-}"
 slug="${2:-}"
 case "$cmd" in
@@ -253,7 +288,7 @@ case "$cmd" in
           ;;
       esac
     done < <(git worktree list --porcelain)
-    git worktree remove "$path"
+    remove_worktree "$path"
     if [ -n "$branch" ]; then
       git branch -D "$branch" 1>&2
     else

@@ -2,7 +2,7 @@
 change: validate-decision-records
 branch: validate-decision-records
 created: 2026-08-09
-status: shaping # shaping | building | landed
+status: building # shaping | building | landed
 ---
 
 # Change — the decision-record contract gets a check, run before `dw-land` writes the next record
@@ -44,7 +44,7 @@ shipped `templates/decisions-README.md` yesterday. This change makes it enforcea
 
 ## Tasks
 
-- [ ] 1. `scripts/runtime/check-decisions.sh` — bash 3.2 safe, read-only, adapted from
+- [x] 1. `scripts/runtime/check-decisions.sh` — bash 3.2 safe, read-only, adapted from
       `check-agents-docs.mjs:98-163`. Takes an optional repo root (default `git rev-parse
 --show-toplevel`), reads only `docs/decisions/*.md`, skips `README.md`. Errors: filename not
       `<NNNN>-<kebab-slug>.md`, duplicate number, missing frontmatter, `decision:` ≠ filename
@@ -95,6 +95,17 @@ shipped `templates/decisions-README.md` yesterday. This change makes it enforcea
 
 ## Notes
 
+- **Task 1 — findings are line-prefixed `error: ` / `warn: `.** The shape wasn't specified; the
+  script needs one because two callers route the same output differently (`dw-land` stops on a
+  non-zero exit, `dw-doctor` turns each line into a `report` row). Anything parsing that output
+  depends on the prefix.
+- **Task 1 — `plugins/dw-solo-setup/scripts/` did not exist**; this is the first shipped script
+  that plugin carries. `validate-manifests.sh` skips a plugin with no `scripts/` dir, so nothing
+  had to change for it to appear.
+- **Task 1 — fixtures are built under `mktemp -d`, not committed.** One synthetic
+  `docs/decisions/` per case, thrown away by an `EXIT` trap. Committing 20 fixture folders to
+  assert one defect each would be more repo than signal, and the test reads better with the
+  defect visible beside the assertion.
 - **Neighbour, deliberately not merged**: `.ai/backlog/validator-blind-spots.md`, third bullet,
   wants a validator asserting that the three copies of the contract
   (`templates/decisions-README.md`, `skills/dw-land/references/decision-record.md`,

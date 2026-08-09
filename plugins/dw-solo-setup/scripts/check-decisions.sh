@@ -1,0 +1,1 @@
+../../../scripts/runtime/check-decisions.sh

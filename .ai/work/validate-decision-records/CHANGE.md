@@ -58,7 +58,7 @@ shipped `templates/decisions-README.md` yesterday. This change makes it enforcea
       them). Bump `dw-solo` 0.4.11 → 0.4.12 and `dw-solo-setup` 0.1.9 → 0.1.10, each in
       `.claude-plugin/marketplace.json` **and** its own `plugin.json`, identical — one bump per
       plugin covers this whole change, later tasks do not bump again.
-- [ ] 2. `skills/dw-land/SKILL.md:67-73` — the **Promote the decisions** bullet runs
+- [x] 2. `skills/dw-land/SKILL.md:67-73` — the **Promote the decisions** bullet runs
       `bash "${CLAUDE_PLUGIN_ROOT}/scripts/check-decisions.sh"` **before** allocating a number, and
       stops on a non-zero exit: report what it found and let the user fix the folder, never
       renumber or rewrite a record to make it pass. One or two sentences appended to the existing
@@ -106,6 +106,9 @@ shipped `templates/decisions-README.md` yesterday. This change makes it enforcea
   `docs/decisions/` per case, thrown away by an `EXIT` trap. Committing 20 fixture folders to
   assert one defect each would be more repo than signal, and the test reads better with the
   defect visible beside the assertion.
+- **Task 2 — the bullet says explicitly what to do with a `warn:` line.** Without it the "stops on
+  a non-zero exit" instruction reads as "any output is a problem", which would turn a gap into a
+  blocked close — exactly the outcome the WARN decision exists to prevent.
 - **Neighbour, deliberately not merged**: `.ai/backlog/validator-blind-spots.md`, third bullet,
   wants a validator asserting that the three copies of the contract
   (`templates/decisions-README.md`, `skills/dw-land/references/decision-record.md`,

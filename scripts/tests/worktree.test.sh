@@ -313,6 +313,13 @@ if grep -q "COMMIT HOOKS ARE INACTIVE" "$RLOG2"; then
 else
   note_pass "readiness-no-false-hook-warning"
 fi
+# $REPO has no .gitmodules — most repos don't, and a line about submodules there would teach the
+# reader to skim the whole report.
+if grep -q "submodule" "$RLOG2"; then
+  note_fail "readiness-no-false-submodule-warning" "warned in a repo with no submodules"
+else
+  note_pass "readiness-no-false-submodule-warning"
+fi
 "$WORKTREE" remove kappa >/dev/null 2>&1
 rm -rf "$REPO/.husky/_"
 
@@ -346,10 +353,19 @@ git -C "$SUPER" -c protocol.file.allow=always submodule add -q "$SUB" vendor/sub
 git -C "$SUPER" commit -qm "add submodule" >/dev/null 2>&1
 cd "$SUPER"
 
-if [ -n "$("$WORKTREE" create delta 2>/dev/null)" ]; then
+RLOG3="$TMP/delta.stderr"
+if [ -n "$("$WORKTREE" create delta 2>"$RLOG3")" ]; then
   note_pass "submodule-create-ok"
 else
   note_fail "submodule-create-ok" "create failed in a superproject"
+fi
+
+# The empty submodule is the state `create` leaves behind, so the readiness report has to name it
+# before the init below hides the evidence.
+if grep -q "run: git submodule update --init" "$RLOG3"; then
+  note_pass "readiness-names-submodule-init"
+else
+  note_fail "readiness-names-submodule-init" "stderr: $(tr '\n' '|' <"$RLOG3")"
 fi
 
 git -C "$SUPER/.claude/worktrees/delta" -c protocol.file.allow=always \

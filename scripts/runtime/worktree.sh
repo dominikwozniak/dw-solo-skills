@@ -169,6 +169,20 @@ report_readiness() {
     fi
   fi
 
+  # Submodules are the same regenerate class: `git worktree add` checks out tracked state, and a
+  # submodule's tracked state is a gitlink, not its contents — so every reference checkout lands here
+  # empty and the build fails on files that exist in the main tree. Reported, never run: a large
+  # submodule turns a two-second `create` into a network round trip, and whether this worktree needs
+  # its references populated is the caller's call, not this script's.
+  #
+  # `submodule status` prefixes an uninitialized submodule with `-`. That marker is git's own, so it
+  # holds regardless of locale — unlike matching prose.
+  if [ -f "$dst_root/.gitmodules" ] &&
+    git -C "$dst_root" submodule status 2>/dev/null | grep -q '^-'; then
+    missing="$missing  - submodules — this worktree's submodule directories are empty; run: git submodule update --init
+"
+  fi
+
   # Self-contained on purpose: the install line above is conditional, so pointing at it would
   # dangle exactly when this warning matters most.
   if [ -d "$dst_root/.husky" ] && [ ! -d "$dst_root/.husky/_" ]; then

@@ -2,7 +2,8 @@
 change: decision-record-contract-for-consumer-repos
 branch: decision-record-contract-for-consumer-repos
 created: 2026-08-08
-status: building # shaping | building | landed
+landed: 2026-08-09
+status: landed # shaping | building | landed
 ---
 
 # Change — `docs/decisions/` ships its own contract, and supersession becomes a thing a skill does
@@ -35,7 +36,9 @@ tells a session to flip an old record rather than only ever appending a new one.
 
 ## Tasks
 
-- [x] 1. `templates/decisions-README.md` (new, ~25-35 lines, voice of `templates/backlog-README.md`):
+- [x] 1. `templates/decisions-README.md` (new — shaped as ~25-35 lines in `backlog-README.md`'s flat
+      voice; **shipped as 41 lines in `work-README.md`'s sectioned shape**, decided at `dw-check`:
+      the content is a protocol, and the flat 15-line form could not hold it):
       the bar (all three, zero records is the correct number), the shape (`<NNNN>-<slug>.md`, next in
       sequence, never renumbered; frontmatter; the four H2s) as condensed prose not a second fenced
       template, superseding, and one "not here" line pointing at `CONTEXT.md` and `## Gotchas`.

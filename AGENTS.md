@@ -115,6 +115,16 @@ CI runs those seven plus a `trufflehog` secrets scan on every PR and push to `ma
 
 Traps this repo has actually sprung, newest first.
 
+- **`git commit` commits the index, not what you staged — and the main tree's index is shared with
+  every other session in it.** `git add <my-folder>` followed by `git commit` swept a concurrent
+  session's staged rename into this change's `chore: shape …` commit: the sibling change's promotion
+  from `.ai/backlog/` to `.ai/work/` now rides a PR that has nothing to do with it. Nothing warns —
+  `git status` was clean of it at session start, and the other session staged its work in between.
+  Parallel shaping in the main tree is the normal case here, so before committing there, run
+  `git status --porcelain` **unscoped** and check every staged path is yours; commit with explicit
+  pathspecs (`git commit -- <paths>`) when it isn't. Worth knowing what the fix isn't: once the
+  commit is an ancestor of your branch, splitting it does **not** get the passenger out of the PR —
+  a squash-merge flattens both halves into one commit anyway.
 - **A worktree-isolated session refuses compound shell, and it reads as a permission problem.** Every
   `dw-start` session lands in one, and there the harness rejects any Bash call it cannot statically
   prove stays inside the worktree — `cmd; cmd` chains with a redirect, a `../../..` path, a heredoc.

@@ -18,6 +18,9 @@ Terms this repo uses in a specific way. Definitions only, no implementation deta
   the project green. Not a layer ("add all the migrations" is not a task).
 - **Anchor** — a `path/to/file.rb:42` reference in a `CHANGE.md`. Orientation for a fresh session, never
   an edit script; re-verified when the work resumes.
+- **Payload** — `templates/`: files copied **verbatim into a target project** by `dw-init`, never
+  read from the plugin at runtime. The opposite of canon — a payload file may have a hand-written
+  twin in this repo, because a symlink would put a `templates/` path in the consumer's copy.
 - **Vendored** — a byte-identical copy of a file whose canon lives in `dw-skills`
   (`templates/hooks/*`, `scripts/runtime/slugify.sh`). Fixes must be applied in both repos.
 - **Fork** — a skill copied from `dw-skills` and deliberately simplified for one reader. Expected to

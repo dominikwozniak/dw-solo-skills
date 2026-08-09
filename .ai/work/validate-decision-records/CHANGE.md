@@ -69,7 +69,7 @@ shipped `templates/decisions-README.md` yesterday. This change makes it enforcea
       Keep the absent branch as it is. `doctor.sh` reaches the script via `${CLAUDE_PLUGIN_ROOT}`
       like the skill bodies do; confirm that variable is actually set for a bundled script before
       relying on it, and fall back to a path relative to the script's own location if it is not.
-- [ ] 4. `skills/dw-doctor/SKILL.md:36` — one clause saying the decisions check now reads the
+- [x] 4. `skills/dw-doctor/SKILL.md:36` — one clause saying the decisions check now reads the
       records, not just the folder, so the skill's own description of what it checks stays true.
 
 ## Anchors

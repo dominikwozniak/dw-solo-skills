@@ -63,7 +63,7 @@ shipped `templates/decisions-README.md` yesterday. This change makes it enforcea
       stops on a non-zero exit: report what it found and let the user fix the folder, never
       renumber or rewrite a record to make it pass. One or two sentences appended to the existing
       bullet, not a new step — the closing sequence is already long.
-- [ ] 3. `skills/dw-doctor/scripts/doctor.sh:196-201` — the `docs/decisions/` presence check gains
+- [x] 3. `skills/dw-doctor/scripts/doctor.sh:196-201` — the `docs/decisions/` presence check gains
       the content pass: when the folder exists, run the shared script and turn its output into
       `report ok` / `report warn` / `report fail` lines with the usual "gap + fix to paste" shape.
       Keep the absent branch as it is. `doctor.sh` reaches the script via `${CLAUDE_PLUGIN_ROOT}`
@@ -109,6 +109,14 @@ shipped `templates/decisions-README.md` yesterday. This change makes it enforcea
 - **Task 2 — the bullet says explicitly what to do with a `warn:` line.** Without it the "stops on
   a non-zero exit" instruction reads as "any output is a problem", which would turn a gap into a
   blocked close — exactly the outcome the WARN decision exists to prevent.
+- **Task 3 — `CLAUDE_PLUGIN_ROOT` is NOT in the environment a skill's Bash call runs in.** Checked
+  with `env` in this session: it is substituted into skill _bodies_ at load, and nothing exports
+  it, so a bundled script that reads it gets an empty string. `doctor.sh` resolves from `$0`'s
+  directory and treats the variable as an optional first candidate only. Anything else bundled
+  that wants a sibling shipped script has the same problem.
+- **Task 3 — the three rendered levels were checked by hand** (OK on the clean folder, FAIL on a
+  planted duplicate-number record, WARN on a planted gap), then the folder was restored from
+  `HEAD`. `doctor.sh` has no self-test in this repo and this change did not add one.
 - **Neighbour, deliberately not merged**: `.ai/backlog/validator-blind-spots.md`, third bullet,
   wants a validator asserting that the three copies of the contract
   (`templates/decisions-README.md`, `skills/dw-land/references/decision-record.md`,

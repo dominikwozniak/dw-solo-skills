@@ -46,7 +46,7 @@ shipped `templates/decisions-README.md` yesterday. This change makes it enforcea
 
 - [ ] 1. `scripts/runtime/check-decisions.sh` — bash 3.2 safe, read-only, adapted from
       `check-agents-docs.mjs:98-163`. Takes an optional repo root (default `git rev-parse
-    --show-toplevel`), reads only `docs/decisions/*.md`, skips `README.md`. Errors: filename not
+--show-toplevel`), reads only `docs/decisions/*.md`, skips `README.md`. Errors: filename not
       `<NNNN>-<kebab-slug>.md`, duplicate number, missing frontmatter, `decision:` ≠ filename
       number, `date:` not `YYYY-MM-DD`, `status:` ∉ {`active`, `superseded`}, `superseded` with a
       missing or dangling `superseded-by:`. Warning: first gap in the sequence from `0001`, that

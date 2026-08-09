@@ -18,8 +18,10 @@
 # stdout stays the path and nothing else — dw-start parses it.
 #
 # remove uses `git branch -D`: after a squash-merge the branch tip is never an ancestor of
-# the default branch, so `-d` would always refuse. Never `--force` on the worktree itself —
-# a dirty worktree must refuse, and surfacing git's own error is the feature.
+# the default branch, so `-d` would always refuse. On the worktree itself `--force` is reached for
+# in exactly one case — git refuses outright once a submodule is checked out there — and only after
+# remove_worktree has checked cleanliness itself, because that flag waives the dirty check too.
+# A dirty worktree must still refuse; surfacing git's own error is the feature.
 set -euo pipefail
 # The include matching below sorts two file lists and intersects them with `comm`; all three have to
 # agree on collation. Every other script here that compares text pins it the same way.
@@ -167,6 +169,20 @@ report_readiness() {
     fi
   fi
 
+  # Submodules are the same regenerate class: `git worktree add` checks out tracked state, and a
+  # submodule's tracked state is a gitlink, not its contents — so every reference checkout lands here
+  # empty and the build fails on files that exist in the main tree. Reported, never run: a large
+  # submodule turns a two-second `create` into a network round trip, and whether this worktree needs
+  # its references populated is the caller's call, not this script's.
+  #
+  # `submodule status` prefixes an uninitialized submodule with `-`. That marker is git's own, so it
+  # holds regardless of locale — unlike matching prose.
+  if [ -f "$dst_root/.gitmodules" ] &&
+    git -C "$dst_root" submodule status 2>/dev/null | grep -q '^-'; then
+    missing="$missing  - submodules — this worktree's submodule directories are empty; run: git submodule update --init
+"
+  fi
+
   # Self-contained on purpose: the install line above is conditional, so pointing at it would
   # dangle exactly when this warning matters most.
   if [ -d "$dst_root/.husky" ] && [ ! -d "$dst_root/.husky/_" ]; then
@@ -190,6 +206,39 @@ main_root() {
   local common
   common="$(git rev-parse --git-common-dir)"
   (cd "$common/.." && pwd -P)
+}
+
+# Remove the worktree, keeping git's dirty-worktree refusal intact.
+#
+# `git worktree remove` refuses outright once a submodule is checked out in the worktree —
+# cleanliness does not enter into it, so the plain call can never tear that worktree down. A gitlink
+# in the index alone is harmless: `worktree add` leaves submodules empty and removal still works.
+# The refusal starts the moment someone runs `submodule update --init` there, which is exactly what
+# a repo keeping reference checkouts as submodules needs before it can build anything.
+#
+# `--force` lifts that refusal, but it lifts the dirty-worktree one in the same breath, so reaching
+# for it unconditionally would silently delete uncommitted work. Hence: plain call first, and
+# `--force` only for the submodule refusal, gated on a cleanliness check we make ourselves.
+#
+# Matching git's English stderr is safe because this script exports LC_ALL=C above.
+remove_worktree() {
+  local path="$1" err rc
+  err="$(git worktree remove "$path" 2>&1)" && return 0
+  rc=$?
+
+  case "$err" in
+    *submodule*)
+      if [ -n "$(git -C "$path" status --porcelain 2>/dev/null)" ]; then
+        echo "worktree.sh: $path has uncommitted changes — commit, stash or delete them first" >&2
+        return 1
+      fi
+      git worktree remove --force "$path"
+      ;;
+    *)
+      printf '%s\n' "$err" >&2
+      return "$rc"
+      ;;
+  esac
 }
 
 cmd="${1:-}"
@@ -253,7 +302,7 @@ case "$cmd" in
           ;;
       esac
     done < <(git worktree list --porcelain)
-    git worktree remove "$path"
+    remove_worktree "$path"
     if [ -n "$branch" ]; then
       git branch -D "$branch" 1>&2
     else

@@ -313,8 +313,89 @@ if grep -q "COMMIT HOOKS ARE INACTIVE" "$RLOG2"; then
 else
   note_pass "readiness-no-false-hook-warning"
 fi
+# $REPO has no .gitmodules — most repos don't, and a line about submodules there would teach the
+# reader to skim the whole report.
+if grep -q "submodule" "$RLOG2"; then
+  note_fail "readiness-no-false-submodule-warning" "warned in a repo with no submodules"
+else
+  note_pass "readiness-no-false-submodule-warning"
+fi
 "$WORKTREE" remove kappa >/dev/null 2>&1
 rm -rf "$REPO/.husky/_"
+
+echo "remove, superproject with populated submodules:"
+# `git worktree remove` refuses outright once a submodule is **checked out** in the worktree —
+# cleanliness never enters into it, so the plain call can never tear that worktree down. A gitlink
+# sitting in the index is not enough: `worktree add` leaves submodules empty, and the refusal only
+# starts once someone runs `submodule update --init` there, which is exactly what a repo keeping
+# reference checkouts under submodules needs. Hence the init below — without it this whole section
+# would pass through the plain path and pin nothing.
+#
+# --force lifts that refusal, but it lifts the dirty-worktree one too, so the dirty case below is
+# the one that matters: it pins that remove reaches for the flag only on a clean worktree.
+#
+# A separate repo on purpose. Adding a submodule to $REPO would route every remove above through
+# the --force branch too, and the plain path would stop being tested at all.
+SUB="$TMP/sub"
+SUPER="$TMP/super"
+for r in "$SUB" "$SUPER"; do
+  mkdir -p "$r"
+  git init -q -b main "$r"
+  git -C "$r" config user.email "test@test"
+  git -C "$r" config user.name "test"
+  echo seed >"$r/file.txt"
+  git -C "$r" add file.txt
+  git -C "$r" commit -qm "init"
+done
+SUPER="$(cd "$SUPER" && pwd -P)"
+# file:// submodules are refused by default since git 2.38 (CVE-2022-39253).
+git -C "$SUPER" -c protocol.file.allow=always submodule add -q "$SUB" vendor/sub >/dev/null 2>&1
+git -C "$SUPER" commit -qm "add submodule" >/dev/null 2>&1
+cd "$SUPER"
+
+RLOG3="$TMP/delta.stderr"
+if [ -n "$("$WORKTREE" create delta 2>"$RLOG3")" ]; then
+  note_pass "submodule-create-ok"
+else
+  note_fail "submodule-create-ok" "create failed in a superproject"
+fi
+
+# The empty submodule is the state `create` leaves behind, so the readiness report has to name it
+# before the init below hides the evidence.
+if grep -q "run: git submodule update --init" "$RLOG3"; then
+  note_pass "readiness-names-submodule-init"
+else
+  note_fail "readiness-names-submodule-init" "stderr: $(tr '\n' '|' <"$RLOG3")"
+fi
+
+git -C "$SUPER/.claude/worktrees/delta" -c protocol.file.allow=always \
+  submodule update --init >/dev/null 2>&1
+if [ -n "$(ls -A "$SUPER/.claude/worktrees/delta/vendor/sub" 2>/dev/null)" ]; then
+  note_pass "submodule-populated-in-worktree (the refusal's precondition)"
+else
+  note_fail "submodule-populated-in-worktree" "submodule empty — the cases below prove nothing"
+fi
+
+# Untracked counts as dirty for git's own check, so it must count for ours.
+echo scratch >"$SUPER/.claude/worktrees/delta/untracked.txt"
+if "$WORKTREE" remove delta >/dev/null 2>&1; then
+  note_fail "submodule-remove-dirty-refused" "expected non-zero exit — --force went too wide"
+elif [ -d "$SUPER/.claude/worktrees/delta" ]; then
+  note_pass "submodule-remove-dirty-refused (worktree kept)"
+else
+  note_fail "submodule-remove-dirty-refused" "worktree is gone despite refusal"
+fi
+
+rm -f "$SUPER/.claude/worktrees/delta/untracked.txt"
+if "$WORKTREE" remove delta >/dev/null 2>&1 &&
+  ! git -C "$SUPER" worktree list | grep -q "worktrees/delta" &&
+  ! git -C "$SUPER" show-ref --verify --quiet refs/heads/delta; then
+  note_pass "submodule-remove-ok (worktree and branch gone)"
+else
+  note_fail "submodule-remove-ok" "worktree or branch survived"
+fi
+
+cd "$REPO"
 
 echo "errors (expect non-zero exit):"
 if "$WORKTREE" bogus >/dev/null 2>&1; then note_fail "unknown-subcmd" "expected non-zero"; else note_pass "unknown-subcmd"; fi

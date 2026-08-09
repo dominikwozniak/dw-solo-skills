@@ -117,6 +117,17 @@ shipped `templates/decisions-README.md` yesterday. This change makes it enforcea
 - **Task 3 — the three rendered levels were checked by hand** (OK on the clean folder, FAIL on a
   planted duplicate-number record, WARN on a planted gap), then the folder was restored from
   `HEAD`. `doctor.sh` has no self-test in this repo and this change did not add one.
+- **A number is claimed by the filename, not by a valid record.** Both cascade bugs (found in
+  review, one by Codex) came from registering the number only after the frontmatter parsed: one
+  malformed file then fabricated a missing-number gap _and_ a dangling `superseded-by:` on top of
+  the real finding. `0002-Bad-Slug.md` is a badly named 0002, not a missing one. Registration now
+  happens the moment the filename yields four digits, before any check can `continue`.
+- **A substring assertion cannot see a cascade.** 20 green cases passed while the script emitted
+  two fabricated findings beside each real one, because `expect()` only asked whether the expected
+  line appeared. It now pins the exact finding-line count, asserts stderr stayed empty (findings
+  are a stdout contract — `doctor.sh` parses them), and checks the exit code on the warning-only
+  cases too. `slugify.test.sh` had this right with exact-output matching; this file drifted off
+  its own stated model.
 - **Neighbour, deliberately not merged**: `.ai/backlog/validator-blind-spots.md`, third bullet,
   wants a validator asserting that the three copies of the contract
   (`templates/decisions-README.md`, `skills/dw-land/references/decision-record.md`,

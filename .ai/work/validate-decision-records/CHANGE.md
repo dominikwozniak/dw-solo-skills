@@ -1,6 +1,6 @@
 ---
 change: validate-decision-records
-branch: unclaimed
+branch: validate-decision-records
 created: 2026-08-09
 status: shaping # shaping | building | landed
 ---

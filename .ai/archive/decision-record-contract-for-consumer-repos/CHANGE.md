@@ -36,12 +36,15 @@ tells a session to flip an old record rather than only ever appending a new one.
 
 ## Tasks
 
-- [x] 1. `templates/decisions-README.md` (new — shaped as ~25-35 lines in `backlog-README.md`'s flat
-      voice; **shipped as 41 lines in `work-README.md`'s sectioned shape**, decided at `dw-check`:
-      the content is a protocol, and the flat 15-line form could not hold it):
-      the bar (all three, zero records is the correct number), the shape (`<NNNN>-<slug>.md`, next in
-      sequence, never renumbered; frontmatter; the four H2s) as condensed prose not a second fenced
-      template, superseding, and one "not here" line pointing at `CONTEXT.md` and `## Gotchas`.
+- [x] 1. `templates/decisions-README.md` (new, 26 lines): the bar (all three, zero records is the
+      correct number), superseding, and one "not here" line pointing at `CONTEXT.md` and
+      `## Gotchas`. **The shape is not described at all** — reversed after review against
+      `grateful-me-app-v2/docs/decisions/README.md`, which is the same contract at 24 lines and
+      proves the point: in a folder that has records, the records are the shape spec, so
+      "`0001` is the worked example — copy its shape" replaces the whole section. A prose spec for
+      the frontmatter and the four H2s would have been a third copy of what `dw-land`'s reference
+      already holds, and the copy most likely to drift. It shipped at 41 lines with that section
+      first; cutting it landed back inside the ~25-35 this task asked for.
       Then `skills/dw-init/SKILL.md:81-87` — drop `docs/decisions` from the `.gitkeep` list, add the
       README to the verbatim-copy bullet, existing records left alone. Bump `dw-solo-setup`
       0.1.8 → 0.1.9 in `.claude-plugin/marketplace.json` **and**

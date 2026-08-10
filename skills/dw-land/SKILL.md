@@ -98,9 +98,11 @@ fine, I guess"; wait for a plain one — and only then:
   line, at most ~3 lines of context. Findings go by pointer to `.ai/archive/<slug>` — never
   inlined. If `.ai/backlog/<slug>.md` already exists, merge into it or re-slug with a more
   specific description — **never overwrite it silently**; the existing entry is queued work.
-  Create the dir with its `README.md` if the repo predates the scaffold. Same bar as
-  gotchas — **if you wouldn't pick it up within a month, don't write it** — and zero is a normal
-  answer.
+  Create the dir with its `README.md` if the repo predates the scaffold. Two bars, and an entry
+  clears both. **Will you ever?** — if you would not pick it up within a month, don't write it.
+  **Should it have been done now?** — if doing it costs less than describing it, do it now: a fix
+  that fits in a file the change already touched, or that is smaller than the entry describing it,
+  is a commit in that change, not a file here. Zero is a normal answer.
 - **Archive the scaffolding.** `git rm` a leftover `HANDOFF.md` first — it described the middle of
   a task, and post-merge it is noise — then `git mv .ai/work/<slug>/ .ai/archive/<slug>/` and, in
   the moved `CHANGE.md`, flip `status:` to `landed` and add `landed: YYYY-MM-DD` plus `pr: "#<n>"`

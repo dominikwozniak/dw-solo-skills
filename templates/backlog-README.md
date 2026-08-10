@@ -12,4 +12,7 @@ One exception to the three lines: an entry may **bundle** several small fixes as
 they ship together — same version bump, same gate run, one PR. Say in the lead sentence what makes
 them one change, and keep each bullet to what a session needs to find the code.
 
-The bar: if you would not pick it up within a month, don't write it.
+Two bars, and an entry clears both. **Will you ever?** — if you would not pick it up within a month,
+don't write it. **Should it have been done now?** — if doing it costs less than describing it, do it
+now: a fix that fits in a file the change already touched, or that is smaller than the entry
+describing it, is a commit in that change, not a file here.

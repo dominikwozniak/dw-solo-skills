@@ -49,7 +49,7 @@ that state it — both skills and both backlog READMEs — and both plugin versi
       what it now claims and why the rest is gone, then re-run the verdict. Say explicitly that
       ticked boxes do not settle it — every box was ticked in `#8` while a Goal result was unmet. Put
       it **inside the step**, not the preamble.
-- [ ] 2. **Absorption bar, everywhere it is stated** — the same sentence in `dw-land:92-94` (beside
+- [x] 2. **Absorption bar, everywhere it is stated** — the same sentence in `dw-land:92-94` (beside
       the month bar), `.ai/backlog/README.md:15` and `templates/backlog-README.md:15`: if doing it now
       costs less than describing it, do it now; a fix that fits in a file this change already touched,
       or that is smaller than the entry describing it, is a commit here. Keep the two READMEs

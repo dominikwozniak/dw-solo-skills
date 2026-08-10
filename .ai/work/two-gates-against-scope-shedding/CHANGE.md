@@ -1,6 +1,6 @@
 ---
 change: two-gates-against-scope-shedding
-branch: unclaimed
+branch: two-gates-against-scope-shedding
 created: 2026-08-10
 status: shaping # shaping | building | landed
 ---

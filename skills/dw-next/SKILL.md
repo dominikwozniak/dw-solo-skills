@@ -80,7 +80,15 @@ One task per invocation unless the mode says otherwise.
 - **Narrow and complete.** A vertical slice through whatever layers it needs, not a whole layer.
   Resist widening scope mid-task; a second task is free, a sprawling commit is not. An idea that
   belongs to a **different change** isn't a task here at all — it's one small file in
-  `.ai/backlog/` (an H1 plus `created:`), which is how you drop it without losing it.
+  `.ai/backlog/` (an H1 plus `created:`), which is how you drop it without losing it. Two things
+  are never that file:
+  - **A gap in this change's `## Goal`.** The goal is what this change is for; parking a piece of it
+    is abandonment wearing a queue entry's clothes, and `dw-land` will refuse to close over it
+    anyway. It is a new task in this `CHANGE.md` — or a `## Goal` the user amends to say what the
+    change now claims. Never your call alone to shrink it.
+  - **Something cheaper to do than to describe.** If doing it costs less than describing it, do it
+    now: a fix that fits in a file this task already touched, or that is smaller than the entry
+    describing it, is a commit here. The backlog is for work that genuinely waits.
 - **Test the way the project does.** Read the test command from `CLAUDE.md` / `CLAUDE.local.md` /
   `AGENTS.md`, else the manifests. Where the project has a real test suite and the task has a
   meaningful assertion, write the failing test first and make it pass — where it genuinely doesn't

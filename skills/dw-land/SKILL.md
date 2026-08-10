@@ -56,8 +56,17 @@ ground it, don't report it.**
 
 Close with one line — **ready to merge**, **ready with follow-ups** (name them; each becomes a
 backlog file in phase 3, and an unnamed follow-up vanishes into the archive unread), or **not
-ready** and why —
-then **stop.** You've graded the work; the user decides what happens next.
+ready** and why.
+
+**A `## Goal` result that isn't delivered is not ready.** Read the goal as a list of observable
+results and check each one against the diff. An undelivered result is **not ready** — never **ready
+with follow-ups**, because parking it is how a change sheds the thing it existed to do, and the
+backlog is where that becomes invisible. **Ticked boxes do not settle this**: every box can be
+ticked while a goal result is still unmet, so check the goal against the diff, not against the
+checklist. Two ways out, both the user's call: finish it, or amend the `## Goal` to state what the
+change now claims and why the rest is gone — then re-run the verdict against the amended goal.
+
+Then **stop.** You've graded the work; the user decides what happens next.
 
 ### 3. Close — only on explicit approval
 
@@ -89,9 +98,11 @@ fine, I guess"; wait for a plain one — and only then:
   line, at most ~3 lines of context. Findings go by pointer to `.ai/archive/<slug>` — never
   inlined. If `.ai/backlog/<slug>.md` already exists, merge into it or re-slug with a more
   specific description — **never overwrite it silently**; the existing entry is queued work.
-  Create the dir with its `README.md` if the repo predates the scaffold. Same bar as
-  gotchas — **if you wouldn't pick it up within a month, don't write it** — and zero is a normal
-  answer.
+  Create the dir with its `README.md` if the repo predates the scaffold. Two bars, and an entry
+  clears both. **Will you ever?** — if you would not pick it up within a month, don't write it.
+  **Should it have been done now?** — if doing it costs less than describing it, do it now: a fix
+  that fits in a file the change already touched, or that is smaller than the entry describing it,
+  is a commit in that change, not a file here. Zero is a normal answer.
 - **Archive the scaffolding.** `git rm` a leftover `HANDOFF.md` first — it described the middle of
   a task, and post-merge it is noise — then `git mv .ai/work/<slug>/ .ai/archive/<slug>/` and, in
   the moved `CHANGE.md`, flip `status:` to `landed` and add `landed: YYYY-MM-DD` plus `pr: "#<n>"`

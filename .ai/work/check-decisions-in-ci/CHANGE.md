@@ -52,7 +52,7 @@ in `.ai/archive/validate-decision-records/`.
       for: a commit that only adds or edits a record matches none of the six existing filters, so
       the workflow never runs. Follow the existing comment style — one line saying why the folder is
       listed.
-- [ ] 3. The three prose descriptions that say `validate:artifacts` is "the bash self-tests in
+- [x] 3. The three prose descriptions that say `validate:artifacts` is "the bash self-tests in
       `scripts/tests/`" become true again: `AGENTS.md:98`, `CONTRIBUTING.md:31` (table row) and
       `CLAUDE.local.md:71`. Keep the command name identical in all three — `CLAUDE.local.md`'s
       "Keep this file current" rule pairs it with `AGENTS.md`, and the lint hook greps that file by
@@ -92,7 +92,20 @@ in `.ai/archive/validate-decision-records/`.
   reads as coverage of the code but silently becomes a gate on content. It fails for a reason its
   own name does not describe — here, `arguments:` / `no-arg-…` would have been the heading over a
   broken decision record.
-- **Task 1 — verified against the real folder, all three paths**: clean (silent, `• docs/decisions/
-clean`, exit 0), a planted duplicate `0005` (finding printed, `Artifact validation FAILED`, exit
-  1), a planted `0007` gap (`warn:` printed, `All artifact checks passed`, exit 0). Both fixtures
-  were untracked files, deleted after.
+- **Task 3 — `CLAUDE.local.md` could not be edited from this session, and that is structural.**
+  `worktree.sh create` links it in from the main tree, and the harness resolves the symlink and
+  refuses the write as leaving the worktree. The file is gitignored anyway, so no commit could
+  carry it: the line has to be changed in the main tree by hand, and it is the one part of task 3
+  a merge does **not** deliver. The generalisation: **no `CLAUDE.local.md` edit is ever reachable
+  from a `dw-start` worktree** — schedule it as a main-tree step, or it silently doesn't happen.
+  Outstanding replacement for the **Test command** line under `## Project specifics`:
+
+  ```
+  - **Test command**: `pnpm validate:artifacts` (the bash self-tests in `scripts/tests/`, then
+    `check-decisions.sh` over this repo's own `docs/decisions/`)
+  ```
+
+- **Task 1 — verified against the real folder, all three paths**: clean (silent, one
+  `• docs/decisions/ clean` line, exit 0), a planted duplicate `0005` (finding printed,
+  `Artifact validation FAILED`, exit 1), a planted `0007` gap (`warn:` printed,
+  `All artifact checks passed`, exit 0). Both fixtures were untracked files, deleted after.

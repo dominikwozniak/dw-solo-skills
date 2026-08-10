@@ -95,7 +95,8 @@ checklist by hand.
 This repo is Markdown / JSON / Shell plus a little dependency-free TypeScript under `evals/` — there
 is no build step and no typecheck. Node runs the `.ts` files directly.
 
-- **Test**: `pnpm validate:artifacts` (the bash self-tests in `scripts/tests/`)
+- **Test**: `pnpm validate:artifacts` (the bash self-tests in `scripts/tests/`, then
+  `check-decisions.sh` over this repo's own `docs/decisions/`)
 - **Lint**: `pnpm lint`
 - **Format**: `pnpm format` (check) · `pnpm format:fix` (write)
 - **Routing evals**: `pnpm eval:routing` (free, deterministic) · `pnpm validate:evals` (the

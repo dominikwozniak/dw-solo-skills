@@ -28,7 +28,7 @@ CI runs those five plus a secrets scan on every PR and push to `main`:
 | `pnpm lint`               | `agnix` validates `CLAUDE.md` / `SKILL.md` frontmatter, hooks, manifests                   |
 | `pnpm format`             | `prettier --check` (`printWidth: 100`, `proseWrap: preserve`)                              |
 | `pnpm validate:manifests` | `claude plugin validate`, marketplace↔plugin version sync, runtime symlinks                |
-| `pnpm validate:artifacts` | the self-tests in `scripts/tests/` (slugify, guardrail hooks, hooks-in-sync)               |
+| `pnpm validate:artifacts` | the self-tests in `scripts/tests/`, then `docs/decisions/` against the record contract     |
 | `pnpm validate:docs`      | README / `DESIGN.md` ↔ skills sync — dead links, undocumented skills, `⭑`, `Next:` targets |
 | `trufflehog`              | secrets scan                                                                               |
 

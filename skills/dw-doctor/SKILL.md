@@ -34,7 +34,8 @@ assumed:
 - `.ai/work/` — the scaffold this lane runs on; its absence points at `dw-init`, and a `.ai/runs/`
   directory is flagged as the other lane's repo rather than half-checked.
 - `docs/decisions/`, `CONTEXT.md`, and `CLAUDE.md`'s `## Gotchas` / `## Commands` sections — the
-  promotion targets `dw-land` writes into.
+  promotion targets `dw-land` writes into — and `docs/decisions/` is read, not just counted: its
+  records are checked against their own contract (numbering, frontmatter, supersede links).
 - `CLAUDE.local.md` — the file the hooks and `dw-git` read for commands and conventions.
 - `.claude-plugin/marketplace.json` — only if present (a marketplace repo); a light
   plugin/version-sync glance.

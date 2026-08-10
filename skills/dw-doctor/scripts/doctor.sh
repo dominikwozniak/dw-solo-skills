@@ -45,6 +45,26 @@ ver_ge() { [ "$(printf '%s\n%s\n' "$1" "$2" | sort -V | head -n1)" = "$1" ]; }
 # --- locate the target repo ---------------------------------------------------
 ROOT="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
 
+# --- locate the shipped scripts this one borrows ------------------------------
+# ${CLAUDE_PLUGIN_ROOT} is substituted into skill *bodies*; it is NOT exported into the shell a
+# skill's Bash call runs in, so a bundled script cannot read it — checked, not assumed. Resolve
+# from this file's own location instead, and honour the variable only when something did set it.
+# Empty when nothing matches: a missing sibling degrades one check, it never aborts the report.
+SELF_DIR="$(cd "$(dirname "$0")" && pwd)"
+CHECK_DECISIONS=""
+for candidate in \
+  "${CLAUDE_PLUGIN_ROOT:-}/scripts/check-decisions.sh" \
+  "$SELF_DIR/../../../scripts/check-decisions.sh" \
+  "$SELF_DIR/../../../scripts/runtime/check-decisions.sh"; do
+  # …/skills/dw-doctor/scripts/ → the plugin root in an install (and in plugins/<p>/ in source),
+  # → the repo root when this runs from the canon at skills/dw-doctor/, where it is runtime/.
+  case "$candidate" in /scripts/*) continue ;; esac
+  if [ -f "$candidate" ] && [ -r "$candidate" ]; then
+    CHECK_DECISIONS="$candidate"
+    break
+  fi
+done
+
 printf '%sdw-doctor%s — read-only environment diagnostic\n' "$C_DIM" "$C_RST"
 printf '%srepo: %s%s\n' "$C_DIM" "$ROOT" "$C_RST"
 
@@ -195,7 +215,34 @@ fi
 # The promotion targets dw-land writes into; their absence breaks the closing step.
 if [ "$SOLO" -eq 1 ]; then
   if [ -d "$ROOT/docs/decisions" ]; then
-    report ok "docs/decisions/" "present"
+    # Presence is the cheap half. The records themselves carry a contract nothing else reads —
+    # the filename number is the identity and superseded-by: is a pointer made of it — so a
+    # duplicate or a dangling link sits there silently. check-decisions.sh is the read.
+    if [ -n "$CHECK_DECISIONS" ]; then
+      decisions_out="$(bash "$CHECK_DECISIONS" "$ROOT" 2>&1)"
+      decisions_rc=$?
+      if [ "$decisions_rc" -eq 0 ] && [ -z "$decisions_out" ]; then
+        report ok "docs/decisions/" "present, records consistent"
+      else
+        if [ "$decisions_rc" -eq 0 ]; then
+          report warn "docs/decisions/" "present; numbering gap below (harmless — records are never renumbered)"
+        else
+          report fail "docs/decisions/" "present, but the records break their own contract; fix: edit the files named below"
+        fi
+        # One finding per line, at the level the script assigned it. Never auto-repaired: the
+        # number is what every superseded-by: points with.
+        printf '%s\n' "$decisions_out" | while IFS= read -r finding; do
+          case "$finding" in
+            error:*) printf '    %s%s%s\n' "$C_FAIL" "${finding#error: }" "$C_RST" ;;
+            warn:*) printf '    %s%s%s\n' "$C_WARN" "${finding#warn: }" "$C_RST" ;;
+            "") ;;
+            *) printf '    %s\n' "$finding" ;;
+          esac
+        done
+      fi
+    else
+      report warn "docs/decisions/" "present; could not find check-decisions.sh beside this plugin, so the records went unread"
+    fi
   else
     report warn "docs/decisions/" "absent — dw-land promotes decision records here; fix: dw-init"
   fi

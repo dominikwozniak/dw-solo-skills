@@ -1,8 +1,9 @@
 ---
 change: validate-decision-records
-branch: unclaimed
+branch: validate-decision-records
 created: 2026-08-09
-status: shaping # shaping | building | landed
+landed: 2026-08-10
+status: landed # shaping | building | landed
 ---
 
 # Change — the decision-record contract gets a check, run before `dw-land` writes the next record
@@ -44,7 +45,7 @@ shipped `templates/decisions-README.md` yesterday. This change makes it enforcea
 
 ## Tasks
 
-- [ ] 1. `scripts/runtime/check-decisions.sh` — bash 3.2 safe, read-only, adapted from
+- [x] 1. `scripts/runtime/check-decisions.sh` — bash 3.2 safe, read-only, adapted from
       `check-agents-docs.mjs:98-163`. Takes an optional repo root (default `git rev-parse
 --show-toplevel`), reads only `docs/decisions/*.md`, skips `README.md`. Errors: filename not
       `<NNNN>-<kebab-slug>.md`, duplicate number, missing frontmatter, `decision:` ≠ filename
@@ -58,18 +59,18 @@ shipped `templates/decisions-README.md` yesterday. This change makes it enforcea
       them). Bump `dw-solo` 0.4.11 → 0.4.12 and `dw-solo-setup` 0.1.9 → 0.1.10, each in
       `.claude-plugin/marketplace.json` **and** its own `plugin.json`, identical — one bump per
       plugin covers this whole change, later tasks do not bump again.
-- [ ] 2. `skills/dw-land/SKILL.md:67-73` — the **Promote the decisions** bullet runs
+- [x] 2. `skills/dw-land/SKILL.md:67-73` — the **Promote the decisions** bullet runs
       `bash "${CLAUDE_PLUGIN_ROOT}/scripts/check-decisions.sh"` **before** allocating a number, and
       stops on a non-zero exit: report what it found and let the user fix the folder, never
       renumber or rewrite a record to make it pass. One or two sentences appended to the existing
       bullet, not a new step — the closing sequence is already long.
-- [ ] 3. `skills/dw-doctor/scripts/doctor.sh:196-201` — the `docs/decisions/` presence check gains
+- [x] 3. `skills/dw-doctor/scripts/doctor.sh:196-201` — the `docs/decisions/` presence check gains
       the content pass: when the folder exists, run the shared script and turn its output into
       `report ok` / `report warn` / `report fail` lines with the usual "gap + fix to paste" shape.
       Keep the absent branch as it is. `doctor.sh` reaches the script via `${CLAUDE_PLUGIN_ROOT}`
       like the skill bodies do; confirm that variable is actually set for a bundled script before
       relying on it, and fall back to a path relative to the script's own location if it is not.
-- [ ] 4. `skills/dw-doctor/SKILL.md:36` — one clause saying the decisions check now reads the
+- [x] 4. `skills/dw-doctor/SKILL.md:36` — one clause saying the decisions check now reads the
       records, not just the folder, so the skill's own description of what it checks stays true.
 
 ## Anchors
@@ -95,6 +96,45 @@ shipped `templates/decisions-README.md` yesterday. This change makes it enforcea
 
 ## Notes
 
+- **Task 1 — findings are line-prefixed `error: ` / `warn: `.** The shape wasn't specified; the
+  script needs one because two callers route the same output differently (`dw-land` stops on a
+  non-zero exit, `dw-doctor` turns each line into a `report` row). Anything parsing that output
+  depends on the prefix.
+- **Task 1 — `plugins/dw-solo-setup/scripts/` did not exist**; this is the first shipped script
+  that plugin carries. `validate-manifests.sh` skips a plugin with no `scripts/` dir, so nothing
+  had to change for it to appear.
+- **Task 1 — fixtures are built under `mktemp -d`, not committed.** One synthetic
+  `docs/decisions/` per case, thrown away by an `EXIT` trap. Committing 20 fixture folders to
+  assert one defect each would be more repo than signal, and the test reads better with the
+  defect visible beside the assertion.
+- **Task 2 — the bullet says explicitly what to do with a `warn:` line.** Without it the "stops on
+  a non-zero exit" instruction reads as "any output is a problem", which would turn a gap into a
+  blocked close — exactly the outcome the WARN decision exists to prevent.
+- **Task 3 — `CLAUDE_PLUGIN_ROOT` is NOT in the environment a skill's Bash call runs in.** Checked
+  with `env` in this session: it is substituted into skill _bodies_ at load, and nothing exports
+  it, so a bundled script that reads it gets an empty string. `doctor.sh` resolves from `$0`'s
+  directory and treats the variable as an optional first candidate only. Anything else bundled
+  that wants a sibling shipped script has the same problem.
+- **Task 3 — the three rendered levels were checked by hand** (OK on the clean folder, FAIL on a
+  planted duplicate-number record, WARN on a planted gap), then the folder was restored from
+  `HEAD`. `doctor.sh` has no self-test in this repo and this change did not add one.
+- **A number is claimed by the filename, not by a valid record.** Both cascade bugs (found in
+  review, one by Codex) came from registering the number only after the frontmatter parsed: one
+  malformed file then fabricated a missing-number gap _and_ a dangling `superseded-by:` on top of
+  the real finding. `0002-Bad-Slug.md` is a badly named 0002, not a missing one. Registration now
+  happens the moment the filename yields four digits, before any check can `continue`.
+- **A substring assertion cannot see a cascade.** 20 green cases passed while the script emitted
+  two fabricated findings beside each real one, because `expect()` only asked whether the expected
+  line appeared. It now pins the exact finding-line count, asserts stderr stayed empty (findings
+  are a stdout contract — `doctor.sh` parses them), and checks the exit code on the warning-only
+  cases too. `slugify.test.sh` had this right with exact-output matching; this file drifted off
+  its own stated model.
+- **Both skill-body edits were trimmed back at ship time.** The first drafts ran to seven lines in
+  `dw-land` and three in `dw-doctor`; re-read sentence by sentence, most of that carried no
+  instruction — rationale that restated the reference, and a "the folder is the user's to fix" that
+  repeated "report and stop". What survives is four beats in `dw-land` (run it before allocating,
+  stop on non-zero, never renumber, `warn:` is not a failure) and one clause in `dw-doctor`. A skill
+  body is read on every invocation; prose that only reassures the author costs on each one.
 - **Neighbour, deliberately not merged**: `.ai/backlog/validator-blind-spots.md`, third bullet,
   wants a validator asserting that the three copies of the contract
   (`templates/decisions-README.md`, `skills/dw-land/references/decision-record.md`,

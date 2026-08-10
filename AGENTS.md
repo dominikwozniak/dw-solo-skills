@@ -115,6 +115,16 @@ CI runs those seven plus a `trufflehog` secrets scan on every PR and push to `ma
 
 Traps this repo has actually sprung, newest first.
 
+- **`${CLAUDE_PLUGIN_ROOT}` is substituted into skill _bodies_, not exported into the shell those
+  bodies run.** A skill body's `bash "${CLAUDE_PLUGIN_ROOT}/scripts/x.sh"` resolves because the text
+  is expanded before the call — but a **bundled script** reading `$CLAUDE_PLUGIN_ROOT` at runtime
+  gets an empty string, because it is not in the environment at all (confirmed by dumping `env` in a
+  live session; the only `CLAUDE_*` vars there are `CLAUDE_CODE_*`, `CLAUDE_PID` and friends). Under
+  `set -u` that is a hard error; without it, a silently wrong path. A bundled script that needs a
+  sibling shipped script must resolve from its own `$0` — see the candidate list in
+  `skills/dw-doctor/scripts/doctor.sh`, which covers the install layout _and_ both source layouts,
+  since `skills/<name>/` and `plugins/<p>/skills/<name>/` sit at different depths from
+  `scripts/runtime/`.
 - **`git commit` commits the index, not what you staged — and the main tree's index is shared with
   every other session in it.** `git add <my-folder>` followed by `git commit` swept a concurrent
   session's staged rename into this change's `chore: shape …` commit: the sibling change's promotion

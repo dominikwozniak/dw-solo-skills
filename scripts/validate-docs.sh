@@ -246,7 +246,9 @@ done
 
 # Every gate in that command needs its own row in the table, or the table is the stale half.
 if [ -n "$gate_ref" ]; then
-  # Read line by line: a gate name contains a space, which word-splitting would tear in half.
+  # Read line by line: a gate name contains a space, which word-splitting would tear in half. The
+  # character class admits digits and hyphens because a narrower `[a-z]+` truncated `pnpm test:e2e`
+  # to `pnpm test:e` and then blamed the table for the missing row.
   while IFS= read -r gate; do
     [ -n "$gate" ] || continue
     if grep -qE "^\|[[:space:]]*\`$gate\`[[:space:]]*\|" "$GATE_TABLE_DOC"; then
@@ -255,7 +257,7 @@ if [ -n "$gate_ref" ]; then
       echo "::error::$gate is in the pre-push gate but has no row in $GATE_TABLE_DOC's gate table"
       FAILED=1
     fi
-  done < <(printf '%s\n' "$gate_ref" | grep -oE 'pnpm [a-z]+(:[a-z]+)?' | sort -u)
+  done < <(printf '%s\n' "$gate_ref" | grep -oE 'pnpm [a-z0-9-]+(:[a-z0-9-]+)?' | sort -u)
 fi
 
 echo

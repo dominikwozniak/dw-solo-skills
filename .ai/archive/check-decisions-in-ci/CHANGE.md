@@ -2,7 +2,8 @@
 change: check-decisions-in-ci
 branch: check-decisions-in-ci
 created: 2026-08-10
-status: building # shaping | building | landed
+landed: 2026-08-10
+status: landed # shaping | building | landed
 ---
 
 # Change — CI holds this repo's own `docs/decisions/` to the contract it ships

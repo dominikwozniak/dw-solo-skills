@@ -116,6 +116,22 @@ CI runs those seven plus a `trufflehog` secrets scan on every PR and push to `ma
 
 Traps this repo has actually sprung, newest first.
 
+- **A self-test whose fixture is the live repo is a content gate wearing a unit test's name.**
+  `check-decisions.test.sh` had a case, `no-arg-checks-this-repo`, that ran the script with no
+  argument — which resolves to this repo — and asserted total silence. So the real `docs/decisions/`
+  was gated by a file nobody thinks of as a gate, under the heading `arguments:`, and more strictly
+  than the contract allows: a `warn:` gap exits 0 by design and would still have failed it. It also
+  proved less than it claimed — passing identically whether the script resolved the repo root or
+  just `$PWD`. Build the argument case on a synthetic `git init` fixture and call it from a
+  subdirectory; live-content checks belong in `validate-artifacts.sh`, where a failure names the
+  folder rather than a test case.
+- **`CLAUDE.local.md` cannot be edited from a `dw-start` worktree at all.** It is carried by the
+  **link** class, and the harness resolves the symlink and refuses the write as leaving the
+  worktree — and it is gitignored, so no commit can deliver the edit either. A change that updates
+  the test/lint command therefore lands its `AGENTS.md` half and silently drops the
+  `CLAUDE.local.md` half, which is exactly the pair "Keep this file current" says must move
+  together. Schedule any `CLAUDE.local.md` edit as a main-tree step, before or after the worktree,
+  never inside it.
 - **`${CLAUDE_PLUGIN_ROOT}` is substituted into skill _bodies_, not exported into the shell those
   bodies run.** A skill body's `bash "${CLAUDE_PLUGIN_ROOT}/scripts/x.sh"` resolves because the text
   is expanded before the call — but a **bundled script** reading `$CLAUDE_PLUGIN_ROOT` at runtime

@@ -2,7 +2,8 @@
 change: validate-decision-records
 branch: validate-decision-records
 created: 2026-08-09
-status: building # shaping | building | landed
+landed: 2026-08-10
+status: landed # shaping | building | landed
 ---
 
 # Change — the decision-record contract gets a check, run before `dw-land` writes the next record
@@ -128,6 +129,10 @@ shipped `templates/decisions-README.md` yesterday. This change makes it enforcea
   are a stdout contract — `doctor.sh` parses them), and checks the exit code on the warning-only
   cases too. `slugify.test.sh` had this right with exact-output matching; this file drifted off
   its own stated model.
+- **Task 2 overran its budget on purpose.** The shaped bullet was "one or two sentences"; it landed
+  as four. The `warn:` clause is what stops an agent reading "stops on a non-zero exit" as "any
+  output blocks the close" — cutting it to fit would delete the sentence the WARN level exists for.
+  Deviation, not debt.
 - **Neighbour, deliberately not merged**: `.ai/backlog/validator-blind-spots.md`, third bullet,
   wants a validator asserting that the three copies of the contract
   (`templates/decisions-README.md`, `skills/dw-land/references/decision-record.md`,

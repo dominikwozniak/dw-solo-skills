@@ -1,6 +1,6 @@
 ---
 change: contributing-pre-push-gate-list-is-stale
-branch: unclaimed
+branch: contributing-pre-push-gate-list-is-stale
 created: 2026-08-10
 status: shaping # shaping | building | landed
 ---

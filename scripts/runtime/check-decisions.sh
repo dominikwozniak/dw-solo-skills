@@ -110,6 +110,11 @@ for path in "$DIR"/*.md; do
     continue
   fi
 
+  if [ ! -r "$path" ]; then
+    err "docs/decisions/$entry cannot be read — its contents went unchecked (fix the file permissions)."
+    continue
+  fi
+
   if ! fm=$(frontmatter "$path"); then
     err "docs/decisions/$entry has no frontmatter — decision, status and date are required."
     continue

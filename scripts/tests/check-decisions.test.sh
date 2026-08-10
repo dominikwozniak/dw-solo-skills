@@ -197,6 +197,12 @@ else
   chmod 000 "$r/docs/decisions"
   expect "unreadable-folder-is-an-error" 1 1 "cannot be listed" "$r"
   chmod 755 "$r/docs/decisions"
+
+  r=$(fixture unreadable-record)
+  record "$r" "0001-locked.md" 0001 2026-01-01 active
+  chmod 000 "$r/docs/decisions/0001-locked.md"
+  expect "unreadable-record-is-an-error" 1 1 "cannot be read" "$r"
+  chmod 644 "$r/docs/decisions/0001-locked.md"
 fi
 
 echo "arguments:"

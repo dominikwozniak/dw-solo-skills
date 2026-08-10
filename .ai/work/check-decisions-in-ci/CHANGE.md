@@ -1,6 +1,6 @@
 ---
 change: check-decisions-in-ci
-branch: unclaimed
+branch: check-decisions-in-ci
 created: 2026-08-10
 status: shaping # shaping | building | landed
 ---

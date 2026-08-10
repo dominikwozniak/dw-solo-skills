@@ -2,7 +2,7 @@
 change: two-gates-against-scope-shedding
 branch: two-gates-against-scope-shedding
 created: 2026-08-10
-status: shaping # shaping | building | landed
+status: building # shaping | building | landed
 ---
 
 # Change — two gates so a change can't shed its own scope into the backlog
@@ -43,7 +43,7 @@ that state it — both skills and both backlog READMEs — and both plugin versi
 
 ## Tasks
 
-- [ ] 1. **Completion gate** — in `dw-land` step 2, after the three verdicts at `:57-60`: an unmet
+- [x] 1. **Completion gate** — in `dw-land` step 2, after the three verdicts at `:57-60`: an unmet
       `## Goal` result is **not ready**, never **ready with follow-ups**. Read the Goal as a list of
       observable results and check each; the two ways out are finish it, or amend the Goal to state
       what it now claims and why the rest is gone, then re-run the verdict. Say explicitly that

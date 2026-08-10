@@ -56,8 +56,17 @@ ground it, don't report it.**
 
 Close with one line — **ready to merge**, **ready with follow-ups** (name them; each becomes a
 backlog file in phase 3, and an unnamed follow-up vanishes into the archive unread), or **not
-ready** and why —
-then **stop.** You've graded the work; the user decides what happens next.
+ready** and why.
+
+**A `## Goal` result that isn't delivered is not ready.** Read the goal as a list of observable
+results and check each one against the diff. An undelivered result is **not ready** — never **ready
+with follow-ups**, because parking it is how a change sheds the thing it existed to do, and the
+backlog is where that becomes invisible. **Ticked boxes do not settle this**: every box can be
+ticked while a goal result is still unmet, so check the goal against the diff, not against the
+checklist. Two ways out, both the user's call: finish it, or amend the `## Goal` to state what the
+change now claims and why the rest is gone — then re-run the verdict against the amended goal.
+
+Then **stop.** You've graded the work; the user decides what happens next.
 
 ### 3. Close — only on explicit approval
 

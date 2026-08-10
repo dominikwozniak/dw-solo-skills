@@ -55,7 +55,7 @@ that state it — both skills and both backlog READMEs — and both plugin versi
       or that is smaller than the entry describing it, is a commit here. Keep the two READMEs
       byte-identical — they are 927 B each today, and the template is what `dw-init` copies out. One
       commit, because splitting it ships a disagreement between a skill and its README.
-- [ ] 3. **`dw-next` gets its first bar** — extend the "Narrow and complete" bullet at `:80-83` with
+- [x] 3. **`dw-next` gets its first bar** — extend the "Narrow and complete" bullet at `:80-83` with
       the absorption bar _and_ the rule that a gap in this change's `## Goal` is never a backlog
       entry: it is a new task in this `CHANGE.md`, or a Goal the user amends. Leave `:81` "a second
       task is free" alone — a second task keeps the work inside the change.

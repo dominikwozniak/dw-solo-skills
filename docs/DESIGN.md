@@ -83,15 +83,16 @@ What is genuinely durable is **promoted out** to four targets before the doc is 
 | `docs/decisions/`           | hard-to-reverse decisions   | needs the reasoning, not just the outcome           |
 | `CONTEXT.md`                | domain terms, glossary only | a term you'd have to re-derive every session        |
 | `## Gotchas` in `CLAUDE.md` | traps that cost real time   | **auto-loaded** — the next session reads it unasked |
-| `.ai/backlog/<slug>.md`     | ordinary follow-ups         | clears none of the above bars, still real           |
+| `.ai/backlog/<slug>.md`     | ordinary follow-ups         | clears none of the above bars, but clears its own   |
 
 Without that closing step a private repo accumulates stale specs _and_ loses the decisions worth
 keeping — the one failure a thin lane would otherwise introduce.
 
 The backlog is the fourth target because the other three each have a high bar, and an ordinary
-follow-up clears none of them. Each entry stays one minimal file (`created:` plus an H1),
-unvalidated on purpose: the moment it grows a status column it is the validated plan this lane
-exists to avoid. The archive is deliberately **not** a fifth target: it is history, not guidance —
+follow-up clears none of them — but it is not the target with no bar of its own: an entry must also
+be work that genuinely waits, not a piece of the change's own goal and not a fix cheaper to apply
+than to describe. Each entry stays one minimal file (`created:` plus an H1), unvalidated on purpose:
+the moment it grows a status column it is the validated plan this lane exists to avoid. The archive is deliberately **not** a fifth target: it is history, not guidance —
 the doc moves there whole, and nothing reads it to decide anything.
 
 ## One gate, not a skill boundary

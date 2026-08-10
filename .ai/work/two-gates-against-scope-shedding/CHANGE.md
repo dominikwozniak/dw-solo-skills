@@ -59,7 +59,7 @@ that state it — both skills and both backlog READMEs — and both plugin versi
       the absorption bar _and_ the rule that a gap in this change's `## Goal` is never a backlog
       entry: it is a new task in this `CHANGE.md`, or a Goal the user amends. Leave `:81` "a second
       task is free" alone — a second task keeps the work inside the change.
-- [ ] 4. **`docs/DESIGN.md`** — `:86` ("clears none of the above bars") and `:91-92` ("the other three
+- [x] 4. **`docs/DESIGN.md`** — `:86` ("clears none of the above bars") and `:91-92` ("the other three
       each have a high bar, and an ordinary follow-up clears none of them") both stop being true once
       the bar exists. One sentence each. Cuttable if the change wants to be narrower; nothing
       validates it.

@@ -18,10 +18,10 @@ agent (and CI) already read it.
 ## Before you push
 
 ```bash
-pnpm lint && pnpm format && pnpm validate:manifests && pnpm validate:artifacts && pnpm validate:docs
+pnpm lint && pnpm format && pnpm validate:manifests && pnpm validate:artifacts && pnpm validate:docs && pnpm validate:evals && pnpm eval:routing
 ```
 
-CI runs those five plus a secrets scan on every PR and push to `main`:
+CI runs those, plus a `trufflehog` secrets scan, on every PR and push to `main`:
 
 | Gate                      | What it checks                                                                             |
 | ------------------------- | ------------------------------------------------------------------------------------------ |
@@ -30,6 +30,8 @@ CI runs those five plus a secrets scan on every PR and push to `main`:
 | `pnpm validate:manifests` | `claude plugin validate`, marketplace↔plugin version sync, runtime symlinks                |
 | `pnpm validate:artifacts` | the self-tests in `scripts/tests/`, then `docs/decisions/` against the record contract     |
 | `pnpm validate:docs`      | README / `DESIGN.md` ↔ skills sync — dead links, undocumented skills, `⭑`, `Next:` targets |
+| `pnpm validate:evals`     | every model-invocable skill has an `evals/cases/` file, and no orphan case files           |
+| `pnpm eval:routing`       | `node evals/routing.ts --min-rank1 67` — the deterministic, free routing tier              |
 | `trufflehog`              | secrets scan                                                                               |
 
 The validators name the exact missing entry, so run them instead of re-deriving the checklist.

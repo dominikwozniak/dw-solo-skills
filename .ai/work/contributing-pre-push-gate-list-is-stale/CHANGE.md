@@ -2,7 +2,7 @@
 change: contributing-pre-push-gate-list-is-stale
 branch: contributing-pre-push-gate-list-is-stale
 created: 2026-08-10
-status: shaping # shaping | building | landed
+status: building # shaping | building | landed
 ---
 
 # Change — `CONTRIBUTING.md`'s pre-push gate catches up to CI, and a check keeps it there
@@ -41,7 +41,7 @@ matching `AGENTS.md`'s or when a gate in it has no table row. You know it worked
 
 ## Tasks
 
-- [ ] 1. `CONTRIBUTING.md` — replace the `:21` command with `AGENTS.md:110` verbatim, rewrite `:24`
+- [x] 1. `CONTRIBUTING.md` — replace the `:21` command with `AGENTS.md:110` verbatim, rewrite `:24`
       to drop the count, and add table rows for `pnpm validate:evals` (the skills ↔ eval-case-files
       contract) and `pnpm eval:routing` (`node evals/routing.ts --min-rank1 67` — the deterministic
       free tier). Keep the existing column alignment; `prettier` will reflow the table, so run

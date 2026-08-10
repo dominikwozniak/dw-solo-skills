@@ -2,7 +2,8 @@
 change: contributing-pre-push-gate-list-is-stale
 branch: contributing-pre-push-gate-list-is-stale
 created: 2026-08-10
-status: building # shaping | building | landed
+status: landed # shaping | building | landed
+landed: 2026-08-10
 ---
 
 # Change — `CONTRIBUTING.md`'s pre-push gate catches up to CI, and a check keeps it there
@@ -80,5 +81,12 @@ matching `AGENTS.md`'s or when a gate in it has no table row. You know it worked
   leaves the fences equal and fails the row check alone. Since there is no
   `scripts/tests/validate-docs.test.sh` yet (see the Decisions), those two probes are the only record
   that check 6 can fail at all — re-run them by hand when `validator-blind-spots` touches this file.
+- **Two findings at land time; one fixed, one deliberately dropped.** Fixed: the gate matcher's
+  `[a-z]+` truncated `pnpm test:e2e` to `pnpm test:e` and then blamed the table for the missing row —
+  now `[a-z0-9-]+`, with the reason in a comment beside it. **Dropped on purpose, not parked:**
+  `GATE_LIST_DOCS` has no reverse check, so a third doc growing a "Before you push" block stays
+  invisible — the same drift-because-it-wasn't-in-the-loop failure check 3's comment records about
+  `docs/WORKFLOWS.md`. Only `AGENTS.md` and `CONTRIBUTING.md` carry the heading today. Whoever adds a
+  third is on the honour system; if that bites, this note is the record that it was a choice.
 - No new file types, so `.lintstagedrc.json`'s glob is fine. Full gate before push:
   `pnpm lint && pnpm format && pnpm validate:manifests && pnpm validate:artifacts && pnpm validate:docs && pnpm validate:evals && pnpm eval:routing`.

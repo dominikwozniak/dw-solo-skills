@@ -12,6 +12,9 @@ on:
       - templates/**
       # this repo's own installed copies, which hooks-in-sync pins to the canon.
       - .claude/hooks/**
+      # the dogfood pass reads these records — without the folder here, a commit that only adds
+      # or edits one matches no filter and the check that exists for it never runs.
+      - docs/decisions/**
       - scripts/validate-artifacts.sh
       - .github/workflows/validate-artifacts.yaml
   push:
@@ -21,6 +24,7 @@ on:
       - scripts/runtime/**
       - templates/**
       - .claude/hooks/**
+      - docs/decisions/**
       - scripts/validate-artifacts.sh
       - .github/workflows/validate-artifacts.yaml
 

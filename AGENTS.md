@@ -95,7 +95,8 @@ checklist by hand.
 This repo is Markdown / JSON / Shell plus a little dependency-free TypeScript under `evals/` — there
 is no build step and no typecheck. Node runs the `.ts` files directly.
 
-- **Test**: `pnpm validate:artifacts` (the bash self-tests in `scripts/tests/`)
+- **Test**: `pnpm validate:artifacts` (the bash self-tests in `scripts/tests/`, then
+  `check-decisions.sh` over this repo's own `docs/decisions/`)
 - **Lint**: `pnpm lint`
 - **Format**: `pnpm format` (check) · `pnpm format:fix` (write)
 - **Routing evals**: `pnpm eval:routing` (free, deterministic) · `pnpm validate:evals` (the
@@ -115,6 +116,14 @@ CI runs those seven plus a `trufflehog` secrets scan on every PR and push to `ma
 
 Traps this repo has actually sprung, newest first.
 
+- **`CLAUDE.local.md` cannot be edited from a `dw-start` worktree.** Link-class carry, so the
+  harness refuses the write as leaving the worktree — and it is gitignored, so no commit delivers it
+  either. A change touching the test/lint command lands its `AGENTS.md` half and silently drops the
+  other. Do `CLAUDE.local.md` edits in the main tree.
+- **A self-test whose fixture is the live repo is a content gate under a unit test's name.**
+  `check-decisions.test.sh`'s `no-arg` case ran the script against this repo and demanded silence —
+  gating `docs/decisions/` from under the heading `arguments:`, and stricter than the contract (a
+  `warn:` exits 0). Use a synthetic fixture; live-content checks belong in `validate-artifacts.sh`.
 - **`${CLAUDE_PLUGIN_ROOT}` is substituted into skill _bodies_, not exported into the shell those
   bodies run.** A skill body's `bash "${CLAUDE_PLUGIN_ROOT}/scripts/x.sh"` resolves because the text
   is expanded before the call — but a **bundled script** reading `$CLAUDE_PLUGIN_ROOT` at runtime

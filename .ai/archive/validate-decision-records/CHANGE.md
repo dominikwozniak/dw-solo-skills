@@ -129,10 +129,12 @@ shipped `templates/decisions-README.md` yesterday. This change makes it enforcea
   are a stdout contract — `doctor.sh` parses them), and checks the exit code on the warning-only
   cases too. `slugify.test.sh` had this right with exact-output matching; this file drifted off
   its own stated model.
-- **Task 2 overran its budget on purpose.** The shaped bullet was "one or two sentences"; it landed
-  as four. The `warn:` clause is what stops an agent reading "stops on a non-zero exit" as "any
-  output blocks the close" — cutting it to fit would delete the sentence the WARN level exists for.
-  Deviation, not debt.
+- **Both skill-body edits were trimmed back at ship time.** The first drafts ran to seven lines in
+  `dw-land` and three in `dw-doctor`; re-read sentence by sentence, most of that carried no
+  instruction — rationale that restated the reference, and a "the folder is the user's to fix" that
+  repeated "report and stop". What survives is four beats in `dw-land` (run it before allocating,
+  stop on non-zero, never renumber, `warn:` is not a failure) and one clause in `dw-doctor`. A skill
+  body is read on every invocation; prose that only reassures the author costs on each one.
 - **Neighbour, deliberately not merged**: `.ai/backlog/validator-blind-spots.md`, third bullet,
   wants a validator asserting that the three copies of the contract
   (`templates/decisions-README.md`, `skills/dw-land/references/decision-record.md`,

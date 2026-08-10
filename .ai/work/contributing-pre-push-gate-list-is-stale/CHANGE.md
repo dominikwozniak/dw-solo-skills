@@ -46,7 +46,7 @@ matching `AGENTS.md`'s or when a gate in it has no table row. You know it worked
       contract) and `pnpm eval:routing` (`node evals/routing.ts --min-rank1 67` — the deterministic
       free tier). Keep the existing column alignment; `prettier` will reflow the table, so run
       `pnpm format:fix` and re-read it.
-- [ ] 2. `scripts/validate-docs.sh` — add check 6: extract the fenced block under the
+- [x] 2. `scripts/validate-docs.sh` — add check 6: extract the fenced block under the
       "Before you push" heading from each of `GATE_LIST_DOCS` (`AGENTS.md`, `CONTRIBUTING.md`), fail
       on any doc where it is missing or differs from the first, then fail on any `pnpm <script>` in
       that command that has no row of its own in `CONTRIBUTING.md`'s gate table (match a leading pipe
@@ -70,5 +70,15 @@ matching `AGENTS.md`'s or when a gate in it has no table row. You know it worked
   `validate-docs.sh:157` and adds the fixtures. It should land **second** — this one appends a check
   and touches nothing it edits, so going first keeps the conflict to zero and gives its fixtures a
   sixth check to cover.
+- **A gate name contains a space, and `for gate in $(…)` tears it in half.** The first cut of check 6
+  reported `pnpm`, `lint`, `format` … as seven separate missing gates. Fixed with
+  `while IFS= read -r` over a process substitution — the same shape check 5 already uses for the
+  backticked tokens in an Arguments cell. Worth knowing before the next check iterates anything whose
+  items aren't single words.
+- **Both halves were proved by breaking them, not by reading them.** Deleting `&& pnpm eval:routing`
+  from `CONTRIBUTING.md` fails with both commands printed side by side; deleting only its table row
+  leaves the fences equal and fails the row check alone. Since there is no
+  `scripts/tests/validate-docs.test.sh` yet (see the Decisions), those two probes are the only record
+  that check 6 can fail at all — re-run them by hand when `validator-blind-spots` touches this file.
 - No new file types, so `.lintstagedrc.json`'s glob is fine. Full gate before push:
   `pnpm lint && pnpm format && pnpm validate:manifests && pnpm validate:artifacts && pnpm validate:docs && pnpm validate:evals && pnpm eval:routing`.

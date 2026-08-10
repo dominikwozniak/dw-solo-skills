@@ -63,7 +63,7 @@ that state it — both skills and both backlog READMEs — and both plugin versi
       each have a high bar, and an ordinary follow-up clears none of them") both stop being true once
       the bar exists. One sentence each. Cuttable if the change wants to be narrower; nothing
       validates it.
-- [ ] 5. **Both version bumps, then the full gate** — `dw-solo` `0.4.12` → `0.4.13` (tasks 1–3 touch
+- [x] 5. **Both version bumps, then the full gate** — `dw-solo` `0.4.12` → `0.4.13` (tasks 1–3 touch
       its skills) and `dw-solo-setup` `0.1.10` → `0.1.11` (task 2 touches the payload), each in
       `.claude-plugin/marketplace.json` **and** `plugins/<p>/.claude-plugin/plugin.json`. Last task on
       purpose: `validate-manifests.sh` only checks the pairs are _equal_, so a forgotten bump ships
@@ -115,3 +115,15 @@ that state it — both skills and both backlog READMEs — and both plugin versi
     change. Deepest fix available; beyond this change's land-side scope.
 - `TASK2.md` sits untracked in the main tree and belongs to another session. Commit with explicit
   pathspecs.
+- **The absorption bar is now stated in four places, word-for-word**: `skills/dw-land/SKILL.md`
+  (the "Promote the follow-ups" bullet), `skills/dw-next/SKILL.md` (the "Narrow and complete"
+  sub-bullets), `.ai/backlog/README.md` and `templates/backlog-README.md`. The last two are
+  byte-identical at 1217 B and nothing validates that — `diff` them after touching either. Rewording
+  the bar means touching all four or shipping a disagreement.
+- The two bars got names in the prose — **"Will you ever?"** and **"Should it have been done
+  now?"** — so a later edit has something to refer to instead of re-describing them.
+- `docs/DESIGN.md`'s promotion table needed `prettier --write` after the row edit: the new cell text
+  changed the column width, and `pnpm format` fails on a hand-aligned table.
+- The full gate ran green, all seven. No `description:` field changed, so `eval:routing` is unmoved
+  (rank-1 67%, 20/30 · 21/21) — the run was for the idf side-effect the checklist warns about, and
+  there was none.

@@ -2,7 +2,7 @@
 change: check-decisions-in-ci
 branch: check-decisions-in-ci
 created: 2026-08-10
-status: shaping # shaping | building | landed
+status: building # shaping | building | landed
 ---
 
 # Change — CI holds this repo's own `docs/decisions/` to the contract it ships
@@ -39,7 +39,7 @@ in `.ai/archive/validate-decision-records/`.
 
 ## Tasks
 
-- [ ] 1. `scripts/validate-artifacts.sh` — after the self-test loop, add a second section that runs
+- [x] 1. `scripts/validate-artifacts.sh` — after the self-test loop, add a second section that runs
       `bash "$ROOT/scripts/runtime/check-decisions.sh" "$ROOT"`, echoes its stdout, and sets
       `FAILED=1` only on a non-zero exit. Update the file's opening comment: it currently reads as
       "run every self-test", and the `NOTE:` about deliberately not sweeping `.ai/` stays true and
@@ -76,3 +76,23 @@ in `.ai/archive/validate-decision-records/`.
   error.
 
 ## Notes
+
+- **Task 1 — the dogfood pass already half-existed, in the wrong place and with the wrong
+  semantics.** `check-decisions.test.sh` carried a case called `no-arg-checks-this-repo` that ran
+  the script with no argument — which resolves to this repo — and asserted total silence. So a unit
+  test was the live-content gate, and a stricter one than the contract: a `warn:` gap exits 0 by
+  design but would have failed that assertion. The change's premise ("only checked when someone
+  closes a change here") was therefore wrong in letter, right in spirit.
+  Amended in the same commit rather than left as a second, conflicting assertion: the case is now
+  `no-arg-resolves-the-repo-root-from-a-subdirectory`, built on a synthetic `git init` fixture with
+  a planted duplicate and run from `nested/deeper/`. That actually proves the
+  `git rev-parse --show-toplevel` fallback it always claimed to test — the old version passed
+  identically whether the script resolved the root or just `$PWD`.
+- **The general shape, worth more than the instance**: a unit test whose fixture is the live repo
+  reads as coverage of the code but silently becomes a gate on content. It fails for a reason its
+  own name does not describe — here, `arguments:` / `no-arg-…` would have been the heading over a
+  broken decision record.
+- **Task 1 — verified against the real folder, all three paths**: clean (silent, `• docs/decisions/
+clean`, exit 0), a planted duplicate `0005` (finding printed, `Artifact validation FAILED`, exit
+  1), a planted `0007` gap (`warn:` printed, `All artifact checks passed`, exit 0). Both fixtures
+  were untracked files, deleted after.

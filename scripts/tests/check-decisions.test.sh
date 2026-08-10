@@ -207,15 +207,27 @@ fi
 
 echo "arguments:"
 
-# No argument at all: falls back to the repo root, whose own docs/decisions/ must be clean.
+# No argument at all: falls back to `git rev-parse --show-toplevel`, so a call from a SUBDIRECTORY
+# still reads the root's docs/decisions/ and not the cwd's. A synthetic repo, deliberately: an
+# earlier version ran this against the repo the test itself lives in, which quietly made a unit
+# test the gate on live content — and a strictly-silent one, so a `warn:` gap would have failed it
+# even though the script exits 0 for exactly that reason. scripts/validate-artifacts.sh owns the
+# dogfood pass over this repo's own records, with the warn/error split intact.
+r="$(fixture noarg)"
+git init -q -b main "$r"
+record "$r" "0001-first.md" "0001" "2026-01-01" "active"
+record "$r" "0001-second.md" "0001" "2026-01-02" "active"
+mkdir -p "$r/nested/deeper"
 errfile="$TMP/stderr.noarg"
-out=$(bash "$CHECK" 2>"$errfile"); rc=$?
+out=$(cd "$r/nested/deeper" && bash "$CHECK" 2>"$errfile"); rc=$?
 errout=$(cat "$errfile" 2>/dev/null)
 rm -f "$errfile"
-if [ "$rc" -eq 0 ] && [ -z "$out" ] && [ -z "$errout" ]; then
-  note_pass "no-arg-checks-this-repo"
+lines=0
+[ -n "$out" ] && lines=$(printf '%s\n' "$out" | wc -l | tr -d ' ')
+if [ "$rc" -eq 1 ] && [ "$lines" -eq 1 ] && [ -z "$errout" ] && printf '%s' "$out" | grep -q "reuses number 0001"; then
+  note_pass "no-arg-resolves-the-repo-root-from-a-subdirectory"
 else
-  note_fail "no-arg-checks-this-repo" "this repo's own docs/decisions/ is not clean (exit $rc): $out$errout"
+  note_fail "no-arg-resolves-the-repo-root-from-a-subdirectory" "exit $rc, $lines line(s): $out$errout"
 fi
 
 echo

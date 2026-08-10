@@ -2,7 +2,8 @@
 change: two-gates-against-scope-shedding
 branch: two-gates-against-scope-shedding
 created: 2026-08-10
-status: building # shaping | building | landed
+status: landed # shaping | building | landed
+landed: 2026-08-10
 ---
 
 # Change — two gates so a change can't shed its own scope into the backlog

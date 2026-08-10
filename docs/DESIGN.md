@@ -92,8 +92,9 @@ The backlog is the fourth target because the other three each have a high bar, a
 follow-up clears none of them — but it is not the target with no bar of its own: an entry must also
 be work that genuinely waits, not a piece of the change's own goal and not a fix cheaper to apply
 than to describe. Each entry stays one minimal file (`created:` plus an H1), unvalidated on purpose:
-the moment it grows a status column it is the validated plan this lane exists to avoid. The archive is deliberately **not** a fifth target: it is history, not guidance —
-the doc moves there whole, and nothing reads it to decide anything.
+the moment it grows a status column it is the validated plan this lane exists to avoid. The archive
+is deliberately **not** a fifth target: it is history, not guidance — the doc moves there whole, and
+nothing reads it to decide anything.
 
 ## One gate, not a skill boundary
 

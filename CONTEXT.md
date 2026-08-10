@@ -12,6 +12,12 @@ Terms this repo uses in a specific way. Definitions only, no implementation deta
 - **Promotion** — moving the durable residue out of a `CHANGE.md` before it is archived: decisions to
   `docs/decisions/`, terms here, traps to `## Gotchas` in `CLAUDE.md`, follow-ups to `.ai/backlog/`
   (one file per idea).
+- **Completion gate** — the closing verdict's rule that a `## Goal` result the diff doesn't deliver
+  makes a change **not ready**, never _ready with follow-ups_. Ticked boxes don't satisfy it; only
+  the diff does, or a `## Goal` the user amends.
+- **Absorption bar** — the second test a backlog entry must clear: if doing it costs less than
+  describing it, it belongs to the change that found it. Joins the month bar (_will you ever?_),
+  which tests only whether the idea is worth queueing at all.
 - **Archive** — `.ai/archive/<slug>/`: landed change docs kept as history, not guidance. Nothing
   reads them to decide anything; backlog entries may point at one for its findings.
 - **Task** — one ticked box in a `CHANGE.md`: a thin vertical slice, independently committable, leaving

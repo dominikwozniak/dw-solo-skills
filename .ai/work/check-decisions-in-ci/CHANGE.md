@@ -47,7 +47,7 @@ in `.ai/archive/validate-decision-records/`.
       ↔ filename, `superseded-by:` pointers), which is exactly what `.ai/` lacks. Verify by planting
       a bad record under `mktemp`-free conditions (edit, run, restore from `HEAD`), including the
       warnings-only case.
-- [ ] 2. `.github/workflows/validate-artifacts.yaml` — add `docs/decisions/**` to **both** the
+- [x] 2. `.github/workflows/validate-artifacts.yaml` — add `docs/decisions/**` to **both** the
       `pull_request` and `push` `paths:` lists. Without it the check is dead for the case it exists
       for: a commit that only adds or edits a record matches none of the six existing filters, so
       the workflow never runs. Follow the existing comment style — one line saying why the folder is

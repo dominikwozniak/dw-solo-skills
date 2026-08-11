@@ -11,17 +11,23 @@ status: building # shaping | building | landed
 
 Three numbers move, and one behaviour changes:
 
-- `skills/*/SKILL.md` — 11 812 words → **under 7000**, with no behaviour removed.
-- The doc layer — 7 files / 9804 words → **3 files / ~4k**, and `validate-docs.sh` 269 → ~80 lines,
-  because 5 of its 6 checks only ever guarded prose written twice.
+- `skills/*/SKILL.md` — 11 812 words → **~11 100**, by deleting duplication and prose-about-procedure
+  only. **Amended 2026-08-11, mid-build**: this said _under 7000_, an estimate made before the work on
+  the assumption that prose was the bulk. It isn't — the remainder is steps, edge cases and HARD STOPs,
+  so the goal's other half, **no behaviour removed**, binds first. Reaching 7000 would mean either
+  deleting procedure or moving it to `references/` to lower `wc -w` without removing a word from the
+  catalog; both were rejected in favour of stating the honest number.
+- The doc layer — 7 files / 9804 words → **3 files / ~4k**, and `validate-docs.sh` 269 → 156 lines,
+  because 2 of its 6 checks only ever guarded prose written twice.
 - `evals/` 1287 → ~790 lines, and the decision-record enforcement 489 → 0.
 - `dw-land` phase 3 stops being append-only, and two caps in `validate-artifacts.sh` make that
   checkable: `## Gotchas` ≤ 12 entries, `.ai/backlog/` ≤ 8 files.
 
-You know it worked when `cat skills/*/SKILL.md | wc -w` is under 7000; the pre-push gate is five
-commands, not seven, and all five pass; adding a 13th gotcha makes `pnpm validate:artifacts` fail
-with the count and the cap; and `grep -rn "CONTRIBUTING.md\|SKILL-ANATOMY\|docs/DESIGN.md"` over
-tracked files (excluding `.ai/archive/` and `docs/decisions/`) returns nothing.
+You know it worked when `cat skills/*/SKILL.md | wc -w` is at ~11 100 with no step, edge case or HARD
+STOP gone; the pre-push gate is six commands, not seven, and all six pass; adding a 13th gotcha makes
+`pnpm validate:artifacts` fail with the count and the cap; and
+`grep -rn "CONTRIBUTING.md\|SKILL-ANATOMY\|docs/DESIGN.md"` over tracked files (excluding
+`.ai/archive/` and `docs/decisions/`) returns nothing.
 
 **This is a large change — nine tasks.** It is deliberately not split; see the first decision.
 
@@ -108,7 +114,8 @@ tracked files (excluding `.ai/archive/` and `docs/decisions/`) returns nothing.
       promotion bullets: re-read the target and delete what this change supersedes, then write. Per
       bullet: a retired gotcha is deleted rather than left beside its replacement; an absorbed
       backlog entry is `git rm`'d.
-- [ ] 8. **Prune the skill bodies** — 11 812 → ~6k words, no behaviour removed. Delete the opening
+- [x] 8. **Prune the skill bodies** — 11 812 → ~11 100 words (goal amended mid-build), no behaviour
+      removed. Delete the opening
       rationale from all 11 skills (`dw-land:18-20`, `dw-check:14-16`, `dw-shape:14-16`,
       `dw-grill:7-11`, `dw-next:14-25`, and the rest). De-duplicate the two PR #19 rules: the
       backlog bar stays once at `dw-land:101-105`, and `dw-next:83-91` keeps one sentence — _never
@@ -245,7 +252,9 @@ tracked files (excluding `.ai/archive/` and `docs/decisions/`) returns nothing.
   find deletes a step, an edge case or a HARD STOP, which the same task forbids. The two honest ways
   forward are a `## Goal` amendment or moving in-file reference down to `references/` (the anchor's
   third rung); the second lowers `cat skills/*/SKILL.md | wc -w` without removing a word from the
-  catalog, so it is the user's call whether that counts. **Not decided here.**
+  catalog, so it is the user's call whether that counts. **Decided: the `## Goal` is amended to the
+  achieved number**, with the reason recorded there — 7000 assumed prose was the bulk, and it was not.
+  Disclosure to `references/` was rejected as a way of moving the number rather than the problem.
 - **Task 7 — the lead-in is a sentence, so each bullet also carries its own instruction.** `## Gotchas`
   records that a constraint written as intro prose does not act like one, so "promotion replaces" is
   stated once up front _and_ made concrete per target: rewrite a sharpened `CONTEXT.md` line rather

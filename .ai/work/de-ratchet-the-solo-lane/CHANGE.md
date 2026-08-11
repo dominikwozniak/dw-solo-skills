@@ -90,7 +90,7 @@ tracked files (excluding `.ai/archive/` and `docs/decisions/`) returns nothing.
       collapse the contract stated in three files — `docs/decisions/README.md`,
       `templates/decisions-README.md`, `skills/dw-land/references/decision-record.md` — so the
       three-part bar lives once, in the reference, with the two READMEs pointing at it.
-- [ ] 5. **Bring the durable layer under the caps, before the caps exist** — so each half is green
+- [x] 5. **Bring the durable layer under the caps, before the caps exist** — so each half is green
       alone. `## Gotchas` 21 → 12 by thematic merge: worktree (4→1), pnpm (4→1), git history (3→1),
       lint hooks (2→1), eight standalone entries untouched, every trap kept as a sub-bullet.
       `.ai/backlog/` to ≤ 8: apply the absorption bar, rewrite `validator-blind-spots.md` to its one
@@ -221,6 +221,39 @@ tracked files (excluding `.ai/archive/` and `docs/decisions/`) returns nothing.
     with it.
   - `scripts/validate-artifacts.sh` pass 2 was the dogfood run. Deleted here rather than in task 6, so
     that this commit leaves `pnpm validate:artifacts` green instead of red-until-task-6.
+- **Task 5 — `## Gotchas` is 21 traps in 12 entries, all 21 kept.** Groups: worktree (4 → 1: local
+  memory, no git hooks, hook-fix-doesn't-apply, compound shell), git history (3 → 1: shared index,
+  rebase resurrection, rewind blocked), lint hooks (2 → 1), pnpm (4 → 1). Eight standalone entries
+  untouched — including the `validate-manifests.sh` versions-are-_equal_ one that task 9 depends on.
+  The section intro now states the cap and says a thirteenth means merging or retiring, never
+  appending. Both stale citations fixed: the self-test-fixture entry frames
+  `check-decisions.test.sh` as gone, and the `${CLAUDE_PLUGIN_ROOT}` entry states the three-layout
+  rule directly instead of pointing at the candidate list task 4 deleted.
+- **Task 5 — the backlog is 8, and the arithmetic differs from the shape's.** Task 3 left 9 (the
+  stemmer entry was wrongly slated for deletion), so this needed one more decision than planned:
+  - `grateful-me-app-v2-8-leftovers.md` — **deleted.** It is work in another repo, by hand, in that
+    repo; `de-ratchet` should not spend one of eight slots on a TODO this repo cannot action. Worth
+    re-parking in `grateful-me-app-v2` itself if that PR is still open.
+  - `shape-time-parking-for-the-left-out-list.md` — **merged**, not dropped. Its false-promise half
+    (`dw-grill` says `dw-shape` files the left-out list; `dw-shape` has no such step) is a one-line
+    deletion in a file task 8 already opens, so task 8 absorbs it. The feature half moved into a new
+    bundled entry.
+  - `validator-blind-spots.md` — **rewritten to one bullet.** The `awk -F'|' '{print $4}'` index died
+    with the Arguments column (task 1); the three-copies-of-the-decision-contract bullet died in task 4. What survives is the base-ref blind spot, which is the same fact as the `## Gotchas` entry.
+  - `loop-prose-disagrees-with-the-bodies.md` — **new**, holding the three survivors of
+    `.ai/work/skill-and-docs-drift/` (2 of its 5 items were resolved, not 5 of 6 as the shape
+    assumed): `dw-ship`'s review nudge missing on the fast path, `dw-ship` ordering `dw-land` before a
+    CI result that cannot exist yet, and the shape-time parking feature. **These are follow-ups, not
+    tasks here** — none is in this change's `## Goal`, and all three are behaviour changes to the
+    loop, which de-ratcheting is not.
+  - `dw-shape`'s `description` promises "one durable `CHANGE.md`" while the body writes N — a
+    contradiction rather than a restatement, so task 8 fixes it (and the idf shift means task 9's
+    `eval:routing` run is what proves it safe).
+- **Task 5 — `eager-doc-size-budget` is archived as `status: rejected`** with a `## Why rejected`
+  giving the reason from the fifth decision. No `pr:` field: it was never claimed, so there is no
+  closed PR to name. `.ai/work/eager-doc-size-budget/` is left as an **empty directory on disk** —
+  `rmdir` is in `block-dangerous-commands.sh`, and git tracks no empty directories, so the commit is
+  clean either way. Remove it by hand if it bothers you.
 - **Two `## Gotchas` entries now cite files this change deleted** — the self-test-fixture one names
   `check-decisions.test.sh`, and the `${CLAUDE_PLUGIN_ROOT}` one points at doctor.sh's candidate list.
   Both lessons stand; the citations need rewording, which task 5 does while merging.

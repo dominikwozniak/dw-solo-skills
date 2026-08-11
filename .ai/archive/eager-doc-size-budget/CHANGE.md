@@ -2,8 +2,31 @@
 change: eager-doc-size-budget
 branch: unclaimed
 created: 2026-08-09
-status: shaping # shaping | building | landed
+status: rejected # shaping | building | landed | rejected
+rejected: 2026-08-11
 ---
+
+## Why rejected
+
+Turned down by `de-ratchet-the-solo-lane`, which shipped the load-bearing half for about a thirtieth
+of the machinery.
+
+**A byte budget does not stop duplication.** You can sit comfortably under 120 lines and still say the
+same thing in two files — which was the actual disease in this repo, and what a size number cannot
+see. The two caps that replaced this (`## Gotchas` ≤ 12 entries, `.ai/backlog/` ≤ 8 files) count
+_entries_, so they price the thing that actually grows: one more trap, one more queued idea. They cost
+~30 lines inside `validate-artifacts.sh`, a script already in CI.
+
+**And it would have cost five moving parts** — a `PostToolUse` hook, its self-test, a `templates/`
+payload copy, a `settings.json` wire and a `dw-solo-setup` version bump — to enforce a number this
+change's own `## Decisions` concluded the repo would not declare. An opt-in limit that the flagship
+repo leaves unset is a mechanism with no user.
+
+**What would justify revisiting.** A second repo that genuinely wants a declared per-file ceiling and
+will set one, or evidence that an eager file grew past the point of being read while every entry in it
+was individually justified — the failure mode a count cannot catch and a size can. The measurements in
+`## Decisions` (`AGENTS.md` at 214 lines / 16132 B, `CLAUDE.local.md` at 131 / 8443) are still the
+honest starting numbers if so.
 
 # Change — a file that is loaded every session can declare a size budget, and a hook holds it to it
 

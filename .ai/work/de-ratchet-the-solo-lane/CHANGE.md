@@ -74,7 +74,7 @@ tracked files (excluding `.ai/archive/` and `docs/decisions/`) returns nothing.
       `git rm CONTRIBUTING.md docs/SKILL-ANATOMY.md`, `git mv docs/DESIGN.md` to
       `.ai/archive/design-rationale.md`, and fix the dangling pointers at `CONTEXT.md:4` and
       `CLAUDE.local.md:81`.
-- [ ] 2. **Shrink `scripts/validate-docs.sh`** 269 → ~80. Delete check 5 (`:155-204`) and check 6
+- [x] 2. **Shrink `scripts/validate-docs.sh`** 269 → ~80. Delete check 5 (`:155-204`) and check 6
       (`:205-269`). Collapse `EXPLICIT_LIST_DOCS`, `GATE_LIST_DOCS`, `GATE_TABLE_DOC`, `DESIGN` and
       `CONTRIBUTING` (`:27-38`) to `README` alone. Rewrite the header comment for four checks.
 - [ ] 3. **Freeze the evals.** `git rm evals/trigger.ts scripts/validate-evals.sh`; drop
@@ -189,3 +189,9 @@ tracked files (excluding `.ai/archive/` and `docs/decisions/`) returns nothing.
 - `docs/DESIGN.md` → `.ai/archive/design-rationale.md` gained a four-line frozen banner and its two
   relative links re-pointed (`../README.md` → `../../README.md`), so the archived copy doesn't read
   as live guidance with broken links.
+- **Task 2 landed at 156 lines, not the `~80` the goal estimated.** The two deleted checks were 115
+  lines; what remains is 26 lines of header comment and four checks whose logic is load-bearing —
+  check 3 alone is ~50 lines because it reads a wrapped prose paragraph in both directions. Cutting
+  to 80 would have meant deleting working checks to hit a number, which is the failure mode the task
+  8 anchor warns about. `EXPLICIT_LIST_DOCS` stays a list of one rather than a hardcoded filename, so
+  a future doc that grows a skill list plugs in with one edit.

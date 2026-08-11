@@ -1,6 +1,11 @@
-# Design notes
+# Design notes — archived
 
-Why the skills are shaped this way. The [README](../README.md) is the short version; this is the
+**Frozen on 2026-08-11, when this was `docs/DESIGN.md`.** It is history, not guidance: the rules it
+stated that are still live moved into [`AGENTS.md`](../../AGENTS.md) — the file an agent actually
+loads — and nothing keeps the rest in sync. Read it for the _why_ behind a shape, never to decide
+what the repo does now.
+
+Why the skills are shaped this way. The [README](../../README.md) is the short version; this is the
 _why_ behind the shape.
 
 ## The loop

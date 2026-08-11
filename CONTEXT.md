@@ -1,7 +1,7 @@
 # Context — glossary
 
-Terms this repo uses in a specific way. Definitions only, no implementation detail — that lives in
-[`docs/DESIGN.md`](docs/DESIGN.md).
+Terms this repo uses in a specific way. Definitions only, no implementation detail — the rules live
+in [`AGENTS.md`](AGENTS.md) and the procedures in the skills themselves.
 
 - **Lane** — how much process a change gets. This repo is the **thin lane** (one reader). The
   team-weight lane is [`dw-skills`](https://github.com/dominikwozniak/dw-skills). One lane per repo.

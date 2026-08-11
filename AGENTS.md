@@ -24,13 +24,69 @@ templates/                       payload copied verbatim INTO a target project (
 ```
 
 **Always edit the canon above; use it instead of any `plugins/…` path**, since every one of those is
-a symlink back to it — `plugins/*/skills/`, `scripts/` and `templates/` alike. Every canon skill is
-shipped by exactly one plugin; `validate-manifests.sh` enforces the ownership in both directions.
+a symlink back to it — `plugins/*/skills/`, `scripts/` and `templates/` alike. That rule is
+absolute. Every canon skill is shipped by exactly one plugin; `validate-manifests.sh` enforces the
+ownership in both directions, and `scripts/tests/hooks-in-sync.test.sh` pins this repo's own
+`.claude/hooks/` to the `templates/hooks/` canon it ships, so the hooks you run are the hooks you
+ship.
 
-Skill bodies invoke a shipped script as `${CLAUDE_PLUGIN_ROOT}/scripts/<script>.sh` — install
-dereferences the symlink, so the path resolves. A script used by only **one** skill needs no canon:
-bundle it in `skills/<name>/scripts/` and invoke it via `<this-skill-dir>/…`.
-Why it's built this way: [`docs/DESIGN.md`](docs/DESIGN.md), "The symlink canon".
+The indirection works because `claude plugin install` **dereferences** symlinks — the plugin gets a
+real copy in the plugin cache. So skill bodies invoke a shipped script as
+`${CLAUDE_PLUGIN_ROOT}/scripts/<script>.sh` and the path resolves; `templates/` gets the same
+treatment (`plugins/dw-solo-setup/templates -> ../../templates`, read as
+`${CLAUDE_PLUGIN_ROOT}/templates/…`, since only the scaffolder consumes the payload). A script used
+by only **one** skill needs no canon: bundle it in `skills/<name>/scripts/` and invoke it via
+`<this-skill-dir>/…`.
+
+## The loop
+
+```
+dw-grill? → dw-shape → dw-start? → dw-next ↺ → dw-check? → dw-land → dw-ship
+  fuzzy      plan it    worktree     build        gate       close     merge
+```
+
+`?` marks the opt-in steps. The mandatory spine is `dw-shape → dw-next → dw-ship`; a small serial
+change never leaves the default branch, and `dw-ship` runs the closing pass itself when the change
+doc is still there — so a finished change needs one command. Skills connect through artifacts, never
+a forced sequence: the shared `CHANGE.md`, and a `**Next:**` pointer at the end of each body that
+`validate-docs.sh` checks names a skill existing **in this repo**.
+
+## `.ai/` — tracked, one folder per change, no central index
+
+Artifacts are real work documents, committed with the code — not scratch.
+
+- **No shared index file.** A central registry becomes a merge-conflict magnet once tracked.
+  Discovery is by directory name + per-file frontmatter, so two branches never fight over one file.
+- **One folder per change** (`.ai/work/<slug>/`) — parallel branches and worktrees don't collide.
+- **One change is one independently shippable scope** — "could each piece land on its own and leave
+  the repo green?", asked at **shape time** rather than discovered mid-build. A request carrying two
+  such scopes is two folders, not one doc with two goals. Where two of them touch the same file,
+  that's an **ordering** sentence in the `## Notes` of whichever lands second — never a dependency
+  field, which would be the status column this lane exists to avoid.
+- **Branch-matched resume.** A change doc records its branch; the resume step globs the work dirs,
+  matches the current branch, and reports the first unticked box.
+- **Branch reads use `git rev-parse --abbrev-ref HEAD`**, never `git branch --show-current`, which
+  returns an empty string on a detached HEAD and silently turns a branch match into a no-match.
+- **The claim protocol.** A change shaped on the default branch records the literal sentinel
+  `branch: unclaimed`; `dw-start` claims right after creating the worktree, and `dw-next` offers a
+  claim when its branch-grep misses (stripping the `worktree-` prefix a `claude -w` session's branch
+  carries). A claim is one frontmatter edit — the sentinel flips to the verbatim
+  `git rev-parse --abbrev-ref HEAD` — committed **immediately**, because `.ai/` is tracked and an
+  uncommitted claim is invisible to every other session. Anything touching `.ai/work/` must respect
+  the sentinel.
+- **Worktrees live at `.claude/worktrees/<slug>` on branch `<slug>`** (`scripts/runtime/worktree.sh`
+  owns create/remove), and the closing pass's promotion commit lands **on the feature branch**, so a
+  squash-merge carries the durable residue to the default branch.
+
+## Explicit-only skills
+
+A skill is marked `disable-model-invocation: true` for either of two reasons: it **acts outward** —
+on branch topology, on the remote, or on a fresh repo's tooling — so the model never reaches for it
+unbidden, or **only you can see its moment has come**, where a model left to guess fires it at the
+wrong time or not at all. The cost is deliberate: an explicit-only skill is invisible to the model,
+so no other skill can reach it by prose either — anything the loop must be able to delegate to stays
+model-invocable. Which skills those currently are is the `⭑` list in `README.md`, kept in sync by
+`validate-docs.sh`.
 
 ## Vendored from `dw-skills` — fix in both
 
@@ -52,18 +108,16 @@ instead of a dated record under `.ai/handoffs/`, so treat the two as unrelated. 
 
 1. `skills/<name>/SKILL.md` — kebab-case `name` matching the directory (the validators' regex is
    `dw-[a-z-]+` — lowercase letters and hyphens only, no digits), a `description` that is routing
-   signal only, `disable-model-invocation: true` if explicit-invoke only. Shape:
-   [`docs/SKILL-ANATOMY.md`](docs/SKILL-ANATOMY.md) — copy a near neighbour and keep the section
-   order.
+   signal only, `disable-model-invocation: true` if explicit-invoke only. For the shape, copy a near
+   neighbour and keep its section order — the skills on disk are the anatomy.
 2. `ln -s ../../../skills/<name> plugins/<plugin>/skills/<name>` in the **owning** plugin and
    `git add` the symlink — exactly one plugin per skill.
 3. Bump the owning plugin's patch version in **both** `.claude-plugin/marketplace.json` and its
    `plugin.json` — keep the two identical. One bump covers a train of skills landing together.
-4. Name the skill everywhere the docs list skills: the README **task-router** row — including its
-   **Arguments** cell, condensed from the skill's own `argument-hint` (`—` if it takes none) — the
-   **loop diagram** in README + `docs/DESIGN.md` if it joins the core loop (honor-system — no
-   validator reads the diagram), and — if explicit-invoke — the `⭑` marker plus the explicit-only
-   lists in README **and** `docs/DESIGN.md`.
+4. Name the skill everywhere the docs list skills: the README **task-router** row, the **loop
+   diagram** in README + `## The loop` above if it joins the core loop (honor-system — no validator
+   reads the diagram), and — if explicit-invoke — the `⭑` marker plus the explicit-only list in
+   README.
 5. End the body with a `**Next:**` line naming a skill that exists **in this repo** — a pointer at a
    team-lane skill is a dead end here, and `validate:docs` fails it. A cycle of new skills lands its
    `**Next:**` lines in one wiring commit at the end; `validate:docs` only checks pointers that
@@ -106,11 +160,10 @@ is no build step and no typecheck. Node runs the `.ts` files directly.
 
 ## Before you push
 
-```bash
-pnpm lint && pnpm format && pnpm validate:manifests && pnpm validate:artifacts && pnpm validate:docs && pnpm validate:evals && pnpm eval:routing
-```
-
-CI runs those seven plus a `trufflehog` secrets scan on every PR and push to `main`.
+Run every check in the `scripts` block of `package.json` — `lint`, `format`, each `validate:*` and
+`eval:routing`. That block is the gate; the list is deliberately not restated in prose, because the
+prose copies drifted from it (see `.ai/archive/contributing-pre-push-gate-list-is-stale/`). CI runs
+the same set plus a `trufflehog` secrets scan on every PR and push to `main`.
 
 ## Gotchas
 
@@ -166,7 +219,7 @@ Traps this repo has actually sprung, newest first.
   reverted. Review delegation belongs to `dw-check`; the verdict's whole light layer is those two
   lines of prose. The general lesson, worth more than the instance: **a constraint written as an intro
   sentence does not act like a constraint** — if a boundary between two skills is load-bearing, put it
-  in the step or in `docs/DESIGN.md`, not in the paragraph that sets the tone.
+  in the step itself, not in the paragraph that sets the tone.
 - **Rebasing onto a squash-merged `main` resurrects the merged change's own commits.** A squash-merge
   leaves no shared ancestor, so a branch shaped before it replays that change's `chore: shape …`
   commit as a new one — re-adding `.ai/work/<slug>/CHANGE.md` for work already archived. No conflict,

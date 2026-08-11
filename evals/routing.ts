@@ -70,8 +70,8 @@ function fail(message: string): never {
 
 /**
  * The two-space-indented `description: >-` folded scalar every SKILL.md uses, plus plain and
- * quoted single-line values. Deliberately not a YAML parser: the frontmatter shape here is fixed
- * by docs/SKILL-ANATOMY.md and a dependency for four keys would be the tail wagging the dog.
+ * quoted single-line values. Deliberately not a YAML parser: the frontmatter shape here is uniform
+ * across every skill on disk, and a dependency for four keys would be the tail wagging the dog.
  */
 function parseFrontmatter(src: string): Map<string, string> {
   const out = new Map<string, string>()

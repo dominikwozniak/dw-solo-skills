@@ -2,7 +2,7 @@
 change: de-ratchet-the-solo-lane
 branch: de-ratchet-the-solo-lane
 created: 2026-08-11
-status: shaping # shaping | building | landed
+status: building # shaping | building | landed
 ---
 
 # Change — remove the duplication, then give the durable layer a ceiling
@@ -66,7 +66,7 @@ tracked files (excluding `.ai/archive/` and `docs/decisions/`) returns nothing.
 
 ## Tasks
 
-- [ ] 1. **Collapse the doc layer.** `README.md`: drop the Arguments column (header and every row)
+- [x] 1. **Collapse the doc layer.** `README.md`: drop the Arguments column (header and every row)
       and the three `docs/DESIGN.md` pointers at `:37`, `:104`, `:150-151`; update the
       project-structure listing. `AGENTS.md`: absorb the live rules from `docs/DESIGN.md` — the loop
       (`:6-16`), the symlink canon (`:158-176`), the explicit-only list (`:184-197`), the `.ai/`
@@ -169,3 +169,23 @@ tracked files (excluding `.ai/archive/` and `docs/decisions/`) returns nothing.
   `pnpm lint && pnpm format && pnpm validate:manifests && pnpm validate:artifacts && pnpm validate:docs && pnpm eval:routing`.
 - Seeded from `.ai/backlog/re-triage-the-backlog-against-the-absorption-bar.md`, whose two items are
   task 5.
+
+### Build log
+
+- **Task 1.** `validate:docs` is red between this commit and task 2's, by construction: checks 3, 5
+  and 6 read `docs/DESIGN.md`, the Arguments column and `CONTRIBUTING.md` respectively, and task 1
+  removes all three. The pre-commit hook doesn't run `validate:docs`, so the commits go through;
+  don't read the red as a mistake before task 2 lands.
+- **Task 1 — the explicit-only list did not move into `AGENTS.md`.** `docs/DESIGN.md:184-197` was two
+  things: the _rule_ for what makes a skill explicit-only, and a _list_ of the four that are. Only
+  the rule was absorbed; re-listing the names would have recreated exactly the second unchecked copy
+  this change exists to delete (task 2 collapses `EXPLICIT_LIST_DOCS` to `README` alone, so an
+  `AGENTS.md` list would be guarded by nothing). `AGENTS.md` points at README's `⭑` list instead.
+- **`CLAUDE.local.md:81` still points at `docs/DESIGN.md`** — unfixable from this worktree (see
+  `## Gotchas`), and gitignored, so no commit here delivers it. Fix by hand in the main tree; the
+  line is the `**Domain**` bullet under `## Project specifics`.
+- `evals/routing.ts:74` also named `docs/SKILL-ANATOMY.md` in a comment — not in the task text, but
+  it is a dangling pointer the task's own grep criterion covers, so it was fixed here.
+- `docs/DESIGN.md` → `.ai/archive/design-rationale.md` gained a four-line frozen banner and its two
+  relative links re-pointed (`../README.md` → `../../README.md`), so the archived copy doesn't read
+  as live guidance with broken links.

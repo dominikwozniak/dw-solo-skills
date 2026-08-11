@@ -99,7 +99,7 @@ tracked files (excluding `.ai/archive/` and `docs/decisions/`) returns nothing.
       `.ai/work/skill-and-docs-drift/` folder — five of its six items are resolved by tasks 1–4;
       re-file survivors as tasks here. Reject `.ai/work/eager-doc-size-budget/` with the reason from
       the fifth decision.
-- [ ] 6. **Add the caps to `scripts/validate-artifacts.sh`.** Replace the `check-decisions.sh` pass
+- [x] 6. **Add the caps to `scripts/validate-artifacts.sh`.** Replace the `check-decisions.sh` pass
       (`:41-55`) with two counts: `## Gotchas` entries in `AGENTS.md` (`grep -c '^- \*\*'` scoped to
       the section) ≤ 12, and `.ai/backlog/*.md` excluding `README.md` ≤ 8. Fail with the count and
       the cap. Rewrite the header comment — `:11-17` says there is deliberately no `.ai/` schema
@@ -221,6 +221,13 @@ tracked files (excluding `.ai/archive/` and `docs/decisions/`) returns nothing.
     with it.
   - `scripts/validate-artifacts.sh` pass 2 was the dogfood run. Deleted here rather than in task 6, so
     that this commit leaves `pnpm validate:artifacts` green instead of red-until-task-6.
+- **Task 6 — both caps proven by breaking them, then reverted.** Added a 13th gotcha and a 9th backlog
+  file: the run printed `has 13 entries, cap is 12` and `holds 9 entries, cap is 8` with the remedy for
+  each, and exited 1. Both probes removed; `AGENTS.md` is byte-identical to before. The `## Gotchas`
+  count is `awk`-scoped to the section and matches `^- \*\*` at column 0 only, so a group's indented
+  sub-bullets don't count — which is what makes the 21-traps-in-12-entries merge legible to the check.
+  No self-test: this is a live-content check, which `## Gotchas` says belongs here rather than in
+  `scripts/tests/`.
 - **Task 5 — `## Gotchas` is 21 traps in 12 entries, all 21 kept.** Groups: worktree (4 → 1: local
   memory, no git hooks, hook-fix-doesn't-apply, compound shell), git history (3 → 1: shared index,
   rebase resurrection, rewind blocked), lint hooks (2 → 1), pnpm (4 → 1). Eight standalone entries

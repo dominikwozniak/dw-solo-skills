@@ -1,6 +1,6 @@
 ---
 change: de-ratchet-the-solo-lane
-branch: unclaimed
+branch: de-ratchet-the-solo-lane
 created: 2026-08-11
 status: shaping # shaping | building | landed
 ---

@@ -9,10 +9,9 @@ argument-hint: "Which git op? e.g. commit, push, open PR, sync, branch, stash"
 
 # dw-git — all git ops, by the project's own conventions
 
-One skill, every git operation. The point is consistency: read the conventions the repo already
-documents and apply them, rather than guessing per-commit. The rest of the loop delegates here by
-prose — the build step commits the way this skill does, the ship step pushes and opens PRs the way
-this skill does — so the conventions live in exactly one place.
+Every git operation in one place, so the conventions live in exactly one place: the rest of the loop
+delegates here by prose — the build step commits the way this skill does, the ship step pushes and
+opens PRs the way this skill does.
 
 ## What it reads
 
@@ -21,8 +20,11 @@ Before any operation, read `CLAUDE.local.md` (repo root) if present and look for
 branch, branch naming, trailer policy, PR title format, rebase-vs-merge, signing. If there's no
 `CLAUDE.local.md` or no such block, use the documented defaults.
 
-dw-git writes **no `.ai/` artifact** — its durable output is the git history itself (commits,
-branches, the opened PR). It's an action skill, not a document-producing one.
+**Resolving the default branch** is the one lookup every other skill borrows from here: take it from
+`## Git conventions`, else `git symbolic-ref --short refs/remotes/origin/HEAD`, else `main`. Never
+assume `main` outright.
+
+dw-git writes **no `.ai/` artifact** — its durable output is the git history itself.
 
 ## Operations
 
@@ -85,8 +87,7 @@ branches, the opened PR). It's an action skill, not a document-producing one.
 **Workflow:**
 
 1. Push the branch first if it isn't pushed (see **push**).
-2. Base branch: from `## Git conventions`, else
-   `git symbolic-ref --short refs/remotes/origin/HEAD`.
+2. Base branch: the default branch, resolved as above.
 3. Build the body (PR template if present, else `## Summary` bullets +
    `## Test plan` checklist).
 4. `gh pr create --title "..." --body "..."`; print the PR URL.

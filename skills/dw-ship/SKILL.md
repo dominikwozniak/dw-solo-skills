@@ -11,10 +11,9 @@ disable-model-invocation: true
 
 # dw-ship — push, merge, clean up
 
-Shipping is a decision, not a step — so it lives behind its own explicit name, and everything
-before the merge is reversible right up to the HARD STOP. One command covers both endings of a
-change: the small serial edit that just gets pushed, and the worktree branch that goes out through
-a PR and leaves nothing behind.
+One command for both endings of a change: the small serial edit that just gets pushed, and the
+worktree branch that goes out through a PR and leaves nothing behind. Everything before the merge is
+reversible, right up to the HARD STOP.
 
 ## What it reads
 
@@ -35,9 +34,8 @@ worktree.
 
 ### 2. Pick the path
 
-- Already **on the default branch** (from `## Git conventions`, else
-  `git symbolic-ref --short refs/remotes/origin/HEAD`) and it isn't protected → **fast path**:
-  plain `git push`. Done — there's no worktree to clean.
+- Already **on the default branch** (resolved the way `dw-git` does) and it isn't protected → **fast
+  path**: plain `git push`. Done — there's no worktree to clean.
 - On any other branch → the **PR path** below. `pr` in `$ARGUMENTS` forces it even where a direct
   push would work.
 - **No `origin` at all** → say so and offer the local ending instead: switch to the default

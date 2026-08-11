@@ -221,6 +221,24 @@ tracked files (excluding `.ai/archive/` and `docs/decisions/`) returns nothing.
     with it.
   - `scripts/validate-artifacts.sh` pass 2 was the dogfood run. Deleted here rather than in task 6, so
     that this commit leaves `pnpm validate:artifacts` green instead of red-until-task-6.
+- **Task 8 — 11 812 → 11 101 words, and the `## Goal`'s "under 7000" is not reachable without deleting
+  behaviour.** What came out is what the anchor's standard actually licenses: the opening rationale
+  paragraph from all 11 skills, the split test at 44 lines → 17, `reject` stated twice in `dw-land`
+  (once in the archive bullet, once in Modes) collapsed to once, the default-branch resolution
+  duplicated in `dw-check` / `dw-land` / `dw-shape` / `dw-ship` now naming `dw-git` — which gained the
+  lookup as an explicit rule so the four pointers land somewhere concrete — `dw-next`'s two-bar block
+  down to the one sentence that is build-time-specific, `dw-shape`'s `## The CHANGE shape` section
+  folded into `## References` (it restated step 4's first line), `dw-doctor`'s duplicated read-only
+  guardrail, and `dw-init`'s restatement of the backlog entry shape that the README it copies already
+  states. Two stale statements went with it: `dw-doctor` claimed to check decision records against
+  their contract (task 4 deleted the parser) and `dw-init` called the copied README the home of that
+  contract. Absorbed from task 5: `dw-grill`'s promise that `dw-shape` files the left-out list, and
+  `dw-shape`'s `description` saying "one durable `CHANGE.md`" where the body writes N.
+  **The remaining ~4100 words are procedure**, not prose about procedure — every further cut I could
+  find deletes a step, an edge case or a HARD STOP, which the same task forbids. The two honest ways
+  forward are a `## Goal` amendment or moving in-file reference down to `references/` (the anchor's
+  third rung); the second lowers `cat skills/*/SKILL.md | wc -w` without removing a word from the
+  catalog, so it is the user's call whether that counts. **Not decided here.**
 - **Task 7 — the lead-in is a sentence, so each bullet also carries its own instruction.** `## Gotchas`
   records that a constraint written as intro prose does not act like one, so "promotion replaces" is
   stated once up front _and_ made concrete per target: rewrite a sharpened `CONTEXT.md` line rather

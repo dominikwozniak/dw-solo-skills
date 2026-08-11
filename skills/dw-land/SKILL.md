@@ -11,13 +11,8 @@ argument-hint: "bare for the verdict — your go closes it · close to trust the
 
 # dw-land — one thin verdict, then keep what's worth keeping
 
-Two phases with an explicit gate between them. The verdict is deliberately thin — a last look, not
-a review pipeline; if the change deserved scrutiny mid-build, `dw-check` already gave it — and it
-is **not a toll gate**: when you already trust the diff, say so and go straight to closing.
-
-The second phase is the reason this skill exists at all. Without it a private repo accumulates stale
-change docs _and_ loses the decisions worth keeping — and when you come back after a week, that
-durable layer is the only thing working for you.
+Two phases with an explicit gate between them: a verdict, then — on your word — promotion and the
+archive move.
 
 ## What it reads and writes
 
@@ -32,10 +27,10 @@ skill that takes something out of `work/` on purpose.
 
 ### 1. Establish what actually changed
 
-- `git diff <default-branch>...HEAD` plus `git log --oneline <default-branch>..HEAD`. Read the default
-  branch from `## Git conventions`, don't assume `main`. Prefer `origin/<default-branch>` when it
-  exists, falling back to the local ref: a local default branch that has fallen behind makes the
-  merge-base older than your branch point, so the diff swallows commits you didn't write.
+- `git diff <default-branch>...HEAD` plus `git log --oneline <default-branch>..HEAD`, resolving the
+  default branch the way `dw-git` does. **Prefer `origin/<default-branch>`**, falling back to the
+  local ref: a local default branch that has fallen behind makes the merge-base older than your
+  branch point, so the diff swallows commits you didn't write.
 - Read the `CHANGE.md`: the goal, the ticked tasks, the Notes.
 - Read `CONTEXT.md` and `docs/decisions/` if present, so the verdict is against this project's
   established choices rather than a generic standard.
@@ -44,6 +39,11 @@ skill that takes something out of `work/` on purpose.
 
 One thin pass, all four together, every finding at a real `file:line` you opened — **if you can't
 ground it, don't report it.**
+
+**Read the diff yourself; never delegate this pass.** It is a last look, not a review pipeline —
+mid-build scrutiny is `dw-check`'s job, and giving the verdict its own reviewer is the one thing this
+step must not grow. It is also **not a toll gate**: when you already trust the diff, say so and go
+straight to closing.
 
 - **Correct?** Does it do what the goal said — including the edge case, the error path, the empty
   input?
@@ -58,13 +58,11 @@ Close with one line — **ready to merge**, **ready with follow-ups** (name them
 backlog file in phase 3, and an unnamed follow-up vanishes into the archive unread), or **not
 ready** and why.
 
-**A `## Goal` result that isn't delivered is not ready.** Read the goal as a list of observable
-results and check each one against the diff. An undelivered result is **not ready** — never **ready
-with follow-ups**, because parking it is how a change sheds the thing it existed to do, and the
-backlog is where that becomes invisible. **Ticked boxes do not settle this**: every box can be
-ticked while a goal result is still unmet, so check the goal against the diff, not against the
-checklist. Two ways out, both the user's call: finish it, or amend the `## Goal` to state what the
-change now claims and why the rest is gone — then re-run the verdict against the amended goal.
+**The completion gate.** Read the `## Goal` as a list of observable results and check each against
+the **diff, not the checklist** — every box can be ticked with a result still unmet. An undelivered
+result is **not ready**, never _ready with follow-ups_: parking it is how a change sheds the thing it
+existed to do. Two ways out, both the user's call — finish it, or amend the `## Goal` and re-run the
+verdict against what the change now claims.
 
 Then **stop.** You've graded the work; the user decides what happens next.
 
@@ -119,26 +117,16 @@ what makes the build fail.
   closed**: an entry whose work the diff just did, or which the change made moot, is `git rm`'d in
   this same commit — and one that survives with fewer bullets than it had gets rewritten to what is
   left. A queue holding finished work reads as a backlog you have stopped believing.
-- **Archive the scaffolding.** `git rm` a leftover `HANDOFF.md` first — it described the middle of
-  a task, and post-merge it is noise — then `git mv .ai/work/<slug>/ .ai/archive/<slug>/` and, in
-  the moved `CHANGE.md`, flip `status:` to `landed` and add `landed: YYYY-MM-DD` plus `pr: "#<n>"`
-  when there is one. `reject` moves the same way but stamps `status: rejected` and
-  `rejected: YYYY-MM-DD`, `pr:` naming the **closed, unmerged** PR, and the doc must carry a
-  `## Why rejected` — what was tried, what killed it, what would justify revisiting. An idea turned
-  down before it was ever shaped has nothing to move: write `.ai/archive/<slug>/CHANGE.md` directly,
-  slug derived the way `dw-shape` does so a re-shape collides with it. If `.ai/archive/<slug>/`
-  already exists, stop and pick a suffixed destination (`<slug>-2`) — `git mv` into an existing
-  directory silently nests the folder inside it. `.ai/archive/README.md` states the convention;
-  create it from that one line if the repo predates the scaffold. If something in the doc still
-  feels too valuable to bury, that is the signal it belonged in a record, a gotcha, or the
+- **Archive the scaffolding.** `git rm` a leftover `HANDOFF.md` first — it described the middle of a
+  task, and post-merge it is noise — then `git mv .ai/work/<slug>/ .ai/archive/<slug>/` and, in the
+  moved `CHANGE.md`, flip `status:` to `landed` with `landed: YYYY-MM-DD` plus `pr: "#<n>"` when there
+  is one. If `.ai/archive/<slug>/` already exists, stop and pick a suffixed destination (`<slug>-2`):
+  `git mv` into an existing directory silently nests the folder inside it. If something in the doc
+  still feels too valuable to bury, that is the signal it belonged in a record, a gotcha or the
   backlog — promote it first, then archive.
 - **Commit** the promotion and the archive move together, the way `dw-git` does — **on the branch you
-  are on.** In a worktree that means the feature branch: the promotion rides the PR, the
-  squash-merge carries it to the default branch, and post-merge `main` is already clean.
-  **`reject` is the exception**, because nothing will be merged: a record committed to the rejected
-  branch dies with it, and the only way to save it would be shipping the code it rejects. Commit the
-  archive and the promotion on a **short branch off the default one** instead, and open a PR for
-  that — the rejected branch is then deleted without taking the reasoning with it.
+  are on.** In a worktree that means the feature branch: the promotion rides the PR, the squash-merge
+  carries it to the default branch, and post-merge `main` is already clean.
 
 Then report what was promoted, what was parked, and what was archived — and stop. This skill
 deliberately does not push or open anything: shipping is a decision, and it belongs to `dw-ship`.
@@ -155,10 +143,16 @@ is the default.
   line and close without waiting for a go. One exception: a verdict that comes out **not ready**
   stops here too — report it and wait; closing over it takes an explicit word from a user who has
   seen it. Never close blind.
-- **`reject`** — the idea was turned down. Skip the verdict; there is no diff worth judging. Promote
-  as usual — a rejection still leaves follow-ups worth keeping — then archive as `rejected`. **Refuse
-  to write the doc without a reason**: an empty `## Why rejected` costs a folder and teaches nothing,
-  which is the whole failure this mode exists to prevent.
+- **`reject`** — the idea was turned down. Skip the verdict; there is no diff worth judging. Promote as
+  usual (a rejection still leaves follow-ups worth keeping), then archive with `status: rejected`,
+  `rejected: YYYY-MM-DD` and `pr:` naming the **closed, unmerged** PR. The doc must carry a
+  `## Why rejected` — what was tried, what killed it, what would justify revisiting — and **writing it
+  without a reason is refused**: an empty one costs a folder and teaches nothing, which is the whole
+  failure this mode exists to prevent. An idea turned down before it was ever shaped has nothing to
+  move: write `.ai/archive/<slug>/CHANGE.md` directly, slug derived the way `dw-shape` does so a
+  re-shape collides with it. **Commit somewhere that survives**: nothing will be merged here, so a
+  record on the rejected branch dies with it — use a short branch off the default one and open a PR
+  for that.
 
 ## References
 

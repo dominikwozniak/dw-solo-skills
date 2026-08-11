@@ -10,12 +10,9 @@ disable-model-invocation: true
 
 # dw-start — a worktree per change, claimed before building
 
-Building in the main tree serializes you: the second change waits for the first to merge. This skill
-opens a shaped change in its own worktree and branch, so several changes run at once — each in its
-own session, each reading its own `CHANGE.md` from disk.
-
-It is mechanics plus one field write. The thinking already happened in `dw-shape`; the building
-happens in `dw-next`.
+Mechanics plus one field write: a shaped change gets its own worktree and branch, so several run at
+once, each in its own session reading its own `CHANGE.md` from disk. The thinking already happened in
+`dw-shape`; the building happens in `dw-next`.
 
 ## What it reads and writes
 

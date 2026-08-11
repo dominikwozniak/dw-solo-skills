@@ -104,7 +104,7 @@ tracked files (excluding `.ai/archive/` and `docs/decisions/`) returns nothing.
       the section) ≤ 12, and `.ai/backlog/*.md` excluding `README.md` ≤ 8. Fail with the count and
       the cap. Rewrite the header comment — `:11-17` says there is deliberately no `.ai/` schema
       sweep, so state that a file **count** is not a schema.
-- [ ] 7. **`dw-land` phase 3 — promote by replacing.** One lead-in sentence before the four
+- [x] 7. **`dw-land` phase 3 — promote by replacing.** One lead-in sentence before the four
       promotion bullets: re-read the target and delete what this change supersedes, then write. Per
       bullet: a retired gotcha is deleted rather than left beside its replacement; an absorbed
       backlog entry is `git rm`'d.
@@ -221,6 +221,14 @@ tracked files (excluding `.ai/archive/` and `docs/decisions/`) returns nothing.
     with it.
   - `scripts/validate-artifacts.sh` pass 2 was the dogfood run. Deleted here rather than in task 6, so
     that this commit leaves `pnpm validate:artifacts` green instead of red-until-task-6.
+- **Task 7 — the lead-in is a sentence, so each bullet also carries its own instruction.** `## Gotchas`
+  records that a constraint written as intro prose does not act like one, so "promotion replaces" is
+  stated once up front _and_ made concrete per target: rewrite a sharpened `CONTEXT.md` line rather
+  than adding a second, delete a gotcha the change made untrue and look for the cousin before adding a
+  sibling, `git rm` a backlog entry the diff just closed. The decisions bullet says the opposite on
+  purpose — a superseded record stays, because the link is the replacement there. One wording change
+  beyond the task: gotchas were "one dated line", which the repo's own undated entries had already
+  drifted from, and which forbade the sub-bullets the cap now depends on.
 - **Task 6 — both caps proven by breaking them, then reverted.** Added a 13th gotcha and a 9th backlog
   file: the run printed `has 13 entries, cap is 12` and `holds 9 entries, cap is 8` with the remedy for
   each, and exited 1. Both probes removed; `AGENTS.md` is byte-identical to before. The `## Gotchas`

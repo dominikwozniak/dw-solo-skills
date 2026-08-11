@@ -73,6 +73,11 @@ Then **stop.** You've graded the work; the user decides what happens next.
 When the user approves — an unambiguous affirmative like "close" or "go", not a hedged "looks
 fine, I guess"; wait for a plain one — and only then:
 
+**Promotion replaces; it does not append.** For each target below, read what is already there before
+writing, and delete what this change supersedes in the same edit. A durable layer that only ever grows
+stops being read, which costs you the promotion step entirely — and where a cap exists, appending is
+what makes the build fail.
+
 - **Promote the decisions.** Anything from Decisions or Notes that a future session would need and
   couldn't re-derive from the code becomes `docs/decisions/<NNNN>-<slug>.md`, numbered next in
   sequence, from the shape in `references/decision-record.md`. Be strict: a decision earns a record
@@ -81,14 +86,24 @@ fine, I guess"; wait for a plain one — and only then:
   replaces an older one, flip that one to `status: superseded` with `superseded-by:` in the same
   pass — the reference says how, and nothing else in the loop does it. Take the next number from the
   highest on disk and **never renumber an existing record**: its number is what every
-  `superseded-by:` pointer is made of.
+  `superseded-by:` pointer is made of. This is the one target where replacing is a link rather than a
+  deletion — a superseded record stays, because why a settled choice was reopened is the most useful
+  thing in the folder.
 - **Promote the vocabulary.** Any new domain term this change introduced or sharpened goes into
   `CONTEXT.md` as a glossary line. Terms only — no implementation detail. Create the file if it
-  doesn't exist.
-- **Promote the gotchas.** A trap that cost real time, or repeated, becomes one dated line under
+  doesn't exist. **If the change sharpened a term already defined there, rewrite that line** — two
+  definitions of one word is worse than none, and a term the change retired comes out.
+- **Promote the gotchas.** A trap that cost real time, or repeated, becomes one entry under
   `## Gotchas` in `CLAUDE.md`, newest first — the local trap, and what to do instead. Same bar as
   decision records: **not every surprise.** A gotchas list that logs every small confusion teaches
-  you to stop reading it.
+  you to stop reading it. Two things before you write:
+  - **Delete what this trap replaces.** A gotcha the change made untrue — the tool is gone, the hook
+    is fixed, the flag now defaults the other way — comes out in this edit. Leaving it beside its
+    replacement is how the list stops being trustworthy: the reader can no longer tell which half is
+    current.
+  - **Look for the cousin.** If an existing entry has the same root cause, make this a sub-bullet of
+    it rather than a thirteenth sibling. Where the repo caps the list, a merge is the only way to add
+    to a full one, and appending fails the build.
 - **Promote the follow-ups.** Every follow-up named in the verdict, plus anything deliberately left
   out, becomes one file `.ai/backlog/<slug>.md` — slug from
   `bash "${CLAUDE_PLUGIN_ROOT}/scripts/slugify.sh" slug "<the follow-up>"`, frontmatter
@@ -100,7 +115,10 @@ fine, I guess"; wait for a plain one — and only then:
   clears both. **Will you ever?** — if you would not pick it up within a month, don't write it.
   **Should it have been done now?** — if doing it costs less than describing it, do it now: a fix
   that fits in a file the change already touched, or that is smaller than the entry describing it,
-  is a commit in that change, not a file here. Zero is a normal answer.
+  is a commit in that change, not a file here. Zero is a normal answer. **Then clear what this change
+  closed**: an entry whose work the diff just did, or which the change made moot, is `git rm`'d in
+  this same commit — and one that survives with fewer bullets than it had gets rewritten to what is
+  left. A queue holding finished work reads as a backlog you have stopped believing.
 - **Archive the scaffolding.** `git rm` a leftover `HANDOFF.md` first — it described the middle of
   a task, and post-merge it is noise — then `git mv .ai/work/<slug>/ .ai/archive/<slug>/` and, in
   the moved `CHANGE.md`, flip `status:` to `landed` and add `landed: YYYY-MM-DD` plus `pr: "#<n>"`

@@ -83,7 +83,7 @@ tracked files (excluding `.ai/archive/` and `docs/decisions/`) returns nothing.
       `AGENTS.md` add-a-skill checklist. Then `git rm` the three backlog entries that are work on
       the frozen tier — `routing-baseline-remeasure.md`, `stemmer-derivational-audit.md`,
       `boilerplate-idf-zero-claim-is-unsupported.md`.
-- [ ] 4. **Delete the decision-record machinery** (489 lines). `git rm` the canon
+- [x] 4. **Delete the decision-record machinery** (489 lines). `git rm` the canon
       `scripts/runtime/check-decisions.sh`, its test `scripts/tests/check-decisions.test.sh` and the
       symlink `plugins/dw-solo/scripts/check-decisions.sh`; drop the basename from `RUNTIME_SCRIPTS`
       in `scripts/validate-manifests.sh`; remove the call at `skills/dw-land/SKILL.md:83-86`. Then
@@ -211,6 +211,19 @@ tracked files (excluding `.ai/archive/` and `docs/decisions/`) returns nothing.
   - `stemmer-derivational-audit.md` — **restored.** It is `--explain`-driven work on the surviving
     tier, unaffected by the deletion. That leaves `.ai/backlog/` at 9 entries, one over the cap, so
     task 5 has one more absorb-or-drop decision than the shape assumed.
+- **Task 4 had three consumers the task text didn't name**, all of which would have broken quietly:
+  - `plugins/dw-solo-setup/scripts/check-decisions.sh` — a **second** shipped symlink, so
+    `validate-manifests.sh` failed on a dangling link until it went too. That directory is now empty
+    and gone; no `dw-solo-setup` skill invokes a plugin-level script.
+  - `skills/dw-doctor/scripts/doctor.sh` ran the script over a consumer repo's `docs/decisions/`, with
+    a warn branch for "could not find it beside this plugin". Left alone, every consumer would get
+    that warning forever. The check is now presence-only, and the `$0`-relative candidate list went
+    with it.
+  - `scripts/validate-artifacts.sh` pass 2 was the dogfood run. Deleted here rather than in task 6, so
+    that this commit leaves `pnpm validate:artifacts` green instead of red-until-task-6.
+- **Two `## Gotchas` entries now cite files this change deleted** — the self-test-fixture one names
+  `check-decisions.test.sh`, and the `${CLAUDE_PLUGIN_ROOT}` one points at doctor.sh's candidate list.
+  Both lessons stand; the citations need rewording, which task 5 does while merging.
 - **Task 3 also touched `docs/decisions/0005`**, whose `## Trade-off` named `validate-evals.sh` as the
   thing paying back the locality cost. The decision itself (evals at the repo root) is unchanged — only
   that sentence was stale, so it now records that the validator was deleted here and the contract moved

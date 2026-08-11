@@ -79,11 +79,9 @@ fine, I guess"; wait for a plain one — and only then:
   only if it was **hard to reverse, surprising, and a real trade-off** — all three, not any one of
   them. Most changes produce **zero** records, and that's the correct number. When a record here
   replaces an older one, flip that one to `status: superseded` with `superseded-by:` in the same
-  pass — the reference says how, and nothing else in the loop does it. **Before allocating a
-  number**, run `bash "${CLAUDE_PLUGIN_ROOT}/scripts/check-decisions.sh"` and stop on a non-zero
-  exit: report what it found and let the user fix the folder — never renumber a record to make it
-  pass, which severs the `superseded-by:` links the check protects. A `warn:` line is a gap in the
-  sequence, not a failure: pass it on and keep writing.
+  pass — the reference says how, and nothing else in the loop does it. Take the next number from the
+  highest on disk and **never renumber an existing record**: its number is what every
+  `superseded-by:` pointer is made of.
 - **Promote the vocabulary.** Any new domain term this change introduced or sharpened goes into
   `CONTEXT.md` as a glossary line. Terms only — no implementation detail. Create the file if it
   doesn't exist.

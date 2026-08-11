@@ -1,12 +1,13 @@
-// routing.ts — Tier 2 of the routing evals. Deterministic, dependency-free, free to run.
+// routing.ts — the routing eval. Deterministic, dependency-free, free to run.
 //
 // The question it answers: does each skill still rank first for its own vocabulary, or has a
 // neighbour's description drifted far enough to steal it? It scores every case prompt against the
 // corpus of `name: description` pairs with TF-IDF + cosine and prints the ranking.
 //
 // This is a LEXICAL PROXY, not the router. The real router is a model reading the same lines with
-// far more context, and it is allowed to disagree — `evals/trigger.ts` is the tier that asks it.
-// What this tier buys is a check that runs in CI on every push for zero tokens and catches the one
+// far more context, and it is allowed to disagree — asking it is a by-hand `claude -p` exercise, not
+// something this repo ships. What this buys is a check that runs in CI on every push for zero tokens
+// and catches the one
 // failure mode that matters: two descriptions competing for the same words. A skill that stops
 // ranking for its own vocabulary here is a description bug regardless of what the router does.
 //
@@ -121,7 +122,10 @@ function stripQuotes(value: string): string {
 
 // Ordinary English function words, kept as one whitespace-split string so the list stays legible.
 // Note what is NOT here: the "Use when someone says ..." phrasing every description shares. It needs
-// no list — a term carried by all N documents gets idf log(1) = 0 and drops out arithmetically.
+// no list because `log(N/df)` prices it down on its own — `use` sits in 7 of 11 descriptions and
+// `say` in 5, so both are cheap rather than free. A term carried by *all* N would reach idf 0 and
+// drop out outright; nothing in this corpus actually does, so the mechanism is a gradient, not a
+// filter. Either way there is no hand-kept boilerplate list to rot.
 const STOPWORDS = new Set(
   `a about after again against all also am an and any are as at be because been before being below
    between both but by can did do does doing down during each else few for from further had has have
@@ -436,9 +440,9 @@ function report(cases: CaseFile[], index: Index, top: number): Tally[] {
     if (!index.vectors.has(entry.skill)) {
       fail(`evals/cases/${entry.skill}.json has no matching skills/${entry.skill}/SKILL.md`)
     }
-    // Same rejection validate-evals.sh makes, made again here so a bare `node evals/routing.ts`
-    // says it too. Without this the skill is absent from the ranked field below and the lookup
-    // walks off the front of the array.
+    // The case-file contract used to have its own validator; this is the half of it that survived,
+    // and it is here rather than there because without the check the skill is absent from the ranked
+    // field below and the lookup walks off the front of the array.
     if (index.explicit.has(entry.skill)) {
       fail(
         `evals/cases/${entry.skill}.json exists but skills/${entry.skill}/ is ` +
@@ -652,6 +656,8 @@ function explain(index: Index, prompt: string, top: number): void {
     const weight = query.get(term)
     let tail: string
     if (idf === undefined) tail = "—       —       in no description — out of vocabulary"
+    // df = N, so idf is 0 and the term drops out. No term in this corpus reaches it, which is why
+    // this branch has never printed — kept because it is the one case a 0 weight is not a bug.
     else if (weight === undefined) tail = `${fmt(idf)}   —       in every description — idf 0`
     else tail = `${fmt(idf)}   ${fmt(weight)}`
     console.log(`${term.padEnd(termWidth)}  ${String(count).padEnd(5)}  ${tail}`)

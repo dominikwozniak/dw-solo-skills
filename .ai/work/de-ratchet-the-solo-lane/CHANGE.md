@@ -77,7 +77,7 @@ tracked files (excluding `.ai/archive/` and `docs/decisions/`) returns nothing.
 - [x] 2. **Shrink `scripts/validate-docs.sh`** 269 → ~80. Delete check 5 (`:155-204`) and check 6
       (`:205-269`). Collapse `EXPLICIT_LIST_DOCS`, `GATE_LIST_DOCS`, `GATE_TABLE_DOC`, `DESIGN` and
       `CONTRIBUTING` (`:27-38`) to `README` alone. Rewrite the header comment for four checks.
-- [ ] 3. **Freeze the evals.** `git rm evals/trigger.ts scripts/validate-evals.sh`; drop
+- [x] 3. **Freeze the evals.** `git rm evals/trigger.ts scripts/validate-evals.sh`; drop
       `validate:evals` from `package.json:16` and `.github/workflows/evals-routing.yaml:28`; rewrite
       `evals/README.md` for one tier; fold the skills↔cases contract into one line of the
       `AGENTS.md` add-a-skill checklist. Then `git rm` the three backlog entries that are work on
@@ -195,3 +195,23 @@ tracked files (excluding `.ai/archive/` and `docs/decisions/`) returns nothing.
   to 80 would have meant deleting working checks to hit a number, which is the failure mode the task
   8 anchor warns about. `EXPLICIT_LIST_DOCS` stays a list of one rather than a hardcoded filename, so
   a future doc that grows a skill list plugs in with one edit.
+- **Task 3 — two of the three named backlog entries were not frozen-tier work.** The task's premise
+  was that all three die with `trigger.ts`; checking them says otherwise, and `routing.ts` is the tier
+  that _survives_:
+  - `routing-baseline-remeasure.md` — **deleted as specified.** Its method was
+    `node evals/trigger.ts --go --trials 3 dw-git`, so the entry has no way to be actioned any more.
+    Its one durable observation (`dw-git` scores zero on two prompts since `44c06c7`) is already in
+    `evals/README.md`'s baseline section.
+  - `boilerplate-idf-zero-claim-is-unsupported.md` — **absorbed, not deleted.** It reported a false
+    sentence in `evals/README.md:261` and `evals/routing.ts:124`, and task 3 rewrites that README
+    anyway, so fixing it cost less than describing it (the absorption bar). Both sentences now say
+    what happens: `use` is in 7 of 11 descriptions and `say` in 5, so boilerplate gets cheap, never
+    free. The `idf 0` branch at `routing.ts:655` kept its wording plus a comment saying why it has
+    never printed.
+  - `stemmer-derivational-audit.md` — **restored.** It is `--explain`-driven work on the surviving
+    tier, unaffected by the deletion. That leaves `.ai/backlog/` at 9 entries, one over the cap, so
+    task 5 has one more absorb-or-drop decision than the shape assumed.
+- **Task 3 also touched `docs/decisions/0005`**, whose `## Trade-off` named `validate-evals.sh` as the
+  thing paying back the locality cost. The decision itself (evals at the repo root) is unchanged — only
+  that sentence was stale, so it now records that the validator was deleted here and the contract moved
+  to the checklist. Not the same as `0002`, which is left alone because it _describes a past world_.

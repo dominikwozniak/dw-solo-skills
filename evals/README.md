@@ -1,24 +1,25 @@
 # Routing evals
 
-Two tiers answering one question: **has a skill's `description` drifted into a neighbour's territory
-badly enough that the loop will misroute?**
+One free, deterministic check answering one question: **has a skill's `description` drifted into a
+neighbour's territory badly enough that the loop will misroute?**
 
-| Tier               | Cost                | Determinism | Where it runs          |
-| ------------------ | ------------------- | ----------- | ---------------------- |
-| `evals/routing.ts` | free                | total       | CI + the pre-push gate |
-| `evals/trigger.ts` | subscription tokens | none        | by hand, never in CI   |
-
-Tier 2 is a **lexical proxy**, not the router. It scores prompts against the corpus of
+`evals/routing.ts` is a **lexical proxy**, not the router. It scores prompts against the corpus of
 `name: description` pairs with TF-IDF and cosine. The real router is a model reading those same lines
-with far more context and is allowed to disagree — that is what tier 3 is for. What tier 2 buys is a
-check that runs on every push for zero tokens and catches the failure mode that matters: two
-descriptions competing for the same words.
+with far more context, and it is allowed to disagree. What this buys is a check that runs on every
+push for zero tokens and catches the failure mode that matters: two descriptions competing for the
+same words.
+
+There used to be a second tier — `evals/trigger.ts`, which spawned real `claude -p` runs against a
+throwaway fixture and reported which skill actually fired. It was deleted along with its
+`scripts/validate-evals.sh` sibling: it spent subscription quota, never ran in CI (there is no login
+to inherit there), refused to do anything without `--go`, and answered a question no change had asked
+for months. What it measured once is recorded under [Asking the real router](#asking-the-real-router),
+and `.ai/archive/skill-routing-evals/` keeps the rest.
 
 ## Running it
 
 ```bash
 pnpm eval:routing                           # what CI and the pre-push gate run (--min-rank1 67)
-pnpm validate:evals                         # every model-invocable skill has a case file, and back
 node evals/routing.ts                       # report only, no floor enforced
 node evals/routing.ts dw-shape dw-grill     # only these skills
 node evals/routing.ts --top 5               # show more of each ranking, and more collision pairs
@@ -28,15 +29,14 @@ node evals/routing.ts --explain "<prompt>"  # score one prompt out loud instead 
 No build step and no dependencies — Node strips the types natively. Exit codes: `0` pass, `1` a gate
 failed, `2` bad usage or a malformed case file.
 
-Both live in `.github/workflows/evals-routing.yaml` and in the pre-push gate in `AGENTS.md`. The
-workflow installs nothing: tier 2 has no dependencies and `jq` for the validator is already on the
-runner.
+It runs from `.github/workflows/evals-routing.yaml` and from the pre-push gate (the `scripts` block in
+`package.json`). The workflow installs nothing, because there is nothing to install.
 
 ## How the scoring works
 
 `--explain` prints the arithmetic behind one prompt instead of a pass/fail line. Take
-`shape a change that adds a CSV export` — the prompt tier 3 caught `dw-grill` on, and the one tier 2
-answers `dw-start` to:
+`shape a change that adds a CSV export` — the prompt a real router was once caught answering
+`dw-grill` to, and the one this eval answers `dw-start` to:
 
 ```bash
 node evals/routing.ts --explain "shape a change that adds a CSV export" --top 4
@@ -58,8 +58,10 @@ any description at all:
 | `export` | —     | —            | in no description                       |
 
 The domain nouns carry nothing: no skill description mentions CSVs, and it would be a bug if one did.
-The whole ranking turns on `shap` and `chang`. A term in _every_ description gets `log(11/11) = 0` and
-drops out the same way — that is the boilerplate filter, done arithmetically.
+The whole ranking turns on `shap` and `chang`. The shared boilerplate is priced down the same way, by
+document frequency: `use` is in 7 of 11 descriptions and `say` in 5, so both are cheap. Only a term in
+_all_ 11 would reach `log(11/11) = 0` and drop out outright, and none does — the filter is a gradient,
+not a cliff.
 
 **Stage 3, weights to a score.** Each skill's score is the dot product of the two normalised vectors,
 so it decomposes term by term:
@@ -114,6 +116,10 @@ Banner comments split the file, top to bottom. Each section depends only on the 
 One `evals/cases/<skill>.json` per **model-invocable** skill. The four with
 `disable-model-invocation: true` get none: routing is never the model's decision there. Their
 descriptions stay in the corpus regardless, because they still compete for the same words.
+
+That contract used to have its own validator. It is now one line of the add-a-skill checklist in
+`AGENTS.md` — a missing case file means a skill measured by nothing, and an orphan one means a case
+file measuring nothing, both visible on the run's own summary table.
 
 ```json
 {
@@ -203,40 +209,15 @@ broadening a description raises the document frequency of the terms it absorbs, 
 idf, so some of those three negatives now collapse to zero on both sides and are reported as
 asserting nothing rather than as thefts. Three negatives break either way — only the label moved.
 
-## Tier 3 — asking the real router
+## Asking the real router
 
-```bash
-node evals/trigger.ts                             # plan only: what it would run, and nothing else
-node evals/trigger.ts --go --trials 3 dw-shape    # actually run it
-node evals/trigger.ts --go --model haiku dw-git   # same prompts, a different router
-node evals/trigger.ts --go --prompt "..."          # an ad-hoc prompt, no case file needed
-```
+**There is no tool here for this any more**, and that is deliberate: `evals/trigger.ts` spawned real
+`claude -p` runs to see which skill actually fired, and the answer it gave once was worth more than
+the tool was worth keeping.
 
-It spawns real `claude -p` runs against a throwaway fixture, reads the first `Skill` tool call out of
-the stream-json, and reports the distribution. **It does nothing without `--go`** — the plan and a
-cost line print first, because this is the tier that spends quota. Never in CI, never in the gate.
-
-**No `ANTHROPIC_API_KEY` is needed or wanted.** `claude -p` inherits your existing subscription login,
-so the cost line is quota, not a bill — which is also why this tier cannot run in CI, where there is
-no login to inherit.
-
-Three things it gets right that are easy to get wrong:
-
-- **All three plugin directories are loaded**, from the marketplace manifest rather than a hardcoded
-  one. The 11 skills span `dw-solo`, `dw-solo-setup` (`dw-doctor`, `dw-init`) and `dw-solo-extras`
-  (`dw-handoff`). Loading only `dw-solo` removes three skills from the router's choices and quietly
-  invalidates any verdict about a near neighbour.
-- **Every globally enabled plugin is switched off**, read from `~/.claude/settings.json`. Otherwise
-  the cache-installed copy of this same marketplace loads _alongside_ `--plugin-dir` and every skill
-  appears twice, while unrelated plugins add their own skills to the pool.
-- **The fixture is not an empty directory** — `git init`, an empty `.ai/work/` and a stub `CLAUDE.md`,
-  because several descriptions key off cues a real project has.
-
-### Recorded verdict — 2026-08-02
-
-The reconnaissance that motivated this change saw `dw-grill` fire 3/3 on `shape a change that adds a
-CSV export`, a prompt containing `dw-shape`'s own trigger verb. Under identical conditions through
-this tool, with only the model changed:
+Recorded 2026-08-02. The reconnaissance behind these evals saw `dw-grill` fire 3/3 on `shape a change
+that adds a CSV export` — a prompt containing `dw-shape`'s own trigger verb. Under identical
+conditions with only the model changed:
 
 | model   | first `Skill` call | turns | cost    |
 | ------- | ------------------ | ----- | ------- |
@@ -244,20 +225,23 @@ this tool, with only the model changed:
 | `opus`  | **`dw-shape`** ✓   | 7     | $0.2722 |
 
 **The grill/shape collision is a haiku artifact, not a live misroute.** The loop runs opus, and opus
-routes it correctly. `dw-grill`'s own positive also went to `dw-grill` on opus. n=1 per cell — enough
-to kill the lead, not enough to be a distribution; re-run with `--trials 3` before trusting either
-cell further.
+routes it correctly. n=1 per cell — enough to kill the lead, not enough to be a distribution. This
+eval also declined to reproduce the lead, but for its own reason: it puts `dw-start` first, not
+`dw-grill`. Two measurements disagreeing with the same reconnaissance in two different ways is the
+expected shape, not a bug in either.
 
-Worth keeping in view: tier 2 also declined to reproduce the lead, but for a different reason — it put
-`dw-start` first, not `dw-grill`. Two tiers disagreeing with the same reconnaissance in two different
-ways is the expected shape, not a bug in either.
+To ask the question again, ask it by hand: run `claude -p` in a scratch project with the three plugin
+directories loaded and every globally enabled plugin switched off, and read the first `Skill` call out
+of the stream. Those two conditions were the whole subtlety of the deleted tool — without them the
+cache-installed copy of this marketplace loads alongside and every skill appears twice.
 
 ## Caveats
 
 - The stemmer is a suffix stripper, not a linguist's. `shape`/`shaping`/`shaped` conflate;
   `decide`/`decision` never meet. Both the corpus and the query go through the same function, so
   relative ranking holds even where the stem is wrong.
-- `log(N/df)` is deliberate: a term every description carries — the shared "Use when someone says"
-  phrasing — lands on exactly zero and drops out, with no boilerplate list to maintain by hand.
+- `log(N/df)` is deliberate: the shared "Use when someone says" phrasing gets cheap on its own —
+  `use` in 7 of 11 descriptions, `say` in 5 — so there is no boilerplate list to maintain by hand.
+  Cheap, not free: reaching idf 0 needs df = N, which nothing in this corpus does.
 - Only `name` and `description` are scored, because a listing of those two is the whole surface the
   routing decision is made from. Not `argument-hint`, not the body.

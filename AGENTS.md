@@ -18,7 +18,7 @@ scripts/runtime/<script>.sh      shipped scripts — symlinked into the owning p
 scripts/<script>.sh              repo CI tooling, never shipped (validate-*.sh, lint.sh)
 scripts/tests/<script>.test.sh   bash self-tests
 evals/cases/<name>.json          routing cases — one per model-invocable skill, never shipped
-evals/routing.ts                 the free tier, in CI · evals/trigger.ts is the paid one, by hand
+evals/routing.ts                 the routing eval — free, deterministic, in CI
 templates/                       payload copied verbatim INTO a target project (hooks, settings.json)
 .claude-plugin/marketplace.json  makes this repo installable as a plugin source
 ```
@@ -122,13 +122,14 @@ instead of a dated record under `.ai/handoffs/`, so treat the two as unrelated. 
    team-lane skill is a dead end here, and `validate:docs` fails it. A cycle of new skills lands its
    `**Next:**` lines in one wiring commit at the end; `validate:docs` only checks pointers that
    exist.
-6. **If the skill is model-invocable**, add `evals/cases/<name>.json` — at least 3 positives and 2
-   negatives, each negative naming the `owner` that should win instead. `validate:evals` fails
-   without it. If the skill is `disable-model-invocation: true`, do **not** add one: routing is never
-   the model's decision there, and a case file for it would read as coverage while measuring nothing.
-   Shape and conventions: [`evals/README.md`](evals/README.md).
-7. `pnpm lint && pnpm format && pnpm validate:manifests && pnpm validate:docs && pnpm validate:evals && pnpm eval:routing`
-   — the last one because a new description shifts every term's idf, so adding a skill can knock an
+6. **Exactly one `evals/cases/<name>.json` per model-invocable skill, and none for an explicit-invoke
+   one** — at least 3 positives and 2 negatives, each negative naming the `owner` that should win
+   instead. Nothing validates that count any more, so it is yours to hold: a missing file is a skill
+   measured by nothing, an orphan file is a case file measuring nothing, and a file for a
+   `disable-model-invocation: true` skill reads as coverage while measuring a decision the model never
+   makes. Shape and conventions: [`evals/README.md`](evals/README.md).
+7. `pnpm lint && pnpm format && pnpm validate:manifests && pnpm validate:docs && pnpm eval:routing` —
+   the last one because a new description shifts every term's idf, so adding a skill can knock an
    _existing_ one off rank-1 and fail CI's floor without your own case file scoring badly at all.
 
 Steps 2–6 are CI-enforced (bar the loop diagram, and CI checks the versions are _equal_, not that
@@ -153,10 +154,8 @@ is no build step and no typecheck. Node runs the `.ts` files directly.
   `check-decisions.sh` over this repo's own `docs/decisions/`)
 - **Lint**: `pnpm lint`
 - **Format**: `pnpm format` (check) · `pnpm format:fix` (write)
-- **Routing evals**: `pnpm eval:routing` (free, deterministic) · `pnpm validate:evals` (the
-  skills ↔ case-files contract). The paid tier is `node evals/trigger.ts`, run by hand and never in
-  CI — it spends subscription quota and does nothing without `--go`. See
-  [`evals/README.md`](evals/README.md).
+- **Routing evals**: `pnpm eval:routing` — free, deterministic, in CI. The one tier there is; the
+  paid `claude -p` tier was deleted, see [`evals/README.md`](evals/README.md).
 
 ## Before you push
 

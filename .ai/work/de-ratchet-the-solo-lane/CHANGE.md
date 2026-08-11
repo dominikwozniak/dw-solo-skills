@@ -118,7 +118,7 @@ tracked files (excluding `.ai/archive/` and `docs/decisions/`) returns nothing.
       `origin/<branch>` fallback, which is a real extra constraint. Collapse `dw-shape:78-121` (44
       lines for one decision) to ~15. Leave `description:` frontmatter alone unless it restates the
       body.
-- [ ] 9. **Bump and gate.** Three plugins are touched, one bump each, `marketplace.json` and the
+- [x] 9. **Bump and gate.** Three plugins are touched, one bump each, `marketplace.json` and the
       owning `plugin.json` identical: `dw-solo` (skills plus a removed runtime script),
       `dw-solo-setup` (`templates/decisions-README.md`), `dw-solo-extras` (`dw-handoff` body). Then
       the full gate, now five commands.
@@ -221,6 +221,13 @@ tracked files (excluding `.ai/archive/` and `docs/decisions/`) returns nothing.
     with it.
   - `scripts/validate-artifacts.sh` pass 2 was the dogfood run. Deleted here rather than in task 6, so
     that this commit leaves `pnpm validate:artifacts` green instead of red-until-task-6.
+- **Task 9 — `dw-solo` 0.4.14, `dw-solo-setup` 0.1.12, `dw-solo-extras` 0.1.3**, each identical in
+  `marketplace.json` and its `plugin.json`. Patch, per the checklist, even for `dw-solo` losing a
+  shipped script: nothing invokes `check-decisions.sh` any more, so no consumer breaks on the removal.
+  **The gate is six commands, not the five the `## Goal` says** — dropping `validate:evals` from seven
+  leaves `lint`, `format`, `validate:manifests`, `validate:artifacts`, `validate:docs`,
+  `eval:routing`, which is what `## Notes` lists and what `package.json` now holds. All six pass.
+  `pnpm lint` was run as `bash scripts/lint.sh` because of the rtk hijack in `## Gotchas`.
 - **Task 8 — 11 812 → 11 101 words, and the `## Goal`'s "under 7000" is not reachable without deleting
   behaviour.** What came out is what the anchor's standard actually licenses: the opening rationale
   paragraph from all 11 skills, the split test at 44 lines → 17, `reject` stated twice in `dw-land`

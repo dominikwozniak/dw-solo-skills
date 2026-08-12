@@ -13,21 +13,40 @@ import { existsSync, lstatSync, readFileSync, readdirSync, readlinkSync } from "
 import { dirname, join } from "node:path"
 import { fileURLToPath } from "node:url"
 
-// The repo root is the nearest ancestor of this script that holds AGENTS.md — so the file works at
-// scripts/check-agents-docs.mjs, at the root, or anywhere else it gets dropped.
-const findRoot = () => {
+// The repo root is where `.git` is — a directory in a normal clone, a FILE in a git worktree, so
+// existsSync is the right probe for both. The script works at scripts/check-agents-docs.mjs, at the
+// root, or anywhere else it gets dropped.
+//
+// Resolving by "nearest ancestor holding an AGENTS.md" was the obvious version and it was wrong:
+// AGENTS.md is a per-directory convention, so a perfectly legal scripts/AGENTS.md ("rules for this
+// directory") made this script treat scripts/ as the repo root and grade that file instead — three
+// failures about a healthy repo, none of them naming a path you could tell them apart by.
+//
+// The fallback exists for a copy with no .git above it at all (a tarball, a vendored subtree); there
+// the AGENTS.md walk is the best guess available, and the report names the root it settled on either
+// way so a wrong one is visible rather than inferred.
+const findUp = (marker) => {
   let dir = dirname(fileURLToPath(import.meta.url))
   for (;;) {
-    if (existsSync(join(dir, "AGENTS.md"))) return dir
+    if (existsSync(join(dir, marker))) return dir
     const up = dirname(dir)
     if (up === dir) return null
     dir = up
   }
 }
 
-const repoRoot = findRoot()
+const repoRoot = findUp(".git") ?? findUp("AGENTS.md")
 if (repoRoot === null) {
-  console.error("agents:check — no AGENTS.md found at or above this script. Nothing to check.")
+  console.error(
+    "agents:check — no .git and no AGENTS.md at or above this script. Nothing to check.",
+  )
+  process.exit(1)
+}
+if (!existsSync(join(repoRoot, "AGENTS.md"))) {
+  console.error(
+    `agents:check — no AGENTS.md at the repo root (${repoRoot}). ` +
+      "It is the one file every session loads in full; a topic file under docs/agents/ does not stand in for it.",
+  )
   process.exit(1)
 }
 
@@ -210,6 +229,8 @@ if (failures.length > 0) {
   for (const failure of failures) console.error(`agents:check — ${failure}`)
   process.exit(1)
 }
+// The root is in the success line on purpose: it is the one input every check above depends on, and a
+// wrong one produces confident, wrong output. Naming it makes that visible instead of inferable.
 console.log(
-  `agents:check — ${budgetReport}; ${topics.length} topic file(s), ${routedPaths.size} routed path(s).`,
+  `agents:check — ${repoRoot}: ${budgetReport}; ${topics.length} topic file(s), ${routedPaths.size} routed path(s).`,
 )

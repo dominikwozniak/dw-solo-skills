@@ -40,6 +40,9 @@ scaffold() {
   local dir
   dir="$WORK/repo.$RANDOM$RANDOM"
   mkdir -p "$dir/scripts" "$dir/.ai"
+  # A real .git, because that is what the checker resolves the repo root by. Without it the fixtures
+  # would exercise only the tarball fallback and the primary path would go untested.
+  git -C "$dir" init --quiet
   cp "$CHECKER" "$dir/scripts/check-agents-docs.mjs"
   printf 'glossary\n' >"$dir/CONTEXT.md"
   printf 'what .ai/ is\n' >"$dir/.ai/README.md"
@@ -89,6 +92,29 @@ echo "a valid scaffold passes, and says what it measured:"
 repo="$(scaffold '120 lines / 10 KB')"
 expect_rc "valid-exit-0" 0 "$(check "$repo")"
 expect_says "valid-reports-the-budget" "/120 lines"
+# The resolved root is in the report because every check depends on it, and a wrong one produces
+# confident wrong output.
+expect_says "valid-names-the-resolved-root" "$repo"
+
+echo "the repo root comes from .git, not from the first AGENTS.md above the script:"
+# AGENTS.md is a per-directory convention, so scripts/AGENTS.md is legal. Resolving by the nearest
+# AGENTS.md made the checker treat scripts/ as the root and report three failures about a healthy repo.
+repo="$(scaffold '120 lines / 10 KB')"
+printf '# Rules for scripts/\n\nKeep them POSIX.\n' >"$repo/scripts/AGENTS.md"
+expect_rc "nested-agents-md-does-not-hijack-the-root" 0 "$(check "$repo")"
+expect_says "nested-agents-md-root-is-still-the-repo" "$repo:"
+
+# A git root with no AGENTS.md fails by naming the path, so the message is actionable.
+repo="$(scaffold '120 lines / 10 KB')"
+rm "$repo/AGENTS.md" "$repo/CLAUDE.md"
+printf '# Rules for scripts/\n' >"$repo/scripts/AGENTS.md"
+expect_rc "no-root-agents-md-exit-1" 1 "$(check "$repo")"
+expect_says "no-root-agents-md-names-the-path" "no AGENTS.md at the repo root"
+
+# No .git anywhere: the AGENTS.md walk is the only guess left, and it still works.
+repo="$(scaffold '120 lines / 10 KB')"
+rm -rf "$repo/.git"
+expect_rc "no-git-falls-back-to-the-agents-walk" 0 "$(check "$repo")"
 
 echo "the budget parser:"
 # KB is ×1024, so 1 KB is roomy for a ~15-line fixture and 1 bare byte is not.
@@ -232,6 +258,7 @@ echo "the shipped AGENTS.md template, rendered the way dw-init renders it, passe
 # or naming a `pnpm <script>` dw-init never writes.
 repo="$WORK/rendered"
 mkdir -p "$repo/scripts" "$repo/.ai/backlog" "$repo/.ai/archive" "$repo/docs/decisions" "$repo/.claude/hooks"
+git -C "$repo" init --quiet
 cp "$CHECKER" "$repo/scripts/check-agents-docs.mjs"
 for seeded in .ai/README.md .ai/backlog/README.md .ai/archive/README.md docs/decisions/README.md CONTEXT.md; do
   printf 'seeded by dw-init\n' >"$repo/$seeded"

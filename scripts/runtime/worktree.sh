@@ -9,9 +9,10 @@
 #
 # Subcommands:
 #   worktree.sh create <slug> [base]   worktree + branch <slug> at [base] (default HEAD);
-#                                      copies the .worktreeinclude matches in, links
-#                                      CLAUDE.local.md, reports what still needs installing;
-#                                      prints the worktree's absolute path on stdout
+#                                      copies the .worktreeinclude matches in, links a legacy
+#                                      CLAUDE.local.md if one is there, reports what still
+#                                      needs installing; prints the worktree's absolute path
+#                                      on stdout
 #   worktree.sh remove <slug>          remove the worktree, delete its branch, prune
 #
 # Everything create does past `git worktree add` is best-effort and speaks only on stderr, so
@@ -108,27 +109,36 @@ EOF
     echo "worktree.sh: copied $copied file(s) named by .worktreeinclude" >&2
 }
 
-# Personal agent memory is link-class, not copy-class: one source of truth, so an edit in either
-# tree is visible in both. That is `link-local-memory.sh`'s argument, and it stays the right one.
+# LEGACY. Personal agent memory used to be a gitignored `CLAUDE.local.md`, which `git worktree add`
+# never checks out — so it was carried in as a symlink rather than a copy: one source of truth, so an
+# edit in either tree is visible in both. That argument was right, and it no longer has a subject. The
+# scaffold writes tracked `AGENTS.md` and git checks it out on its own, which is why decision 0007
+# supersedes 0003 and the link class has no member in a repo scaffolded now.
 #
-# The hook cannot cover this path, though. It runs on SessionStart, which fires for `claude -w`
-# (the session starts *in* the worktree) but not for a session that enters a worktree mid-flight —
-# `/dw-start`'s route. Creating the link here has no session lifecycle to miss. Both sides test for
-# an existing entry first, so they compose rather than race.
+# It stays because repos scaffolded before that move still have the file, and their worktrees would
+# silently lose the git conventions and the lint/typecheck commands without it. The `-f` guard is what
+# makes it inert everywhere else: no file, no link, no output, and `create` carries on.
+#
+# The hook cannot cover this path, and that is still true. It runs on SessionStart, which fires for
+# `claude -w` (the session starts *in* the worktree) but not for a session that enters a worktree
+# mid-flight — `/dw-start`'s route. Creating the link here has no session lifecycle to miss. Both
+# sides test for an existing entry first, so they compose rather than race.
 #
 # Absolute target, matching the hook: a relative one would break the moment the worktree moves.
 link_local_memory() {
   local src_root="$1" dst_root="$2"
   local src="$src_root/CLAUDE.local.md"
+  # The ordinary case on a repo scaffolded now: nothing to link, and silence is correct — a message
+  # here would report the absence of a file the scaffold deliberately stopped writing.
   [ -f "$src" ] || return 0
   # -e, not -f: a link the hook already made counts as present.
   if [ -e "$dst_root/CLAUDE.local.md" ]; then
     return 0
   fi
   if ln -s "$src" "$dst_root/CLAUDE.local.md" 2>/dev/null; then
-    echo "worktree.sh: linked CLAUDE.local.md from the main tree — it carries the git conventions and the lint/typecheck commands" >&2
+    echo "worktree.sh: linked a legacy CLAUDE.local.md from the main tree — it carries this repo's git conventions and lint/typecheck commands; tracked AGENTS.md is where they live now" >&2
   else
-    echo "worktree.sh: could not link CLAUDE.local.md into the worktree — the agent will fall back to generic git conventions" >&2
+    echo "worktree.sh: could not link the legacy CLAUDE.local.md into the worktree — the agent will fall back to generic git conventions" >&2
   fi
 }
 

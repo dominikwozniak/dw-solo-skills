@@ -223,7 +223,25 @@ else
 fi
 "$WORKTREE" remove epsilon >/dev/null 2>&1
 
-echo "CLAUDE.local.md (link-class, not copy-class):"
+echo "tracked AGENTS.md needs no carry at all (the link class lost its member):"
+# Decision 0007: agent memory is tracked now, so `git worktree add` delivers it unaided. This is the
+# ordinary case, and the point of asserting it is that nothing in worktree.sh has to be involved.
+printf '# Fixture — agent rules\n' >"$REPO/AGENTS.md"
+git -C "$REPO" add AGENTS.md
+git -C "$REPO" commit -qm "tracked agent memory"
+"$WORKTREE" create upsilon >/dev/null 2>&1
+UPSILON="$REPO/.claude/worktrees/upsilon"
+if [ -f "$UPSILON/AGENTS.md" ] && [ ! -L "$UPSILON/AGENTS.md" ]; then
+  note_pass "tracked-memory-arrives-as-a-real-file"
+else
+  note_fail "tracked-memory-arrives-as-a-real-file" "missing, or carried in as a link"
+fi
+"$WORKTREE" remove upsilon >/dev/null 2>&1
+
+echo "legacy CLAUDE.local.md (link-class, not copy-class):"
+# Kept for repos scaffolded before the move: their worktrees would silently lose the git conventions
+# and the lint/typecheck commands. Nothing writes this file any more, so every case below is a
+# compatibility case, not the happy path.
 echo "conventions" >"$REPO/CLAUDE.local.md"
 
 "$WORKTREE" create zeta >/dev/null 2>&1
@@ -260,13 +278,22 @@ fi
 git -C "$REPO" rm -q --cached CLAUDE.local.md
 git -C "$REPO" commit -qm "untrack local memory"
 
-# Absent source -> nothing to link, and create still succeeds.
+# Absent source -> nothing to link, and create still succeeds. Since the scaffold stopped writing the
+# file, this is now the ordinary path rather than an edge case, which is why the no-op has to be
+# SILENT too: a message about a missing CLAUDE.local.md would read as a warning on every worktree of
+# every repo scaffolded from here on.
 mv "$REPO/CLAUDE.local.md" "$REPO/CLAUDE.local.md.bak"
-out=$("$WORKTREE" create theta 2>/dev/null)
+TLOG="$TMP/theta.stderr"
+out=$("$WORKTREE" create theta 2>"$TLOG")
 if [ "$out" = "$REPO/.claude/worktrees/theta" ] && [ ! -e "$REPO/.claude/worktrees/theta/CLAUDE.local.md" ]; then
   note_pass "local-memory-absent-is-a-no-op"
 else
   note_fail "local-memory-absent-is-a-no-op" "out='$out' or a stray link appeared"
+fi
+if grep -qi "CLAUDE.local.md" "$TLOG"; then
+  note_fail "local-memory-absent-is-silent" "stderr mentioned it: $(tr '\n' '|' <"$TLOG")"
+else
+  note_pass "local-memory-absent-is-silent"
 fi
 "$WORKTREE" remove theta >/dev/null 2>&1
 mv "$REPO/CLAUDE.local.md.bak" "$REPO/CLAUDE.local.md"

@@ -53,7 +53,7 @@ routed topic file — not the root — as a gotcha's home.
       `none` means "skip", fixing the seed's `eval`-of-`none` bug. Update the byte-identical
       `.claude/hooks/` copies; extend `scripts/tests/lint-on-edit.test.sh` and give
       `typecheck-on-stop.sh` the self-test the seed asked for.
-- [ ] 3. **Retire the local-memory machinery.** `link-local-memory.sh` leaves the always-offered
+- [x] 3. **Retire the local-memory machinery.** `link-local-memory.sh` leaves the always-offered
       hook set in `dw-init` (template stays for legacy repos or goes — decide while there);
       `worktree.sh` link-carry becomes conditional on the file existing; adjust
       `worktree.test.sh:226-272`; write the decision record superseding 0003 (next free number).
@@ -148,6 +148,21 @@ routed topic file — not the root — as a gotcha's home.
   lint hook needed re-copying. `hooks-in-sync.test.sh` checks the copy only where one exists.
 - **`.ai/backlog/` is at 6 of 8** before this change parks anything. Applying the hook fix in
   `dw-skills` is one of the entries land time owes; leave room.
+- **Task 3 decided the `link-local-memory` template stays.** Two reasons, and the first is hard:
+  `hooks-in-sync.test.sh` requires a template for every hook in this repo's own `.claude/hooks/`, and
+  this repo still wires it — retiring the file here is `own-root-under-budget-and-router`'s scope, and
+  its `CLAUDE.local.md` is the user's to delete, not the agent's. The second is that legacy repos'
+  worktrees genuinely still need it. So the retirement is from dw-init's **always-offered** set: it is
+  now offered only when step 1 finds a `CLAUDE.local.md` already there.
+- **`worktree.sh`'s link-carry was already conditional** (`[ -f "$src" ] || return 0` at what is now
+  `:131`), so task 3 changed framing, not behaviour: the guard is documented as the thing that makes
+  the step inert, and the messages say "legacy". The one new assertion that matters is that the
+  absent case is **silent** — it is the ordinary path now, and a warning there would fire on every
+  worktree of every repo scaffolded from here on.
+- **0003 is flipped to `superseded` even though only its link class died.** Its copy, regenerate and
+  absent classes are untouched and still implemented. The folder has no partial-supersession status
+  and nothing validates one, so 0007 carries an explicit paragraph naming what it does and does not
+  replace, and points the reader back at 0003 for the other three.
 - **`AGENTS.md` gained a `## Project` section** the shape did not list (Stack / Key directories /
   Deployment target) — the old `CLAUDE.local.md`'s `## Project specifics` carried real orientation
   value and `{{STACK}}` had no other home. 94 lines / 5085 B rendered, so 26 lines of the budget are

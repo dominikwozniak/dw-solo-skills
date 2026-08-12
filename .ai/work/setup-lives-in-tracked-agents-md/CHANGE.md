@@ -57,7 +57,7 @@ routed topic file — not the root — as a gotcha's home.
       hook set in `dw-init` (template stays for legacy repos or goes — decide while there);
       `worktree.sh` link-carry becomes conditional on the file existing; adjust
       `worktree.test.sh:226-272`; write the decision record superseding 0003 (next free number).
-- [ ] 4. **The shipped checker.** New `templates/check-agents-docs.mjs` — zero deps: root budget
+- [x] 4. **The shipped checker.** New `templates/check-agents-docs.mjs` — zero deps: root budget
       read from the file's own prose declaration (`grep`-grade parsing, bare number = bytes, `KB` =
       ×1024, malformed = reject), router coverage (every `docs/agents/*.md` has a row), routed
       paths exist, every `pnpm <script>` named exists in `package.json`. `dw-init` copies it and
@@ -163,6 +163,27 @@ routed topic file — not the root — as a gotcha's home.
   absent classes are untouched and still implemented. The folder has no partial-supersession status
   and nothing validates one, so 0007 carries an explicit paragraph naming what it does and does not
   replace, and points the reader back at 0003 for the other three.
+- **The checker got two checks the shape did not list, and one it did not.** Added: a leftover
+  `{{PLACEHOLDER}}` is a failure (dw-init's own prose calls that hazard out — a stray token is read as
+  content and `eval`ed as a command), and `CLAUDE.md` must be a symlink to `AGENTS.md` (the whole
+  premise of the layout, and generic). Not added, deliberately: anything under `docs/decisions/`, with
+  a test case asserting the absence so the next reader knows it is a decision and not an oversight.
+- **A test against the shipped template caught a real bug in the shipped checker.** Every other case
+  builds its own minimal `AGENTS.md`, so none would notice the two payload halves disagreeing. Adding
+  one that renders `templates/AGENTS.md` the way dw-init does failed immediately: path sync scanned
+  the whole router row, so the backticked **concepts** in the `task` column — `.ai/work/`,
+  `CHANGE.md` — were read as routed targets, and no `CHANGE.md` exists at a repo root. Path sync is
+  now scoped to the last cell, the `read` column, and both the bug and the template case are pinned.
+- **`.lintstagedrc.json` needed `mjs`** — the `## Gotchas` trap firing exactly as written: prettier
+  checks every extension it understands, lint-staged only the listed ones, so the first file of a new
+  kind is unformatted at commit and rejected at push. `references/precommit.md` now carries the same
+  warning for scaffolded repos, since the checker is the `.mjs` they all get.
+- **`agents:check` is wired uncommented, unlike typecheck and test.** Those are opt-ins in the
+  reference because they build the whole project; this reads `AGENTS.md` and the paths it routes to.
+  It is guarded on `AGENTS.md`, `docs/agents/` or `package.json` being staged — the third because
+  command sync is what catches a renamed script.
+- **No pre-push exists in this scaffold.** The task said "+ pre-push per `references/precommit.md`";
+  that reference only has a pre-commit, so the gate went there. Nothing was invented to hold it.
 - **`AGENTS.md` gained a `## Project` section** the shape did not list (Stack / Key directories /
   Deployment target) — the old `CLAUDE.local.md`'s `## Project specifics` carried real orientation
   value and `{{STACK}}` had no other home. 94 lines / 5085 B rendered, so 26 lines of the budget are

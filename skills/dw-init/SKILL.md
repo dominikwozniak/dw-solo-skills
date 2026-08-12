@@ -27,6 +27,7 @@ allow-list is **derived from the project rather than guessed**.
 | `CONTEXT.md`                        | **tracked**       | the project's glossary — terms only                      |
 | `AGENTS.md`                         | **tracked**       | the one always-loaded file: rules, commands, Task Router |
 | `CLAUDE.md`                         | **tracked**       | a symlink to `AGENTS.md` — never a second copy           |
+| `scripts/check-agents-docs.mjs`     | **tracked**       | the gate on that file's budget, router and commands      |
 | `.claude/settings.json`             | **tracked**       | permissions (ask + deny + derived allow) and hook wiring |
 | `.claude/hooks/*.sh`                | **tracked**       | the guardrail scripts those settings reference           |
 | `.worktreeinclude`                  | **tracked**       | gitignored files a fresh worktree should carry in        |
@@ -127,6 +128,18 @@ light.
     write `none` rather than wiring a slow hook.
   - Idempotency is per-section: if `AGENTS.md` already exists, leave it alone and report which of the
     template's sections it is missing. Never merge a rendered template into a file someone wrote.
+- `scripts/check-agents-docs.mjs` — copy `${CLAUDE_PLUGIN_ROOT}/templates/check-agents-docs.mjs`
+  verbatim. Zero dependencies, Node built-ins only, and it finds the repo root by walking up from its
+  own location to the nearest `AGENTS.md` — so `scripts/` is the conventional home, not a required
+  one. It checks five things: the declared budget, that no `{{…}}` placeholder survived, Task Router
+  coverage and path sync, that every `pnpm <script>` named in `AGENTS.md` exists, and that `CLAUDE.md`
+  is a symlink. It checks **nothing** under `docs/decisions/` — those records are editorial, and a
+  validator over them turns a durable layer into a build gate.
+  - `{{AGENTS_CHECK_COMMAND}}` is how `AGENTS.md`'s own header names its enforcement. With a
+    `package.json`, add `"agents:check": "node scripts/check-agents-docs.mjs"` to `scripts` and render
+    `pnpm agents:check`; where the repo has an aggregate gate script (`check`, `verify`), add it to
+    that too. Without a `package.json`, render the bare `node scripts/check-agents-docs.mjs` — and say
+    at the gate that the checker needs Node even where the project does not.
 - `CLAUDE.md` — `ln -s AGENTS.md CLAUDE.md`. A **symlink**, never a copy: the harnesses load
   `CLAUDE.md`, the file is `AGENTS.md`, and a materialized second copy is the fork this whole layout
   exists to prevent. If a real `CLAUDE.md` with content is already there, it was approved at the gate
@@ -170,10 +183,15 @@ queued work, and a backlog you have to first decide isn't real is one you stop o
 Only when opted in at the gate. `pnpm add -D husky lint-staged`, `pnpm exec husky init`, then write
 `.husky/pre-commit` and `.lintstagedrc.json` from the shapes in `references/precommit.md` — globs
 matched to the formatter and linter step 1 actually detected, never to a tool that isn't installed.
-Typecheck and test lines are separate opt-ins: both run the whole project per commit. On a repo
+Typecheck and test lines are separate opt-ins: both run the whole project per commit. **`agents:check`
+is not an opt-in** — it goes in uncommented, guarded on the docs actually being staged, because it
+reads a handful of files rather than building the project. The reference has the shape. On a repo
 that's partly wired, fill the gaps and show diffs — never overwrite blind; the re-run rules are in
 the reference. Worth having even solo: it catches the commits made outside a session, where no hook
 fires.
+
+Where the repo has no `package.json` and so no husky, say what that leaves uncovered rather than
+inventing a gate: `AGENTS.md` can then drift past its budget until someone runs the checker by hand.
 
 ### 6. Reconcile tracking
 

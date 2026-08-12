@@ -250,6 +250,38 @@ specifics` block, which `own-root-under-budget-and-router` task 3 is about to mo
     target the run skipped, stated as a general rule. `3bef4c5`
 - **No further version bump for the fixes** — `dw-solo` 0.4.16 and `dw-solo-setup` 0.1.14 were taken
   in this same unmerged PR, and one bump covers a train landing together.
+- **A Codex pass then found ten more, and all ten held up against a fixture.** `/codex:review` is
+  `disable-model-invocation: true` and therefore unreachable from a skill; the delegated path is
+  `codex:rescue`. Two were worse than reported:
+  - **A filename could inject a command into the lint hook, and the probe executed it.**
+    `eval "$cmd \"$file_path\""` spliced the edited path into the string `eval` parses, and double
+    quotes do not stop command substitution on the reparse — a file named `$(touch PWNED).js` cleared
+    the existence and extension checks and then ran. The authored command is still `eval`ed, into the
+    positional parameters so its own quoting survives; the path is now one literal argument. **This
+    predates the change** — the line is vendored and the diff never touched it.
+  - **Explanatory prose beat the `none` sentinel in both hooks.** They took the first backticked span
+    before considering the bare value, so `none — see \`scripts/lint.sh\``ran`scripts/lint.sh`on
+every edit. Worse, my own doctor test asserted that behaviour, pinning the bug as the contract.`none` is now tested on the raw remainder first, and must stand alone. This also **fixes at the
+    source** the backlog bullet about this repo's own typecheck line, so that entry shrank instead of
+    describing finished work.
+  - **`08 KB` did not "abort the doctor" as reported — it silently dropped the budget check.** Bash
+    read the leading zero as octal, bailed out of the arithmetic, and carried on with no budget line at
+    all. `10#` forces base 10, matching `Number("08")`.
+  - **`$HOME` under `set -u` did abort it** — with `HOME` unset the diagnostic died before the summary,
+    losing every check below the codex probe.
+  - The rest: coverage grepping section text rather than the parsed `read` column (the mistake path
+    sync had already been fixed for, one check below it); rows split on escaped `\|`; the symlink check
+    comparing spelling rather than destination — resolved-path strings still trip over a symlinked
+    ancestor, so it is `realpathSync` in the checker and `test -ef` in the doctor; and the doctor's
+    budget tail being an open `.*` where the gate is strict.
+  - **The pre-commit guard was deleted, not widened.** Every check the gate runs can be broken by a
+    file the guard didn't name, so enumerating them means restating the router in a shell pattern
+    forever — more than the node startup it saved.
+  - **Two of my own tests passed for the wrong reason** and Codex caught both: the doctor's
+    `routed-topic-ok` appended its router row after `## Solo lane`, which only passed because the grep
+    scanned the whole file; and `value-matches-hook-extraction` asserted the sentinel bug. Both are
+    now scoped inside the table, and the doctor fixture takes an extra-row parameter like the
+    checker's.
 - **All four observable results in the `## Goal` are covered by tests, not by inspection:**
   `shipped-template-passes-exit-0` renders the template into a scratch scaffold and runs the checker
   on it; `agents-backticked-exit-0` / `agents-received-path` feed `lint-on-edit.sh` a synthetic

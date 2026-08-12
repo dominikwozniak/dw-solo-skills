@@ -2,7 +2,8 @@
 change: setup-lives-in-tracked-agents-md
 branch: worktree-setup-lives-in-tracked-agents-md
 created: 2026-08-12
-status: building # shaping | building | landed
+status: landed # shaping | building | landed
+landed: 2026-08-12
 ---
 
 # Change — the payload scaffolds tracked `AGENTS.md` with a task router, and `CLAUDE.local.md` retires
@@ -13,7 +14,10 @@ status: building # shaping | building | landed
 symlink) instead of a gitignored `CLAUDE.local.md`: boundary sections, a Task Router seeded with
 the solo-lane rows, the load-bearing `- **Lint command**:` / `- **Typecheck command**:` bullets,
 `## Git conventions`, and a `Budget: **120 lines / 10 KB**` line — plus a generic
-`check-agents-docs.mjs` wired into `pnpm check` and pre-push. You know it worked when a scratch
+`check-agents-docs.mjs` wired into an `agents:check` script and the pre-commit gate (**amended at land
+time**: the shape said "`pnpm check` and pre-push", and this scaffold has neither — `references/precommit.md`
+only ever described a pre-commit, and `check` is not a script `dw-init` creates. The gate runs
+automatically either way, uncommented and unguarded). You know it worked when a scratch
 scaffold has no `CLAUDE.local.md`, its checker passes, `lint-on-edit.sh` resolves the lint command
 from `AGENTS.md` given a synthetic PostToolUse payload, and `dw-land`'s promotion step names a
 routed topic file — not the root — as a gotcha's home.

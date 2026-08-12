@@ -1,8 +1,9 @@
 ---
 change: pnpm-pin-in-one-field
-branch: unclaimed
+branch: pnpm-pin-in-one-field
 created: 2026-08-12
-status: shaping # shaping | building | landed
+status: landed # shaping | building | landed
+landed: 2026-08-12
 ---
 
 # Change — the pnpm version lives in one field, and everything that reads it agrees
@@ -46,13 +47,15 @@ Taken in the `dw-grill` pass; the measurements they rest on are in
 
 ## Tasks
 
-- [ ] 1. **The pin.** Swap `pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4` for
+- [x] 1. **The pin.** Swap `pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4` for
       `@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10` in all three Node workflows, delete
       `package.json:7`, and retire the fourth sub-bullet of the pnpm entry in `## Gotchas`
       (`AGENTS.md:279-282` — the entry becomes "three traps deep", and `:281` stops being true the
       moment the SHA moves). Green when `pnpm install` still resolves 11.18.0 and the full gate
-      passes; CI itself can only be confirmed on the PR.
-- [ ] 2. **The doctor reads the right field.** `doctor.sh:98-113`: take the version from
+      passes; CI itself can only be confirmed on the PR. **Took two extra edits nobody predicted —
+      an `engines.pnpm` floor and `onFail: "download"`; the third `## Gotchas` sub-bullet was
+      rewritten rather than the fourth merely deleted. See `## Notes`.**
+- [x] 2. **The doctor reads the right field.** `doctor.sh:98-113`: take the version from
       `.devEngines.packageManager` first, fall back to `.packageManager` (a target repo may still
       have only that), and replace both `corepack enable` hints — missing pnpm is
       `brew install pnpm`, a version mismatch is `pnpm install`, since v11 self-manages. Update
@@ -60,7 +63,7 @@ Taken in the `dw-grill` pass; the measurements they rest on are in
       `dw-solo-setup` by one patch in `.claude-plugin/marketplace.json` **and**
       `plugins/dw-solo-setup/.claude-plugin/plugin.json:3` — read the current number rather than
       trusting this doc (see `## Notes`).
-- [ ] 3. **The two silent traps.** Two new WARN-tier checks in the same block, never FAIL: a
+- [x] 3. **The two silent traps.** Two new WARN-tier checks in the same block, never FAIL: a
       `package.json#pnpm` block that merely _exists_ (v11 drops unrecognised keys with no warning at
       all — measured), and a lockfile written before v11, detected by the absence of
       `packageManagerDependencies`, never by `lockfileVersion`, which still reads `'9.0'`. Both
@@ -104,6 +107,55 @@ reads `devEngines.runtime` and `devEngines.packageManager` with no inputs, and r
 automatically unless `install: false` — so `actions/setup-node` and `.nvmrc` would leave CI, and
 `devEngines.runtime` would become required. That is where the parked Node question goes to be
 answered, not here.
+
+### From task 1 — `devEngines` alone is not a pin, it is a pin plus two preconditions
+
+**`devEngines.packageManager` is a pnpm 11 field, and the bootstrap that must read it lives outside
+the repo.** Homebrew had pnpm 10.14.0 on `PATH` here. Measured both ways in the worktree: with
+`packageManager` present `pnpm --version` reported 11.18.0, with it deleted, 10.14.0 — v10 cannot see
+`devEngines` at all. The demotion is nearly silent: v10 does read `pnpm-workspace.yaml` (`pnpm config
+get minimumReleaseAge` → `10080`), but `allowBuilds` is a v11 key and `strictDepBuilds` a v11 default,
+so build approval and lockfile handling quietly differ. **Fix: an `engines.pnpm` floor**
+(`>=11.0.0 <12.0.0`), measured to hard-fail with `ERR_PNPM_UNSUPPORTED_ENGINE  Expected version: …
+Got: 10.14.0`. `brew upgrade pnpm` took this machine to 11.21.0.
+
+**`onFail` had to change from `"error"` to `"download"`, and that retires an archived decision.**
+While `packageManager` existed, pnpm's own self-management resolved the version and `onFail` never
+fired. With the field gone it governs every command: on 11.21.0 against a pinned 11.18.0, `"error"`
+refused outright — `[ERROR] This project is configured to use 11.18.0 of pnpm` — so no `brew upgrade`
+would survive it. `"download"` fetches 11.18.0 and runs it, which is precisely what the deleted field
+used to do. `pnpm --version` → 11.18.0 on an 11.21.0 bootstrap.
+
+**Open, and it needs a human to probe: is npm still refused here?**
+`.ai/archive/pnpm-v11-migration/CHANGE.md:166-198` chose `onFail: "error"` as the `pnpm/only-allow`
+replacement and measured `pnpm view` as the proxy for "npm refuses". That proxy is no longer valid —
+under `"error"` pnpm refuses before it ever delegates, and under `"download"` `pnpm view prettier
+version` returns `3.9.6` here, so nothing about npm is being observed either way. `block-non-pnpm.sh`
+stops the agent from testing npm directly. One command in the repo root settles it:
+`npm install --dry-run` — `EBADDEVENGINES` means the guard survived the switch, a normal dry-run
+report means it did not, and the archived decision needs a `superseded-by:` record at land time.
+
+**The third `## Gotchas` sub-bullet was rewritten, not just the fourth deleted.** "`pnpm view` and
+`pnpm info` are broken here on purpose" became false the moment `onFail` changed. The replacement
+states the pin's three preconditions (v11 bootstrap, `onFail` semantics, action-setup ≥ v6) and
+deliberately makes no claim about npm until the probe above is run. Entry count is unchanged at
+12/12 — these are sub-bullets.
+
+### From task 3 — `packageManagerDependencies` alone would have false-positived
+
+The task said to detect a pre-v11 lockfile by the absence of `packageManagerDependencies`. Reading
+this repo's lockfile shows why that is too narrow: the archive's own finding
+(`CHANGE.md:98-103`) is that the key appears **once `devEngines.packageManager` exists** — so a v11
+lockfile in a repo without that field carries no such key and would be reported as stale. The check
+therefore accepts any of v11's marks: the leading `---` document separator, `configDependencies:`, or
+`packageManagerDependencies:`. `lockfileVersion` is still never consulted, which was the real
+instruction.
+
+Both checks are gated on v11 actually being in play — the running pnpm or the pin reading 11 or
+higher — because on v10 a `package.json#pnpm` block is correct and the old lockfile is current.
+Exercised against a throwaway fixture repo (a v10-shaped lockfile plus an
+`onlyBuiltDependencies` block): both fired there, both stay silent here. `doctor.sh` still has no
+self-test — see the ordering note above.
 
 **Verification is PR-only.** Every workflow fires on `pull_request:` or `push: branches: [main]`,
 with no `workflow_dispatch` — a feature-branch push confirms nothing. `validate-plugin-manifests`

@@ -26,8 +26,8 @@ It diagnoses the **current git repo** (resolved via `git rev-parse --show-toplev
 skill's own location. Checks are conditional on what the repo declares, so nothing about a stack is
 assumed:
 
-- `package.json` — `engines.node`, `packageManager`, declared deps, and `scripts.typecheck`
-  (drives the JS/TS checks).
+- `package.json` — `engines.node`, the pnpm pin (`devEngines.packageManager` first, then the older
+  `packageManager`), declared deps, and `scripts.typecheck` (drives the JS/TS checks).
 - `tsconfig.json`, `.nvmrc` — presence informs the `tsc` / node checks.
 - `.claude/settings.json` — parsed for every wired hook command; each referenced `*.sh` is checked
   for existence + the executable bit.

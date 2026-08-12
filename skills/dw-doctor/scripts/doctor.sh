@@ -95,20 +95,66 @@ else
     report fail "node" "missing — install via nvm (.nvmrc) or brew install node"
   fi
 
-  # pnpm vs packageManager
-  pm=""; have jq && pm="$(jq -r '.packageManager // empty' "$pkg" 2>/dev/null)"
-  want_pnpm=0; pmver=""
-  case "$pm" in pnpm@*) want_pnpm=1; pmver="${pm##*@}"; pmver="${pmver%%+*}" ;; esac
-  if [ -f "$ROOT/pnpm-lock.yaml" ] || [ "$want_pnpm" -eq 1 ]; then
+  # pnpm vs the version the repo pins. devEngines.packageManager first — pnpm 11 reads it and
+  # gives it priority over packageManager, and a repo migrated to v11 may carry only that one.
+  # No corepack anywhere: pnpm self-manages through devEngines' own onFail, and corepack is
+  # unbundled from Node 25.
+  pmver=""; pmsrc=""; cur_pnpm=""
+  if have jq; then
+    if [ "$(jq -r '.devEngines.packageManager.name // empty' "$pkg" 2>/dev/null)" = "pnpm" ]; then
+      pmver="$(jq -r '.devEngines.packageManager.version // empty' "$pkg" 2>/dev/null)"
+      [ -n "$pmver" ] && pmsrc="devEngines"
+    fi
+    if [ -z "$pmver" ]; then
+      pm="$(jq -r '.packageManager // empty' "$pkg" 2>/dev/null)"
+      case "$pm" in pnpm@*) pmver="${pm##*@}"; pmver="${pmver%%+*}"; pmsrc="packageManager" ;; esac
+    fi
+  fi
+  if [ -f "$ROOT/pnpm-lock.yaml" ] || [ -n "$pmver" ]; then
     if have pnpm; then
       cur_pnpm="$(pnpm -v 2>/dev/null)"
-      if [ "$want_pnpm" -eq 1 ] && [ -n "$pmver" ] && [ "$cur_pnpm" != "$pmver" ]; then
-        report warn "pnpm" "$cur_pnpm (packageManager pins $pmver — run: corepack enable)"
+      if [ -z "$cur_pnpm" ]; then
+        # `pnpm -v` itself failing means pnpm is refusing this repo — the usual cause is a
+        # devEngines onFail of "error", which rejects every bootstrap but the pinned version.
+        report warn "pnpm" "on PATH but refuses to run here — run: pnpm -v (an onFail of \"error\" rejects any version but the pin)"
       else
-        report ok "pnpm" "${cur_pnpm:-present}"
+        case "$pmver" in
+          # No pin to check against.
+          "") report ok "pnpm" "$cur_pnpm" ;;
+          # A range (devEngines allows ">=11.0.0 <12.0.0") is not comparable by string.
+          *[!0-9.]*) report ok "pnpm" "$cur_pnpm ($pmsrc wants $pmver)" ;;
+          *)
+            if [ "$cur_pnpm" = "$pmver" ]; then
+              report ok "pnpm" "$cur_pnpm ($pmsrc pins $pmver)"
+            else
+              report warn "pnpm" "$cur_pnpm, but $pmsrc pins $pmver — the pin is not in effect. Upgrade the pnpm on PATH: brew upgrade pnpm"
+            fi
+            ;;
+        esac
       fi
     else
-      report fail "pnpm" "missing — hooks enforce pnpm. Install: corepack enable (or npm i -g pnpm)"
+      report fail "pnpm" "missing — hooks enforce pnpm. Install: brew install pnpm"
+    fi
+
+    # Two things pnpm 11 does in silence, each worth its own line. Only checked when v11 is
+    # actually in play — on v10 a `pnpm` block is correct and the old lockfile is current.
+    v11=0
+    case "${cur_pnpm%%.*}" in ''|*[!0-9]*) ;; *) [ "${cur_pnpm%%.*}" -ge 11 ] && v11=1 ;; esac
+    case "${pmver%%.*}" in ''|*[!0-9]*) ;; *) [ "${pmver%%.*}" -ge 11 ] && v11=1 ;; esac
+    if [ "$v11" -eq 1 ]; then
+      # v11 reads none of `package.json#pnpm`, and warns only about the keys on its own
+      # relocation list — anything else it drops without a word. So flag the block's existence.
+      if have jq && jq -e 'has("pnpm")' "$pkg" >/dev/null 2>&1; then
+        report warn "pnpm settings" "package.json#pnpm is present but pnpm 11 reads none of it, and names only the keys it recognises — move them to pnpm-workspace.yaml"
+      fi
+      # `lockfileVersion` is NOT the tell: v11 still writes '9.0'. Its own marks are the leading
+      # document separator and the two per-importer keys it added.
+      lock="$ROOT/pnpm-lock.yaml"
+      if [ -f "$lock" ] &&
+        ! head -n1 "$lock" | grep -q '^---[[:space:]]*$' &&
+        ! grep -q '^[[:space:]]*\(configDependencies\|packageManagerDependencies\):' "$lock"; then
+        report warn "pnpm-lock.yaml" "written before pnpm 11 (lockfileVersion still reads '9.0', so it is not the tell) — run: pnpm install"
+      fi
     fi
   fi
 

@@ -230,6 +230,26 @@ specifics` block, which `own-root-under-budget-and-router` task 3 is about to mo
 - **Gate, run as the underlying binaries:** `scripts/lint.sh` 0 errors · `prettier --check .` clean ·
   `validate-manifests.sh` with both versions in sync · `validate-artifacts.sh` 298 self-test cases,
   `## Gotchas` 12/12, backlog 6/8 · `validate-docs.sh` · `routing.ts --min-rank1 67` at 20/30.
+- **`dw-check` found four defects after the seven tasks were done; all four are fixed with tests.** Every
+  one was reproduced against a synthetic fixture before being reported, and each fix carries the case
+  that would have caught it:
+  - **The checker resolved its root by the nearest `AGENTS.md`** — but that is a per-directory
+    convention, so a legal `scripts/AGENTS.md` made it grade `scripts/` as the repo root and emit
+    three failures about a healthy repo, none naming a path. Root is now the nearest `.git`, the
+    resolved root is printed in the success line, and the fixtures gained a real `git init` so the
+    primary path is the one under test. `fd579de`
+  - **The doctor's line count was one lower than the gate's** (`wc -l` counts newlines,
+    `split("\n").length` is newlines + 1), so a file exactly on budget passed here and failed there —
+    in the block whose entire claim is that it agrees with what enforces. Counted once, `+1`, and the
+    test asserts parity against the real checker plus both sides of the boundary. `21484ca`
+  - **The agent-memory block escaped the `$SOLO` guard** its predecessor lived behind, so a team-lane
+    repo got three `fix: dw-init` lines right after being told the solo plugin is the wrong one there.
+    The old team-lane case missed it because that fixture has an `AGENTS.md`. `21484ca`
+  - **The template's `.claude/hooks/` router row failed the shipped checker on a hooks-less
+    scaffold** — the directory only exists if a hook was selected. `dw-init` now prunes any row whose
+    target the run skipped, stated as a general rule. `3bef4c5`
+- **No further version bump for the fixes** — `dw-solo` 0.4.16 and `dw-solo-setup` 0.1.14 were taken
+  in this same unmerged PR, and one bump covers a train landing together.
 - **All four observable results in the `## Goal` are covered by tests, not by inspection:**
   `shipped-template-passes-exit-0` renders the template into a scratch scaffold and runs the checker
   on it; `agents-backticked-exit-0` / `agents-received-path` feed `lint-on-edit.sh` a synthetic

@@ -18,9 +18,9 @@ argument-hint: "bare checks the change's diff · codex delegates the pass · a p
 
 The diff against the default branch — both the branch and **the ref of it** resolved the way `dw-git`
 does, never `origin/` by reflex; `<base>` below is that ref. Plus the change's `CHANGE.md` for the
-goal, found by branch the same way `dw-next` finds it. `$ARGUMENTS` is read two ways, and this is the one skill in the catalog that mixes
-them: the single word **`codex`** switches mode (step 2), and anything else — including whatever
-follows that word — narrows the focus to a path or a topic.
+goal, found by branch the same way `dw-next` finds it. `$ARGUMENTS` is read two ways, and this is the
+one skill in the catalog that mixes them: the single word **`codex`** switches mode (step 2), and
+anything else — including whatever follows that word — narrows the focus to a path or a topic.
 
 It writes **no `.ai/` artifact** — approved fixes land as code commits, and a gate you re-run
 freely doesn't need a report file rotting between runs.

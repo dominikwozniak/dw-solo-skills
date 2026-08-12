@@ -252,11 +252,16 @@ holds four traps.
   checklist only fires when a skill is added, and `dw-ship` never mentions versions at all. Bump the
   owning plugin by hand, in `marketplace.json` and its `plugin.json` together, whenever the diff
   touches the payload.
-- **The two lint hooks disagree with the gate, in opposite directions.**
+- **The lint hooks disagree with the gate, in more than one direction.**
   - **`.lintstagedrc.json`'s glob and `prettier --check .` disagree by construction.** Prettier checks
     every file it understands; lint-staged only formats the extensions listed, so a new file type is
     unformatted at commit and rejected at push — which reads as a lint failure in a green repo.
     Adding `evals/*.ts` needed `ts` in that glob. Add the extension with the first file of a kind.
+  - **Prettier is not idempotent on a paragraph nested inside a task-list item**, so `--write` and
+    `--check` can loop forever disagreeing — which `pnpm format` fails and `.husky/pre-commit` does
+    not, because lint-staged writes and re-stages, committing the very content the push gate then
+    refuses. It bites in `.ai/work/<slug>/CHANGE.md`, where writing findings under a `- [x] N.` box is
+    the natural thing to do. Keep task bodies to one paragraph; findings belong in `## Notes`.
   - **`evals/*.ts` must never get the executable bit.** `lint-on-edit.sh` `eval`s its resolved lint
     command against the file path; the pre-fix version resolved to a bare space and executed the
     target. Fixed and pinned by `scripts/tests/lint-on-edit.test.sh`.
@@ -274,21 +279,30 @@ holds four traps.
     abnormally" under memory pressure; `scripts/lint.sh` turns that into a hard error rather than a
     silent pass. Re-run it, or lint only the staged paths the way `.husky/pre-commit` does. CI has
     the headroom.
-  - **The pnpm version is pinned in exactly one field, and three things have to line up for it to
-    hold.** `devEngines.packageManager` states `11.18.0`; there is no `packageManager` field any
-    more. (1) The **bootstrap on `PATH` must be pnpm 11** — v10 cannot read `devEngines` at all and
+  - **Both versions this repo pins live in one field, and three things have to line up for it to
+    hold.** `devEngines.packageManager` states pnpm `11.18.0` and `devEngines.runtime` Node
+    `24.16.0`; there is no `packageManager` field and no `.nvmrc` any more. (1) The **bootstrap on
+    `PATH` must be pnpm 11** — v10 cannot read `devEngines` at all and
     would run this repo with v11 settings half-applied, so `engines.pnpm` is the floor that turns
     that into a loud `ERR_PNPM_UNSUPPORTED_ENGINE` instead. (2) **`onFail` governs every command
     now**, not just installs: `"error"` refuses unless your pnpm matches the pin _exactly_ (which no
     `brew upgrade` survives), `"download"` fetches the pinned version and runs it — the behaviour
-    the deleted `packageManager` field used to provide. (3) **CI reads the field only from
-    `pnpm/action-setup` v6 up**; the v4 SHA this repo pinned until August saw `packageManager` and
-    nothing else.
+    the deleted `packageManager` field used to provide. (3) **CI reads both fields through one
+    inputless `pnpm/setup@v2` step**, which installs pnpm, installs Node, and runs `pnpm install` —
+    so a workflow needs no `with:` block, and adding one only restates the manifest. The Node half
+    carries a tail: `devEngines.runtime` makes Node a **locked dependency** (a `node@runtime:…` entry
+    with a hash per platform), so bumping it is the field **plus** a regenerated `pnpm-lock.yaml` —
+    edit the version alone and CI's frozen install refuses it. Locally the pin reaches
+    `pnpm <script>` only: `pnpm exec node --version` is the pinned Node, a bare `node --version`
+    is still whatever your shell has.
 - **`block-env-access.sh` inspects the whole Bash command, and now stops reading at a `<<`.** Commit
   messages are fine either way — quoted prose passes, and heredoc bodies are dropped before
   tokenizing, so `git commit -F - <<'MSG'` no longer blocks. But that drop is unconditional: a
   literal `<<` anywhere in a command starts body mode and **nothing below it is scanned**. The other
   half is that a bare `.env` token still blocks anywhere, so a probe of the hook cannot be typed
-  literally — build the string (`D=$(printf ".%s" env)`) or your own test call never runs.
+  literally — build the string (`D=$(printf ".%s" env)`) or your own test call never runs. **The same
+  blindness sits in `block-non-pnpm.sh`**, which cannot tell a mention from an invocation either: a
+  `git grep "npm install" -- .github/` is refused for containing the string it is searching _for_.
+  Grep the shorter token, or build it.
 - **`templates/hooks/` and `scripts/runtime/slugify.sh` are vendored** from `dw-skills`. A fix here
   does not reach that repo, and no test can see across the boundary — apply it twice.

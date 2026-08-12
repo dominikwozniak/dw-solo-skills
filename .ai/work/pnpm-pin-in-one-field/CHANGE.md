@@ -54,7 +54,7 @@ Taken in the `dw-grill` pass; the measurements they rest on are in
       passes; CI itself can only be confirmed on the PR. **Took two extra edits nobody predicted —
       an `engines.pnpm` floor and `onFail: "download"`; the third `## Gotchas` sub-bullet was
       rewritten rather than the fourth merely deleted. See `## Notes`.**
-- [ ] 2. **The doctor reads the right field.** `doctor.sh:98-113`: take the version from
+- [x] 2. **The doctor reads the right field.** `doctor.sh:98-113`: take the version from
       `.devEngines.packageManager` first, fall back to `.packageManager` (a target repo may still
       have only that), and replace both `corepack enable` hints — missing pnpm is
       `brew install pnpm`, a version mismatch is `pnpm install`, since v11 self-manages. Update

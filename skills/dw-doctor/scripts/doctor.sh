@@ -95,20 +95,45 @@ else
     report fail "node" "missing — install via nvm (.nvmrc) or brew install node"
   fi
 
-  # pnpm vs packageManager
-  pm=""; have jq && pm="$(jq -r '.packageManager // empty' "$pkg" 2>/dev/null)"
-  want_pnpm=0; pmver=""
-  case "$pm" in pnpm@*) want_pnpm=1; pmver="${pm##*@}"; pmver="${pmver%%+*}" ;; esac
-  if [ -f "$ROOT/pnpm-lock.yaml" ] || [ "$want_pnpm" -eq 1 ]; then
+  # pnpm vs the version the repo pins. devEngines.packageManager first — pnpm 11 reads it and
+  # gives it priority over packageManager, and a repo migrated to v11 may carry only that one.
+  # No corepack anywhere: pnpm self-manages through devEngines' own onFail, and corepack is
+  # unbundled from Node 25.
+  pmver=""; pmsrc=""
+  if have jq; then
+    if [ "$(jq -r '.devEngines.packageManager.name // empty' "$pkg" 2>/dev/null)" = "pnpm" ]; then
+      pmver="$(jq -r '.devEngines.packageManager.version // empty' "$pkg" 2>/dev/null)"
+      [ -n "$pmver" ] && pmsrc="devEngines"
+    fi
+    if [ -z "$pmver" ]; then
+      pm="$(jq -r '.packageManager // empty' "$pkg" 2>/dev/null)"
+      case "$pm" in pnpm@*) pmver="${pm##*@}"; pmver="${pmver%%+*}"; pmsrc="packageManager" ;; esac
+    fi
+  fi
+  if [ -f "$ROOT/pnpm-lock.yaml" ] || [ -n "$pmver" ]; then
     if have pnpm; then
       cur_pnpm="$(pnpm -v 2>/dev/null)"
-      if [ "$want_pnpm" -eq 1 ] && [ -n "$pmver" ] && [ "$cur_pnpm" != "$pmver" ]; then
-        report warn "pnpm" "$cur_pnpm (packageManager pins $pmver — run: corepack enable)"
+      if [ -z "$cur_pnpm" ]; then
+        # `pnpm -v` itself failing means pnpm is refusing this repo — the usual cause is a
+        # devEngines onFail of "error", which rejects every bootstrap but the pinned version.
+        report warn "pnpm" "on PATH but refuses to run here — run: pnpm -v (an onFail of \"error\" rejects any version but the pin)"
       else
-        report ok "pnpm" "${cur_pnpm:-present}"
+        case "$pmver" in
+          # No pin to check against.
+          "") report ok "pnpm" "$cur_pnpm" ;;
+          # A range (devEngines allows ">=11.0.0 <12.0.0") is not comparable by string.
+          *[!0-9.]*) report ok "pnpm" "$cur_pnpm ($pmsrc wants $pmver)" ;;
+          *)
+            if [ "$cur_pnpm" = "$pmver" ]; then
+              report ok "pnpm" "$cur_pnpm ($pmsrc pins $pmver)"
+            else
+              report warn "pnpm" "$cur_pnpm, but $pmsrc pins $pmver — the pin is not in effect. Upgrade the pnpm on PATH: brew upgrade pnpm"
+            fi
+            ;;
+        esac
       fi
     else
-      report fail "pnpm" "missing — hooks enforce pnpm. Install: corepack enable (or npm i -g pnpm)"
+      report fail "pnpm" "missing — hooks enforce pnpm. Install: brew install pnpm"
     fi
   fi
 

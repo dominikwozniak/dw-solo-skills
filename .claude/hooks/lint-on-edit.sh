@@ -49,23 +49,28 @@ cd "$repo_root" || exit 0
 #
 # Echoes the command, the literal `none` for an explicit skip, or nothing at all.
 resolve_lint_cmd() {
-  local md line from_md
+  local md line rest from_md
   for md in "AGENTS.md" "CLAUDE.local.md"; do
     [[ -f "$md" ]] || continue
     line=$(grep -E '^[[:space:]]*[-*]?[[:space:]]*\*{0,2}Lint command\*{0,2}:' "$md" | head -n1)
     [[ -n "$line" ]] || continue
-    # The first backticked span is the command — that is how the line is written. A freshly
-    # rendered file may carry the bare `{{LINT_COMMAND}}` placeholder and no backticks, so fall
-    # back to the rest of the line and let the placeholder check reject it.
-    from_md=$(printf '%s\n' "$line" | sed -n 's/.*Lint command[*]*:[^`]*`\([^`]*\)`.*/\1/p')
-    [[ -z "$from_md" ]] && from_md=$(printf '%s\n' "$line" | sed 's/.*Lint command[*]*://')
-    from_md=$(printf '%s' "$from_md" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
-    case "$from_md" in
-      none|None|NONE)
+    rest=$(printf '%s\n' "$line" | sed -e 's/.*Lint command[*]*://' -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
+    # `none` is tested on the RAW remainder, before any backtick extraction. A line reading
+    # `none — see `scripts/lint.sh`` has to skip; picking the first backticked span first made it run
+    # scripts/lint.sh on every edit, which is the opposite of what the line says. The word must stand
+    # alone — `nonexistent-linter` is a command, not the sentinel.
+    case "$rest" in
+      none | None | NONE | none[!A-Za-z0-9]* | None[!A-Za-z0-9]* | NONE[!A-Za-z0-9]*)
         echo "none"
         return
         ;;
     esac
+    # Otherwise the first backticked span is the command — that is how the line is written. A freshly
+    # rendered file may carry the bare `{{LINT_COMMAND}}` placeholder and no backticks, so fall
+    # back to the rest of the line and let the placeholder check reject it.
+    from_md=$(printf '%s\n' "$line" | sed -n 's/.*Lint command[*]*:[^`]*`\([^`]*\)`.*/\1/p')
+    [[ -z "$from_md" ]] && from_md="$rest"
+    from_md=$(printf '%s' "$from_md" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
     if [[ -n "$from_md" && "$from_md" != "{{LINT_COMMAND}}" ]]; then
       echo "$from_md"
       return
@@ -88,7 +93,18 @@ cmd=$(resolve_lint_cmd)
 # Blank-safe, not just empty-safe: a whitespace-only command would `eval` into running the file.
 [[ "$cmd" =~ [^[:space:]] ]] || exit 0
 
-if ! output=$(eval "$cmd \"$file_path\"" 2>&1); then
+# The command and the file path get DIFFERENT trust. `$cmd` is authored by whoever owns the repo, in
+# a tracked file, so shell syntax in it is deliberate and `eval` is the point. `$file_path` is
+# whatever the model just edited, and splicing it into the string `eval` parses was a
+# code-execution hole: a file named `$(touch PWNED).js` cleared the existence and extension checks
+# and then ran on the next Write, because double quotes do not stop command substitution when eval
+# reparses. So the authored command is eval'ed into the positional parameters — quoting inside it
+# still honoured — and the path is appended as one literal argument that is never re-parsed.
+# The subshell keeps `set --` from touching this script's own arguments.
+if ! output=$(
+  eval "set -- $cmd"
+  "$@" "$file_path" 2>&1
+); then
   {
     echo "Lint failed for $file_path ($cmd):"
     echo "$output"

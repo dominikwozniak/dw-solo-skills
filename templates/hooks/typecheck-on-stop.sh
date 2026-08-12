@@ -40,20 +40,24 @@ changed=$(
 #
 # Echoes the command, the literal `none` for an explicit skip, or nothing at all.
 resolve_typecheck_cmd() {
-  local md line from_md
+  local md line rest from_md
   for md in "AGENTS.md" "CLAUDE.local.md"; do
     [[ -f "$md" ]] || continue
     line=$(grep -E '^[[:space:]]*[-*]?[[:space:]]*\*{0,2}Typecheck command\*{0,2}:' "$md" | head -n1)
     [[ -n "$line" ]] || continue
-    from_md=$(printf '%s\n' "$line" | sed -n 's/.*Typecheck command[*]*:[^`]*`\([^`]*\)`.*/\1/p')
-    [[ -z "$from_md" ]] && from_md=$(printf '%s\n' "$line" | sed 's/.*Typecheck command[*]*://')
-    from_md=$(printf '%s' "$from_md" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
-    case "$from_md" in
-      none|None|NONE)
+    rest=$(printf '%s\n' "$line" | sed -e 's/.*Typecheck command[*]*://' -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
+    # `none` is tested on the RAW remainder, before any backtick extraction — the same order fix
+    # lint-on-edit.sh needed. `none — the `evals/*.ts` types are stripped` resolved to `evals/*.ts`
+    # and got eval'ed at the end of every turn; the sentinel has to win over explanatory prose.
+    case "$rest" in
+      none | None | NONE | none[!A-Za-z0-9]* | None[!A-Za-z0-9]* | NONE[!A-Za-z0-9]*)
         echo "none"
         return
         ;;
     esac
+    from_md=$(printf '%s\n' "$line" | sed -n 's/.*Typecheck command[*]*:[^`]*`\([^`]*\)`.*/\1/p')
+    [[ -z "$from_md" ]] && from_md="$rest"
+    from_md=$(printf '%s' "$from_md" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
     if [[ -n "$from_md" && "$from_md" != "{{TYPECHECK_COMMAND}}" ]]; then
       echo "$from_md"
       return

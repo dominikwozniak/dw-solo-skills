@@ -148,6 +148,22 @@ repo="$(fixture '- **Lint command**: None' '- **Lint command**: `./fake-lint.sh`
 expect_rc "none-capitalised-exit-0" 0 "$(run "$repo")"
 never_ran_linter "none-capitalised-stops-the-chain" "$repo"
 
+# The sentinel is tested on the RAW remainder, before any backtick extraction. Taking the first
+# backticked span first made `none — see `./fake-lint.sh`` RUN ./fake-lint.sh on every edit, which is
+# the exact opposite of what the line says.
+repo="$(fixture '- **Lint command**: none — see `./fake-lint.sh` if you must' '')"
+expect_rc "none-with-explanatory-backticks-exit-0" 0 "$(run "$repo")"
+never_ran_linter "none-beats-explanatory-backticks" "$repo"
+
+repo="$(fixture '- **Lint command**: none (this project has no linter)' '')"
+expect_rc "none-with-parenthetical-exit-0" 0 "$(run "$repo")"
+never_ran_linter "none-beats-a-parenthetical" "$repo"
+
+# ...but the word has to stand alone. A command that merely starts with those letters is a command.
+repo="$(fixture '- **Lint command**: `./fake-lint.sh --none-of-it`' '')"
+expect_rc "none-prefixed-command-still-runs-exit-0" 0 "$(run "$repo")"
+ran_linter "none-is-not-a-prefix-match" "$repo"
+
 echo "no-ops instead of executing the file (the regression):"
 repo="$(fixture '- **Lint command**:' '')"
 expect_rc "empty-value-exit-0" 0 "$(run "$repo")"
@@ -166,6 +182,35 @@ repo="$(fixture '- **Lint command**: `./fake-lint.sh`' '')"
 printf 'text\n' >"$repo/notes.md"
 expect_rc "md-ignored" 0 "$(run "$repo" "notes.md")"
 never_ran_linter "md-not-linted" "$repo"
+
+echo "a filename cannot inject a command (the path is never re-parsed):"
+# The hole: the path used to be spliced into the string `eval` parsed, and double quotes do not stop
+# command substitution once eval reparses. A file named `$(touch PWNED).js` cleared the existence and
+# extension checks and then executed on the next Write. The command is still eval'ed — it is authored
+# by the repo owner — but the path goes in as one literal argument.
+repo="$(fixture '- **Lint command**: `./fake-lint.sh`' '')"
+inject='$(touch PWNED).js'
+printf 'export const x = 1\n' >"$repo/$inject"
+expect_rc "injected-filename-exit-0" 0 "$(run "$repo" "$inject")"
+if [ -e "$repo/PWNED" ]; then
+  note_fail "injected-filename-not-executed" "the substitution in the filename RAN"
+else
+  note_pass "injected-filename-not-executed"
+fi
+if [ -f "$repo/lint-args" ] && grep -qF 'touch PWNED' "$repo/lint-args"; then
+  note_pass "injected-filename-passed-through-literally"
+else
+  note_fail "injected-filename-passed-through-literally" "args: $(tr '\n' ' ' <"$repo/lint-args" 2>/dev/null)"
+fi
+
+# Quoting inside the authored command still works — that is why it is eval'ed at all.
+repo="$(fixture '- **Lint command**: `env TAG="two words" ./fake-lint.sh --flag`' '')"
+expect_rc "quoted-args-in-command-exit-0" 0 "$(run "$repo")"
+if [ -f "$repo/lint-args" ] && grep -qx -- "--flag" "$repo/lint-args"; then
+  note_pass "quoted-args-in-command-preserved"
+else
+  note_fail "quoted-args-in-command-preserved" "args: $(tr '\n' ' ' <"$repo/lint-args" 2>/dev/null)"
+fi
 
 echo
 echo "lint-on-edit self-test: $PASS passed, $FAIL failed"

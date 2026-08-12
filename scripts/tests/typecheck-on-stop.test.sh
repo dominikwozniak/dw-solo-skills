@@ -132,6 +132,18 @@ repo="$(fixture '- **Typecheck command**: NONE' '- **Typecheck command**: `./fak
 expect_rc "none-uppercase-exit-0" 0 "$(run "$repo")"
 never_ran "none-uppercase-stops-the-chain" "$repo"
 
+# The sentinel is tested on the RAW remainder, before any backtick extraction. Taking the first
+# backticked span first made an honest `none` followed by explanatory prose resolve to whatever path
+# that prose happened to quote — and eval it at the end of every turn.
+repo="$(fixture '- **Typecheck command**: none — the `./fake-tc.sh` types are stripped by Node' '')"
+expect_rc "none-with-explanatory-backticks-exit-0" 0 "$(run "$repo")"
+never_ran "none-beats-explanatory-backticks" "$repo"
+
+# ...but only as a standalone word.
+repo="$(fixture '- **Typecheck command**: `env TC_TAG=nonstop ./fake-tc.sh`' '')"
+expect_rc "none-prefixed-command-still-runs-exit-0" 0 "$(run "$repo")"
+ran "none-is-not-a-prefix-match" "$repo"
+
 echo "a blank value falls through instead of \`eval\`ing whitespace:"
 repo="$(fixture '- **Typecheck command**:' '- **Typecheck command**: `./fake-tc.sh`')"
 expect_rc "empty-value-exit-0" 0 "$(run "$repo")"

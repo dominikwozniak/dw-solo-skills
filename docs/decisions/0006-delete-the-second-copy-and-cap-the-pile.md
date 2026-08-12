@@ -30,8 +30,11 @@ stated once in the file that is actually read at the moment it applies (the deci
 lives in `skills/dw-land/references/decision-record.md`, which `dw-land` reads while writing a record;
 the two READMEs point at it).
 
-**The durable layer is capped by entry count, enforced in `validate-artifacts.sh`**: `## Gotchas` ≤ 12
-entries, `.ai/backlog/` ≤ 8 files. Counting entries, not bytes. `dw-land` phase 3 is the counterpart —
+**The durable layer is capped by entry count, enforced in `validate-artifacts.sh`** — which is also
+where the numbers live, as `GOTCHAS_CAP` and `BACKLOG_CAP`. They were 12 and 8 on the date above; this
+record states them as history and the prose beside each capped list deliberately does not repeat them,
+by the rule in the paragraph before this one. Counting entries, not bytes. `dw-land` phase 3 is the
+counterpart —
 promotion now reads its target and deletes what the change supersedes, so a full list can still take a
 new trap by merging it into the cousin it belongs with.
 

@@ -43,6 +43,8 @@ if [ "$found" -eq 0 ]; then
 fi
 
 # --- the caps on the durable layer -------------------------------------------
+# These two numbers are the single source. The prose beside each capped list says only THAT it is
+# capped and points here, so raising a cap is one edit rather than four that drift (0006).
 GOTCHAS_CAP=12
 BACKLOG_CAP=8
 

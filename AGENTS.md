@@ -165,10 +165,10 @@ the same set plus a `trufflehog` secrets scan on every PR and push to `main`.
 
 ## Gotchas
 
-Traps this repo has actually sprung, newest first. Twelve entries, and that is the cap
-`validate-artifacts.sh` enforces — a thirteenth means merging cousins into one entry or retiring a
-trap that stopped being true, never appending. Sub-bullets are how a group holds four traps in one
-entry.
+Traps this repo has actually sprung, newest first. **This section is capped** —
+`validate-artifacts.sh` holds the number and fails with it. One over means merging cousins into a
+single entry or retiring a trap that stopped being true, never appending. Sub-bullets are how one entry
+holds four traps.
 
 - **A `dw-start` worktree is not the main tree, and every way it differs reads as something else.**
   Four traps, one root cause: the worktree gets tracked files and a branch, and nothing else.

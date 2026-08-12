@@ -2,7 +2,8 @@
 change: block-env-heredoc-escape
 branch: block-env-heredoc-escape
 created: 2026-08-12
-status: building # shaping | building | landed
+status: landed # shaping | building | landed
+landed: 2026-08-12
 ---
 
 # Change — `block-env-access.sh` stops blocking commit messages that name a dotenv file

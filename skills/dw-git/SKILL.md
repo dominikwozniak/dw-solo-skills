@@ -2,8 +2,8 @@
 name: dw-git
 description: >-
   One skill for every git operation in this project — commit, push, open PR, sync (rebase), branch,
-  stash — applying the repo's own `## Git conventions` from `CLAUDE.local.md` instead of generic
-  defaults. Use for any git intent, however it's phrased.
+  stash — applying the repo's own `## Git conventions` from `AGENTS.md` instead of generic defaults.
+  Use for any git intent, however it's phrased.
 argument-hint: "Which git op? e.g. commit, push, open PR, sync, branch, stash"
 ---
 
@@ -15,10 +15,15 @@ opens PRs the way this skill does.
 
 ## What it reads
 
-Before any operation, read `CLAUDE.local.md` (repo root) if present and look for a
-`## Git conventions` block. Those values **override** the defaults below — commit format, default
-branch, branch naming, trailer policy, PR title format, rebase-vs-merge, signing. If there's no
-`CLAUDE.local.md` or no such block, use the documented defaults.
+Before any operation, look for a `## Git conventions` block in `AGENTS.md` (repo root) first, then in
+a legacy `CLAUDE.local.md`. **First one found wins**, and its values **override** the defaults below —
+commit format, default branch, branch naming, trailer policy, PR title format, rebase-vs-merge,
+signing. With neither file, or neither carrying such a block, use the documented defaults.
+
+`CLAUDE.md` is deliberately not in that list: where it exists it is a symlink to `AGENTS.md`, so
+reading it is reading the first entry twice. And `AGENTS.md` comes first because it is **tracked** —
+it reaches a fresh clone and a `git worktree` checkout, which is exactly where the old gitignored
+copy left this skill falling back to defaults the repo had already overridden.
 
 **Resolving the default branch** is the one lookup every other skill borrows from here: take it from
 `## Git conventions`, else `git symbolic-ref --short refs/remotes/origin/HEAD`, else `main`. Never
@@ -73,8 +78,14 @@ dw-git writes **no `.ai/` artifact** — its durable output is the git history i
    If found, prefix `[KEY] `.
 6. Commit — `-m` for the subject, repeat `-m` for the body (no heredoc needed for a
    short body). Use plain `git commit` and follow the project's signing convention
-   from `CLAUDE.local.md`; don't add `-S` or run `git config` to change signing.
+   from `## Git conventions`; don't add `-S` or run `git config` to change signing.
    Surface an error only if the commit genuinely fails.
+   - **A backtick inside a `-m` string is command substitution, and it fails silently.**
+     The shell runs the backticked span and splices the output in, so a message quoting
+     `` `CHANGE.md` `` commits with that phrase simply **gone** — the commit succeeds, the
+     error goes to stderr among the tool's other noise, and the gap is invisible until
+     someone reads the log. Either write the message without backticks, or put it in a
+     file and use `-F`. Then read it back with `git log -1 --format=%B` before moving on.
 7. `git log --oneline -1` — confirm.
 
 ### push

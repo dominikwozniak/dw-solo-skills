@@ -10,7 +10,7 @@
   "plugins": [
     {
       "name": "dw-solo",
-      "version": "0.4.14",
+      "version": "0.4.15",
       "source": "./plugins/dw-solo",
       "keywords": ["solo", "personal", "lightweight", "workflow"],
       "category": "workflow",

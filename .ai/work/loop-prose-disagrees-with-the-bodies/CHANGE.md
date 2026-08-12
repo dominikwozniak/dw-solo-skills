@@ -59,7 +59,7 @@ silent about review.
       task carries it. `skills/dw-ship/SKILL.md` gains the matching half in **both** paths — the PR path
       checks the PR's checks before the merge go (`:48-51`), the fast path watches the run its own push
       triggers (`:37-38`). Both halves or neither: half of this ships a new disagreement.
-- [ ] 4. **One `dw-solo` bump, then the full gate.** Read the current version off `main` at build time
+- [x] 4. **One `dw-solo` bump, then the full gate.** Read the current version off `main` at build time
       rather than trusting `0.4.14` — `.ai/work/setup-lives-in-tracked-agents-md` bumps `dw-solo` too,
       and the rebase-onto-squashed-`main` trap applies. `.claude-plugin/marketplace.json:13` and
       `plugins/dw-solo/.claude-plugin/plugin.json:3`, kept identical. No `description:` field changes,
@@ -102,6 +102,16 @@ silent about review.
   the default branch", not a claim about `.github/workflows/` here. The bar is stated as _the evidence
   does not exist yet_, never _gathering it is inconvenient_ — otherwise the carve-out becomes the
   escape hatch the completion gate was built to close.
+- **The gate is six commands, not seven.** `pnpm validate:evals` does not exist — added in 7eb684c,
+  deleted in 1182f7f — and `CLAUDE.local.md` still lists it, so the documented pre-push gate dies on a
+  missing script. Parked as `.ai/backlog/local-memory-s-pre-push-gate-names-a-deleted-script.md`
+  rather than fixed here: a worktree cannot write that file. Everything that does exist ran green —
+  `lint` 0 errors, `format`, `manifests` (`dw-solo=0.4.15` synced), `artifacts` (38 self-tests,
+  Gotchas 12/12, backlog 5/8 before this entry), `docs`, `eval:routing` rank-1 67% · 20/30 · 21/21,
+  unmoved as predicted since no `description:` changed.
+- **`dw-solo` 0.4.15 was free, and it was worth checking.** The live `block-env-heredoc-escape` branch
+  bumps `dw-solo-setup` to 0.1.13 and leaves `dw-solo` alone, so the two do not collide. Read both
+  numbers off the sibling branch, not just `main` — `main` cannot show a bump that hasn't merged.
 - **Two candidate terms for `dw-land` to weigh** against `CONTEXT.md`: **base ref** (task 1's
   local-vs-`origin` choice) and **pending on the push** (task 3's third state beside delivered and
   undelivered). Neither is certain to earn a glossary line; the second is the stronger candidate,

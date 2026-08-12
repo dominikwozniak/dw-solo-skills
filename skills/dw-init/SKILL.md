@@ -126,6 +126,11 @@ light.
     `lint-on-edit` appends one path to it — not the whole-project script, which would re-lint the
     tree on every edit. Where the project only has the whole-project form, say so at the gate and
     write `none` rather than wiring a slow hook.
+  - **Prune the Task Router row for anything this run didn't create.** The template ships a row
+    pointing at `.claude/hooks/`, and that directory only exists if step 2 selected a hook — so a
+    scaffold that declined them all fails its own `agents:check` on its first run, because path sync
+    requires every routed path to exist. Same rule for any row whose target you skipped. A row is a
+    promise that the file is there.
   - Idempotency is per-section: if `AGENTS.md` already exists, leave it alone and report which of the
     template's sections it is missing. Never merge a rendered template into a file someone wrote.
 - `scripts/check-agents-docs.mjs` — copy `${CLAUDE_PLUGIN_ROOT}/templates/check-agents-docs.mjs`

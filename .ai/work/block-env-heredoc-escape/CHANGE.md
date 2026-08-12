@@ -39,7 +39,7 @@ that tells you to route around the hook is gone.
       bare delimiter) and two blocked ones (`cat > .env <<EOF`; `cat .env` on a line after a closed
       heredoc). Bump `dw-solo-setup` 0.1.12 → 0.1.13 in `marketplace.json` **and**
       `plugins/dw-solo-setup/.claude-plugin/plugin.json` — the diff touches shipped payload.
-- [ ] 2. **Retire the workaround from `## Gotchas`.** Rewrite the `block-env-access.sh` entry in
+- [x] 2. **Retire the workaround from `## Gotchas`.** Rewrite the `block-env-access.sh` entry in
       `AGENTS.md`: the `-F <path>` workaround is obsolete, what survives is that the hook still reads
       the whole Bash command and that a bare `<<` in prose now eats the lines below it. **Rewrite,
       never append** — the section is at 12/12 against `validate-artifacts.sh`'s cap.
@@ -76,6 +76,10 @@ that tells you to route around the hook is gone.
   to this repo's copies (verified 2026-08-12), and nothing across the repo boundary detects the drift.
   Not a task here: a commit in another repo cannot land with this one. Take the hunk across by hand
   after merge.
+- **The rewritten gotcha trades one trap for a smaller one rather than deleting an entry.** The
+  `-F <path>` workaround is gone, but the unconditional strip is itself a trap worth writing down,
+  and the "a bare token blocks any command" half was always the more general fact. Count held at
+  12/12 — the cap forces this shape, and here it produced a better entry than an append would have.
 - **Ordering against `setup-lives-in-tracked-agents-md`** — that change also edits `templates/hooks/`
   (different files: `lint-on-edit.sh`, `typecheck-on-stop.sh`) and also bumps `dw-solo-setup`. Whichever
   lands second re-checks the version: 0.1.13 may already be taken.

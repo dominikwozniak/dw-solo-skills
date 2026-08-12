@@ -68,9 +68,11 @@ verdict against what the change now claims.
 green", where the project's workflows only run on a pull request or a push to the default branch — is
 not _undelivered_ at land time; it is _unobservable_ at land time, and the closing order (this skill
 before `dw-ship`) is what makes it so. Record it in the verdict as **pending on the push**, name the
-task that carries it, and hand it to `dw-ship`, which stops where the checks are readable. Anything
-you could have run yourself gets no such pass — the bar is that the evidence does not exist yet, never
-that gathering it is inconvenient.
+task that carries it, and hand it to `dw-ship`, which stops where the checks are readable. Such a
+change closes **ready to merge** with that line attached — nothing is undelivered — and never _ready
+with follow-ups_, which would park the very thing the push is about to settle. Anything you could have
+run yourself gets no such pass — the bar is that the evidence does not exist yet, never that gathering
+it is inconvenient.
 
 Then **stop.** You've graded the work; the user decides what happens next.
 

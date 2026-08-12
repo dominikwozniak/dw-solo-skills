@@ -1,6 +1,6 @@
 ---
 change: migrate-ci-to-the-pnpm-setup-successor-action
-branch: unclaimed
+branch: migrate-ci-to-the-pnpm-setup-successor-action
 created: 2026-08-12
 status: shaping # shaping | building | landed
 ---

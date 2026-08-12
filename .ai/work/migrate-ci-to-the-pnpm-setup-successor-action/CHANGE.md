@@ -200,6 +200,24 @@ writes and re-stages, so the commit went in carrying content the push gate then 
 seven-day `minimumReleaseAge` is nowhere near binding. A fresher pin would need
 `minimumReleaseAgeExclude` and should be its own change.
 
+### From task 3 — the PR answered both open questions, and CI got simpler than expected
+
+PR [#24](https://github.com/dominikwozniak/dw-solo-skills/pull/24), all five checks green — the
+`agnix` postinstall flake did not recur, so the red runs on `main` really were transient.
+
+**Node is downloaded once, not twice.** The open worry was that the action's `pnpm runtime set` and
+the lockfile's runtime entry would each fetch it. Read from run `31638505867`: the runtime step
+reports `downloaded 1`, and the `pnpm install` that follows reports `reused 1, downloaded 8` — the
+reused one is Node, out of the same content-addressable store. The whole setup step is ~7s. One
+side-effect worth recognising later: the supply-chain check now reads **9 entries** where it read 8,
+because Node is one of them.
+
+**Task 4's `pnpm add -g` works, and the runtime shim is handled for us.** The step ran with
+`PNPM_HOME=/home/runner/setup-pnpm` and `PNPM_CONFIG_GLOBAL_SHIMS={"node":false}` — the action
+exports that itself so a project's `devEngines.runtime` cannot shadow the Node it just installed.
+`--allow-build` was accepted, the CLI installed in 6.2s, and `claude plugin validate` then ran green
+over every manifest. `install: false` kept the dev tree out of that job entirely.
+
 **Left out, for `dw-land` to park:**
 
 - **`cache: true` on the new step.** The repo caches nothing today; now that one action owns install,

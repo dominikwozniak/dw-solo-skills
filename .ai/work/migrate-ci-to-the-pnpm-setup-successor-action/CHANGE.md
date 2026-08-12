@@ -85,7 +85,7 @@ PR.
       which needs no inputs and installs the runtime too. Clauses (1) and (2) stay verbatim — they are
       about the local bootstrap and `onFail`, both still exactly right. Sub-bullet edit only, so the
       12/12 entry count does not move.
-- [ ] 3. **The gate, then the PR.** Run the full gate, push, open the PR, and read all four rewritten
+- [x] 3. **The gate, then the PR.** Run the full gate, push, open the PR, and read all four rewritten
       workflows there — the only place they run. **The npm probe this task originally demanded is
       gone, twice over.** It was scoped wrong: the manifests workflow's `paths:` filter did not match
       this diff, so no dry-run here would have gated anything. And task 4 then removed the premise
@@ -104,14 +104,6 @@ PR.
       its "this single entry is the whole blast radius" comment claims. Version stays `2.1.179` —
       published 2026-06-16, so `minimumReleaseAge: 10080` is satisfied and a bump would confound two
       variables. Green when the workflow passes on the PR; nothing local exercises it.
-
-      Two things it settled on the way. **`block-non-pnpm.sh` blocks reading about npm, not just
-              running it** — `git grep -n "npm install" -- .github/`, the verification this task's own goal
-              asks for, is refused because the pattern contains the string. Build it (`git grep "npm"`) the
-              way the `.env` trap in `## Gotchas` already documents. And the pinned version is safely old:
-              `pnpm view @anthropic-ai/claude-code time` dates 2.1.179 to **2026-06-16**, so the seven-day
-              cooldown is not in play; a fresher pin would need `minimumReleaseAgeExclude` and should be its
-              own change.
 
 ## Anchors
 
@@ -188,6 +180,25 @@ specified. And clause (3) **already carries the lockfile-coupling trap** from ta
 needs the field plus a regenerated lockfile — because that is the sentence a session editing
 `24.16.0` needs in the file that loads unasked. `dw-land` should treat that promotion as done rather
 than adding a second copy. Entry count still 12/12, `.ai/backlog/` 6/8.
+
+### From task 4 — three traps, one of them in prettier
+
+**`block-non-pnpm.sh` blocks reading _about_ npm, not just running it.** The verification this
+change's own goal asks for — `git grep -n "npm install" -- .github/` — is refused, because the hook
+scans the whole command for the string and cannot tell a search pattern from an invocation. Same
+shape as the `.env` trap already in `## Gotchas`: grep for `npm` alone, or build the string. Worth
+merging into that entry rather than adding a thirteenth.
+
+**Prettier is not idempotent on a paragraph nested inside a task-list item.** These two findings were
+first written as a second paragraph under `- [x] 4.`; `--write` re-indented it, `--check` rejected the
+result, and `--write` re-indented it back — a loop that would have failed `pnpm format` in CI while
+looking like a formatting slip. That is also why `.husky/pre-commit` did not catch it: lint-staged
+writes and re-stages, so the commit went in carrying content the push gate then refuses. Keep
+`## Tasks` bodies to one paragraph and put the findings here.
+
+**`@anthropic-ai/claude-code@2.1.179` was published 2026-06-16** (`pnpm view … time`), so the
+seven-day `minimumReleaseAge` is nowhere near binding. A fresher pin would need
+`minimumReleaseAgeExclude` and should be its own change.
 
 **Left out, for `dw-land` to park:**
 

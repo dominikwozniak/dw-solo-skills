@@ -212,6 +212,26 @@ else
   note_fail "quoted-args-in-command-preserved" "args: $(tr '\n' ' ' <"$repo/lint-args" 2>/dev/null)"
 fi
 
+echo "a pipeline in the declared command refuses, instead of executing the file:"
+# `eval "set -- foo | bar"` runs `set --` in a subshell, so no positional parameters land in the
+# parent and `"$@" "$file_path"` collapses to just the path. That re-entered the execute-the-file bug
+# through a different door, silently and at exit 0. Refuse loudly instead.
+repo="$(fixture '- **Lint command**: `./fake-lint.sh | cat`' '')"
+expect_rc "pipeline-command-exit-2" 2 "$(run "$repo")"
+never_executed "pipeline-command-no-exec" "$repo"
+
+# The shapes that DO survive word-splitting keep working — only a pipeline is refused.
+for shape in './fake-lint.sh && true' './fake-lint.sh;' './fake-lint.sh 2>/dev/null'; do
+  repo="$(fixture "- **Lint command**: \`$shape\`" '')"
+  rc="$(run "$repo")"
+  if [ "$rc" = "0" ] && [ -f "$repo/lint-args" ]; then
+    note_pass "shell-shape-still-runs: $shape"
+  else
+    note_fail "shell-shape-still-runs: $shape" "rc=$rc, linted=$([ -f "$repo/lint-args" ] && echo yes || echo no)"
+  fi
+  never_executed "shell-shape-no-exec: $shape" "$repo"
+done
+
 echo
 echo "lint-on-edit self-test: $PASS passed, $FAIL failed"
 [ "$FAIL" -eq 0 ]

@@ -345,6 +345,43 @@ for label in "AGENTS.md" "Lint command" "Typecheck command"; do
   fi
 done
 
+echo "the two silent pnpm-11 traps (inherited from pnpm-pin-in-one-field, which left them untested):"
+# That change added both checks and recorded in this change's CHANGE.md that they ship with no
+# self-test "because this change owns the harness". This is the harness, so here they are.
+#
+# The v11 gate is satisfied through the DECLARED pin, never through the pnpm on PATH: `cur_pnpm` also
+# flips it, so a case resting on that would pass or fail by machine. For the same reason the v10
+# negative — where a `pnpm` block is legitimate — is not testable here at all, and is left out rather
+# than faked.
+pin_v11() {
+  printf '{ "devEngines": { "packageManager": { "name": "pnpm", "version": "11.18.0" } } }\n' >"$1/package.json"
+}
+
+repo="$(scaffold '120 lines / 10 KB')"
+pin_v11 "$repo"
+printf '{ "devEngines": { "packageManager": { "name": "pnpm", "version": "11.18.0" } }, "pnpm": { "onlyBuiltDependencies": ["esbuild"] } }\n' >"$repo/package.json"
+run "$repo" >/dev/null
+says "orphaned-pnpm-block-warns" warn "pnpm settings" "pnpm 11 reads none of it"
+
+repo="$(scaffold '120 lines / 10 KB')"
+pin_v11 "$repo"
+run "$repo" >/dev/null
+if grep -qF "pnpm settings" "$OUT"; then
+  note_fail "no-pnpm-block-is-silent" "$(grep -F 'pnpm settings' "$OUT" | head -n1)"
+else
+  note_pass "no-pnpm-block-is-silent"
+fi
+
+# The pre-v11 LOCKFILE check has no case here, and the reason is worth more than the case would be:
+# it cannot be pinned while doctor.sh probes with `pnpm -v` inside the repo. In a repo declaring
+# `devEngines.packageManager`, that probe makes pnpm download itself and REWRITE pnpm-lock.yaml —
+# adding the very `packageManagerDependencies` key the check looks for, so the fixture is v11 by the
+# time the check reads it. Verified: the file's sha changes across one doctor run.
+#
+# That is a bug in the pnpm block, not in this test, and it breaks doctor.sh's headline promise to
+# never edit a file. Parked in .ai/backlog/ rather than fixed here — it belongs to the change that
+# introduced the devEngines read.
+
 echo "lane detection still fires:"
 repo="$(scaffold '120 lines / 10 KB')"
 mkdir -p "$repo/.ai/runs"

@@ -100,11 +100,25 @@ cmd=$(resolve_lint_cmd)
 # and then ran on the next Write, because double quotes do not stop command substitution when eval
 # reparses. So the authored command is eval'ed into the positional parameters — quoting inside it
 # still honoured — and the path is appended as one literal argument that is never re-parsed.
-# The subshell keeps `set --` from touching this script's own arguments.
-if ! output=$(
-  eval "set -- $cmd"
-  "$@" "$file_path" 2>&1
-); then
+#
+# `set --` runs at top level, not in a subshell, and that is deliberate: this hook takes no arguments
+# of its own (its payload arrives on stdin), so there is nothing to clobber — and a subshell would
+# swallow the guard below.
+eval "set -- $cmd"
+# A declared command containing a PIPELINE breaks the line above: bash parses `set -- foo | bar` as a
+# pipeline, so `set --` runs in its own subshell and NOTHING lands here. `"$@" "$file_path"` would
+# then collapse to just the path and EXECUTE the edited file — the very bug passing it as a literal
+# argument was meant to close, re-entered through a different door, silently and at exit 0.
+if [[ "$#" -eq 0 ]]; then
+  {
+    echo "lint-on-edit: cannot run this lint command safely — \"$cmd\""
+    echo "The hook appends the edited file as one argument, so the command must be a plain argv, not"
+    echo "a shell pipeline. Wrap it instead:  sh -c '<your pipeline> \"\$1\"' --"
+  } >&2
+  exit 2
+fi
+
+if ! output=$("$@" "$file_path" 2>&1); then
   {
     echo "Lint failed for $file_path ($cmd):"
     echo "$output"

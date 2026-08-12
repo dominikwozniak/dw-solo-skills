@@ -34,8 +34,6 @@ smallest weight that still works:
 - **Commits drift from your conventions** — the repo's own `## Git conventions` are applied instead
   of generic defaults.
 
-The _why_ behind each design choice is in [`docs/DESIGN.md`](docs/DESIGN.md).
-
 ## ▸ Quick start
 
 ```
@@ -50,7 +48,8 @@ Then, in a project of your own: `/dw-init` scaffolds it, `/dw-shape` opens the f
 ## ◇ Task router — which skill for which task
 
 A task may match several rows — read all that apply. `⭑` = explicit-invoke only: say its name (it
-never auto-fires). The phrases that trigger each skill live in its own `description`, not here.
+never auto-fires). The phrases that trigger each skill live in its own `description`, and the
+arguments it takes in its own `argument-hint` — neither is copied here.
 
 **Explicit-only skills**: `dw-start`, `dw-ship`, `dw-init` and `dw-handoff`. Marked `⭑` in the
 router; they never auto-fire — say the name. Being invisible to the model, they also can't be reached
@@ -70,38 +69,36 @@ A small serial change never leaves the default branch: shape → next → ship (
 closing pass itself when the change doc is still there). Parallel changes: shape several on the
 default branch, then one worktree + session each via `dw-start` or `claude -w <slug>`.
 
-| Skill                                      | Task                                                       | Arguments                                                      | What you get                                                |
-| ------------------------------------------ | ---------------------------------------------------------- | -------------------------------------------------------------- | ----------------------------------------------------------- |
-| [`dw-grill`](skills/dw-grill/SKILL.md)     | Interview a fuzzy idea into decisions — max five questions | the idea to grill                                              | shared understanding (writes nothing)                       |
-| [`dw-shape`](skills/dw-shape/SKILL.md)     | Synthesize it into one goal + decisions + task checklist   | the change to shape                                            | `.ai/work/<slug>/CHANGE.md`                                 |
-| [`dw-start`](skills/dw-start/SKILL.md) `⭑` | Open a shaped change: worktree + branch + claim            | `bare` lists unclaimed · `<slug>` · a description → `dw-shape` | `.claude/worktrees/<slug>` on branch `<slug>`               |
-| [`dw-next`](skills/dw-next/SKILL.md)       | Resume point _and_ build step (`go` builds and commits)    | `bare` · `go` · `all`                                          | code + ticked box + commit                                  |
-| [`dw-check`](skills/dw-check/SKILL.md)     | Fast optional QA gate — delegate, or two-axis self-review  | `bare` · `codex` · a path or topic                             | findings at `file:line`, fixed in-session                   |
-| [`dw-land`](skills/dw-land/SKILL.md)       | One thin verdict, then promote what's durable and archive  | `bare` · `close` · `reject`                                    | `docs/decisions/` · `CONTEXT.md` · backlog · `.ai/archive/` |
-| [`dw-ship`](skills/dw-ship/SKILL.md) `⭑`   | Push — or PR → squash-merge — then tear the worktree down  | `bare` · `pr`                                                  | merged default branch, clean tree                           |
+| Skill                                      | Task                                                       | What you get                                                |
+| ------------------------------------------ | ---------------------------------------------------------- | ----------------------------------------------------------- |
+| [`dw-grill`](skills/dw-grill/SKILL.md)     | Interview a fuzzy idea into decisions — max five questions | shared understanding (writes nothing)                       |
+| [`dw-shape`](skills/dw-shape/SKILL.md)     | Synthesize it into one goal + decisions + task checklist   | `.ai/work/<slug>/CHANGE.md`                                 |
+| [`dw-start`](skills/dw-start/SKILL.md) `⭑` | Open a shaped change: worktree + branch + claim            | `.claude/worktrees/<slug>` on branch `<slug>`               |
+| [`dw-next`](skills/dw-next/SKILL.md)       | Resume point _and_ build step (`go` builds and commits)    | code + ticked box + commit                                  |
+| [`dw-check`](skills/dw-check/SKILL.md)     | Fast optional QA gate — delegate, or two-axis self-review  | findings at `file:line`, fixed in-session                   |
+| [`dw-land`](skills/dw-land/SKILL.md)       | One thin verdict, then promote what's durable and archive  | `docs/decisions/` · `CONTEXT.md` · backlog · `.ai/archive/` |
+| [`dw-ship`](skills/dw-ship/SKILL.md) `⭑`   | Push — or PR → squash-merge — then tear the worktree down  | merged default branch, clean tree                           |
 
 **Anytime**
 
-| Skill                              | Task                                                     | Arguments                              | What you get                       |
-| ---------------------------------- | -------------------------------------------------------- | -------------------------------------- | ---------------------------------- |
-| [`dw-git`](skills/dw-git/SKILL.md) | All git ops — commit / push / PR / sync / branch / stash | which git op — commit, push, open PR … | commits / PR per `CLAUDE.local.md` |
+| Skill                              | Task                                                     | What you get                       |
+| ---------------------------------- | -------------------------------------------------------- | ---------------------------------- |
+| [`dw-git`](skills/dw-git/SKILL.md) | All git ops — commit / push / PR / sync / branch / stash | commits / PR per `CLAUDE.local.md` |
 
 **Off-loop** — the `dw-solo-extras` plugin; reached for when a session ends before the task does.
 
-| Skill                                          | Task                                                           | Arguments                     | What you get                 |
-| ---------------------------------------------- | -------------------------------------------------------------- | ----------------------------- | ---------------------------- |
-| [`dw-handoff`](skills/dw-handoff/SKILL.md) `⭑` | Compact the session mid-task — where you are, what's ruled out | `bare` · next session's focus | `.ai/work/<slug>/HANDOFF.md` |
+| Skill                                          | Task                                                           | What you get                 |
+| ---------------------------------------------- | -------------------------------------------------------------- | ---------------------------- |
+| [`dw-handoff`](skills/dw-handoff/SKILL.md) `⭑` | Compact the session mid-task — where you are, what's ruled out | `.ai/work/<slug>/HANDOFF.md` |
 
 **Setup** — the `dw-solo-setup` plugin; run once per repo.
 
-| Skill                                    | Task                                                  | Arguments                        | What you get                             |
-| ---------------------------------------- | ----------------------------------------------------- | -------------------------------- | ---------------------------------------- |
-| [`dw-init`](skills/dw-init/SKILL.md) `⭑` | Scaffold a solo repo: `.ai/`, hooks, settings, memory | `bare` · project context to seed | tracked scaffold (+ optional pre-commit) |
-| [`dw-doctor`](skills/dw-doctor/SKILL.md) | Diagnose tools, hooks, `.ai/` sanity (read-only)      | —                                | health report + copy-paste fixes         |
+| Skill                                    | Task                                                  | What you get                             |
+| ---------------------------------------- | ----------------------------------------------------- | ---------------------------------------- |
+| [`dw-init`](skills/dw-init/SKILL.md) `⭑` | Scaffold a solo repo: `.ai/`, hooks, settings, memory | tracked scaffold (+ optional pre-commit) |
+| [`dw-doctor`](skills/dw-doctor/SKILL.md) | Diagnose tools, hooks, `.ai/` sanity (read-only)      | health report + copy-paste fixes         |
 
 ## ⚙ How it works — the design in one screen
-
-Full rationale in [`docs/DESIGN.md`](docs/DESIGN.md).
 
 - **Persistence in the skill, not a wrapper.** Each `SKILL.md` writes its own `.ai/` path as part of
   its procedure, so the change doc lands automatically and travels with the installed plugin — no
@@ -144,11 +141,11 @@ enable this lane's two plugins and disable the team lane's.
 skills/<name>/SKILL.md          canonical skill (edit here)
 plugins/dw-solo/                the loop plugin — git-tracked symlinks → ../../../skills/<name>
 plugins/dw-solo-setup/          the setup plugin — dw-init, dw-doctor, the templates symlink
+plugins/dw-solo-extras/         the off-loop plugin — dw-handoff
 scripts/runtime/                shipped scripts (slugify, worktree), symlinked into the owning plugin
 templates/                      payload copied INTO a target project (hooks, settings, CLAUDE.local.md)
 .claude-plugin/marketplace.json makes the repo installable
-docs/DESIGN.md                  design rationale (the "why")
-docs/SKILL-ANATOMY.md           the shape every SKILL.md follows
+AGENTS.md                       layout, conventions, gotchas — the one doc (CLAUDE.md symlinks to it)
 ```
 
 ## ◆ Contributing

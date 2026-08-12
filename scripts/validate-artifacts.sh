@@ -2,19 +2,25 @@
 # Two passes, both backing `pnpm validate:artifacts` and the validate-artifacts CI workflow:
 #
 #   1. every self-test under scripts/tests/ — synthetic cases proving the shipped scripts behave
-#      (slugify derives paths deterministically, check-decisions catches a malformed record), the
-#      guardrail hooks block what they claim, and this repo's own .claude/hooks/ stay
-#      byte-identical to the templates/ canon it ships.
-#   2. check-decisions.sh over this repo's OWN docs/decisions/ — the dogfood pass. The script
-#      ships to consumer repos and dw-land runs it there at close time, so without this the
-#      records here are only ever read when someone happens to close a change in this repo.
+#      (slugify derives paths deterministically, worktree.sh creates and tears down), the guardrail
+#      hooks block what they claim, and this repo's own .claude/hooks/ stay byte-identical to the
+#      templates/ canon it ships.
+#   2. the two caps on the durable layer — `## Gotchas` entries and `.ai/backlog/` files. Both grow
+#      by append and nothing ever asked them to stop, which is how 21 gotchas and 12 queued ideas
+#      happen. The cap is not a size limit; it forces the choice the append silently skipped —
+#      merge this trap into the cousin it belongs with, absorb this entry into the change that found
+#      it, or admit an old one is no longer true.
 #
-# NOTE: there is deliberately no `.ai/` schema sweep here, and pass 2 is not a precedent for one.
-# docs/decisions/ has a machine-parsed identity — `decision:` has to match the filename number and
-# `superseded-by:` is a pointer made of that number — so a record can break silently and is worth
-# gating. This lane's CHANGE.md has none of that: a goal, a decision list and a task checklist,
-# with no status table, no SHA column and no edge graph. A validator over it could only check that
-# prose exists.
+# NOTE: pass 2 is a COUNT, not a schema, and it is not a precedent for one — there is still
+# deliberately no `.ai/` sweep here. A count knows nothing about what is inside the files; it only
+# refuses to let the pile grow without a decision. This lane's CHANGE.md is a goal, a decision list
+# and a task checklist — no status table, no SHA column, no edge graph — so a validator reading one
+# could only check that prose exists.
+#
+# A third pass used to run check-decisions.sh over this repo's own docs/decisions/. The script, its
+# 235-line test and the pass all went in `de-ratchet-the-solo-lane`: 489 lines of enforcement over
+# 229 lines of records, in a repo with one reader who does not need a parser to notice a malformed
+# record they just wrote.
 set -uo pipefail
 export LC_ALL=C
 
@@ -36,19 +42,41 @@ if [ "$found" -eq 0 ]; then
   exit 1
 fi
 
-# The dogfood pass. Findings go to stdout one per line, prefixed `error: ` or `warn: `; the script
-# exits non-zero for errors only, so a `warn:` (a gap in the sequence — past tense, breaks nothing
-# being written now) prints and does not fail the build. That routing is the script's contract,
-# not this file's judgement: don't re-read the prefixes here.
+# --- the caps on the durable layer -------------------------------------------
+# These two numbers are the single source. The prose beside each capped list says only THAT it is
+# capped and points here, so raising a cap is one edit rather than four that drift (0006).
+GOTCHAS_CAP=12
+BACKLOG_CAP=8
+
 echo
-echo "Checking docs/decisions/ against the record contract..."
-decisions_out="$(bash "$ROOT/scripts/runtime/check-decisions.sh" "$ROOT")"
-decisions_rc=$?
-[ -n "$decisions_out" ] && printf '%s\n' "$decisions_out"
-if [ "$decisions_rc" -ne 0 ]; then
+echo "Checking the durable layer against its caps..."
+
+# Top-level entries only: an entry opens at column 0 with `- **`, and a group's sub-bullets are
+# indented, so a merge of four traps into one entry counts as the one entry it reads as. Scoped to the
+# section because the same bullet style is used elsewhere in the file.
+gotchas="$(awk '/^## Gotchas/{f=1;next} f&&/^## /{exit} f&&/^- \*\*/{c++} END{print c+0}' "$ROOT/AGENTS.md")"
+if [ "$gotchas" -gt "$GOTCHAS_CAP" ]; then
+  echo "::error::AGENTS.md ## Gotchas has $gotchas entries, cap is $GOTCHAS_CAP — merge a trap into the"
+  echo "::error::  cousin it belongs with, or retire one that stopped being true. Never just append."
   FAILED=1
 else
-  [ -n "$decisions_out" ] || echo "• docs/decisions/ clean"
+  echo "• ## Gotchas: $gotchas/$GOTCHAS_CAP entries"
+fi
+
+# README.md is the folder's own contract, not a queued idea.
+backlog=0
+for f in "$ROOT"/.ai/backlog/*.md; do
+  [ -f "$f" ] || continue
+  [ "$(basename "$f")" = "README.md" ] && continue
+  backlog=$((backlog + 1))
+done
+if [ "$backlog" -gt "$BACKLOG_CAP" ]; then
+  echo "::error::.ai/backlog/ holds $backlog entries, cap is $BACKLOG_CAP — bundle one with a cousin that"
+  echo "::error::  ships alongside it, absorb the cheapest into the open change, or drop one that failed"
+  echo "::error::  the month bar."
+  FAILED=1
+else
+  echo "• .ai/backlog/: $backlog/$BACKLOG_CAP entries"
 fi
 
 echo

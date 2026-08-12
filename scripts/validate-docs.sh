@@ -2,20 +2,23 @@
 # validate-docs.sh — guard the docs ↔ skills contract that AGENTS.md's add-a-skill checklist
 # otherwise keeps by hand. CI already validates manifests but never the prose, so a skill added /
 # renamed / removed — or an explicit-invoke flag flipped — can ship with the docs silently out of
-# sync. Six mechanical, no-judgement checks:
+# sync. Four mechanical, no-judgement checks:
 #   1. no dead skill links   — every skills/<x>/SKILL.md linked in README exists on disk
 #   2. no undocumented skill — every skills/<x>/ on disk is linked in the README task-router
 #   3. explicit-invoke sync  — a skill's `disable-model-invocation: true` <=> it is marked `⭑` in
-#                              the task-router AND named in EVERY doc that carries an explicit list
+#                              the task-router AND named in README's explicit-only list
 #   4. no stale Next: target — every `**Next:**` pointer names a skill that exists on disk
-#   5. arguments agree     — every backticked token in a README Arguments cell appears in that
-#                            skill's `argument-hint`; the cell is `—` iff the skill has no hint
-#   6. pre-push gate agrees — the "Before you push" command is identical in every doc that states it,
-#                            and every gate in it has its own row in CONTRIBUTING's gate table
 #
-# Check 3 iterates EXPLICIT_LIST_DOCS rather than hardcoding two files: in the upstream repo this
-# check covered README + DESIGN only, and docs/WORKFLOWS.md drifted (it listed 5 of 7 explicit
-# skills) precisely because it wasn't in the loop. Adding a doc that lists skills is one edit here.
+# There used to be two more, and their deletion is the point rather than a regression: one compared
+# each README Arguments cell to the skill's own `argument-hint`, the other compared the "Before you
+# push" gate across three markdown copies. Both guarded prose that existed only because it was
+# written twice — the column is gone (argument-hint is the one copy) and the gate now lives in
+# package.json, which is what CI runs. A check whose whole job is to notice that two hand-kept
+# copies drifted is cheaper to delete along with the second copy.
+#
+# Every doc that lists skills is README, so check 3 reads one file. If a second doc ever grows such a
+# list, put it in EXPLICIT_LIST_DOCS rather than hardcoding a filename — upstream, docs/WORKFLOWS.md
+# drifted to 5 of 7 explicit skills precisely because it was outside that loop.
 #
 # Run from the repo root (`pnpm validate:docs`) or via CI. Exit 0 iff the docs match the skills.
 set -uo pipefail
@@ -25,16 +28,8 @@ ROOT="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
 cd "$ROOT" || exit 1
 
 README="README.md"
-DESIGN="docs/DESIGN.md"
-AGENTS="AGENTS.md"
-CONTRIBUTING="CONTRIBUTING.md"
 # Every doc carrying an "Explicit-only skills" list. Add a doc here when it grows one.
-EXPLICIT_LIST_DOCS="$README $DESIGN"
-# Every doc carrying a "Before you push" gate command. AGENTS.md is first, so it reads as the source
-# the others are compared against. Add a doc here when it grows one.
-GATE_LIST_DOCS="$AGENTS $CONTRIBUTING"
-# The one doc that also tabulates the gates one row each.
-GATE_TABLE_DOC="$CONTRIBUTING"
+EXPLICIT_LIST_DOCS="$README"
 FAILED=0
 
 # in_list <needle> <space-separated-haystack> — exit 0 if present.
@@ -151,114 +146,6 @@ for d in skills/*/; do
     fi
   done
 done
-
-# --- check 5: README Arguments cell agrees with argument-hint ------------------
-echo
-echo "Checking each README Arguments cell against its skill's argument-hint..."
-# The hint is canon and the cell condenses it, so the two can never be string-equal — which is why
-# this was left to the honour system until the column actually rotted. What IS checkable is
-# containment: a backticked token in the cell (`bare`, `go`, `<slug>`) names a real argument, so it
-# must appear verbatim in the hint. A backticked skill name is a link, not an argument, and is
-# exempt. Rows are matched on a leading `|` so prose quoting a SKILL.md path cannot pose as one.
-for name in $disk_skills; do
-  row="$(grep -E "^\|.*skills/$name/SKILL\.md" "$README" | head -n1)"
-  [ -n "$row" ] || continue # check 2 already reported the missing row
-  cell="$(printf '%s\n' "$row" | awk -F'|' '{print $4}' | sed 's/^[[:space:]]*//; s/[[:space:]]*$//')"
-  hint="$(sed -n 's/^argument-hint:[[:space:]]*//p' "skills/$name/SKILL.md" | head -n1 |
-    sed 's/^"\(.*\)"$/\1/; s/^'\''\(.*\)'\''$/\1/')"
-
-  if [ -z "$cell" ]; then
-    echo "::error::$name has an empty Arguments cell in $README"
-    FAILED=1
-    continue
-  fi
-  if [ -z "$hint" ]; then
-    if [ "$cell" = "—" ]; then
-      echo "OK  $name takes no argument, cell is —"
-    else
-      echo "::error::$name has no argument-hint, so its $README Arguments cell must be \`—\`, not \"$cell\""
-      FAILED=1
-    fi
-    continue
-  fi
-  if [ "$cell" = "—" ]; then
-    echo "::error::$name has an argument-hint but its $README Arguments cell is \`—\`"
-    FAILED=1
-    continue
-  fi
-
-  missing=""
-  while IFS= read -r tok; do
-    [ -n "$tok" ] || continue
-    case "$tok" in dw-*) continue ;; esac
-    case "$hint" in *"$tok"*) ;; *) missing="$missing \`$tok\`" ;; esac
-  done < <(printf '%s\n' "$cell" | grep -oE '`[^`]+`' | tr -d '`')
-
-  if [ -n "$missing" ]; then
-    echo "::error::$name: $README Arguments cell names$missing, absent from its argument-hint \"$hint\""
-    FAILED=1
-  else
-    echo "OK  $name cell agrees with its hint"
-  fi
-done
-
-# --- check 6: the pre-push gate agrees across docs ----------------------------
-echo
-echo "Checking the \"Before you push\" gate command agrees across:$GATE_LIST_DOCS..."
-# CONTRIBUTING.md's copy of the gate sat two gates behind AGENTS.md — and behind CI — because it is
-# prose duplicated by hand. The block is meant to be copy-pasteable, so the bar is verbatim equality
-# rather than containment: a reordered or padded command would still pass a "names at least these"
-# test while being the wrong thing to paste. Anchored on the heading, so AGENTS.md's deliberately
-# narrower add-a-skill step 7 command cannot pose as the gate.
-
-# gate_command <doc> — the command inside the fence under the "Before you push" heading, trimmed.
-gate_command() {
-  awk '
-    /^##[[:space:]]+Before you push[[:space:]]*$/ { inside = 1; next }
-    inside && /^##[[:space:]]/ { exit }
-    inside && /^```/ { if (fence) exit; fence = 1; next }
-    inside && fence { print }
-  ' "$1" | sed 's/^[[:space:]]*//; s/[[:space:]]*$//'
-}
-
-gate_ref=""
-gate_ref_doc=""
-for doc in $GATE_LIST_DOCS; do
-  cmd="$(gate_command "$doc")"
-  if [ -z "$cmd" ]; then
-    echo "::error::$doc has no fenced command under a \"Before you push\" heading for this check to read"
-    FAILED=1
-    continue
-  fi
-  if [ -z "$gate_ref" ]; then
-    gate_ref="$cmd"
-    gate_ref_doc="$doc"
-    echo "OK  $doc states the gate (the source for this check)"
-  elif [ "$cmd" = "$gate_ref" ]; then
-    echo "OK  $doc matches $gate_ref_doc"
-  else
-    echo "::error::$doc's \"Before you push\" command differs from $gate_ref_doc's"
-    echo "::error::  $gate_ref_doc: $gate_ref"
-    echo "::error::  $doc: $cmd"
-    FAILED=1
-  fi
-done
-
-# Every gate in that command needs its own row in the table, or the table is the stale half.
-if [ -n "$gate_ref" ]; then
-  # Read line by line: a gate name contains a space, which word-splitting would tear in half. The
-  # character class admits digits and hyphens because a narrower `[a-z]+` truncated `pnpm test:e2e`
-  # to `pnpm test:e` and then blamed the table for the missing row.
-  while IFS= read -r gate; do
-    [ -n "$gate" ] || continue
-    if grep -qE "^\|[[:space:]]*\`$gate\`[[:space:]]*\|" "$GATE_TABLE_DOC"; then
-      echo "OK  $gate has a row in $GATE_TABLE_DOC"
-    else
-      echo "::error::$gate is in the pre-push gate but has no row in $GATE_TABLE_DOC's gate table"
-      FAILED=1
-    fi
-  done < <(printf '%s\n' "$gate_ref" | grep -oE 'pnpm [a-z0-9-]+(:[a-z0-9-]+)?' | sort -u)
-fi
 
 echo
 if [ "$FAILED" -eq 0 ]; then

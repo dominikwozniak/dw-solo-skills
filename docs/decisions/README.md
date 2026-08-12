@@ -1,29 +1,17 @@
 # `docs/decisions/` — why this repo is shaped this way
 
 One record per decision, `<NNNN>-<kebab-slug>.md`, append-only. `dw-land` writes them at close,
-`dw-shape` reads them before the next change. **[`0001`](0001-separate-repo-from-dw-skills.md) is
-the worked example — copy its shape.**
+`dw-shape` reads them before the next change. **[`0001`](0001-separate-repo-from-dw-skills.md) is the
+worked example — copy its shape.**
 
 No index here on purpose: `ls` sorts them and every slug states its decision.
 
-## The bar — all three, or don't write one
+The contract — the three-part bar a decision has to clear, the frontmatter and section shape, and how
+a record is superseded rather than rewritten — lives once, in
+[`skills/dw-land/references/decision-record.md`](../../skills/dw-land/references/decision-record.md).
+It is stated there because that is the file the skill actually reads while writing one. It used to be
+restated here and in `templates/decisions-README.md` as well, which is three copies of one bar and two
+of them unread.
 
-1. **Hard to reverse** — undoing it means touching many places, migrating data, or breaking a
-   published interface.
-2. **Surprising** — a competent reader would wonder why it was done this way.
-3. **A real trade-off** — you gave something up. If one option was simply better, that is a fact,
-   not a decision.
-
-Most changes produce **zero** records, and that is the correct number. A folder full of "chose the
-obvious library" entries teaches you to stop opening it.
-
-**Never rewrite one.** Mark the old `status: superseded` with `superseded-by:`, point the new one
-back with `supersedes:`, and give it the next number — numbers are never reused. `dw-land` does this
-when it promotes the replacement. Why a settled choice was reopened is often the most useful thing
-here.
-
-What a word _means_ goes in `CONTEXT.md`; a trap that cost real time goes in `## Gotchas` in
-`AGENTS.md`. Both are common; a record is rare.
-
-Same contract as `templates/decisions-README.md`, hand-written rather than symlinked — that file is
-payload, copied verbatim into a scaffolded repo. If the contract changes, it changes in both.
+Nothing enforces the contract mechanically any more. `check-decisions.sh` and its test were 489 lines
+guarding 229 lines of records — worth it for a folder several people write to, not for this one.

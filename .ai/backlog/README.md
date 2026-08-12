@@ -16,3 +16,9 @@ Two bars, and an entry clears both. **Will you ever?** — if you would not pick
 don't write it. **Should it have been done now?** — if doing it costs less than describing it, do it
 now: a fix that fits in a file the change already touched, or that is smaller than the entry
 describing it, is a commit in that change, not a file here.
+
+**This folder is capped** — `validate-artifacts.sh` holds the number and fails with it (this README
+doesn't count). One over means one of three things happens first: bundle the new entry with a cousin
+that ships alongside it, absorb the cheapest one into the change that is open, or admit an old one
+failed the month bar and `git rm` it. The cap exists because a backlog nobody ever deletes from stops
+being a queue and becomes a record of everything you once considered.

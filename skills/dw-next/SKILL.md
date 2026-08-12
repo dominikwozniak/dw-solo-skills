@@ -11,12 +11,8 @@ argument-hint: "bare to report status · go to build the next task · all to kee
 
 # dw-next — where we are, and the next slice
 
-Two jobs that are really one, which is why they're one skill: at 4–6 hours a week the question "what
-was I doing" and the question "do the next bit" arrive in the same breath. Splitting them would cost
-you an extra invocation to learn nothing.
-
-Everything comes from disk. Never reconstruct state from the conversation — the whole point is that a
-`/clear`, a closed laptop or a week away changes nothing about the answer.
+**Everything comes from disk.** Never reconstruct state from the conversation: a `/clear`, a closed
+laptop or a week away must change nothing about the answer.
 
 ## What it reads and writes
 
@@ -79,16 +75,10 @@ One task per invocation unless the mode says otherwise.
 
 - **Narrow and complete.** A vertical slice through whatever layers it needs, not a whole layer.
   Resist widening scope mid-task; a second task is free, a sprawling commit is not. An idea that
-  belongs to a **different change** isn't a task here at all — it's one small file in
-  `.ai/backlog/` (an H1 plus `created:`), which is how you drop it without losing it. Two things
-  are never that file:
-  - **A gap in this change's `## Goal`.** The goal is what this change is for; parking a piece of it
-    is abandonment wearing a queue entry's clothes, and `dw-land` will refuse to close over it
-    anyway. It is a new task in this `CHANGE.md` — or a `## Goal` the user amends to say what the
-    change now claims. Never your call alone to shrink it.
-  - **Something cheaper to do than to describe.** If doing it costs less than describing it, do it
-    now: a fix that fits in a file this task already touched, or that is smaller than the entry
-    describing it, is a commit here. The backlog is for work that genuinely waits.
+  belongs to a **different change** is one small file in `.ai/backlog/` (an H1 plus `created:`)
+  against the two bars `dw-land` states — but **never park a gap in this change's `## Goal`**: that is
+  abandonment wearing a queue entry's clothes, the completion gate refuses to close over it, and
+  shrinking the goal is never your call alone. It is a new task here, or a `## Goal` the user amends.
 - **Test the way the project does.** Read the test command from `CLAUDE.md` / `CLAUDE.local.md` /
   `AGENTS.md`, else the manifests. Where the project has a real test suite and the task has a
   meaningful assertion, write the failing test first and make it pass — where it genuinely doesn't

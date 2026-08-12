@@ -13,7 +13,6 @@
     "validate:manifests": "scripts/validate-manifests.sh",
     "validate:artifacts": "scripts/validate-artifacts.sh",
     "validate:docs": "scripts/validate-docs.sh",
-    "validate:evals": "scripts/validate-evals.sh",
     "eval:routing": "node evals/routing.ts --min-rank1 67",
     "prepare": "husky"
   },

@@ -11,12 +11,8 @@ argument-hint: "What should I grill you about?"
 
 # dw-grill — interview the idea before it becomes work
 
-The cheapest bug to fix is one you talked yourself out of. This skill exists because the model's
-instinct on a fuzzy request is to pick a plausible reading and build it — and a wrong reading found
-after the code is written costs a rewrite.
-
-It is deliberately conversational and writes nothing. What it produces is a **shared understanding**,
-which `dw-shape` then turns into a durable artifact.
+**Conversational, and it writes nothing.** What it produces is a **shared understanding**, which
+`dw-shape` turns into a durable artifact.
 
 ## What it reads
 
@@ -86,10 +82,10 @@ order.
 Stop when the remaining unknowns wouldn't change what gets built. Say so, and play back the shared
 understanding in a few lines: what we're building, what we decided, what we deliberately left out.
 
-Keep that last list explicit and separate — `dw-shape` is what turns it into something durable, either
-as a Decision in `CHANGE.md` or as an entry in `.ai/backlog/`. **This skill still writes nothing**: a
-playback the next step can act on is the deliverable, and an interviewer that also files things is one
-you can't run to think out loud.
+Keep that last list explicit and separate: `dw-shape` reads it back as a Decision in `CHANGE.md`, and
+what stays out reaches `.ai/backlog/` at land time. **This skill still writes nothing** — a playback
+the next step can act on is the deliverable, and an interviewer that also files things is one you
+can't run to think out loud.
 
 **Do not start implementing.** Getting agreement is the whole job here — writing it down is
 `dw-shape`'s, and building it is `dw-next`'s.

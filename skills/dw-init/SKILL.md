@@ -11,11 +11,9 @@ disable-model-invocation: true
 
 # dw-init — scaffold a repo for the solo lane
 
-The setup step for **your own** projects: everything the loop assumes a repo has, written in one
-gated pass — the `.ai/` state the skills read and write, the durable homes they promote into, the
-guardrail hooks, and a settings file whose allow-list is derived from the project rather than
-guessed. It drops everything that only pays off with an audience: no verification artifacts, no
-handoffs, no status tables.
+Everything the loop assumes a repo has, written in one gated pass: the `.ai/` state the skills read
+and write, the durable homes they promote into, the guardrail hooks, and a settings file whose
+allow-list is **derived from the project rather than guessed**.
 
 ## What it writes
 
@@ -85,9 +83,7 @@ is light.
 - `.ai/backlog/README.md`, `.ai/archive/README.md` and `docs/decisions/README.md` — copy
   `${CLAUDE_PLUGIN_ROOT}/templates/backlog-README.md`,
   `${CLAUDE_PLUGIN_ROOT}/templates/archive-README.md` and
-  `${CLAUDE_PLUGIN_ROOT}/templates/decisions-README.md` verbatim. The last one is the record
-  contract — the bar, the numbering, and how to supersede — which otherwise lives only in the
-  plugin.
+  `${CLAUDE_PLUGIN_ROOT}/templates/decisions-README.md` verbatim.
   **Existing entries in any of the three dirs are left alone** — they carry real content from
   earlier changes.
   A legacy single-file `.ai/BACKLOG.md`, if present, is named at the gate: offer to split it into
@@ -138,15 +134,10 @@ an entry that could match `git commit`, `git push`, anything in the template's `
 anything touching `.env`. Adding write or network commands here is not a speed optimisation; it
 removes the gate the rest of the lane is built around.
 
-**Seed `.ai/backlog/` and `.ai/archive/` with their READMEs and nothing else** — no example entry,
-no `TODO`, nothing standing in for one. On the next read a placeholder is indistinguishable from
-real queued work, and a backlog you have to first decide isn't real is one you stop opening.
-Entries arrive later, one `<slug>.md` each: frontmatter `created: YYYY-MM-DD` (optional `source:`),
-an H1 saying what-and-why in one line, at most ~3 lines of context.
-
-Keep entries exactly that minimal. They have **no status and no priority** on purpose: the moment
-the backlog grows a schema it is the validated plan this lane exists to avoid — and nothing
-validates it, deliberately.
+**Seed `.ai/backlog/` and `.ai/archive/` with their READMEs and nothing else** — no example entry, no
+`TODO`, nothing standing in for one. On the next read a placeholder is indistinguishable from real
+queued work, and a backlog you have to first decide isn't real is one you stop opening. The copied
+`backlog-README.md` states the entry shape; entries arrive later, from `dw-land`.
 
 ### 5. Optional — wire the pre-commit
 

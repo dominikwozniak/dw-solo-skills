@@ -11,12 +11,10 @@ disable-model-invocation: true
 
 # dw-handoff — the middle of a task, saved
 
-`CHANGE.md` already survives a `/clear` at **task** granularity: `dw-next` reads the goal, the ticked
-boxes and the next task straight off disk. This skill covers the gap that leaves — the middle of a
-task, where a checkbox cannot say which three approaches you already ruled out.
-
-So it writes one small file holding only the part that would otherwise be lost. Everything durable
-has a home already: decisions go in `CHANGE.md`, traps in `## Gotchas`, follow-ups in the backlog.
+`CHANGE.md` already survives a `/clear` at **task** granularity. This skill covers the gap that
+leaves — the middle of a task, where a checkbox cannot say which three approaches you already ruled
+out — and holds **only** that: decisions belong in `CHANGE.md`, traps in `## Gotchas`, follow-ups in
+the backlog.
 
 ## Output location
 

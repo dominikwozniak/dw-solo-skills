@@ -11,19 +11,16 @@ argument-hint: "bare checks the change's diff · codex delegates the pass · a p
 
 # dw-check — a fast look, then fixes
 
-The solo QA gate is optional and cheap on purpose: at this cadence a review you can afford to run
-twice mid-build beats a thorough one you only dare run at the end. It finds problems while the diff
-is still small; the closing pass stays a thin last look, not a bottleneck this skill duplicates.
+**This is the review step, and it is repeatable mid-build.** Run it twice while the diff is small;
+`dw-land`'s closing verdict stays a thin last look and never grows a reviewer of its own.
 
 ## What it reads
 
-The diff against the default branch — read that branch from `## Git conventions`, don't assume
-`main`, and prefer `origin/<default-branch>` when it exists (a stale local default makes the
-merge-base older than the branch point, so the diff swallows commits you didn't write). Plus the
-change's `CHANGE.md` for the goal, found by branch the same way `dw-next` finds it. `$ARGUMENTS` is
-read two ways, and this is the one skill in the catalog that mixes them: the single word **`codex`**
-switches mode (step 2), and anything else — including whatever follows that word — narrows the focus
-to a path or a topic.
+The diff against the default branch, resolved the way `dw-git` does and preferring
+`origin/<default-branch>`. Plus the change's `CHANGE.md` for the goal, found by branch the same way
+`dw-next` finds it. `$ARGUMENTS` is read two ways, and this is the one skill in the catalog that mixes
+them: the single word **`codex`** switches mode (step 2), and anything else — including whatever
+follows that word — narrows the focus to a path or a topic.
 
 It writes **no `.ai/` artifact** — approved fixes land as code commits, and a gate you re-run
 freely doesn't need a report file rotting between runs.

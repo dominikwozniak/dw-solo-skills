@@ -34,8 +34,8 @@ assumed:
 - `.ai/work/` — the scaffold this lane runs on; its absence points at `dw-init`, and a `.ai/runs/`
   directory is flagged as the other lane's repo rather than half-checked.
 - `docs/decisions/`, `CONTEXT.md`, and `CLAUDE.md`'s `## Gotchas` / `## Commands` sections — the
-  promotion targets `dw-land` writes into — and `docs/decisions/` is read, not just counted: its
-  records are checked against their own contract (numbering, frontmatter, supersede links).
+  promotion targets `dw-land` writes into. Presence only: the record contract is prose `dw-land` reads
+  while writing one, not something this skill parses.
 - `CLAUDE.local.md` — the file the hooks and `dw-git` read for commands and conventions.
 - `.claude-plugin/marketplace.json` — only if present (a marketplace repo); a light
   plugin/version-sync glance.
@@ -71,13 +71,8 @@ plainly instead of pointing anywhere in this one.
 
 ## Guardrails
 
-- **Read-only.** Never install a tool, edit a file, or run a suggested fix. The script only probes
-  and reads.
-- **Stack-adaptive.** JS/TS checks run only when `package.json` exists; `tsc` only when the repo
-  asks for typechecking. It reports what's declared, never a hardcoded stack.
-- **Consumer-first.** It diagnoses the current git repo, not the skill's location, so it works the
-  same in any repo scaffolded onto the solo loop. The marketplace/plugin check only fires when
-  `marketplace.json` is present.
+- **Stack-adaptive.** JS/TS checks run only when `package.json` exists; `tsc` only when the repo asks
+  for typechecking. The marketplace check fires only when `marketplace.json` is present.
 - **Never guesses.** It reports observed state and the consequence of each gap; it doesn't infer
   intent or "fix" anything for you.
 

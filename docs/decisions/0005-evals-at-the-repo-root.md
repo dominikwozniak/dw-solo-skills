@@ -24,10 +24,12 @@ routing cases are `evals/cases/<name>.json`.
 Locality, and it is not free. The cases now live in a different tree from the description they
 measure, and nothing in a skill directory hints that a second edit exists elsewhere — so adding a
 skill means remembering two places, and renaming one means remembering three.
-`scripts/validate-evals.sh` exists to pay that back: it fails when a model-invocable skill has no case
-file, and when a case file has no model-invocable skill. Colocation would have made that validator
-unnecessary. It would also have shipped test fixtures to every consumer, and left a skill's own
-directory able to fail its own install.
+That was paid back by `scripts/validate-evals.sh`, which failed when a model-invocable skill had no
+case file and when a case file had no model-invocable skill; it was deleted in
+`de-ratchet-the-solo-lane`, and the contract is now one line of the add-a-skill checklist in
+`AGENTS.md` — so the cost sits on the reader again. Colocation would have removed it entirely. It
+would also have shipped test fixtures to every consumer, and left a skill's own directory able to fail
+its own install.
 
 The same reasoning does not extend to everything: a script only one skill uses still belongs in
 `skills/<name>/scripts/`, because there the shipping is the point.

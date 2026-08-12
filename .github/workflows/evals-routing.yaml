@@ -23,7 +23,6 @@ jobs:
       - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
         with:
           run_install: false
-      # No install step: tier 2 has no dependencies — Node strips the types itself, and jq for the
-      # validator is already on the runner. Adding `pnpm ci` here would buy nothing but latency.
-      - run: pnpm validate:evals
+      # No install step: the eval has no dependencies — Node strips the types itself. Adding
+      # `pnpm ci` here would buy nothing but latency.
       - run: pnpm eval:routing

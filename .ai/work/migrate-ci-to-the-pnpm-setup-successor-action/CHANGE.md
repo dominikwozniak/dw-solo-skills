@@ -18,6 +18,12 @@ three workflows are green **on the PR** (a feature-branch push fires nothing her
 `workflow_dispatch`). This is where the Node-pinning question `pnpm-v11-migration` parked and
 `pnpm-pin-in-one-field` deliberately closed as "no" finally gets answered "yes".
 
+**Amended mid-build, on request:** npm leaves CI as well. `validate-plugin-manifests` — the fourth
+workflow, and the only one that never had a Node setup — installs the Claude Code CLI with
+`npm install -g` while this repo blocks npm from the agent with `block-non-pnpm.sh`. Also known when
+every `npm` hit under `.github/` is the tail of a `pnpm` one, and that workflow is green on the same
+PR.
+
 ## Decisions
 
 - **`devEngines.runtime` becomes the Node pin, and the archived "no" is not being re-litigated — its
@@ -79,15 +85,33 @@ three workflows are green **on the PR** (a feature-branch push fires nothing her
       which needs no inputs and installs the runtime too. Clauses (1) and (2) stay verbatim — they are
       about the local bootstrap and `onFail`, both still exactly right. Sub-bullet edit only, so the
       12/12 entry count does not move.
-- [ ] 3. **The npm guard, then the gate.** A second `devEngines` entry gives npm a second thing to
-      validate, and `validate-plugin-manifests.yaml:64` runs `npm install -g @anthropic-ai/claude-code`
-      in this repo root — `pnpm-pin-in-one-field` cleared that step against `packageManager` alone
-      (`.ai/archive/pnpm-pin-in-one-field/CHANGE.md:161-163`), not against a runtime entry npm may not
-      know how to `download`. **You have to run this one** — `block-non-pnpm.sh` stops the agent:
-      `npm install -g --dry-run @anthropic-ai/claude-code`, in the repo root. `EBADDEVENGINES` means
-      task 1 broke that workflow and `onFail` needs revisiting; a normal dry-run report means it is
-      safe. Then the full gate, then push and read all three workflows on the PR — the only place
-      they run.
+- [ ] 3. **The gate, then the PR.** Run the full gate, push, open the PR, and read all four rewritten
+      workflows there — the only place they run. **The npm probe this task originally demanded is
+      gone, twice over.** It was scoped wrong: the manifests workflow's `paths:` filter did not match
+      this diff, so no dry-run here would have gated anything. And task 4 then removed the premise
+      entirely — with npm out of that workflow, a second `devEngines` entry has no npm left to
+      refuse it. Do this task **last**, after 4, or the probe question comes back.
+- [x] 4. **npm leaves CI too.** Added mid-build on request, and it lands here rather than in the
+      backlog for one reason that reverses the objection to bundling it: the workflow's `paths:`
+      filter includes **its own path**, so editing it triggers it on this PR — the change is
+      verifiable where the manifests-only filter would have hidden it. In
+      `validate-plugin-manifests.yaml`, add `pnpm/setup@v2` with `install: false` (this job wants
+      pnpm and Node, not the dev tree) and swap `npm install -g @anthropic-ai/claude-code@2.1.179`
+      for `pnpm add -g --allow-build=@anthropic-ai/claude-code @anthropic-ai/claude-code@2.1.179`.
+      **`--allow-build` is not optional**: the package's `postinstall: node install.cjs` would be
+      denied by v11's `strictDepBuilds` and **fail** the install rather than warn. The flag keeps
+      `pnpm-workspace.yaml`'s `allowBuilds` a one-entry allowlist over the dev tree, which is what
+      its "this single entry is the whole blast radius" comment claims. Version stays `2.1.179` —
+      published 2026-06-16, so `minimumReleaseAge: 10080` is satisfied and a bump would confound two
+      variables. Green when the workflow passes on the PR; nothing local exercises it.
+
+      Two things it settled on the way. **`block-non-pnpm.sh` blocks reading about npm, not just
+              running it** — `git grep -n "npm install" -- .github/`, the verification this task's own goal
+              asks for, is refused because the pattern contains the string. Build it (`git grep "npm"`) the
+              way the `.env` trap in `## Gotchas` already documents. And the pinned version is safely old:
+              `pnpm view @anthropic-ai/claude-code time` dates 2.1.179 to **2026-06-16**, so the seven-day
+              cooldown is not in play; a fresher pin would need `minimumReleaseAgeExclude` and should be its
+              own change.
 
 ## Anchors
 
@@ -103,7 +127,11 @@ three workflows are green **on the PR** (a feature-branch push fires nothing her
 - `AGENTS.md:267-286` — `**pnpm here is three traps deep…**`. `:277-286` is the one-field sub-bullet;
   `:284-286` is clause (3), the only false half after this change.
 - `evals/routing.ts:20` — the `.nvmrc` mention inside the no-build-step comment.
-- `.github/workflows/validate-plugin-manifests.yaml:64` — the `npm install -g` step task 3 probes.
+- `.github/workflows/validate-plugin-manifests.yaml:32-34` — the only npm in this repo, the step
+  task 4 replaces. It has no Node setup at all today: it uses whatever the runner ships, because
+  `scripts/validate-manifests.sh:13` needs `claude plugin validate` on `PATH` and nothing else.
+  `:5-8` is the `paths:` filter that includes the workflow's own path — the reason task 4 is
+  verifiable on this PR.
 - `pnpm-workspace.yaml:15-20` — `minimumReleaseAge: 10080` / `minimumReleaseAgeStrict: true`, the
   seven-day cooldown the freshness decision above argues does not reach an action SHA.
 - `.ai/archive/pnpm-pin-in-one-field/CHANGE.md:29-32,38-39` — the two decisions this change reverses,

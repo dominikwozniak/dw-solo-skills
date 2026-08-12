@@ -31,9 +31,17 @@ jobs:
         with:
           fetch-depth: 1
 
+      # `install: false` — this job needs pnpm and the Node it pins, not the repo's dev tree.
+      - uses: pnpm/setup@84cb39b217b10273981911c288cd62326dc7c6d2 # v2.0.2
+        with:
+          install: false
+
       - name: Install Claude Code CLI
         shell: bash
-        run: npm install -g @anthropic-ai/claude-code@2.1.179
+        # `--allow-build` is load-bearing: the package's `postinstall` would be denied by v11's
+        # strictDepBuilds and fail the install outright. Passing it here keeps allowBuilds in
+        # pnpm-workspace.yaml a one-entry allowlist over the dev tree, as its comment claims.
+        run: pnpm add -g --allow-build=@anthropic-ai/claude-code @anthropic-ai/claude-code@2.1.179
 
       - name: Validate manifests
         id: validate

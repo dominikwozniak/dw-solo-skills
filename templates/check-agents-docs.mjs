@@ -9,7 +9,14 @@
 // retired by hand and by dw-land, and a validator over them turns an editorial layer into a build
 // gate — a commit blocked because a decision record is shaped wrong teaches you to stop writing them.
 // If you add one anyway, add it knowing that is the trade.
-import { existsSync, lstatSync, readFileSync, readdirSync, readlinkSync } from "node:fs"
+import {
+  existsSync,
+  lstatSync,
+  readFileSync,
+  readdirSync,
+  readlinkSync,
+  realpathSync,
+} from "node:fs"
 import { dirname, join } from "node:path"
 import { fileURLToPath } from "node:url"
 
@@ -126,7 +133,37 @@ const routerSection = (() => {
   return end === -1 ? rest : rest.slice(0, end)
 })()
 
-// Coverage: a topic file nothing routes to is a file nothing reads.
+// Routed targets, read out of the LAST cell of each row — the `read` column — and never the whole
+// row. The `task` column describes the task, so its backticks name concepts rather than files to
+// open: a row reading "what a `CHANGE.md` is" points at no `CHANGE.md` in the repo root, and scanning
+// it would fail the shipped template against its own checker.
+//
+// Within that cell, a backticked span counts as a path when it holds a `/` or ends in `.md`. That
+// skips the other things a cell names — a skill, a command, a section — and skips globs,
+// placeholders and URLs, none of which are checkable against the filesystem.
+//
+// Rows are split on UNESCAPED pipes: a cell may contain a literal `\|`, and splitting on every pipe
+// picked the wrong "last cell", which could let a nonexistent path through unchecked.
+const routedPaths = new Set()
+for (const line of routerSection.split("\n")) {
+  const row = line.trim()
+  if (!row.startsWith("|")) continue
+  const cells = row.split(/(?<!\\)\|/).slice(1, row.endsWith("|") ? -1 : undefined)
+  const target = cells.at(-1)
+  if (target === undefined) continue
+  for (const [, span] of target.matchAll(/`([^`]+)`/g)) {
+    if (!span.includes("/") && !span.endsWith(".md")) continue
+    if (/[<>*~]/.test(span) || span.includes("://")) continue
+    routedPaths.add(span.replace(/^\.\//, ""))
+  }
+}
+for (const path of routedPaths)
+  if (!existsSync(abs(path)))
+    fail(`AGENTS.md's Task Router points at ${path}, which does not exist.`)
+
+// Coverage: a topic file nothing routes to is a file nothing reads. Checked against the parsed
+// `read` column, not against the section text — a topic file merely NAMED in a task description, or
+// in prose beside the table, is not routed to, and accepting that made the check hollow.
 const topicDir = "docs/agents"
 const topics = existsSync(abs(topicDir))
   ? readdirSync(abs(topicDir))
@@ -134,33 +171,8 @@ const topics = existsSync(abs(topicDir))
       .filter((entry) => entry.endsWith(".md") && entry !== "CLAUDE.md")
   : []
 for (const entry of topics)
-  if (!routerSection.includes(`${topicDir}/${entry}`))
+  if (!routedPaths.has(`${topicDir}/${entry}`))
     fail(`${topicDir}/${entry} has no row in the AGENTS.md Task Router.`)
-
-// Path sync, read out of the LAST cell of each row — the `read` column — and never the whole row.
-// The `task` column describes the task, so its backticks name concepts rather than files to open:
-// a row reading "what a `CHANGE.md` is" points at no `CHANGE.md` in the repo root, and scanning it
-// would fail the shipped template against its own checker.
-//
-// Within that cell, a backticked span counts as a path when it holds a `/` or ends in `.md`. That
-// skips the other things a cell names — a skill, a command, a section — and skips globs,
-// placeholders and URLs, none of which are checkable against the filesystem.
-const routedPaths = new Set()
-for (const line of routerSection.split("\n")) {
-  const row = line.trim()
-  if (!row.startsWith("|")) continue
-  const cells = row.split("|").slice(1, row.endsWith("|") ? -1 : undefined)
-  const target = cells.at(-1)
-  if (target === undefined) continue
-  for (const [, span] of target.matchAll(/`([^`]+)`/g)) {
-    if (!span.includes("/") && !span.endsWith(".md")) continue
-    if (/[<>*~]/.test(span) || span.includes("://")) continue
-    routedPaths.add(span)
-  }
-}
-for (const path of routedPaths)
-  if (!existsSync(abs(path)))
-    fail(`AGENTS.md's Task Router points at ${path}, which does not exist.`)
 
 // ---------------------------------------------------------------------------
 // 4. Command sync: every documented `pnpm <script>` is a real script.
@@ -213,14 +225,29 @@ if (existsSync(abs("package.json"))) {
 // ---------------------------------------------------------------------------
 // The harnesses load CLAUDE.md; AGENTS.md is the file. A materialized copy forks the corpus, and the
 // fork is silent — both halves load, and the stale one wins wherever it was read last.
+// Compared by DESTINATION, not by spelling. `AGENTS.md`, `./AGENTS.md`, an absolute path, and a path
+// through a symlinked parent all name the same file, and rejecting any of them would fail a repo that
+// is correctly set up. Only realpath on both sides gets that right — comparing the resolved path
+// strings still trips over a symlinked ancestor, which is exactly how macOS spells its temp dirs.
+const claudeMd = abs("CLAUDE.md")
+let linkTarget = null // null = missing, false = a real file, string = the link text
 try {
-  const stat = lstatSync(abs("CLAUDE.md"))
-  if (!stat.isSymbolicLink())
-    fail("CLAUDE.md is a real file — it must be a symlink to AGENTS.md, or the two copies diverge.")
-  else if (readlinkSync(abs("CLAUDE.md")) !== "AGENTS.md")
-    fail(`CLAUDE.md links ${readlinkSync(abs("CLAUDE.md"))} — it must point at AGENTS.md.`)
+  linkTarget = lstatSync(claudeMd).isSymbolicLink() ? readlinkSync(claudeMd) : false
 } catch {
+  linkTarget = null
+}
+if (linkTarget === null) {
   fail("CLAUDE.md is missing — it must be a symlink pointing at AGENTS.md.")
+} else if (linkTarget === false) {
+  fail("CLAUDE.md is a real file — it must be a symlink to AGENTS.md, or the two copies diverge.")
+} else {
+  let sameFile = false
+  try {
+    sameFile = realpathSync(claudeMd) === realpathSync(abs("AGENTS.md"))
+  } catch {
+    sameFile = false // a dangling link resolves to nothing, and that is a failure too
+  }
+  if (!sameFile) fail(`CLAUDE.md links ${linkTarget} — it must resolve to AGENTS.md.`)
 }
 
 // ---------------------------------------------------------------------------

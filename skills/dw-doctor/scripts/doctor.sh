@@ -75,7 +75,10 @@ fi
 # it, only those two routes degrade. Depth stops at "installed": probing auth would mean a network
 # call from a read-only diagnostic, and a logged-out codex is the user's business, not this script's.
 codex_plugin=""
-for d in "$HOME"/.claude/plugins/cache/*codex*; do
+# ${HOME:-} — this script runs under `set -u`, and a bare $HOME with HOME unset aborts it outright,
+# taking every check below down with it. Rare, but a diagnostic that dies is worse than one that
+# reports a gap.
+for d in "${HOME:-/nonexistent}"/.claude/plugins/cache/*codex*; do
   [ -d "$d" ] && codex_plugin="$d" && break
 done
 if have codex && [ -n "$codex_plugin" ]; then
@@ -308,13 +311,20 @@ if [ "$MEMORY" -eq 1 ] && [ -f "$agents" ]; then
     report warn "AGENTS.md budget" "no 'Budget: **N lines / M KB**' declaration — nothing caps the file every session loads"
   else
     decl="$(printf '%s' "${bline#*Budget:}" | tr -d '*`')"
-    parsed="$(printf '%s' "$decl" | sed -nE 's|^[[:space:]]*([0-9_]+)[[:space:]]*lines?[[:space:]]*/[[:space:]]*([0-9_]+)[[:space:]]*([A-Za-z]*).*|\1 \2 \3|p')"
+    # The tail must be empty or start with , . ; — exactly what the shipped checker's regex allows.
+    # An open `.*` accepted `120 lines / 10 KB trailing garbage` here and the gate rejected it, which
+    # is the same class of divergence as the line count: the doctor is only worth reading if it agrees
+    # with what enforces.
+    parsed="$(printf '%s' "$decl" | sed -nE 's|^[[:space:]]*([0-9][0-9_]*)[[:space:]]*lines?[[:space:]]*/[[:space:]]*([0-9][0-9_]*)[[:space:]]*([A-Za-z]*)[[:space:]]*([,.;].*)?$|\1 \2 \3|p')"
     if [ -z "$parsed" ]; then
       report warn "AGENTS.md budget" "declaration not parseable: '$(printf '%s' "$decl" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')' — expected 'N lines / M[ KB]'"
     else
       read -r max_lines max_bytes unit <<<"$parsed"
-      max_lines="$(printf '%s' "$max_lines" | tr -d '_')"
-      max_bytes="$(printf '%s' "$max_bytes" | tr -d '_')"
+      # 10# forces base 10. Without it a leading zero is read as octal and `08 KB` — which Node's
+      # Number("08") accepts as 8 — made bash bail out of the arithmetic, dropping the budget line
+      # from the report entirely rather than failing loudly.
+      max_lines=$((10#$(printf '%s' "$max_lines" | tr -d '_')))
+      max_bytes=$((10#$(printf '%s' "$max_bytes" | tr -d '_')))
       case "$unit" in
         "" | b | B) ;;
         kb | Kb | kB | KB) max_bytes=$((max_bytes * 1024)) ;;
@@ -339,7 +349,11 @@ if [ "$MEMORY" -eq 1 ] && [ -f "$agents" ]; then
 
   # The Task Router, and whether the topic layer it indexes has outgrown it.
   if grep -qE '^##[[:space:]]+Task Router' "$agents" 2>/dev/null; then
-    nrows="$(awk '/^##[[:space:]]+Task Router/{f=1;next} f && /^##[[:space:]]/{f=0} f && /^[[:space:]]*\|/{n++} END{print n+0}' "$agents")"
+    # Sliced out ONCE, and coverage is grepped against the slice — not the whole file. Naming a topic
+    # file in some other section is not routing to it, and scanning everything made the check pass on
+    # a row written outside the table.
+    router="$(awk '/^##[[:space:]]+Task Router/{f=1;next} f && /^##[[:space:]]/{f=0} f' "$agents")"
+    nrows="$(printf '%s\n' "$router" | grep -cE '^[[:space:]]*\|' || true)"
     ncontent=$((nrows - 2))
     [ "$ncontent" -lt 0 ] && ncontent=0
     if [ "$ncontent" -eq 0 ]; then
@@ -353,7 +367,7 @@ if [ "$MEMORY" -eq 1 ] && [ -f "$agents" ]; then
         [ -f "$f" ] || continue
         base="$(basename "$f")"
         [ "$base" = "CLAUDE.md" ] && continue
-        grep -qF "docs/agents/$base" "$agents" 2>/dev/null || unrouted="$unrouted $base"
+        printf '%s\n' "$router" | grep -qF "docs/agents/$base" || unrouted="$unrouted $base"
       done
       if [ -n "$unrouted" ]; then
         report warn "docs/agents/ coverage" "no router row for:${unrouted} — a topic file nothing routes to is a file nothing reads"
@@ -368,7 +382,11 @@ if [ "$MEMORY" -eq 1 ] && [ -f "$agents" ]; then
   # CLAUDE.md must be the symlink, not a second copy. A materialized copy forks the corpus silently.
   if [ -L "$ROOT/CLAUDE.md" ]; then
     tgt="$(readlink "$ROOT/CLAUDE.md")"
-    if [ "$tgt" = "AGENTS.md" ]; then
+    # Judged by destination, the way the shipped checker judges it. `-ef` compares device and inode
+    # with the link followed, so `AGENTS.md`, `./AGENTS.md`, an absolute path and a path through a
+    # symlinked parent all read as the one link they are — and a dangling link is correctly false.
+    # Comparing the raw link text would warn about a repo that is set up right.
+    if [ "$ROOT/CLAUDE.md" -ef "$ROOT/AGENTS.md" ]; then
       report ok "CLAUDE.md" "symlink -> AGENTS.md"
     else
       report warn "CLAUDE.md" "symlink -> $tgt, not AGENTS.md; fix: ln -sf AGENTS.md CLAUDE.md"
@@ -398,14 +416,21 @@ if [ "$MEMORY" -eq 1 ]; then
     if [ -z "$src" ]; then
       report warn "$bullet command" "declared nowhere — the hook falls through to a probe, or silently lints nothing"
     else
-      # Extracted the way the hooks extract it, not merely plausibly: first backticked span wins, else
-      # the rest of the line. Diverging here would have the report name a command the hook never runs.
+      # Extracted in the hooks' own order, not merely plausibly: the `none` sentinel is tested on the
+      # raw remainder FIRST, then the first backticked span, then the rest of the line. Reporting a
+      # command the hook would never run is the one thing a diagnostic cannot afford.
       line="$(grep -m1 -E "$pattern" "$src_path" 2>/dev/null)"
+      rest="$(printf '%s\n' "$line" | sed -e 's/.*command[*]*://' -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
+      case "$rest" in
+        none | None | NONE | none[!A-Za-z0-9]* | None[!A-Za-z0-9]* | NONE[!A-Za-z0-9]*)
+          report ok "$bullet command" "none (declared, so the hook skips) — from $src"
+          continue
+          ;;
+      esac
       val="$(printf '%s\n' "$line" | sed -n 's/.*command[*]*:[^`]*`\([^`]*\)`.*/\1/p')"
-      [ -z "$val" ] && val="$(printf '%s\n' "$line" | sed -e 's/.*command[*]*://' -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
+      [ -z "$val" ] && val="$rest"
       case "$val" in
         "" | '{{'*) report warn "$bullet command" "empty or unrendered in $src — the hook will no-op" ;;
-        none | None | NONE) report ok "$bullet command" "none (declared, so the hook skips) — from $src" ;;
         *) report ok "$bullet command" "$val — from $src" ;;
       esac
     fi

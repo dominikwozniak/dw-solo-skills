@@ -189,8 +189,8 @@ Only when opted in at the gate. `pnpm add -D husky lint-staged`, `pnpm exec husk
 `.husky/pre-commit` and `.lintstagedrc.json` from the shapes in `references/precommit.md` — globs
 matched to the formatter and linter step 1 actually detected, never to a tool that isn't installed.
 Typecheck and test lines are separate opt-ins: both run the whole project per commit. **`agents:check`
-is not an opt-in** — it goes in uncommented, guarded on the docs actually being staged, because it
-reads a handful of files rather than building the project. The reference has the shape. On a repo
+is not an opt-in** — it goes in uncommented and unguarded, because it reads a handful of files rather
+than building the project, and the reference explains why a staged-paths guard on it leaks. On a repo
 that's partly wired, fill the gaps and show diffs — never overwrite blind; the re-run rules are in
 the reference. Worth having even solo: it catches the commits made outside a session, where no hook
 fires.

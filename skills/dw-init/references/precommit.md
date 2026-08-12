@@ -39,12 +39,10 @@ on exactly the files in the commit. Don't add a glob for a tool that isn't insta
 ```
 pnpm exec lint-staged
 
-# The agent-docs gate. Not an opt-in: it reads AGENTS.md and the paths its Task
-# Router names, so it costs a node startup, not a build. Guarded on the docs
-# being staged, because a commit that touches neither cannot break them.
-if git diff --cached --name-only | grep -qE '^(AGENTS\.md|docs/agents/|package\.json$)'; then
-  pnpm agents:check
-fi
+# The agent-docs gate. Not an opt-in, and deliberately UNGUARDED: it reads
+# AGENTS.md plus the paths its Task Router names, so it costs a node startup
+# rather than a build.
+pnpm agents:check
 
 # Optional, opt-in at the dw-init gate. Uncomment only the lines whose script
 # exists and you asked for — both run the WHOLE project on every commit, so
@@ -53,8 +51,12 @@ fi
 # pnpm run test
 ```
 
-`package.json` is in that guard because `agents:check` cross-checks every `pnpm <script>` named in
-`AGENTS.md` against it: renaming a script is the other way the two drift apart.
+**Do not add a staged-paths guard to that line.** The obvious one —
+`grep -qE '^(AGENTS\.md|docs/agents/|package\.json$)'` — has a hole big enough to matter: every check
+the gate runs can be broken by touching a file the guard doesn't name. Deleting `CONTEXT.md` or
+`.ai/README.md` breaks path sync; removing `CLAUDE.md` breaks the symlink check; renaming a script
+breaks command sync. Enumerating all of that means restating the router inside a shell pattern and
+keeping the two in step forever, which costs more than the node startup the guard was saving.
 
 ## The `.lintstagedrc.json` shape (prettier + eslint case)
 

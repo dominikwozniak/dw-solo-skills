@@ -28,9 +28,13 @@ WORK="$(mktemp -d)"
 trap 'rm -rf "$WORK"' EXIT
 OUT="$WORK/report"
 
-# scaffold <budget-tail> — a synthetic solo-lane repo: .ai/, docs/decisions/, CONTEXT.md, an AGENTS.md
-# with the given budget declaration, a CLAUDE.md symlink and the shipped checker's filename. Echoes
-# the repo path. Callers mutate the pieces they are testing.
+# scaffold <budget-tail> [extra-router-row] — a synthetic solo-lane repo: .ai/, docs/decisions/,
+# CONTEXT.md, an AGENTS.md with the given budget declaration, a CLAUDE.md symlink and the shipped
+# checker's filename. Echoes the repo path. Callers mutate the pieces they are testing.
+#
+# The extra row goes INSIDE the router table on purpose. Coverage is grepped against the sliced-out
+# `## Task Router` section, so a row appended at the end of the file is scanned by nothing — and a case
+# built that way passes without testing anything, which is how the whole-file grep stayed hidden.
 scaffold() {
   local dir
   dir="$WORK/repo.$RANDOM$RANDOM"
@@ -48,6 +52,7 @@ scaffold() {
 | task          | read           |
 | ------------- | -------------- |
 | a domain term | \`CONTEXT.md\` |
+${2:-}
 
 ## Solo lane
 
@@ -84,6 +89,23 @@ says() {
   fi
   note_pass "$1"
 }
+
+echo "survives a hostile environment — it runs on someone else's machine:"
+# `set -u` plus a bare $HOME took the whole diagnostic down before the summary, so every check below
+# the codex probe was lost. A missing HOME must cost one line, not the report.
+repo="$(scaffold '120 lines / 10 KB')"
+(cd "$repo" && env -u HOME bash "$DOCTOR") >"$OUT" 2>&1
+rc=$?
+if [ "$rc" = "0" ] && grep -q "Summary" "$OUT"; then
+  note_pass "home-unset-still-reports"
+else
+  note_fail "home-unset-still-reports" "exit $rc; last line: $(tail -1 "$OUT")"
+fi
+if grep -q "unbound variable" "$OUT"; then
+  note_fail "home-unset-no-unbound-error" "$(grep 'unbound variable' "$OUT" | head -n1)"
+else
+  note_pass "home-unset-no-unbound-error"
+fi
 
 echo "read-only and always exit 0, whatever it finds:"
 repo="$(scaffold '120 lines / 10 KB')"
@@ -136,6 +158,28 @@ repo="$(scaffold 'as long as it needs to be')"
 run "$repo" >/dev/null
 says "unparseable-budget-warns" warn "AGENTS.md budget" "not parseable"
 
+# Strict on the tail, exactly as the shipped checker is. An open `.*` accepted this here and the gate
+# rejected it — the same divergence class as the line count.
+repo="$(scaffold '120 lines / 10 KB trailing garbage')"
+run "$repo" >/dev/null
+says "trailing-garbage-is-not-parseable" warn "AGENTS.md budget" "not parseable"
+
+# ...but the comma the shipped template actually writes must still parse.
+repo="$(scaffold '120 lines / 10 KB, enforced by the checker')"
+run "$repo" >/dev/null
+says "comma-tail-still-parses" ok "AGENTS.md budget" "/10240 B"
+
+# A leading zero is base 10, not octal. Bash arithmetic bailed on `08` and the budget line vanished
+# from the report altogether, while Node reads Number("08") as 8.
+repo="$(scaffold '120 lines / 08 KB')"
+run "$repo" >/dev/null
+says "leading-zero-is-base-10" ok "AGENTS.md budget" "/8192 B"
+if grep -q "value too great for base" "$OUT"; then
+  note_fail "leading-zero-no-bash-arithmetic-error" "$(grep 'value too great' "$OUT" | head -n1)"
+else
+  note_pass "leading-zero-no-bash-arithmetic-error"
+fi
+
 repo="$(scaffold '120 lines / 10 KB')"
 grep -v "Budget:" "$repo/AGENTS.md" >"$repo/tmp" && mv "$repo/tmp" "$repo/AGENTS.md"
 run "$repo" >/dev/null
@@ -148,9 +192,22 @@ printf 'ui\n' >"$repo/docs/agents/ui.md"
 run "$repo" >/dev/null
 says "unrouted-topic-warns" warn "docs/agents/ coverage" "ui.md"
 
-printf '| ui | `docs/agents/ui.md` |\n' >>"$repo/AGENTS.md"
+# The same topic file with a row INSIDE the table.
+repo="$(scaffold '120 lines / 10 KB' '| ui | `docs/agents/ui.md` |')"
+mkdir -p "$repo/docs/agents"
+printf 'ui\n' >"$repo/docs/agents/ui.md"
 run "$repo" >/dev/null
 says "routed-topic-ok" ok "docs/agents/ coverage" "every topic file has a row"
+
+# Coverage is scoped to the router section: a mention anywhere else is not a row. The earlier version
+# of the case above appended its row after `## Solo lane` and still passed, because the grep scanned
+# the whole file — a case that passed for the wrong reason and hid the bug.
+repo="$(scaffold '120 lines / 10 KB')"
+mkdir -p "$repo/docs/agents"
+printf 'ui\n' >"$repo/docs/agents/ui.md"
+printf -- '- see `docs/agents/ui.md` for the boundary\n' >>"$repo/AGENTS.md"
+run "$repo" >/dev/null
+says "mention-outside-the-router-is-not-a-row" warn "docs/agents/ coverage" "ui.md"
 
 repo="$(scaffold '120 lines / 10 KB')"
 grep -v "## Task Router" "$repo/AGENTS.md" >"$repo/tmp" && mv "$repo/tmp" "$repo/AGENTS.md"
@@ -181,6 +238,20 @@ rm "$repo/CLAUDE.md"
 run "$repo" >/dev/null
 says "claude-md-absent-warns" warn "CLAUDE.md " "absent"
 
+# Judged by destination, like the checker: these spellings are the same link, and warning about them
+# would flag a correct repo.
+repo="$(scaffold '120 lines / 10 KB')"
+rm "$repo/CLAUDE.md"
+ln -s ./AGENTS.md "$repo/CLAUDE.md"
+run "$repo" >/dev/null
+says "claude-md-dot-slash-is-ok" ok "CLAUDE.md " "symlink -> AGENTS.md"
+
+repo="$(scaffold '120 lines / 10 KB')"
+rm "$repo/CLAUDE.md"
+ln -s "$repo/AGENTS.md" "$repo/CLAUDE.md"
+run "$repo" >/dev/null
+says "claude-md-absolute-is-ok" ok "CLAUDE.md " "symlink -> AGENTS.md"
+
 echo "the two command bullets, resolved in the hooks' own order:"
 repo="$(scaffold '120 lines / 10 KB')"
 run "$repo" >/dev/null
@@ -199,13 +270,22 @@ says "typecheck-nowhere-warns" warn "Typecheck command" "declared nowhere"
 # above it, and grep -F would hand back that one instead.
 says "legacy-file-is-info-tier" info "nothing writes it any more" "CLAUDE.local.md"
 
-# The value is extracted the way the hooks extract it — first backticked span, else the rest of the
-# line. A bullet whose prose mentions another backticked path must report what the HOOK would run.
+# The value is extracted in the hooks' own ORDER: the `none` sentinel on the raw remainder first, then
+# the first backticked span, then the rest of the line. An earlier version of this case asserted the
+# opposite — that `none — the `src/*.ts` files…` reports `src/*.ts` — and so pinned the bug instead of
+# the contract: the hook was running that path on every edit.
 repo="$(scaffold '120 lines / 10 KB')"
 grep -v "Lint command" "$repo/AGENTS.md" >"$repo/tmp" && mv "$repo/tmp" "$repo/AGENTS.md"
 printf -- '- **Lint command**: none — the `src/*.ts` files are checked by CI\n' >>"$repo/AGENTS.md"
 run "$repo" >/dev/null
-says "value-matches-hook-extraction" ok "Lint command" "src/*.ts"
+says "none-beats-explanatory-backticks" ok "Lint command" "none (declared, so the hook skips)"
+
+# A backticked command still wins over surrounding prose — that half was always right.
+repo="$(scaffold '120 lines / 10 KB')"
+grep -v "Lint command" "$repo/AGENTS.md" >"$repo/tmp" && mv "$repo/tmp" "$repo/AGENTS.md"
+printf -- '- **Lint command**: `./lint.sh` (notes after it are ignored)\n' >>"$repo/AGENTS.md"
+run "$repo" >/dev/null
+says "backticked-command-wins-over-prose" ok "Lint command" "./lint.sh — from AGENTS.md"
 
 repo="$(scaffold '120 lines / 10 KB')"
 grep -v "Lint command" "$repo/AGENTS.md" >"$repo/tmp" && mv "$repo/tmp" "$repo/AGENTS.md"

@@ -180,6 +180,26 @@ printf -- '- see `docs/agents/ui.md` for the boundary\n' >>"$repo/AGENTS.md"
 expect_rc "mention-outside-router-is-not-a-row-exit-1" 1 "$(check "$repo")"
 expect_says "mention-outside-router-named" "docs/agents/ui.md has no row"
 
+# Tighter: coverage is scoped to the READ column, not merely to the section. A topic file named in a
+# task description is being talked about, not routed to — and accepting that made the check hollow.
+repo="$(scaffold '120 lines / 10 KB' '| editing `docs/agents/ui.md` | `CONTEXT.md` |')"
+mkdir -p "$repo/docs/agents"
+printf 'ui rules\n' >"$repo/docs/agents/ui.md"
+expect_rc "task-column-mention-is-not-coverage-exit-1" 1 "$(check "$repo")"
+expect_says "task-column-mention-is-not-coverage-named" "docs/agents/ui.md has no row"
+
+# A `./`-prefixed target is the same path, and must satisfy coverage rather than read as a second one.
+repo="$(scaffold '120 lines / 10 KB' '| ui | `./docs/agents/ui.md` |')"
+mkdir -p "$repo/docs/agents"
+printf 'ui rules\n' >"$repo/docs/agents/ui.md"
+expect_rc "dot-slash-target-counts-as-coverage" 0 "$(check "$repo")"
+
+# An escaped pipe is cell CONTENT, not a column break. Splitting on every pipe picked the wrong "last
+# cell", which could let a nonexistent routed path through unchecked.
+repo="$(scaffold '120 lines / 10 KB' '| a \| b | `nope/missing.md` |')"
+expect_rc "escaped-pipe-still-finds-the-read-column" 1 "$(check "$repo")"
+expect_says "escaped-pipe-named-the-missing-path" "points at nope/missing.md"
+
 repo="$(scaffold '120 lines / 10 KB')"
 rm "$repo/CONTEXT.md"
 expect_rc "missing-routed-path-exit-1" 1 "$(check "$repo")"
@@ -240,7 +260,19 @@ repo="$(scaffold '120 lines / 10 KB')"
 rm "$repo/CLAUDE.md"
 ln -s CONTEXT.md "$repo/CLAUDE.md"
 expect_rc "claude-md-wrong-target-exit-1" 1 "$(check "$repo")"
-expect_says "claude-md-wrong-target-named" "must point at AGENTS.md"
+expect_says "claude-md-wrong-target-named" "must resolve to AGENTS.md"
+
+# Compared by destination, not spelling: these are the same link, and rejecting them would fail a repo
+# that is correctly set up.
+repo="$(scaffold '120 lines / 10 KB')"
+rm "$repo/CLAUDE.md"
+ln -s ./AGENTS.md "$repo/CLAUDE.md"
+expect_rc "claude-md-dot-slash-target-accepted" 0 "$(check "$repo")"
+
+repo="$(scaffold '120 lines / 10 KB')"
+rm "$repo/CLAUDE.md"
+ln -s "$repo/AGENTS.md" "$repo/CLAUDE.md"
+expect_rc "claude-md-absolute-target-accepted" 0 "$(check "$repo")"
 
 echo "docs/decisions/ is NOT validated — by decision, not by omission:"
 # A record breaking every rule the team-lane checker enforced: no frontmatter, a number out of

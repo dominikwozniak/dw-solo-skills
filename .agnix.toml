@@ -13,9 +13,12 @@ exclude = [
     # so agnix doesn't lint the local drops.
     ".claude/**",
     # Template payloads — inert files copied verbatim INTO a target project
-    # (settings.json / hooks / CLAUDE.local.md, plus the artifact shapes under
-    # skills/*/references/). They reference `.claude/` paths and hook scripts
-    # that only exist once dropped, so they're not validatable in place.
+    # (settings.json / hooks / AGENTS.md, plus the artifact shapes under
+    # skills/*/references/). They reference `.claude/` paths, `.ai/` dirs and hook
+    # scripts that only exist once dropped, so they're not validatable in place.
+    # NOTE: an exclude only applies to the project walk — agnix given an explicit
+    # path lints it regardless, which is why .husky/pre-commit filters templates/
+    # out of what it hands over.
     "templates/**",
     "skills/*/references/templates/**",
 ]

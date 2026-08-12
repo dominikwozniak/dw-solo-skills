@@ -4,7 +4,11 @@ pnpm exec lint-staged
 # Lint the agent-skills files with agnix, scoped to the staged paths only —
 # the repo `lint` script runs agnix over the whole tree and OOMs locally, so
 # never call it here. agnix --fix mirrors the repo's `lint:fix`.
+# templates/ is excluded in .agnix.toml, but an exclude only governs the project walk —
+# a path handed over explicitly is linted anyway, and templates/AGENTS.md names `.ai/`
+# and `.claude/` paths that exist only once dropped into a target repo. Filter it here.
 agnix_files=$(git diff --cached --name-only --diff-filter=ACM \
+  | grep -v '^templates/' \
   | grep -E '((^|/)(SKILL|CLAUDE|AGENTS)\.md|\.claude-plugin/[^/]*\.json)$' || true)
 if [ -n "$agnix_files" ]; then
   echo "$agnix_files" | xargs pnpm exec agnix --fix

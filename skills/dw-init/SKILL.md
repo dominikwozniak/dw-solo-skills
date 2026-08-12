@@ -2,9 +2,9 @@
 name: dw-init
 description: >-
   Scaffold a private/solo repo for the solo loop — `.ai/` (work / backlog / archive),
-  `docs/decisions/`, `CONTEXT.md`, `## Commands` + `## Gotchas` in `CLAUDE.md`, the guardrail
-  hooks, settings with a derived allow-list, and an optional pre-commit. For a repo where you are
-  the only reader. Explicit-invoke only — scaffolding a repo is your call, never the model's.
+  `docs/decisions/`, `CONTEXT.md`, a tracked `AGENTS.md` with a Task Router and a size budget, the
+  guardrail hooks, settings with a derived allow-list, and an optional pre-commit. For a repo where
+  you are the only reader. Explicit-invoke only — scaffolding a repo is your call, never the model's.
 argument-hint: "bare detects the stack from disk · any project context to seed"
 disable-model-invocation: true
 ---
@@ -17,24 +17,33 @@ allow-list is **derived from the project rather than guessed**.
 
 ## What it writes
 
-| Path                                | Tracked?           | Purpose                                                        |
-| ----------------------------------- | ------------------ | -------------------------------------------------------------- |
-| `.ai/work/`                         | **tracked**        | one folder per change (`dw-shape` writes `CHANGE.md`)          |
-| `.ai/README.md`                     | **tracked**        | what `.ai/` is and who owns it                                 |
-| `.ai/backlog/` + its `README.md`    | **tracked**        | one file per follow-up, between changes                        |
-| `.ai/archive/` + its `README.md`    | **tracked**        | landed change docs — history, not guidance                     |
-| `docs/decisions/` + its `README.md` | **tracked**        | durable decision records (`dw-land` promotes here)             |
-| `CONTEXT.md`                        | **tracked**        | the project's glossary — terms only                            |
-| `CLAUDE.md`                         | **tracked**        | `## Commands` + `## Gotchas` — `dw-land` appends to the latter |
-| `.claude/settings.json`             | **tracked**        | permissions (ask + deny + derived allow) and hook wiring       |
-| `.claude/hooks/*.sh`                | **tracked**        | the guardrail scripts those settings reference                 |
-| `CLAUDE.local.md`                   | personal / ignored | your commands, git conventions, and the loop                   |
-| `.worktreeinclude`                  | **tracked**        | gitignored files a fresh worktree should carry in              |
-| `.gitignore`                        | tracked            | a managed marker block for the personal files                  |
-| `.husky/` + `.lintstagedrc.json`    | tracked, optional  | the pre-commit twin of the hooks — only when opted in          |
+| Path                                | Tracked?          | Purpose                                                  |
+| ----------------------------------- | ----------------- | -------------------------------------------------------- |
+| `.ai/work/`                         | **tracked**       | one folder per change (`dw-shape` writes `CHANGE.md`)    |
+| `.ai/README.md`                     | **tracked**       | what `.ai/` is and who owns it                           |
+| `.ai/backlog/` + its `README.md`    | **tracked**       | one file per follow-up, between changes                  |
+| `.ai/archive/` + its `README.md`    | **tracked**       | landed change docs — history, not guidance               |
+| `docs/decisions/` + its `README.md` | **tracked**       | durable decision records (`dw-land` promotes here)       |
+| `CONTEXT.md`                        | **tracked**       | the project's glossary — terms only                      |
+| `AGENTS.md`                         | **tracked**       | the one always-loaded file: rules, commands, Task Router |
+| `CLAUDE.md`                         | **tracked**       | a symlink to `AGENTS.md` — never a second copy           |
+| `.claude/settings.json`             | **tracked**       | permissions (ask + deny + derived allow) and hook wiring |
+| `.claude/hooks/*.sh`                | **tracked**       | the guardrail scripts those settings reference           |
+| `.worktreeinclude`                  | **tracked**       | gitignored files a fresh worktree should carry in        |
+| `.gitignore`                        | tracked           | a managed marker block for the personal files            |
+| `.husky/` + `.lintstagedrc.json`    | tracked, optional | the pre-commit twin of the hooks — only when opted in    |
 
 Deliberately absent: `.ai/verify/` and `.ai/handoffs/` — the solo lane has one thin closing pass
-that writes no artifact, and no one to hand off to.
+that writes no artifact, and no one to hand off to. Also absent: **`CLAUDE.local.md`**. Agent memory
+is tracked `AGENTS.md`, because a gitignored file survives neither a fresh clone nor a
+`git worktree`, and a second always-loaded file forks the corpus in two — `docs/decisions/` in a
+scaffolded repo carries the record. Personal, cross-project notes belong in `~/.claude/CLAUDE.md`.
+`.gitignore` still names `CLAUDE.local.md` so a stray one is never committed, and the hooks still
+read it when they find one, so a repo scaffolded before this keeps working untouched.
+
+Also absent: an empty `docs/agents/`. The Task Router ships with rows for what the scaffold actually
+creates, and the topic layer grows only when `dw-land` promotes into it — a new topic file and its
+router row in the same commit.
 
 Templates come from `${CLAUDE_PLUGIN_ROOT}/templates/` — this lane's own payload; the guardrail
 hooks in it are vendored copies of the team repo's canon. (`${CLAUDE_PLUGIN_ROOT}` is the env var
@@ -52,8 +61,11 @@ Claude Code substitutes to this plugin's install dir.)
   must not appear there.
 - Pre-commit signals for step 5: formatter and linter deps/configs, a `test`/`typecheck` script —
   the detection table in `references/precommit.md`.
-- What already exists: `CLAUDE.md`, `CLAUDE.local.md`, `.claude/settings*`, `.gitignore`,
-  `CONTEXT.md`, `docs/`. This is rarely a greenfield tree, and step 3 must diff against reality.
+- What already exists: `AGENTS.md`, `CLAUDE.md` (a real file? a symlink? to what?), a legacy
+  `CLAUDE.local.md`, `.claude/settings*`, `.gitignore`, `CONTEXT.md`, `docs/`. This is rarely a
+  greenfield tree, and step 3 must diff against reality. A repo already carrying a real `CLAUDE.md`
+  with content is the case to slow down on — it becomes `AGENTS.md` plus a symlink, which is a
+  rename the user has to approve at the gate, not a clobber.
 
 ### 2. Pick the hooks
 
@@ -68,16 +80,20 @@ writing nothing.
 ### 3. HARD STOP — show what you're about to write
 
 List every path, marked **tracked** or **ignored**, with a diff for anything that already exists.
-Add two things that aren't paths: **the `permissions.allow` list derived in step 1**, so what the
-agent may run without asking is approved rather than assumed, and **the optional pre-commit offer**
-(step 5), so the one gate covers it. **Wait for explicit confirmation.** Scaffolding mutates the
-repo and a wrong clobber is expensive — this gate is not optional even though the rest of the lane
-is light.
+Add three things that aren't paths: **the `permissions.allow` list derived in step 1**, so what the
+agent may run without asking is approved rather than assumed; **the optional pre-commit offer**
+(step 5), so the one gate covers it; and, when the repo already has a real `CLAUDE.md`, **the
+`git mv CLAUDE.md AGENTS.md` rename** it needs, spelled out — that one moves a file the user wrote and
+must never be inferred from silence. **Wait for explicit confirmation.** Scaffolding mutates the repo
+and a wrong clobber is expensive — this gate is not optional even though the rest of the lane is
+light.
 
 ### 4. Write
 
 - `mkdir -p .ai/work .ai/backlog .ai/archive docs/decisions`; seed `.ai/work` with `.gitkeep` (the
-  other three get READMEs).
+  other three get READMEs). **Remove a `.gitkeep` that a README now supersedes** — an earlier version
+  seeded `docs/decisions/.gitkeep`, so a repo scaffolded then and re-run now keeps a redundant one
+  beside the README, and the next reader cannot tell which is the convention.
 - `.ai/README.md` — copy `${CLAUDE_PLUGIN_ROOT}/templates/work-README.md` verbatim. It states the
   lifecycle a reader gets wrong: a `CHANGE.md` leaves `work/` at merge — archived, never deleted.
 - `.ai/backlog/README.md`, `.ai/archive/README.md` and `docs/decisions/README.md` — copy
@@ -93,20 +109,27 @@ is light.
 - `${CLAUDE_PLUGIN_ROOT}/templates/settings.json` → `.claude/settings.json`; **prune** the hook
   entries not selected, add the `permissions.allow` list (below), then confirm the file still parses
   as valid JSON.
-- `CLAUDE.md` — seed **two** sections. Idempotency is per-section: create the file with just them if
-  it's absent, append whichever one is missing, and leave an existing one alone. Both go in tracked
-  `CLAUDE.md` because they have to be **auto-loaded**, **tracked**, and in **one** place.
-  - `## Commands` — the test / lint / typecheck commands **exactly as detected in step 1**, one line
-    each, and `_(none detected)_` where the manifests had none. This is the only copy that survives
-    a fresh clone; `CLAUDE.local.md` keeps its own copy because the lint and typecheck **hooks grep
-    that file**, so the two are both load-bearing and must agree.
-  - `## Gotchas` — one line of purpose (traps this project has actually sprung, newest first) and
-    nothing else. `dw-land` appends to it.
+- `AGENTS.md` — if absent, render `${CLAUDE_PLUGIN_ROOT}/templates/AGENTS.md`, substituting
+  `{{PROJECT_NAME}}` `{{DEFAULT_BRANCH}}` `{{STACK}}` `{{TEST_COMMAND}}` `{{LINT_COMMAND}}`
+  `{{TYPECHECK_COMMAND}}` `{{HOOKS_INSTALLED}}` `{{AGENTS_CHECK_COMMAND}}`. **Every placeholder gets
+  a value or the line goes** — a `{{…}}` left in the file is read as content by the next session and
+  `eval`ed as a command by the hooks, which is why they carry an explicit guard against exactly
+  these tokens.
+  - The commands come from step 1 **verbatim**; `none` where the manifests had none. Write `none`,
+    not a plausible guess and not `_(none detected)_`: the hooks read `none` as "skip", and a command
+    that doesn't exist fails on every edit.
+  - `{{LINT_COMMAND}}` is the **per-file** form (`pnpm exec eslint --fix`, `ruff check --fix`), since
+    `lint-on-edit` appends one path to it — not the whole-project script, which would re-lint the
+    tree on every edit. Where the project only has the whole-project form, say so at the gate and
+    write `none` rather than wiring a slow hook.
+  - Idempotency is per-section: if `AGENTS.md` already exists, leave it alone and report which of the
+    template's sections it is missing. Never merge a rendered template into a file someone wrote.
+- `CLAUDE.md` — `ln -s AGENTS.md CLAUDE.md`. A **symlink**, never a copy: the harnesses load
+  `CLAUDE.md`, the file is `AGENTS.md`, and a materialized second copy is the fork this whole layout
+  exists to prevent. If a real `CLAUDE.md` with content is already there, it was approved at the gate
+  as a rename — `git mv CLAUDE.md AGENTS.md`, then link — and its content stays; reconcile it against
+  the template's sections afterwards rather than overwriting.
 - The selected `${CLAUDE_PLUGIN_ROOT}/templates/hooks/*.sh` → `.claude/hooks/`, `chmod +x` each.
-- `CLAUDE.local.md` — if absent, render `${CLAUDE_PLUGIN_ROOT}/templates/CLAUDE.local.md` and
-  substitute `{{PROJECT_NAME}}` `{{DEFAULT_BRANCH}}` `{{STACK}}` `{{TEST_COMMAND}}`
-  `{{LINT_COMMAND}}` `{{TYPECHECK_COMMAND}}` `{{HOOKS_INSTALLED}}`. The template ships this lane's
-  loop and `## Git conventions`; reconcile the rendered copy with what step 1 actually found.
 - `.worktreeinclude` — if absent, copy `${CLAUDE_PLUGIN_ROOT}/templates/worktreeinclude.txt`
   verbatim. **If it exists, leave it alone.** Every line ships commented out, so it copies nothing
   until the user names a file; that is deliberate, because an uncommented guess would copy a secret
@@ -152,14 +175,22 @@ fires.
 ### 6. Reconcile tracking
 
 The split is the whole point, so enforce it after writing: `.ai/`, `docs/decisions/`, `CONTEXT.md`,
-`CLAUDE.md`, `.claude/settings.json` and `.claude/hooks/` (plus `.husky/` when written) must
-**not** be ignored — remove any pre-existing rule that ignores them. `CLAUDE.local.md` and
-`.claude/settings.local.json` must **be** ignored.
+`AGENTS.md`, `CLAUDE.md`, `.claude/settings.json` and `.claude/hooks/` (plus `.husky/` when written)
+must **not** be ignored — remove any pre-existing rule that ignores them. `CLAUDE.local.md` and
+`.claude/settings.local.json` must **be** ignored: nothing writes the first any more, and the rule
+is what keeps a stray one from being committed.
+
+`git add` the `CLAUDE.md` symlink and confirm git recorded it as one — `git ls-files -s CLAUDE.md`
+must show mode `120000`. A repo with `core.symlinks=false` stores the link as a text file holding the
+target's name, which reads as a one-line `CLAUDE.md` and silently un-forks nothing; say so rather
+than leaving it.
 
 ### 7. Report
 
 List what was written and which paths to `git add`. If the pre-commit was declined, say what that
-leaves uncovered: commits made outside a session run with no formatter and no guardrails.
+leaves uncovered: commits made outside a session run with no formatter and no guardrails. Name the
+`_(…)_` placeholders left in `AGENTS.md` for the user to fill — the template ships the sections, only
+they know this project's invariants.
 
 ## References
 

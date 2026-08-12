@@ -2,7 +2,7 @@
 change: migrate-ci-to-the-pnpm-setup-successor-action
 branch: migrate-ci-to-the-pnpm-setup-successor-action
 created: 2026-08-12
-status: shaping # shaping | building | landed
+status: building # shaping | building | landed
 ---
 
 # Change — one action sets up CI, and `devEngines` holds both versions it reads
@@ -59,7 +59,7 @@ three workflows are green **on the PR** (a feature-branch push fires nothing her
 
 ## Tasks
 
-- [ ] 1. **One step, one pin.** Atomic on purpose: the workflow rewrite alone would leave CI on the
+- [x] 1. **One step, one pin.** Atomic on purpose: the workflow rewrite alone would leave CI on the
       runner's default Node with nothing pinning it. In all three of `agnix-lint.yaml`,
       `format-check.yaml`, `evals-routing.yaml`, replace lines 20–26 (`setup-node`, `action-setup`,
       `run_install: false`, and the `pnpm ci` step / the stale no-install comment) with a single
@@ -123,6 +123,33 @@ both failed at `agnix`'s `postinstall` with `Failed to install agnix: socket han
 downloading the prebuilt binary, on the commit that landed `pnpm-pin-in-one-field`. Nothing to fix
 here, but do not read a green/red flip on this PR as evidence about the migration until that step is
 seen to pass.
+
+### From task 1 — the Node pin is a lockfile entry, not just a field
+
+**`devEngines.runtime` makes Node a locked dependency, and nobody predicted the lockfile diff.**
+`pnpm install` printed `+ node 24.16.0` and wrote **126 lines** into `pnpm-lock.yaml`: the importer
+gains `node: specifier: runtime:24.16.0`, and a `node@runtime:24.16.0` package carries a
+`type: variations` block with a SHA-256 integrity hash per platform — eleven of them, aix through
+win32. Two consequences worth more than the diff: the runtime download is **checksummed and
+cross-platform**, not a naked fetch; and **bumping the Node version is now a two-file change**, the
+field plus a regenerated lockfile, because CI installs `--frozen-lockfile` and would refuse a field
+the lock disagrees with. Editing `24.16.0` alone will fail CI, exactly as editing a dependency
+version by hand would.
+
+**The pin governs pnpm, not your shell — measured.** `node --version` → **24.19.0**;
+`pnpm exec node --version` → **24.16.0**; `pnpm --version` → 11.18.0. So every `pnpm <script>` runs
+on the pinned runtime while a bare `node` keeps the system one. That is the surprise a future session
+hits: `node evals/routing.ts` typed by hand and `pnpm eval:routing` are no longer the same Node, and
+only the second one is the version CI uses.
+
+**Green locally, all four:** `pnpm install`, `bash scripts/lint.sh` (0 errors, 93 pre-existing
+warnings), `pnpm format`, `pnpm eval:routing` (rank-1 67%, at the floor as before). `pnpm lint` was
+run as `bash scripts/lint.sh` on purpose — the rtk hijack in `## Gotchas`.
+
+**One thing only the PR can answer.** In CI the action installs the runtime itself
+(`pnpm runtime set node 24.16.0 -g`) and _then_ runs `pnpm install`, which now also sees a runtime in
+the lockfile. Whether that is a no-op or a second download of the same Node is not observable from
+here; read the `pnpm/setup` step's log rather than assuming.
 
 **Left out, for `dw-land` to park:**
 

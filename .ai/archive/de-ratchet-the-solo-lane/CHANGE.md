@@ -2,7 +2,8 @@
 change: de-ratchet-the-solo-lane
 branch: de-ratchet-the-solo-lane
 created: 2026-08-11
-status: building # shaping | building | landed
+status: landed # shaping | building | landed
+landed: 2026-08-12
 ---
 
 # Change — remove the duplication, then give the durable layer a ceiling

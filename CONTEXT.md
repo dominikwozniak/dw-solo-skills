@@ -11,7 +11,14 @@ in [`AGENTS.md`](AGENTS.md) and the procedures in the skills themselves.
   `/clear`), archived at merge (`.ai/archive/<slug>/`, `status: landed`).
 - **Promotion** — moving the durable residue out of a `CHANGE.md` before it is archived: decisions to
   `docs/decisions/`, terms here, traps to `## Gotchas` in `CLAUDE.md`, follow-ups to `.ai/backlog/`
-  (one file per idea).
+  (one file per idea). It **replaces rather than appends**: each target is read first, and what the
+  change supersedes is deleted in the same edit. Decisions are the exception — there the replacement
+  is a `superseded-by:` link and the old record stays.
+- **Cap** — the ceiling `validate-artifacts.sh` enforces on a durable list that would otherwise only
+  grow: `## Gotchas` ≤ 12 entries, `.ai/backlog/` ≤ 8 files. A count of entries, never of bytes, and a
+  forcing function rather than a quota — the way past a full list is to merge a trap into its cousin,
+  absorb an entry into the open change, or retire one that stopped being true. Set by
+  [`0006`](docs/decisions/0006-delete-the-second-copy-and-cap-the-pile.md).
 - **Completion gate** — the closing verdict's rule that a `## Goal` result the diff doesn't deliver
   makes a change **not ready**, never _ready with follow-ups_. Ticked boxes don't satisfy it; only
   the diff does, or a `## Goal` the user amends.

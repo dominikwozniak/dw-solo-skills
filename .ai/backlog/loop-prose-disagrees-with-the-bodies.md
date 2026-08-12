@@ -3,7 +3,7 @@ created: 2026-08-11
 source: skill-and-docs-drift, shape-time-parking-for-the-left-out-list
 ---
 
-# Three places where the loop's prose promises something no body does
+# Four places where the loop's prose promises something no body does
 
 Bundled because all three are text in `skills/`, one `dw-solo` bump, one PR. What is left of
 `.ai/work/skill-and-docs-drift/` after `de-ratchet-the-solo-lane` resolved its other two items (the
@@ -17,6 +17,12 @@ the file).
   cannot satisfy.** The workflows trigger only on `pull_request` or a push to `main`, so there is no
   green to see yet at land time. Decide it as prose in `dw-ship` / `dw-land`, or add a
   `workflow_dispatch`.
+- **"Prefer `origin/<default-branch>`" is wrong whenever the local default branch is _ahead_.**
+  `dw-land` and `dw-check` both say to prefer the remote ref, and both justify it with the opposite
+  case — a _stale local_ branch widening the merge-base. When local is ahead instead, which is the
+  normal state while a `chore: shape …` commit sits unpushed, preferring origin pulls that commit into
+  the diff under review. Seen in `de-ratchet-the-solo-lane`, where local `main` led `origin/main` by
+  exactly that commit. The rule wants to be "whichever of the two is further ahead", stated once.
 - **`dw-grill` promises `dw-shape` files the "deliberately left out" list into `.ai/backlog/`, and
   `dw-shape` has no such step** — it only reads the backlog and consumes an entry. The false promise
   was deleted in `de-ratchet-the-solo-lane`; what stays queued is the feature behind it. The pile

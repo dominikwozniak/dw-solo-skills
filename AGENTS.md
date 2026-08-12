@@ -190,6 +190,10 @@ entry.
     any Bash call it cannot statically prove stays inside the worktree — `cmd; cmd` chains with a
     redirect, a `../../..` path, a heredoc. Issue plain separate commands. This is not the
     dangerous-command hook; the message names the worktree, not a blocked pattern.
+  - **Gitignored material a change doc anchors at is simply absent.** `/.inspirations/` and `/TASK.md`
+    are gitignored, so a `CHANGE.md` whose `## Anchors` cites one — the standard a task is measured
+    against, say — points at nothing from here. Read it through the main tree's absolute path; the
+    harness allows the read even though it refuses writes outside the worktree.
 - **A self-test whose fixture is the live repo is a content gate under a unit test's name.** The case
   that taught this is gone with its script (`check-decisions.test.sh`), and the shape outlives it: a
   `no-arg` case ran the script against this repo and demanded silence — gating `docs/decisions/` from

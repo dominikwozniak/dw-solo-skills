@@ -100,8 +100,8 @@ what makes the build fail.
     replacement is how the list stops being trustworthy: the reader can no longer tell which half is
     current.
   - **Look for the cousin.** If an existing entry has the same root cause, make this a sub-bullet of
-    it rather than a thirteenth sibling. Where the repo caps the list, a merge is the only way to add
-    to a full one, and appending fails the build.
+    it rather than another sibling. Where the repo caps the list, a merge is the only way to add to a
+    full one, and appending fails the build.
 - **Promote the follow-ups.** Every follow-up named in the verdict, plus anything deliberately left
   out, becomes one file `.ai/backlog/<slug>.md` — slug from
   `bash "${CLAUDE_PLUGIN_ROOT}/scripts/slugify.sh" slug "<the follow-up>"`, frontmatter
@@ -120,8 +120,10 @@ what makes the build fail.
 - **Archive the scaffolding.** `git rm` a leftover `HANDOFF.md` first — it described the middle of a
   task, and post-merge it is noise — then `git mv .ai/work/<slug>/ .ai/archive/<slug>/` and, in the
   moved `CHANGE.md`, flip `status:` to `landed` with `landed: YYYY-MM-DD` plus `pr: "#<n>"` when there
-  is one. If `.ai/archive/<slug>/` already exists, stop and pick a suffixed destination (`<slug>-2`):
-  `git mv` into an existing directory silently nests the folder inside it. If something in the doc
+  is one. `.ai/archive/README.md` states the convention; create it from that one line if the repo
+  predates the scaffold. If `.ai/archive/<slug>/` already exists, stop and pick a suffixed destination
+  (`<slug>-2`): `git mv` into an existing directory silently nests the folder inside it. If something
+  in the doc
   still feels too valuable to bury, that is the signal it belonged in a record, a gotcha or the
   backlog — promote it first, then archive.
 - **Commit** the promotion and the archive move together, the way `dw-git` does — **on the branch you

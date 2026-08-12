@@ -21,7 +21,14 @@ in [`AGENTS.md`](AGENTS.md) and the procedures in the skills themselves.
   [`0006`](docs/decisions/0006-delete-the-second-copy-and-cap-the-pile.md).
 - **Completion gate** — the closing verdict's rule that a `## Goal` result the diff doesn't deliver
   makes a change **not ready**, never _ready with follow-ups_. Ticked boxes don't satisfy it; only
-  the diff does, or a `## Goal` the user amends.
+  the diff does, or a `## Goal` the user amends. One carve-out: a result that is **pending on the
+  push** — unobservable at land time rather than undelivered, "CI is green" being the only real case —
+  closes **ready to merge** with that line attached, and `dw-ship` settles it where the checks are
+  readable. The bar is that the evidence cannot exist yet, never that gathering it is inconvenient.
+- **Base ref** — which ref of the default branch a review diff is taken against, local or `origin/`.
+  Never `origin/` by reflex: whichever of the two contains the other wins, and local is the default,
+  because a local branch that is _ahead_ (an unpushed `chore: shape …` commit) makes `origin/` pull
+  commits the branch didn't write into the diff. Resolved once, in `dw-git`.
 - **Absorption bar** — the second test a backlog entry must clear: if doing it costs less than
   describing it, it belongs to the change that found it. Joins the month bar (_will you ever?_),
   which tests only whether the idea is worth queueing at all.

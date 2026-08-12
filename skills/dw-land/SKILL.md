@@ -27,10 +27,10 @@ skill that takes something out of `work/` on purpose.
 
 ### 1. Establish what actually changed
 
-- `git diff <default-branch>...HEAD` plus `git log --oneline <default-branch>..HEAD`, resolving the
-  default branch the way `dw-git` does. **Prefer `origin/<default-branch>`**, falling back to the
-  local ref: a local default branch that has fallen behind makes the merge-base older than your
-  branch point, so the diff swallows commits you didn't write.
+- `git diff <base>...HEAD` plus `git log --oneline <base>..HEAD`, where `<base>` is the default branch
+  **and the ref of it** resolved the way `dw-git` does — never `origin/` by reflex. Picking the wrong
+  one of the two moves the merge-base off your branch point, and the diff swallows commits you didn't
+  write.
 - Read the `CHANGE.md`: the goal, the ticked tasks, the Notes.
 - Read `CONTEXT.md` and `docs/decisions/` if present, so the verdict is against this project's
   established choices rather than a generic standard.
@@ -63,6 +63,16 @@ the **diff, not the checklist** — every box can be ticked with a result still 
 result is **not ready**, never _ready with follow-ups_: parking it is how a change sheds the thing it
 existed to do. Two ways out, both the user's call — finish it, or amend the `## Goal` and re-run the
 verdict against what the change now claims.
+
+**One carve-out, and it is not an escape hatch.** A result the working tree cannot show — "CI is
+green", where the project's workflows only run on a pull request or a push to the default branch — is
+not _undelivered_ at land time; it is _unobservable_ at land time, and the closing order (this skill
+before `dw-ship`) is what makes it so. Record it in the verdict as **pending on the push**, name the
+task that carries it, and hand it to `dw-ship`, which stops where the checks are readable. Such a
+change closes **ready to merge** with that line attached — nothing is undelivered — and never _ready
+with follow-ups_, which would park the very thing the push is about to settle. Anything you could have
+run yourself gets no such pass — the bar is that the evidence does not exist yet, never that gathering
+it is inconvenient.
 
 Then **stop.** You've graded the work; the user decides what happens next.
 

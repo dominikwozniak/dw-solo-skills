@@ -35,7 +35,13 @@ worktree.
 ### 2. Pick the path
 
 - Already **on the default branch** (resolved the way `dw-git` does) and it isn't protected → **fast
-  path**: plain `git push`. Done — there's no worktree to clean.
+  path**: plain `git push`. Done — there's no worktree to clean. **The push is irreversible here
+  too** — nothing sits between it and the default branch — so if the change skipped `dw-check`, say so
+  and offer it before pushing. The nudge at step 3 belongs to both endings, not just the PR one; a
+  fast path that reaches the remote having never mentioned review is the defect, not the speed. A
+  nudge, not a gate: your go is enough. The push is also the **first CI this change gets**, so where
+  `dw-land` left a result pending on it, watch that run and report it rather than calling the ship
+  done at the push.
 - On any other branch → the **PR path** below. `pr` in `$ARGUMENTS` forces it even where a direct
   push would work.
 - **No `origin` at all** → say so and offer the local ending instead: switch to the default
@@ -48,6 +54,9 @@ worktree.
 3. **HARD STOP — the PR link is the moment to look.** Merging is irreversible in a way pushing
    isn't; wait for an explicit go. If the change skipped `dw-check`, this is the last moment for a
    second pair of eyes — suggest typing `/codex:review --wait`, or run `dw-check`, before the go.
+   **This is also where CI first becomes readable**, so a result `dw-land` left pending on the push
+   gets settled here: read the PR's checks (`gh pr checks`) and report them with the link. A pending
+   or failing check is a reason to wait, not a footnote under the go.
 4. On approval: `gh pr merge --squash`.
 
 ### 4. Clean up

@@ -216,12 +216,16 @@ holds four traps.
     commit with explicit pathspecs (`git commit -- <paths>`). What the fix isn't: once the commit is
     an ancestor of your branch, splitting it does **not** get the passenger out of the PR — a
     squash-merge flattens both halves into one commit anyway.
-  - **Rebasing onto a squash-merged `main` resurrects the merged change's own commits.** No shared
-    ancestor survives the squash, so a branch shaped before it replays that change's `chore: shape …`
-    commit as a new one, re-adding a `CHANGE.md` for work already archived. No conflict, no warning.
-    After any rebase, diff `main..HEAD` and drop what you didn't write:
-    `git rebase --onto main <stowaway-sha> <branch>`. Check the version bumps in the same pass — the
-    other change may have taken the number yours targets.
+  - **Rebasing onto a squash-merged `main` resurrects the merged change's own commits** — and **you
+    don't have to be the one who rebases.** No shared ancestor survives the squash, so a branch shaped
+    before it replays that change's `chore: shape …` commit as a new one, re-adding a `CHANGE.md` for
+    work already archived. The wider trigger: `main` is one ref shared by every worktree, so another
+    session merging and rebasing it rewrites your base commit out from under you — your branch keeps
+    descending from the orphan and `main..HEAD` grows their commits with no action of yours at all. It
+    surfaces at land time, as a diff you cannot honestly grade. Either way, diff `main..HEAD` and drop
+    what you didn't write: `git rebase --onto main <stowaway-sha> <branch>`, where the stowaway is your
+    own old base. Check the version bumps in the same pass — the other change may have taken the number
+    yours targets.
   - **Every way to rewind a branch is blocked by `block-dangerous-commands.sh`.** Not just
     `git reset --hard` — `git branch -f`, `git branch -D`, `git checkout .` and `git restore .` are
     all in `DANGEROUS_PATTERNS`, so an agent cannot move a branch backwards at all and must hand the

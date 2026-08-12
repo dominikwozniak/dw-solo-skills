@@ -274,16 +274,22 @@ holds four traps.
     abnormally" under memory pressure; `scripts/lint.sh` turns that into a hard error rather than a
     silent pass. Re-run it, or lint only the staged paths the way `.husky/pre-commit` does. CI has
     the headroom.
-  - **The pnpm version is pinned in exactly one field, and three things have to line up for it to
-    hold.** `devEngines.packageManager` states `11.18.0`; there is no `packageManager` field any
-    more. (1) The **bootstrap on `PATH` must be pnpm 11** — v10 cannot read `devEngines` at all and
+  - **Both versions this repo pins live in one field, and three things have to line up for it to
+    hold.** `devEngines.packageManager` states pnpm `11.18.0` and `devEngines.runtime` Node
+    `24.16.0`; there is no `packageManager` field and no `.nvmrc` any more. (1) The **bootstrap on
+    `PATH` must be pnpm 11** — v10 cannot read `devEngines` at all and
     would run this repo with v11 settings half-applied, so `engines.pnpm` is the floor that turns
     that into a loud `ERR_PNPM_UNSUPPORTED_ENGINE` instead. (2) **`onFail` governs every command
     now**, not just installs: `"error"` refuses unless your pnpm matches the pin _exactly_ (which no
     `brew upgrade` survives), `"download"` fetches the pinned version and runs it — the behaviour
-    the deleted `packageManager` field used to provide. (3) **CI reads the field only from
-    `pnpm/action-setup` v6 up**; the v4 SHA this repo pinned until August saw `packageManager` and
-    nothing else.
+    the deleted `packageManager` field used to provide. (3) **CI reads both fields through one
+    inputless `pnpm/setup@v2` step**, which installs pnpm, installs Node, and runs `pnpm install` —
+    so a workflow needs no `with:` block, and adding one only restates the manifest. The Node half
+    carries a tail: `devEngines.runtime` makes Node a **locked dependency** (a `node@runtime:…` entry
+    with a hash per platform), so bumping it is the field **plus** a regenerated `pnpm-lock.yaml` —
+    edit the version alone and CI's frozen install refuses it. Locally the pin reaches
+    `pnpm <script>` only: `pnpm exec node --version` is the pinned Node, a bare `node --version`
+    is still whatever your shell has.
 - **`block-env-access.sh` inspects the whole Bash command, and now stops reading at a `<<`.** Commit
   messages are fine either way — quoted prose passes, and heredoc bodies are dropped before
   tokenizing, so `git commit -F - <<'MSG'` no longer blocks. But that drop is unconditional: a

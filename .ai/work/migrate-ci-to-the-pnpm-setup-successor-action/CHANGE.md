@@ -71,7 +71,7 @@ three workflows are green **on the PR** (a feature-branch push fires nothing her
       pnpm actually did with the runtime entry (a first-run Node download is expected; whether
       `pnpm eval:routing` then runs on 24.16.0 while a bare `node --version` still says 24.19.0 is
       worth stating, because it is the surprise a future session hits).
-- [ ] 2. **The two prose readers that name what just left.** `evals/routing.ts:20` — "this repo pins
+- [x] 2. **The two prose readers that name what just left.** `evals/routing.ts:20` — "this repo pins
       24 in .nvmrc" becomes `devEngines.runtime`; keep the `>=22.18` type-stripping constraint, which
       is the reason the sentence exists. `AGENTS.md:284-286` — clause (3) of the pnpm sub-bullet
       ("CI reads the field only from `pnpm/action-setup` v6 up") names an action the repo no longer
@@ -150,6 +150,16 @@ run as `bash scripts/lint.sh` on purpose — the rtk hijack in `## Gotchas`.
 (`pnpm runtime set node 24.16.0 -g`) and _then_ runs `pnpm install`, which now also sees a runtime in
 the lockfile. Whether that is a no-op or a second download of the same Node is not observable from
 here; read the `pnpm/setup` step's log rather than assuming.
+
+### From task 2 — the sub-bullet's title had to move too, and the lockfile trap is already promoted
+
+Two departures from the task as written, both deliberate. The sub-bullet's **heading** said "The pnpm
+version is pinned in exactly one field"; with a runtime entry beside it that undercounts, so it now
+reads "Both versions this repo pins live in one field". Clauses (1) and (2) are untouched as
+specified. And clause (3) **already carries the lockfile-coupling trap** from task 1 — a Node bump
+needs the field plus a regenerated lockfile — because that is the sentence a session editing
+`24.16.0` needs in the file that loads unasked. `dw-land` should treat that promotion as done rather
+than adding a second copy. Entry count still 12/12, `.ai/backlog/` 6/8.
 
 **Left out, for `dw-land` to park:**
 

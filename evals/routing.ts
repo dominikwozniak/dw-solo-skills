@@ -17,9 +17,10 @@
 //   node evals/routing.ts --top 5         how many ranked skills to show per prompt
 //   node evals/routing.ts --explain "…"   score one prompt out loud instead of running the eval
 //
-// No build step: Node strips the types natively (>=22.18; this repo pins 24 in .nvmrc). That is
-// also the constraint on the syntax here — erasable constructs only, so no enum, no parameter
-// properties, no namespace.
+// No build step: Node strips the types natively (>=22.18; this repo pins 24 in devEngines.runtime,
+// which is the version `pnpm eval:routing` runs on — a bare `node` may be older). That is also the
+// constraint on the syntax here — erasable constructs only, so no enum, no parameter properties, no
+// namespace.
 
 import { existsSync, readdirSync, readFileSync } from "node:fs"
 import { basename, dirname, join } from "node:path"

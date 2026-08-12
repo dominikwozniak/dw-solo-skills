@@ -80,6 +80,26 @@ echo "bash commands — multiline still blocked (exit 2):"
 blocked_bash "multiline-cat-env" 'echo start
 cat .env'
 
+# Heredoc bodies are prose, not command tokens — a commit message piped through
+# `git commit -F -` carries no quoting for the quote-strip to find. The body is
+# dropped; the opener line is not, so a redirect target on it still blocks.
+echo "bash commands — heredoc body dropped, opener line still checked:"
+allowed_bash "heredoc-commit-quoted" "git commit -F - <<'MSG'
+fix(hook): stop blocking messages that name a dotenv file
+
+The body mentions .env and .envrc as prose.
+MSG"
+allowed_bash "heredoc-commit-bare" "git commit -F - <<MSG
+mentions .env in the body
+MSG"
+blocked_bash "heredoc-redirect-target" "cat > .env <<EOF
+SECRET=1
+EOF"
+blocked_bash "after-heredoc-cat-env" "cat <<EOF
+prose mentioning .env
+EOF
+cat .env"
+
 echo
 echo "block-env-access self-test: $PASS passed, $FAIL failed"
 [ "$FAIL" -eq 0 ]

@@ -280,9 +280,11 @@ holds four traps.
     `11.18.0`; bump them together. If they diverge, pnpm warns once and _ignores_ `packageManager`,
     while CI's pinned `pnpm/action-setup` (v4 — it predates `devEngines`) reads **only**
     `packageManager`, so local and CI silently run different pnpm versions.
-- **`block-env-access.sh` inspects the whole Bash command, including a commit message.** Writing about
-  `.env` in a commit body blocks the commit. The hook's quoted-prose escape only covers
-  `git commit -m "…"`; a heredoc gives the matcher no quoting to see. Write the message to a file
-  outside the repo and use `git commit -F <path>` — which a worktree session wants anyway.
+- **`block-env-access.sh` inspects the whole Bash command, and now stops reading at a `<<`.** Commit
+  messages are fine either way — quoted prose passes, and heredoc bodies are dropped before
+  tokenizing, so `git commit -F - <<'MSG'` no longer blocks. But that drop is unconditional: a
+  literal `<<` anywhere in a command starts body mode and **nothing below it is scanned**. The other
+  half is that a bare `.env` token still blocks anywhere, so a probe of the hook cannot be typed
+  literally — build the string (`D=$(printf ".%s" env)`) or your own test call never runs.
 - **`templates/hooks/` and `scripts/runtime/slugify.sh` are vendored** from `dw-skills`. A fix here
   does not reach that repo, and no test can see across the boundary — apply it twice.

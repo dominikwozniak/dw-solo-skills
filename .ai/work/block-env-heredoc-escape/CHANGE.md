@@ -1,6 +1,6 @@
 ---
 change: block-env-heredoc-escape
-branch: unclaimed
+branch: block-env-heredoc-escape
 created: 2026-08-12
 status: shaping # shaping | building | landed
 ---

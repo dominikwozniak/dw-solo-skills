@@ -1,6 +1,6 @@
 ---
 change: pnpm-pin-in-one-field
-branch: unclaimed
+branch: pnpm-pin-in-one-field
 created: 2026-08-12
 status: shaping # shaping | building | landed
 ---

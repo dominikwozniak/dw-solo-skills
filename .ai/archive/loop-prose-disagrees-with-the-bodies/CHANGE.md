@@ -2,7 +2,8 @@
 change: loop-prose-disagrees-with-the-bodies
 branch: loop-prose-disagrees-with-the-bodies
 created: 2026-08-12
-status: building # shaping | building | landed
+status: landed # shaping | building | landed
+landed: 2026-08-12
 ---
 
 # Change — three places where the loop's prose promises something no body does
@@ -118,4 +119,16 @@ silent about review.
   since it names a verdict state the gate now has to distinguish.
 - **Ordering** — `shape-time-parking-for-the-left-out-list` is shaped alongside this and touches
   different bodies (`dw-shape` / `dw-grill`), but both bump `dw-solo`. Whichever lands second re-reads
-  the version from `main`, never from a change doc.
+  the version from `main`, never from a change doc. **This one took 0.4.15**, on top of the `0.1.13`
+  `dw-solo-setup` that PR #21 landed.
+- **`main` was rewritten under this worktree mid-session, and the land verdict is where it showed.**
+  Another session merged #21 and rebased local `main`, which rewrote this change's own shape commit
+  (`0a92831` → `d9b8988`). The branch kept descending from the orphan, so `main..HEAD` silently grew
+  two commits it didn't write — including `block-env-heredoc-escape`'s change doc, which #21 had
+  already archived. Fixed with `git rebase --onto main 0a92831 <branch>`, no conflicts, and the
+  pre-rebase tip (`187e5b0`) was saved before touching anything. Promoted to `## Gotchas` as the wider
+  trigger on the existing rebase sub-bullet: you do not have to be the one who rebases.
+- **Promotion, for the record**: `CONTEXT.md` gained **base ref** and had **completion gate** rewritten
+  for the carve-out; `## Gotchas` took the amendment above (cap was full at 12/12, so a cousin merge was
+  the only way in); **zero decision records** — undoing any of this is deleting markdown, so the
+  hard-to-reverse leg of the three-part bar fails.

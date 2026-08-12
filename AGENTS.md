@@ -264,7 +264,7 @@ holds four traps.
   `Edit` tool refuses to write through a symlink, and a change doc that treats them as two files
   schedules the same edit twice. There is one file; `## Gotchas`, the add-a-skill checklist and the
   layout rules all live in it.
-- **pnpm here is four traps deep, and three of them look like a broken repo.**
+- **pnpm here is three traps deep, and every one of them looks like a broken repo.**
   - **`pnpm lint` can be hijacked before it reaches `scripts/lint.sh`.** With the `rtk` proxy hook
     active it is rewritten to `rtk lint` — an _ESLint_ wrapper — and dies with
     `Command "eslint" not found` while the repo is perfectly green. `pnpm format` is unaffected (rtk
@@ -274,16 +274,16 @@ holds four traps.
     abnormally" under memory pressure; `scripts/lint.sh` turns that into a hard error rather than a
     silent pass. Re-run it, or lint only the staged paths the way `.husky/pre-commit` does. CI has
     the headroom.
-  - **`pnpm view` and `pnpm info` are broken here on purpose.** They delegate to npm, and
-    `devEngines.packageManager.onFail: "error"` makes npm refuse to run in this repo — which is the
-    point: it replaces `pnpm/only-allow`, now archived. The error is
-    `EBADDEVENGINES ... does not match "npm"`. Everything else (`ci`, `dlx`, `outdated`, `audit`,
-    `why`, `licenses`, `list`) is native and fine. Look a package up from any other directory, or
-    flip `onFail` to `ignore` if the guard ever costs more than it saves.
-  - **`packageManager` and `devEngines.packageManager` must state the same version.** Both say
-    `11.18.0`; bump them together. If they diverge, pnpm warns once and _ignores_ `packageManager`,
-    while CI's pinned `pnpm/action-setup` (v4 — it predates `devEngines`) reads **only**
-    `packageManager`, so local and CI silently run different pnpm versions.
+  - **The pnpm version is pinned in exactly one field, and three things have to line up for it to
+    hold.** `devEngines.packageManager` states `11.18.0`; there is no `packageManager` field any
+    more. (1) The **bootstrap on `PATH` must be pnpm 11** — v10 cannot read `devEngines` at all and
+    would run this repo with v11 settings half-applied, so `engines.pnpm` is the floor that turns
+    that into a loud `ERR_PNPM_UNSUPPORTED_ENGINE` instead. (2) **`onFail` governs every command
+    now**, not just installs: `"error"` refuses unless your pnpm matches the pin _exactly_ (which no
+    `brew upgrade` survives), `"download"` fetches the pinned version and runs it — the behaviour
+    the deleted `packageManager` field used to provide. (3) **CI reads the field only from
+    `pnpm/action-setup` v6 up**; the v4 SHA this repo pinned until August saw `packageManager` and
+    nothing else.
 - **`block-env-access.sh` inspects the whole Bash command, and now stops reading at a `<<`.** Commit
   messages are fine either way — quoted prose passes, and heredoc bodies are dropped before
   tokenizing, so `git commit -F - <<'MSG'` no longer blocks. But that drop is unconditional: a

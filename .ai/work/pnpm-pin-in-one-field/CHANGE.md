@@ -62,7 +62,7 @@ Taken in the `dw-grill` pass; the measurements they rest on are in
       `dw-solo-setup` by one patch in `.claude-plugin/marketplace.json` **and**
       `plugins/dw-solo-setup/.claude-plugin/plugin.json:3` — read the current number rather than
       trusting this doc (see `## Notes`).
-- [ ] 3. **The two silent traps.** Two new WARN-tier checks in the same block, never FAIL: a
+- [x] 3. **The two silent traps.** Two new WARN-tier checks in the same block, never FAIL: a
       `package.json#pnpm` block that merely _exists_ (v11 drops unrecognised keys with no warning at
       all — measured), and a lockfile written before v11, detected by the absence of
       `packageManagerDependencies`, never by `lockfileVersion`, which still reads `'9.0'`. Both
@@ -139,6 +139,22 @@ report means it did not, and the archived decision needs a `superseded-by:` reco
 states the pin's three preconditions (v11 bootstrap, `onFail` semantics, action-setup ≥ v6) and
 deliberately makes no claim about npm until the probe above is run. Entry count is unchanged at
 12/12 — these are sub-bullets.
+
+### From task 3 — `packageManagerDependencies` alone would have false-positived
+
+The task said to detect a pre-v11 lockfile by the absence of `packageManagerDependencies`. Reading
+this repo's lockfile shows why that is too narrow: the archive's own finding
+(`CHANGE.md:98-103`) is that the key appears **once `devEngines.packageManager` exists** — so a v11
+lockfile in a repo without that field carries no such key and would be reported as stale. The check
+therefore accepts any of v11's marks: the leading `---` document separator, `configDependencies:`, or
+`packageManagerDependencies:`. `lockfileVersion` is still never consulted, which was the real
+instruction.
+
+Both checks are gated on v11 actually being in play — the running pnpm or the pin reading 11 or
+higher — because on v10 a `package.json#pnpm` block is correct and the old lockfile is current.
+Exercised against a throwaway fixture repo (a v10-shaped lockfile plus an
+`onlyBuiltDependencies` block): both fired there, both stay silent here. `doctor.sh` still has no
+self-test — see the ordering note above.
 
 **Verification is PR-only.** Every workflow fires on `pull_request:` or `push: branches: [main]`,
 with no `workflow_dispatch` — a feature-branch push confirms nothing. `validate-plugin-manifests`

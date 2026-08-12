@@ -99,7 +99,7 @@ else
   # gives it priority over packageManager, and a repo migrated to v11 may carry only that one.
   # No corepack anywhere: pnpm self-manages through devEngines' own onFail, and corepack is
   # unbundled from Node 25.
-  pmver=""; pmsrc=""
+  pmver=""; pmsrc=""; cur_pnpm=""
   if have jq; then
     if [ "$(jq -r '.devEngines.packageManager.name // empty' "$pkg" 2>/dev/null)" = "pnpm" ]; then
       pmver="$(jq -r '.devEngines.packageManager.version // empty' "$pkg" 2>/dev/null)"
@@ -134,6 +134,27 @@ else
       fi
     else
       report fail "pnpm" "missing — hooks enforce pnpm. Install: brew install pnpm"
+    fi
+
+    # Two things pnpm 11 does in silence, each worth its own line. Only checked when v11 is
+    # actually in play — on v10 a `pnpm` block is correct and the old lockfile is current.
+    v11=0
+    case "${cur_pnpm%%.*}" in ''|*[!0-9]*) ;; *) [ "${cur_pnpm%%.*}" -ge 11 ] && v11=1 ;; esac
+    case "${pmver%%.*}" in ''|*[!0-9]*) ;; *) [ "${pmver%%.*}" -ge 11 ] && v11=1 ;; esac
+    if [ "$v11" -eq 1 ]; then
+      # v11 reads none of `package.json#pnpm`, and warns only about the keys on its own
+      # relocation list — anything else it drops without a word. So flag the block's existence.
+      if have jq && jq -e 'has("pnpm")' "$pkg" >/dev/null 2>&1; then
+        report warn "pnpm settings" "package.json#pnpm is present but pnpm 11 reads none of it, and names only the keys it recognises — move them to pnpm-workspace.yaml"
+      fi
+      # `lockfileVersion` is NOT the tell: v11 still writes '9.0'. Its own marks are the leading
+      # document separator and the two per-importer keys it added.
+      lock="$ROOT/pnpm-lock.yaml"
+      if [ -f "$lock" ] &&
+        ! head -n1 "$lock" | grep -q '^---[[:space:]]*$' &&
+        ! grep -q '^[[:space:]]*\(configDependencies\|packageManagerDependencies\):' "$lock"; then
+        report warn "pnpm-lock.yaml" "written before pnpm 11 (lockfileVersion still reads '9.0', so it is not the tell) — run: pnpm install"
+      fi
     fi
   fi
 

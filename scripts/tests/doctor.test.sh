@@ -220,6 +220,51 @@ printf '# old root\n' >"$repo/CLAUDE.md"
 run "$repo" >/dev/null
 says "pre-migration-named" warn "AGENTS.md" "pre-migration layout"
 
+echo "the line count agrees with the gate, not merely with wc:"
+# The checker counts split("\n").length; `wc -l` counts newlines and is one lower. A file exactly on
+# its budget therefore passed here and failed the gate — the doctor's whole claim is that it agrees
+# with what enforces. Asserted against the real checker rather than a remembered number.
+repo="$(scaffold '120 lines / 10 KB')"
+mkdir -p "$repo/.ai"
+printf 'seeded\n' >"$repo/.ai/README.md"
+run "$repo" >/dev/null
+doctor_lines="$(grep -F "AGENTS.md budget" "$OUT" | sed -nE 's|.*[^0-9]([0-9]+)/120 lines.*|\1|p')"
+checker_lines="$(node -e 'console.log(require("node:fs").readFileSync(process.argv[1],"utf8").split("\n").length)' "$repo/AGENTS.md")"
+if [ -n "$doctor_lines" ] && [ "$doctor_lines" = "$checker_lines" ]; then
+  note_pass "line-count-matches-the-checker ($doctor_lines)"
+else
+  note_fail "line-count-matches-the-checker" "doctor said '$doctor_lines', checker says '$checker_lines'"
+fi
+
+# The boundary case the mismatch hid: a file whose checker count is exactly the budget must be OK
+# here, and one line over must be over — both judged on the same number the gate uses.
+lines_now="$checker_lines"
+repo="$(scaffold "$lines_now lines / 10 KB")"
+run "$repo" >/dev/null
+says "exactly-at-budget-is-ok" ok "AGENTS.md budget" "$lines_now/$lines_now lines"
+
+repo="$(scaffold "$((lines_now - 1)) lines / 10 KB")"
+run "$repo" >/dev/null
+says "one-over-budget-warns" warn "AGENTS.md budget" "over"
+
+echo "a team-lane repo is not half-checked against the solo layout:"
+# The lane warning already says the solo plugin is the wrong one here. Repeating "fix: dw-init" for
+# AGENTS.md and both command bullets would be advice for a lane this script just disclaimed — the
+# same reason the promotion-target checks sit behind $SOLO.
+repo="$(scaffold '120 lines / 10 KB')"
+rm -rf "$repo/.ai"
+mkdir -p "$repo/.ai/runs"
+rm "$repo/AGENTS.md" "$repo/CLAUDE.md"
+run "$repo" >/dev/null
+says "team-lane-memory-skipped" info "agent-memory checks skipped" "team-lane repo"
+for label in "AGENTS.md" "Lint command" "Typecheck command"; do
+  if grep -F -- "$label" "$OUT" | grep -q "dw-init"; then
+    note_fail "team-lane-no-dw-init-advice: $label" "$(grep -F -- "$label" "$OUT" | head -n1)"
+  else
+    note_pass "team-lane-no-dw-init-advice: $label"
+  fi
+done
+
 echo "lane detection still fires:"
 repo="$(scaffold '120 lines / 10 KB')"
 mkdir -p "$repo/.ai/runs"

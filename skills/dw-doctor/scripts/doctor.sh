@@ -284,8 +284,22 @@ group "Agent memory"
 agents="$ROOT/AGENTS.md"
 legacy="$ROOT/CLAUDE.local.md"
 
-if [ -f "$agents" ]; then
-  report ok "AGENTS.md" "present ($(wc -l <"$agents" | tr -d ' ') lines, $(wc -c <"$agents" | tr -d ' ') B)"
+# Skipped outright for a team-lane repo. The lane warning above already says the solo plugin is the
+# wrong one here, so three more lines of "fix: dw-init" would be advice for a lane this script just
+# disclaimed — the same reason the promotion-target checks sit behind $SOLO.
+MEMORY=1
+if [ -d "$ROOT/.ai/runs" ] && [ "$SOLO" -eq 0 ]; then
+  MEMORY=0
+  report info "—" "team-lane repo — agent-memory checks skipped (see the lane warning above)"
+fi
+
+# Counted ONCE, and the line count is newlines + 1 — which is what the shipped checker's
+# `split("\n").length` yields. `wc -l` alone is one lower, so a file sitting exactly on its budget
+# passed here and failed the gate. The doctor's whole claim is that it agrees with what enforces.
+if [ "$MEMORY" -eq 1 ] && [ -f "$agents" ]; then
+  agents_lines=$(($(wc -l <"$agents" | tr -d ' ') + 1))
+  agents_bytes="$(wc -c <"$agents" | tr -d ' ')"
+  report ok "AGENTS.md" "present ($agents_lines lines, $agents_bytes B)"
 
   # The budget, read from the file's own declaration — same grammar the shipped checker parses:
   # `Budget: **120 lines / 10 KB**`, bare number = bytes, KB = x1024, anything else malformed.
@@ -306,14 +320,12 @@ if [ -f "$agents" ]; then
         kb | Kb | kB | KB) max_bytes=$((max_bytes * 1024)) ;;
         *) max_bytes="" ;;
       esac
-      cur_lines="$(wc -l <"$agents" | tr -d ' ')"
-      cur_bytes="$(wc -c <"$agents" | tr -d ' ')"
       if [ -z "$max_bytes" ]; then
         report warn "AGENTS.md budget" "unit '$unit' not understood — use a bare byte count or KB"
-      elif [ "$cur_lines" -gt "$max_lines" ] || [ "$cur_bytes" -gt "$max_bytes" ]; then
-        report warn "AGENTS.md budget" "$cur_lines/$max_lines lines, $cur_bytes/$max_bytes B — over. Move a topic into docs/agents/ with a router row"
+      elif [ "$agents_lines" -gt "$max_lines" ] || [ "$agents_bytes" -gt "$max_bytes" ]; then
+        report warn "AGENTS.md budget" "$agents_lines/$max_lines lines, $agents_bytes/$max_bytes B — over. Move a topic into docs/agents/ with a router row"
       else
-        report ok "AGENTS.md budget" "$cur_lines/$max_lines lines, $cur_bytes/$max_bytes B"
+        report ok "AGENTS.md budget" "$agents_lines/$max_lines lines, $agents_bytes/$max_bytes B"
       fi
     fi
   fi
@@ -366,46 +378,48 @@ if [ -f "$agents" ]; then
   else
     report warn "CLAUDE.md" "absent — Claude Code loads this name; fix: ln -s AGENTS.md CLAUDE.md"
   fi
-elif [ -f "$ROOT/CLAUDE.md" ] || [ -f "$legacy" ]; then
+elif [ "$MEMORY" -eq 1 ] && { [ -f "$ROOT/CLAUDE.md" ] || [ -f "$legacy" ]; }; then
   report warn "AGENTS.md" "absent, but CLAUDE.md/CLAUDE.local.md is here — a pre-migration layout; fix: dw-init moves it"
-else
+elif [ "$MEMORY" -eq 1 ]; then
   report warn "AGENTS.md" "absent — the one always-loaded file; dw-git and both command hooks read it; fix: dw-init"
 fi
 
 # The two bullets the hooks grep, resolved in the hooks' own order. A value of `none` is a valid
 # answer, not a gap: it tells the hook to skip rather than eval a command the project hasn't got.
-for bullet in Lint Typecheck; do
-  pattern="^[[:space:]]*[-*]?[[:space:]]*\*{0,2}$bullet command\*{0,2}:"
-  src=""; src_path=""
-  if [ -f "$agents" ] && grep -qE "$pattern" "$agents" 2>/dev/null; then
-    src="AGENTS.md"; src_path="$agents"
-  elif [ -f "$legacy" ] && grep -qE "$pattern" "$legacy" 2>/dev/null; then
-    src="CLAUDE.local.md (legacy)"; src_path="$legacy"
-  fi
-  if [ -z "$src" ]; then
-    report warn "$bullet command" "declared nowhere — the hook falls through to a probe, or silently lints nothing"
-  else
-    # Extracted the way the hooks extract it, not merely plausibly: first backticked span wins, else
-    # the rest of the line. Diverging here would have the report name a command the hook never runs.
-    line="$(grep -m1 -E "$pattern" "$src_path" 2>/dev/null)"
-    val="$(printf '%s\n' "$line" | sed -n 's/.*command[*]*:[^`]*`\([^`]*\)`.*/\1/p')"
-    [ -z "$val" ] && val="$(printf '%s\n' "$line" | sed -e 's/.*command[*]*://' -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
-    case "$val" in
-      "" | '{{'*) report warn "$bullet command" "empty or unrendered in $src — the hook will no-op" ;;
-      none | None | NONE) report ok "$bullet command" "none (declared, so the hook skips) — from $src" ;;
-      *) report ok "$bullet command" "$val — from $src" ;;
-    esac
-  fi
-done
+if [ "$MEMORY" -eq 1 ]; then
+  for bullet in Lint Typecheck; do
+    pattern="^[[:space:]]*[-*]?[[:space:]]*\*{0,2}$bullet command\*{0,2}:"
+    src=""; src_path=""
+    if [ -f "$agents" ] && grep -qE "$pattern" "$agents" 2>/dev/null; then
+      src="AGENTS.md"; src_path="$agents"
+    elif [ -f "$legacy" ] && grep -qE "$pattern" "$legacy" 2>/dev/null; then
+      src="CLAUDE.local.md (legacy)"; src_path="$legacy"
+    fi
+    if [ -z "$src" ]; then
+      report warn "$bullet command" "declared nowhere — the hook falls through to a probe, or silently lints nothing"
+    else
+      # Extracted the way the hooks extract it, not merely plausibly: first backticked span wins, else
+      # the rest of the line. Diverging here would have the report name a command the hook never runs.
+      line="$(grep -m1 -E "$pattern" "$src_path" 2>/dev/null)"
+      val="$(printf '%s\n' "$line" | sed -n 's/.*command[*]*:[^`]*`\([^`]*\)`.*/\1/p')"
+      [ -z "$val" ] && val="$(printf '%s\n' "$line" | sed -e 's/.*command[*]*://' -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
+      case "$val" in
+        "" | '{{'*) report warn "$bullet command" "empty or unrendered in $src — the hook will no-op" ;;
+        none | None | NONE) report ok "$bullet command" "none (declared, so the hook skips) — from $src" ;;
+        *) report ok "$bullet command" "$val — from $src" ;;
+      esac
+    fi
+  done
+fi
 
 # The gate on all of the above. Its absence is not a failure — it is a repo nobody wired one into.
-if [ -f "$ROOT/scripts/check-agents-docs.mjs" ]; then
+if [ "$MEMORY" -eq 1 ] && [ -f "$ROOT/scripts/check-agents-docs.mjs" ]; then
   report ok "agents:check" "scripts/check-agents-docs.mjs present (run it: node scripts/check-agents-docs.mjs)"
-elif [ -f "$agents" ]; then
+elif [ "$MEMORY" -eq 1 ] && [ -f "$agents" ]; then
   report warn "agents:check" "no scripts/check-agents-docs.mjs — nothing enforces the budget or the router; fix: dw-init"
 fi
 
-if [ -f "$legacy" ]; then
+if [ "$MEMORY" -eq 1 ] && [ -f "$legacy" ]; then
   report info "CLAUDE.local.md" "present (legacy) — nothing writes it any more; AGENTS.md is read first"
 fi
 

@@ -24,6 +24,22 @@ branch, branch naming, trailer policy, PR title format, rebase-vs-merge, signing
 `## Git conventions`, else `git symbolic-ref --short refs/remotes/origin/HEAD`, else `main`. Never
 assume `main` outright.
 
+**Which ref of it to diff against** is the second half of that lookup, and every skill that reviews a
+diff borrows it too. Fetch, then take whichever of the two already contains the other:
+
+```bash
+git fetch origin --quiet 2>/dev/null || true
+git merge-base --is-ancestor origin/<default-branch> <default-branch> \
+  && base=<default-branch> || base=origin/<default-branch>
+```
+
+**Never prefer `origin/` by reflex.** It is wrong exactly when the local branch is _ahead_ — the
+normal state while an unpushed `chore: shape …` commit sits on it: the merge-base reaches back past
+that commit, so the diff under review swallows work the branch didn't write. Preferring local is wrong
+the other way, when it has fallen behind, and the check above is what tells those two apart. Two cases
+it doesn't settle: **diverged** — neither contains the other — where you say so and use the local ref,
+since the branch was cut from it; and **no `origin` at all**, where the local ref is the only answer.
+
 dw-git writes **no `.ai/` artifact** — its durable output is the git history itself.
 
 ## Operations

@@ -2,7 +2,7 @@
 change: loop-prose-disagrees-with-the-bodies
 branch: loop-prose-disagrees-with-the-bodies
 created: 2026-08-12
-status: shaping # shaping | building | landed
+status: building # shaping | building | landed
 ---
 
 # Change — three places where the loop's prose promises something no body does
@@ -41,7 +41,7 @@ silent about review.
 
 ## Tasks
 
-- [ ] 1. **The base-ref rule, stated once in `dw-git`.** Extend "Resolving the default branch"
+- [x] 1. **The base-ref rule, stated once in `dw-git`.** Extend "Resolving the default branch"
       (`skills/dw-git/SKILL.md:23-25`) with the ref choice: `git fetch origin --quiet` first, then
       `git merge-base --is-ancestor origin/<d> <d>` → use the **local** ref (it contains origin), else
       use `origin/<d>` (local is behind). Name the diverged case — neither contains the other — and
@@ -87,9 +87,16 @@ silent about review.
 - **Unexercised on merge, by design.** Every edit is prose in a skill body and nothing in this repo
   asserts skill body content; any `dw-ship` / `dw-land` / `dw-check` run during the work serves the
   cached `0.4.14` from `~/.claude/plugins/cache/`. Say that in the PR rather than implying coverage.
-- Task 1 is the one part that is hand-verifiable: with an unpushed commit on local `main`, confirm
-  `git merge-base --is-ancestor origin/main main` succeeds and that the resolved base excludes that
-  commit from `git diff <base>...HEAD`. That is the exact failure seen in `de-ratchet-the-solo-lane`.
+- **Task 1 verified against live refs, and the real case is worse than the recorded one.** In this
+  worktree local `main` (0a92831) led `origin/main` (77179f6) by two shape commits;
+  `git merge-base --is-ancestor origin/main main` exits 0, so the new rule picks the local ref and
+  `main..HEAD` shows one commit. The old `origin/main..HEAD` shows three — including
+  `c477a0a chore: shape block-env-heredoc-escape`, **another session's change doc**. So the defect is
+  not only "your own unpushed shape commit"; on a repo where several changes are shaped on the default
+  branch it pulls other people's work into your review diff.
+- Task 1 also renamed the diff placeholder to `<base>` in both borrowers (`dw-land:30`,
+  `dw-check:32`), since `<default-branch>` reads as the local ref and the whole point is that the ref
+  is a separate choice from the name.
 - **Ordering** — `shape-time-parking-for-the-left-out-list` is shaped alongside this and touches
   different bodies (`dw-shape` / `dw-grill`), but both bump `dw-solo`. Whichever lands second re-reads
   the version from `main`, never from a change doc.

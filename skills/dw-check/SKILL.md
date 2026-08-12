@@ -16,9 +16,9 @@ argument-hint: "bare checks the change's diff · codex delegates the pass · a p
 
 ## What it reads
 
-The diff against the default branch, resolved the way `dw-git` does and preferring
-`origin/<default-branch>`. Plus the change's `CHANGE.md` for the goal, found by branch the same way
-`dw-next` finds it. `$ARGUMENTS` is read two ways, and this is the one skill in the catalog that mixes
+The diff against the default branch — both the branch and **the ref of it** resolved the way `dw-git`
+does, never `origin/` by reflex; `<base>` below is that ref. Plus the change's `CHANGE.md` for the
+goal, found by branch the same way `dw-next` finds it. `$ARGUMENTS` is read two ways, and this is the one skill in the catalog that mixes
 them: the single word **`codex`** switches mode (step 2), and anything else — including whatever
 follows that word — narrows the focus to a path or a topic.
 
@@ -29,7 +29,7 @@ freely doesn't need a report file rotting between runs.
 
 ### 1. Establish the diff
 
-`git diff <default-branch>...HEAD` plus `git log --oneline <default-branch>..HEAD`, narrowed by the
+`git diff <base>...HEAD` plus `git log --oneline <base>..HEAD`, narrowed by the
 focus part of `$ARGUMENTS` when given — `codex` is a mode, never a path. Read the `CHANGE.md` goal so
 findings are judged against what the change is trying to do, not against taste.
 

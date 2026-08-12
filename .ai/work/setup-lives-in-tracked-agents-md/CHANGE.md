@@ -48,7 +48,7 @@ routed topic file — not the root — as a gotcha's home.
       `CLAUDE.md` symlink, drop the CLAUDE.local.md rendering step and its "two copies must agree"
       prose, fold in the seed's stale-`.gitkeep` clause; the gitignore block keeps ignoring a stray
       `CLAUDE.local.md`.
-- [ ] 2. **The hook chain.** `templates/hooks/lint-on-edit.sh` + `typecheck-on-stop.sh` resolve
+- [x] 2. **The hook chain.** `templates/hooks/lint-on-edit.sh` + `typecheck-on-stop.sh` resolve
       `AGENTS.md` → `CLAUDE.local.md` → probe (grateful-me's fork is the model), and a value of
       `none` means "skip", fixing the seed's `eval`-of-`none` bug. Update the byte-identical
       `.claude/hooks/` copies; extend `scripts/tests/lint-on-edit.test.sh` and give
@@ -130,6 +130,24 @@ routed topic file — not the root — as a gotcha's home.
   `(^|/)AGENTS\.md`, so the payload template got handed to agnix explicitly — which overrides the
   `templates/**` exclude in `.agnix.toml` and warns on 11 paths that only exist after the scaffold is
   dropped. `templates/CLAUDE.local.md` never matched that glob, so the filter is new with this file.
+- **`none` had to stop the chain, not just miss.** The seed described the bug as `eval`-of-`none`;
+  the fix is bigger than a skip, because falling through to the eslint/tsc probe would contradict the
+  very line that said the project has no linter. Both hooks now return the literal `none` as a
+  sentinel and exit before the probes. Both self-tests prove the **stop** rather than a miss, by
+  putting a working command in the legacy `CLAUDE.local.md` that a fall-through would run.
+- **`typecheck-on-stop.sh` carried the same BSD `\s` bug `lint-on-edit.sh` was already fixed for**,
+  in both its `grep -E` and its `sed -E` (`:\s*` matches a colon then zero literal `s`, so the
+  capture kept its leading whitespace). It never bit, because a Stop hook `eval`s the command with no
+  argument appended — a leading space is harmless there in a way it was not for the lint hook. Both
+  extractors are now the same POSIX-class shape.
+- **The typecheck test deliberately does not reach the `scripts.typecheck` / `tsc --noEmit` probes** —
+  they need a working pnpm/npm/npx in the sandbox, which would make the verdict depend on the machine.
+  The declared-value chain, the `none` sentinel, the changed-files gate and the exit-code contract are
+  all covered; 26 cases.
+- **`.claude/hooks/` has no `typecheck-on-stop.sh`** (deliberately unwired here — no TS), so only the
+  lint hook needed re-copying. `hooks-in-sync.test.sh` checks the copy only where one exists.
+- **`.ai/backlog/` is at 6 of 8** before this change parks anything. Applying the hook fix in
+  `dw-skills` is one of the entries land time owes; leave room.
 - **`AGENTS.md` gained a `## Project` section** the shape did not list (Stack / Key directories /
   Deployment target) — the old `CLAUDE.local.md`'s `## Project specifics` carried real orientation
   value and `{{STACK}}` had no other home. 94 lines / 5085 B rendered, so 26 lines of the budget are

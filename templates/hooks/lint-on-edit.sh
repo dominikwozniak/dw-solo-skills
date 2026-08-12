@@ -2,9 +2,23 @@
 # PostToolUse hook — runs the project's lint command on the edited file.
 # Reads tool_input.file_path from stdin (Claude Code hook protocol).
 # Lint command resolved in order:
-#   1. CLAUDE.local.md "Lint command:" value (if present)
-#   2. package.json scripts.lint (with --fix if eslint/biome detected)
-#   3. pnpm exec eslint --fix / npx eslint --fix
+#   1. AGENTS.md "Lint command:" value — tracked, the one the scaffold writes
+#   2. CLAUDE.local.md "Lint command:" value — legacy; repos scaffolded before
+#      agent memory moved into AGENTS.md still keep theirs there
+#   3. pnpm exec eslint --fix / npx eslint --fix — ONLY if eslint is a dependency
+# CLAUDE.md is deliberately absent from that list: it is a symlink to AGENTS.md,
+# so reading it would be reading step 1 twice.
+#
+# A declared value of `none` means "this project has no linter" and STOPS the
+# chain — it must not fall through to the eslint probe, which would contradict
+# what the file says. Before that was handled, the honest value a repo without a
+# linter writes was `eval`ed as a command and failed on every single edit.
+#
+# There is no package.json scripts.lint fallback: `pnpm lint` lints the whole
+# project, and this hook must lint one file. So on a repo with neither the
+# AGENTS.md line nor eslint, step 3 finds nothing and the hook exits 0 having
+# linted NOTHING — silently. Treat the "- **Lint command**:" bullet as
+# load-bearing, not decorative.
 # Exits 0 on success, 2 + stderr on lint failure so Claude self-corrects.
 
 set -uo pipefail
@@ -32,21 +46,31 @@ cd "$repo_root" || exit 0
 # literal colon and then nothing, capturing a single space. A space is not empty, so it sailed
 # through the -n guard below and `eval " \"$file_path\""` EXECUTED the edited file instead of
 # linting it — harmless on a non-executable .ts, not harmless in general.
+#
+# Echoes the command, the literal `none` for an explicit skip, or nothing at all.
 resolve_lint_cmd() {
-  if [[ -f "CLAUDE.local.md" ]]; then
-    local line from_md
-    line=$(grep -E '^[[:space:]]*[-*]?[[:space:]]*\*{0,2}Lint command\*{0,2}:' CLAUDE.local.md | head -n1)
+  local md line from_md
+  for md in "AGENTS.md" "CLAUDE.local.md"; do
+    [[ -f "$md" ]] || continue
+    line=$(grep -E '^[[:space:]]*[-*]?[[:space:]]*\*{0,2}Lint command\*{0,2}:' "$md" | head -n1)
+    [[ -n "$line" ]] || continue
     # The first backticked span is the command — that is how the line is written. A freshly
-    # scaffolded CLAUDE.local.md has the bare `{{LINT_COMMAND}}` placeholder and no backticks,
-    # so fall back to the rest of the line and let the placeholder check reject it.
+    # rendered file may carry the bare `{{LINT_COMMAND}}` placeholder and no backticks, so fall
+    # back to the rest of the line and let the placeholder check reject it.
     from_md=$(printf '%s\n' "$line" | sed -n 's/.*Lint command[*]*:[^`]*`\([^`]*\)`.*/\1/p')
     [[ -z "$from_md" ]] && from_md=$(printf '%s\n' "$line" | sed 's/.*Lint command[*]*://')
     from_md=$(printf '%s' "$from_md" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
+    case "$from_md" in
+      none|None|NONE)
+        echo "none"
+        return
+        ;;
+    esac
     if [[ -n "$from_md" && "$from_md" != "{{LINT_COMMAND}}" ]]; then
       echo "$from_md"
       return
     fi
-  fi
+  done
   if command -v pnpm >/dev/null && [[ -f "package.json" ]] && jq -e '.devDependencies.eslint // .dependencies.eslint' package.json >/dev/null 2>&1; then
     echo "pnpm exec eslint --fix --max-warnings 0"
     return
@@ -59,6 +83,8 @@ resolve_lint_cmd() {
 }
 
 cmd=$(resolve_lint_cmd)
+# `none` is a declaration, not a command: the project says it has no linter.
+[[ "$cmd" == "none" ]] && exit 0
 # Blank-safe, not just empty-safe: a whitespace-only command would `eval` into running the file.
 [[ "$cmd" =~ [^[:space:]] ]] || exit 0
 

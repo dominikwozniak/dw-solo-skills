@@ -1,0 +1,135 @@
+---
+change: migrate-ci-to-the-pnpm-setup-successor-action
+branch: unclaimed
+created: 2026-08-12
+status: shaping # shaping | building | landed
+---
+
+# Change — one action sets up CI, and `devEngines` holds both versions it reads
+
+## Goal
+
+The three Node workflows each open with a single `pnpm/setup@v2` step: no `actions/setup-node`, no
+`pnpm/action-setup`, no `pnpm ci`. Both versions that step needs come from `package.json#devEngines` —
+`packageManager` (already there) and `runtime` (new) — so `.nvmrc` loses its last reader and goes.
+Known when: `git grep -n "setup-node\|action-setup\|nvmrc"` returns nothing under `.github/`, `.nvmrc`
+is deleted, `pnpm eval:routing` and `pnpm lint` still pass locally, the full gate is green, and all
+three workflows are green **on the PR** (a feature-branch push fires nothing here — no
+`workflow_dispatch`). This is where the Node-pinning question `pnpm-v11-migration` parked and
+`pnpm-pin-in-one-field` deliberately closed as "no" finally gets answered "yes".
+
+## Decisions
+
+- **`devEngines.runtime` becomes the Node pin, and the archived "no" is not being re-litigated — its
+  premise is gone.** `pnpm-pin-in-one-field` rejected the field because `setup-node` read `.nvmrc` and
+  a third copy would have no reader (`.ai/archive/pnpm-pin-in-one-field/CHANGE.md:38-39`). Under
+  `pnpm/setup@v2` the field _is_ the reader and `.nvmrc` is the copy with none. That call lives only in
+  an archived `CHANGE.md`, not in `docs/decisions/`, so nothing needs a `superseded-by:` record.
+- **Exact `24.16.0` with `onFail: "download"`, mirroring `packageManager`.** Exact because that is
+  what `node-version-file: .nvmrc` pins today and a range would quietly un-pin CI. `"download"`
+  because the alternatives are all worse here — **measured**: this machine runs Node **24.19.0**
+  against a `.nvmrc` of 24.16.0, so the default `"error"` would refuse every pnpm command in the repo,
+  and `"warn"` would print on all of them. `"download"` has pnpm fetch 24.16.0 and run scripts on it,
+  which is exactly the deal `packageManager.onFail: "download"` already struck for pnpm itself — one
+  field, one version, same in CI and locally. The archive named this download as a _cost_; it is now
+  the point.
+- **`.nvmrc` is deleted, not kept as a version-manager courtesy.** Keeping it recreates the
+  no-reader duplicate this change exists to remove, and nothing in the repo would notice the two
+  drifting apart — they already have. Asked and confirmed at shape time, with the cost accepted:
+  `nvm use` / `fnm use` stop resolving a version in this repo. Do not reopen it mid-build.
+- **The action's own `pnpm install` replaces `pnpm ci`, and losing `pnpm clean` costs nothing.**
+  `pnpm ci` is `pnpm clean` + `pnpm install --frozen-lockfile`; `CI=true` already makes install frozen,
+  and there is no `node_modules` to clean on a fresh runner.
+- **`install:` stays at its default `true` in all three, including `evals-routing`** — whose comment
+  claiming the eval needs no install is **already false**. Measured in run `31635610235`, where
+  `pnpm eval:routing` triggered pnpm 11's `runDepsStatusCheck`, which ran a full `pnpm install` (and
+  died in `agnix`'s postinstall) before the script ever started. The action installing explicitly is
+  the honest version of what already happens.
+- **Pin v2.0.2 by SHA despite the action being three days old.** Verified:
+  `84cb39b217b10273981911c288cd62326dc7c6d2` is the commit both `v2.0.2` and the moving `v2` tag point
+  at. `minimumReleaseAge: 10080` is a pnpm _resolution_ policy over npm packages and does not reach a
+  GitHub Action; the threat it answers — a fresh release auto-resolving into the tree — cannot happen
+  behind an immutable SHA that was read by hand. Reverting is three one-line diffs.
+- **No version bump.** Nothing this change touches is shipped payload: `.github/`, `package.json`,
+  `.nvmrc`, `evals/`, `AGENTS.md`. `templates/` and `scripts/runtime/` are untouched, so neither
+  plugin moves — the one case where the `## Gotchas` bump rule does not fire.
+- **`dw-doctor` is out of scope.** It names `.nvmrc` only inside two hint strings and one SKILL.md
+  bullet, all still true advice for a consumer repo that has the file. Teaching it to read
+  `devEngines.runtime` is a real follow-up, parked, not part of this request.
+
+## Tasks
+
+- [ ] 1. **One step, one pin.** Atomic on purpose: the workflow rewrite alone would leave CI on the
+      runner's default Node with nothing pinning it. In all three of `agnix-lint.yaml`,
+      `format-check.yaml`, `evals-routing.yaml`, replace lines 20–26 (`setup-node`, `action-setup`,
+      `run_install: false`, and the `pnpm ci` step / the stale no-install comment) with a single
+      `- uses: pnpm/setup@84cb39b217b10273981911c288cd62326dc7c6d2 # v2.0.2` — **no `with:` block at
+      all**, since the action reads both versions from `package.json`. Add
+      `runtime: { name: node, version: 24.16.0, onFail: download }` to `devEngines`
+      (`package.json:28-34`) and `git rm .nvmrc`. Green when `pnpm install`, `pnpm lint`,
+      `pnpm format` and `pnpm eval:routing` all still pass locally — and record in `## Notes` what
+      pnpm actually did with the runtime entry (a first-run Node download is expected; whether
+      `pnpm eval:routing` then runs on 24.16.0 while a bare `node --version` still says 24.19.0 is
+      worth stating, because it is the surprise a future session hits).
+- [ ] 2. **The two prose readers that name what just left.** `evals/routing.ts:20` — "this repo pins
+      24 in .nvmrc" becomes `devEngines.runtime`; keep the `>=22.18` type-stripping constraint, which
+      is the reason the sentence exists. `AGENTS.md:284-286` — clause (3) of the pnpm sub-bullet
+      ("CI reads the field only from `pnpm/action-setup` v6 up") names an action the repo no longer
+      uses; replace it with what is true after task 1: CI reads `devEngines` through `pnpm/setup@v2`,
+      which needs no inputs and installs the runtime too. Clauses (1) and (2) stay verbatim — they are
+      about the local bootstrap and `onFail`, both still exactly right. Sub-bullet edit only, so the
+      12/12 entry count does not move.
+- [ ] 3. **The npm guard, then the gate.** A second `devEngines` entry gives npm a second thing to
+      validate, and `validate-plugin-manifests.yaml:64` runs `npm install -g @anthropic-ai/claude-code`
+      in this repo root — `pnpm-pin-in-one-field` cleared that step against `packageManager` alone
+      (`.ai/archive/pnpm-pin-in-one-field/CHANGE.md:161-163`), not against a runtime entry npm may not
+      know how to `download`. **You have to run this one** — `block-non-pnpm.sh` stops the agent:
+      `npm install -g --dry-run @anthropic-ai/claude-code`, in the repo root. `EBADDEVENGINES` means
+      task 1 broke that workflow and `onFail` needs revisiting; a normal dry-run report means it is
+      safe. Then the full gate, then push and read all three workflows on the PR — the only place
+      they run.
+
+## Anchors
+
+- `.github/workflows/agnix-lint.yaml:19-27`, `format-check.yaml:19-27`, `evals-routing.yaml:19-28` —
+  identical five-step preambles bar the last `run:`. `:20-22` is `setup-node` +
+  `node-version-file: .nvmrc`, `:23-25` the `action-setup` v6.0.10 SHA with `run_install: false`,
+  `:26` the `pnpm ci` step — except in `evals-routing`, where `:26-27` is the two-line comment
+  asserting no install is needed.
+- `package.json:24-34` — `engines` (`node >=24.16.0`, `pnpm >=11.0.0 <12.0.0`, the floors
+  `doctor.sh` checks) then the `devEngines.packageManager` block the new `runtime` sibling joins.
+- `.nvmrc` — one line, `24.16.0`; three `node-version-file:` references and two `dw-doctor` hint
+  strings are everything that names it.
+- `AGENTS.md:267-286` — `**pnpm here is three traps deep…**`. `:277-286` is the one-field sub-bullet;
+  `:284-286` is clause (3), the only false half after this change.
+- `evals/routing.ts:20` — the `.nvmrc` mention inside the no-build-step comment.
+- `.github/workflows/validate-plugin-manifests.yaml:64` — the `npm install -g` step task 3 probes.
+- `pnpm-workspace.yaml:15-20` — `minimumReleaseAge: 10080` / `minimumReleaseAgeStrict: true`, the
+  seven-day cooldown the freshness decision above argues does not reach an action SHA.
+- `.ai/archive/pnpm-pin-in-one-field/CHANGE.md:29-32,38-39` — the two decisions this change reverses,
+  and `:104-109`, the left-out paragraph that became the backlog entry seeding this file.
+
+## Notes
+
+**Ordering against the two changes already shaped.** `setup-lives-in-tracked-agents-md` (task 7) and
+`loop-prose-disagrees-with-the-bodies`' successor both rewrite `AGENTS.md`, and both bump plugin
+versions; this one edits `AGENTS.md:284-286` only and bumps nothing, so it can land in any order —
+but re-read `AGENTS.md` at build time rather than trusting the line numbers above, and re-check them
+after any rebase. The squash-merge trap in `## Gotchas` applies: `main` moving under this branch
+resurrects merged commits.
+
+**CI's last two runs on `main` are red for an unrelated reason.** `agnix-lint` and `evals-routing`
+both failed at `agnix`'s `postinstall` with `Failed to install agnix: socket hang up` — a flake
+downloading the prebuilt binary, on the commit that landed `pnpm-pin-in-one-field`. Nothing to fix
+here, but do not read a green/red flip on this PR as evidence about the migration until that step is
+seen to pass.
+
+**Left out, for `dw-land` to park:**
+
+- **`cache: true` on the new step.** The repo caches nothing today; now that one action owns install,
+  the pnpm store cache is a one-line input away. Deliberately not bundled — it changes CI timing and
+  wants its own green/red comparison.
+- **`dw-doctor` reads `devEngines.runtime` as a Node pin**, the mirror of what
+  `pnpm-pin-in-one-field` task 2 did for `packageManager`, plus dropping `.nvmrc` from the two hint
+  strings at `skills/dw-doctor/scripts/doctor.sh:89,95` and the bullet at `SKILL.md:31`. Ships alone,
+  bumps `dw-solo-setup`, and is the reason this change needs no bump at all.

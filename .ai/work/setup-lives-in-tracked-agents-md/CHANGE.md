@@ -103,3 +103,9 @@ routed topic file — not the root — as a gotcha's home.
   absorbed by tasks 2, 6 and 1; the CONTEXT.md bullet is moot (see Decisions).
 - `own-root-under-budget-and-router` applies this shape to this repo itself and **lands after**
   this change — its lint-command move needs task 2's hook chain.
+- **Lands after `pnpm-pin-in-one-field`, which rewrote `doctor.sh:98-138`** — the pnpm check now
+  reads `devEngines.packageManager` and adds two parsing checks (an orphaned `package.json#pnpm`
+  block, a pre-v11 lockfile) that have **no self-test**, because this change owns the harness. Task
+  6's anchor `doctor.sh:270-274` is also stale — it is past EOF; the `CLAUDE.local.md` presence-warn
+  it means is at `:227-230`. Both were verified by hand against a throwaway fixture repo, never in
+  CI.

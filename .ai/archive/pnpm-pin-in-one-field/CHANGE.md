@@ -2,7 +2,8 @@
 change: pnpm-pin-in-one-field
 branch: pnpm-pin-in-one-field
 created: 2026-08-12
-status: building # shaping | building | landed
+status: landed # shaping | building | landed
+landed: 2026-08-12
 ---
 
 # Change — the pnpm version lives in one field, and everything that reads it agrees

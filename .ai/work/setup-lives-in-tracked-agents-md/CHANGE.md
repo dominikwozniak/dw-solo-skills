@@ -68,7 +68,7 @@ routed topic file — not the root — as a gotcha's home.
       AGENTS.md — verify, don't rewrite.
 - [x] 6. **dw-doctor.** Replace the CLAUDE.local.md presence-warn with AGENTS.md presence + budget + router-row sanity; add the seed's codex WARN-tier check (never FAIL, no auth probe); give
       `doctor.sh` the self-test the seed asked for.
-- [ ] 7. **Docs + bump.** Update the README rows and this repo's `AGENTS.md` prose that name
+- [x] 7. **Docs + bump.** Update the README rows and this repo's `AGENTS.md` prose that name
       `CLAUDE.local.md` as the scaffold's memory; bump `dw-solo-setup` and `dw-solo` once each in
       `marketplace.json` + owning `plugin.json`, identical; full five-command gate.
 
@@ -220,5 +220,18 @@ specifics` block, which `own-root-under-budget-and-router` task 3 is about to mo
   about a missing root section would fail every correctly-scaffolded repo.
 - **`AGENTS.md` gained a `## Project` section** the shape did not list (Stack / Key directories /
   Deployment target) — the old `CLAUDE.local.md`'s `## Project specifics` carried real orientation
-  value and `{{STACK}}` had no other home. 94 lines / 5085 B rendered, so 26 lines of the budget are
-  left for the project's own rules.
+  value and `{{STACK}}` had no other home. 100 lines / ~5.4 KB rendered, so ~20 lines of the budget
+  are left for the project's own rules.
+- **`dw-solo` 0.4.15 → 0.4.16, `dw-solo-setup` 0.1.13 → 0.1.14**, both manifests each. The
+  `dw-solo-setup` description also stopped advertising "personal memory".
+- **`AGENTS.md:175`'s worktree gotcha about `CLAUDE.local.md` was left standing.** It is still true
+  _here_ — this repo has one, and a worktree still cannot write it. `own-root-under-budget-and-router`
+  retires the file and the gotcha together; deleting the entry now would remove a live trap.
+- **Gate, run as the underlying binaries:** `scripts/lint.sh` 0 errors · `prettier --check .` clean ·
+  `validate-manifests.sh` with both versions in sync · `validate-artifacts.sh` 298 self-test cases,
+  `## Gotchas` 12/12, backlog 6/8 · `validate-docs.sh` · `routing.ts --min-rank1 67` at 20/30.
+- **All four observable results in the `## Goal` are covered by tests, not by inspection:**
+  `shipped-template-passes-exit-0` renders the template into a scratch scaffold and runs the checker
+  on it; `agents-backticked-exit-0` / `agents-received-path` feed `lint-on-edit.sh` a synthetic
+  PostToolUse payload and prove it resolves from `AGENTS.md`; the scaffold has no `CLAUDE.local.md`
+  because the template is deleted; `dw-land` phase 3 names the routed topic file.

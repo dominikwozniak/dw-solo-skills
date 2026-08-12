@@ -19,7 +19,8 @@ scripts/<script>.sh              repo CI tooling, never shipped (validate-*.sh, 
 scripts/tests/<script>.test.sh   bash self-tests
 evals/cases/<name>.json          routing cases — one per model-invocable skill, never shipped
 evals/routing.ts                 the routing eval — free, deterministic, in CI
-templates/                       payload copied verbatim INTO a target project (hooks, settings.json)
+templates/                       payload copied INTO a target project (hooks, settings.json, AGENTS.md,
+                                 check-agents-docs.mjs, the .ai/ and docs/decisions/ READMEs)
 .claude-plugin/marketplace.json  makes this repo installable as a plugin source
 ```
 

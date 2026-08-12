@@ -11,8 +11,10 @@
 # report text carries the verdict.
 #
 # Stack checks are conditional on what the repo declares (package.json /
-# tsconfig.json / CLAUDE.local.md), mirroring how the hooks resolve their
-# commands — so nothing about a stack is hardcoded.
+# tsconfig.json / AGENTS.md), mirroring how the hooks resolve their commands —
+# so nothing about a stack is hardcoded. Where it reads AGENTS.md it falls back
+# to a legacy CLAUDE.local.md in the same order the hooks do, so a repo
+# scaffolded before agent memory moved still reports accurately.
 set -uo pipefail
 
 # --- output helpers (color only on a TTY) ------------------------------------
@@ -67,6 +69,23 @@ if have gh; then
   report ok "gh" "$(gh --version 2>/dev/null | head -n1)"
 else
   report warn "gh" "absent — dw-git PRs and dw-ship merges need it. Install: brew install gh"
+fi
+# Codex is the only companion the skills route to by name — dw-check delegates an outside review to
+# it, dw-ship reaches for it on a stuck merge. WARN tier and never FAIL: the whole loop works without
+# it, only those two routes degrade. Depth stops at "installed": probing auth would mean a network
+# call from a read-only diagnostic, and a logged-out codex is the user's business, not this script's.
+codex_plugin=""
+for d in "$HOME"/.claude/plugins/cache/*codex*; do
+  [ -d "$d" ] && codex_plugin="$d" && break
+done
+if have codex && [ -n "$codex_plugin" ]; then
+  report ok "codex" "on PATH, plugin at ${codex_plugin#"$HOME"/}"
+elif have codex; then
+  report warn "codex" "on PATH but no codex plugin installed — dw-check's /codex: routes won't resolve; fix: /codex:setup"
+elif [ -n "$codex_plugin" ]; then
+  report warn "codex" "plugin installed but the codex CLI is not on PATH; fix: /codex:setup"
+else
+  report warn "codex" "absent — dw-check's outside reviewer and dw-ship's rescue route need it; fix: /codex:setup"
 fi
 
 # --- JavaScript / TypeScript (only if package.json) ---------------------------
@@ -254,26 +273,140 @@ if [ "$SOLO" -eq 1 ]; then
   else
     report warn "CONTEXT.md" "absent — dw-land promotes domain terms here; fix: dw-init"
   fi
-  if [ -f "$ROOT/CLAUDE.md" ]; then
-    if grep -qE '^##[[:space:]]+Gotchas' "$ROOT/CLAUDE.md" 2>/dev/null; then
-      report ok "CLAUDE.md ## Gotchas" "present"
-    else
-      report warn "CLAUDE.md ## Gotchas" "section missing — dw-land appends traps there; fix: dw-init"
-    fi
-    if grep -qE '^##[[:space:]]+Commands' "$ROOT/CLAUDE.md" 2>/dev/null; then
-      report ok "CLAUDE.md ## Commands" "present"
-    else
-      report warn "CLAUDE.md ## Commands" "section missing — the only tracked copy of test/lint/typecheck; fix: dw-init"
-    fi
-  else
-    report warn "CLAUDE.md" "absent — dw-land has nowhere to promote gotchas; fix: dw-init"
-  fi
 fi
 
-if [ -f "$ROOT/CLAUDE.local.md" ]; then
-  report ok "CLAUDE.local.md" "present"
+# --- the always-loaded file ----------------------------------------------------
+# AGENTS.md is the one file every session loads in full: the git conventions dw-git reads, and the two
+# command bullets the lint and typecheck hooks grep. It is tracked, which is the whole point — a
+# gitignored CLAUDE.local.md reached neither a fresh clone nor a worktree, and every gap failed
+# silently. That file is still honoured as a fallback here, in the same order the hooks use it.
+group "Agent memory"
+agents="$ROOT/AGENTS.md"
+legacy="$ROOT/CLAUDE.local.md"
+
+if [ -f "$agents" ]; then
+  report ok "AGENTS.md" "present ($(wc -l <"$agents" | tr -d ' ') lines, $(wc -c <"$agents" | tr -d ' ') B)"
+
+  # The budget, read from the file's own declaration — same grammar the shipped checker parses:
+  # `Budget: **120 lines / 10 KB**`, bare number = bytes, KB = x1024, anything else malformed.
+  bline="$(grep -m1 'Budget:' "$agents" 2>/dev/null)"
+  if [ -z "$bline" ]; then
+    report warn "AGENTS.md budget" "no 'Budget: **N lines / M KB**' declaration — nothing caps the file every session loads"
+  else
+    decl="$(printf '%s' "${bline#*Budget:}" | tr -d '*`')"
+    parsed="$(printf '%s' "$decl" | sed -nE 's|^[[:space:]]*([0-9_]+)[[:space:]]*lines?[[:space:]]*/[[:space:]]*([0-9_]+)[[:space:]]*([A-Za-z]*).*|\1 \2 \3|p')"
+    if [ -z "$parsed" ]; then
+      report warn "AGENTS.md budget" "declaration not parseable: '$(printf '%s' "$decl" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')' — expected 'N lines / M[ KB]'"
+    else
+      read -r max_lines max_bytes unit <<<"$parsed"
+      max_lines="$(printf '%s' "$max_lines" | tr -d '_')"
+      max_bytes="$(printf '%s' "$max_bytes" | tr -d '_')"
+      case "$unit" in
+        "" | b | B) ;;
+        kb | Kb | kB | KB) max_bytes=$((max_bytes * 1024)) ;;
+        *) max_bytes="" ;;
+      esac
+      cur_lines="$(wc -l <"$agents" | tr -d ' ')"
+      cur_bytes="$(wc -c <"$agents" | tr -d ' ')"
+      if [ -z "$max_bytes" ]; then
+        report warn "AGENTS.md budget" "unit '$unit' not understood — use a bare byte count or KB"
+      elif [ "$cur_lines" -gt "$max_lines" ] || [ "$cur_bytes" -gt "$max_bytes" ]; then
+        report warn "AGENTS.md budget" "$cur_lines/$max_lines lines, $cur_bytes/$max_bytes B — over. Move a topic into docs/agents/ with a router row"
+      else
+        report ok "AGENTS.md budget" "$cur_lines/$max_lines lines, $cur_bytes/$max_bytes B"
+      fi
+    fi
+  fi
+
+  # A placeholder that survived the render is read as content by the next session and eval'ed as a
+  # command by the hooks — which is why they carry an explicit guard against these tokens.
+  stray="$(grep -oE '\{\{[A-Z_]+\}\}' "$agents" 2>/dev/null | sort -u | tr '\n' ' ')"
+  if [ -n "$stray" ]; then
+    report warn "AGENTS.md placeholders" "unrendered: ${stray% } — give each a value or drop the line"
+  fi
+
+  # The Task Router, and whether the topic layer it indexes has outgrown it.
+  if grep -qE '^##[[:space:]]+Task Router' "$agents" 2>/dev/null; then
+    nrows="$(awk '/^##[[:space:]]+Task Router/{f=1;next} f && /^##[[:space:]]/{f=0} f && /^[[:space:]]*\|/{n++} END{print n+0}' "$agents")"
+    ncontent=$((nrows - 2))
+    [ "$ncontent" -lt 0 ] && ncontent=0
+    if [ "$ncontent" -eq 0 ]; then
+      report warn "AGENTS.md Task Router" "section present but holds no rows — a task has nothing to match against"
+    else
+      report ok "AGENTS.md Task Router" "$ncontent row(s)"
+    fi
+    if [ -d "$ROOT/docs/agents" ]; then
+      unrouted=""
+      for f in "$ROOT"/docs/agents/*.md; do
+        [ -f "$f" ] || continue
+        base="$(basename "$f")"
+        [ "$base" = "CLAUDE.md" ] && continue
+        grep -qF "docs/agents/$base" "$agents" 2>/dev/null || unrouted="$unrouted $base"
+      done
+      if [ -n "$unrouted" ]; then
+        report warn "docs/agents/ coverage" "no router row for:${unrouted} — a topic file nothing routes to is a file nothing reads"
+      else
+        report ok "docs/agents/ coverage" "every topic file has a row"
+      fi
+    fi
+  else
+    report warn "AGENTS.md Task Router" "no '## Task Router' section — nothing indexes docs/agents/; fix: dw-init"
+  fi
+
+  # CLAUDE.md must be the symlink, not a second copy. A materialized copy forks the corpus silently.
+  if [ -L "$ROOT/CLAUDE.md" ]; then
+    tgt="$(readlink "$ROOT/CLAUDE.md")"
+    if [ "$tgt" = "AGENTS.md" ]; then
+      report ok "CLAUDE.md" "symlink -> AGENTS.md"
+    else
+      report warn "CLAUDE.md" "symlink -> $tgt, not AGENTS.md; fix: ln -sf AGENTS.md CLAUDE.md"
+    fi
+  elif [ -f "$ROOT/CLAUDE.md" ]; then
+    report warn "CLAUDE.md" "a real file beside AGENTS.md — two always-loaded copies that will diverge; fix: keep AGENTS.md, ln -sf AGENTS.md CLAUDE.md"
+  else
+    report warn "CLAUDE.md" "absent — Claude Code loads this name; fix: ln -s AGENTS.md CLAUDE.md"
+  fi
+elif [ -f "$ROOT/CLAUDE.md" ] || [ -f "$legacy" ]; then
+  report warn "AGENTS.md" "absent, but CLAUDE.md/CLAUDE.local.md is here — a pre-migration layout; fix: dw-init moves it"
 else
-  report warn "CLAUDE.local.md" "absent — hooks + dw-git read it for commands & conventions"
+  report warn "AGENTS.md" "absent — the one always-loaded file; dw-git and both command hooks read it; fix: dw-init"
+fi
+
+# The two bullets the hooks grep, resolved in the hooks' own order. A value of `none` is a valid
+# answer, not a gap: it tells the hook to skip rather than eval a command the project hasn't got.
+for bullet in Lint Typecheck; do
+  pattern="^[[:space:]]*[-*]?[[:space:]]*\*{0,2}$bullet command\*{0,2}:"
+  src=""; src_path=""
+  if [ -f "$agents" ] && grep -qE "$pattern" "$agents" 2>/dev/null; then
+    src="AGENTS.md"; src_path="$agents"
+  elif [ -f "$legacy" ] && grep -qE "$pattern" "$legacy" 2>/dev/null; then
+    src="CLAUDE.local.md (legacy)"; src_path="$legacy"
+  fi
+  if [ -z "$src" ]; then
+    report warn "$bullet command" "declared nowhere — the hook falls through to a probe, or silently lints nothing"
+  else
+    # Extracted the way the hooks extract it, not merely plausibly: first backticked span wins, else
+    # the rest of the line. Diverging here would have the report name a command the hook never runs.
+    line="$(grep -m1 -E "$pattern" "$src_path" 2>/dev/null)"
+    val="$(printf '%s\n' "$line" | sed -n 's/.*command[*]*:[^`]*`\([^`]*\)`.*/\1/p')"
+    [ -z "$val" ] && val="$(printf '%s\n' "$line" | sed -e 's/.*command[*]*://' -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
+    case "$val" in
+      "" | '{{'*) report warn "$bullet command" "empty or unrendered in $src — the hook will no-op" ;;
+      none | None | NONE) report ok "$bullet command" "none (declared, so the hook skips) — from $src" ;;
+      *) report ok "$bullet command" "$val — from $src" ;;
+    esac
+  fi
+done
+
+# The gate on all of the above. Its absence is not a failure — it is a repo nobody wired one into.
+if [ -f "$ROOT/scripts/check-agents-docs.mjs" ]; then
+  report ok "agents:check" "scripts/check-agents-docs.mjs present (run it: node scripts/check-agents-docs.mjs)"
+elif [ -f "$agents" ]; then
+  report warn "agents:check" "no scripts/check-agents-docs.mjs — nothing enforces the budget or the router; fix: dw-init"
+fi
+
+if [ -f "$legacy" ]; then
+  report info "CLAUDE.local.md" "present (legacy) — nothing writes it any more; AGENTS.md is read first"
 fi
 
 # --- plugins (opportunistic: only a marketplace repo has this) ----------------

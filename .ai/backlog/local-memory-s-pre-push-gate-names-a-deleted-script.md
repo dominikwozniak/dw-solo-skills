@@ -3,12 +3,20 @@ created: 2026-08-12
 source: loop-prose-disagrees-with-the-bodies
 ---
 
-# `CLAUDE.local.md`'s pre-push gate names `pnpm validate:evals`, which no longer exists
+# Two lines in `CLAUDE.local.md`'s `## Project specifics` are wrong, and both must be fixed as they move
 
-The script was added in 7eb684c and deleted in 1182f7f (`de-ratchet-the-solo-lane`); the gate line in
-`## Project specifics` still lists it, so running the documented gate ends in
-`Command "validate:evals" not found` and reads as a broken repo. The real gate is the six scripts in
-`package.json`. Tracked `AGENTS.md` is right — it points at that block instead of restating it, for
-exactly this reason (`.ai/archive/contributing-pre-push-gate-list-is-stale/`). Fix in the main tree: a
-worktree cannot write `CLAUDE.local.md`. `.ai/work/own-root-under-budget-and-router/` task 3 already
-migrates those bullets into `AGENTS.md` and could absorb this.
+Bundled because they are the same section of the same file, both unwritable from a worktree, and
+`.ai/work/own-root-under-budget-and-router/` task 3 migrates the whole block into `AGENTS.md` — so one
+pass in the main tree fixes both, or carries both mistakes across.
+
+- **The pre-push gate names `pnpm validate:evals`, which no longer exists.** Added in 7eb684c, deleted
+  in 1182f7f (`de-ratchet-the-solo-lane`); running the documented gate ends in
+  `Command "validate:evals" not found` and reads as a broken repo. The real gate is the scripts block
+  in `package.json` — tracked `AGENTS.md` is right to point at it rather than restate it
+  (`.ai/archive/contributing-pre-push-gate-list-is-stale/`).
+- **The Typecheck command bullet resolves to `evals/*.ts`, not to `none`.** Its value is `none`
+  followed by prose that happens to backtick a path, and the hooks take the **first backticked span**
+  on the line — so the prose tail is what gets `eval`ed. Latent only because `typecheck-on-stop.sh` is
+  not wired here. The moved bullet must carry a bare `none` with the reason somewhere else;
+  `bash skills/dw-doctor/scripts/doctor.sh` now prints the resolved value, so it is one command to
+  confirm.

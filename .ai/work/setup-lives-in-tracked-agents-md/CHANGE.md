@@ -66,7 +66,7 @@ routed topic file — not the root — as a gotcha's home.
       `AGENTS.md` with CLAUDE.local.md fallback (description edit → run `pnpm eval:routing`);
       `dw-start` drops its link-report paragraph; `dw-shape`/`dw-next` chains already list
       AGENTS.md — verify, don't rewrite.
-- [ ] 6. **dw-doctor.** Replace the CLAUDE.local.md presence-warn with AGENTS.md presence + budget + router-row sanity; add the seed's codex WARN-tier check (never FAIL, no auth probe); give
+- [x] 6. **dw-doctor.** Replace the CLAUDE.local.md presence-warn with AGENTS.md presence + budget + router-row sanity; add the seed's codex WARN-tier check (never FAIL, no auth probe); give
       `doctor.sh` the self-test the seed asked for.
 - [ ] 7. **Docs + bump.** Update the README rows and this repo's `AGENTS.md` prose that name
       `CLAUDE.local.md` as the scaffold's memory; bump `dw-solo-setup` and `dw-solo` once each in
@@ -202,6 +202,22 @@ routed topic file — not the root — as a gotcha's home.
   from task 4's commit before `git log -1 --format=%B` caught it. The rule went into `dw-git`'s commit
   step rather than `## Gotchas`, which is at its cap — and that is the right home anyway, since it is
   the skill that writes messages.
+- **The anchor `doctor.sh:270-274` was past EOF, as `pnpm-pin-in-one-field` warned.** The real region
+  was `227-231`. That change rewrites `98-113` (the pnpm block) — different region, no conflict, but it
+  now has a self-test harness to add its cases to rather than leaving new parsing untested.
+- **The doctor extracts the command value the way the hooks do, and that immediately caught a live
+  bug in this repo.** The first draft used its own sed and reported `none — the`; the hooks take the
+  **first backticked span**, so what `typecheck-on-stop.sh` would actually `eval` from this repo's
+  `CLAUDE.local.md` is the literal `evals/*.ts`. Latent (the hook is not wired here), real, and
+  unfixable from a worktree — merged into the existing backlog entry for that file's `## Project
+specifics` block, which `own-root-under-budget-and-router` task 3 is about to move.
+- **Two findings were merged into backlog cousins rather than added as entries**, per the folder's own
+  rule — the vendored-hook carry joined the `dw-skills` heredoc entry, and the typecheck-bullet bug
+  joined the `CLAUDE.local.md` entry. Backlog stays at 6/8.
+- **The doctor's own gotcha check disappeared, and nothing replaced it.** It used to warn when
+  `CLAUDE.md` had no `## Gotchas` / `## Commands` section. Both are gone: gotchas may now live in a
+  routed topic file, and the commands are the two bullets, which the block checks directly. Warning
+  about a missing root section would fail every correctly-scaffolded repo.
 - **`AGENTS.md` gained a `## Project` section** the shape did not list (Stack / Key directories /
   Deployment target) — the old `CLAUDE.local.md`'s `## Project specifics` carried real orientation
   value and `{{STACK}}` had no other home. 94 lines / 5085 B rendered, so 26 lines of the budget are

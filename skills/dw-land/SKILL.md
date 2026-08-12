@@ -64,6 +64,14 @@ result is **not ready**, never _ready with follow-ups_: parking it is how a chan
 existed to do. Two ways out, both the user's call — finish it, or amend the `## Goal` and re-run the
 verdict against what the change now claims.
 
+**One carve-out, and it is not an escape hatch.** A result the working tree cannot show — "CI is
+green", where the project's workflows only run on a pull request or a push to the default branch — is
+not _undelivered_ at land time; it is _unobservable_ at land time, and the closing order (this skill
+before `dw-ship`) is what makes it so. Record it in the verdict as **pending on the push**, name the
+task that carries it, and hand it to `dw-ship`, which stops where the checks are readable. Anything
+you could have run yourself gets no such pass — the bar is that the evidence does not exist yet, never
+that gathering it is inconvenient.
+
 Then **stop.** You've graded the work; the user decides what happens next.
 
 ### 3. Close — only on explicit approval

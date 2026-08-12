@@ -53,7 +53,7 @@ silent about review.
       intro sentence does not act like one. A fast-path push to the default branch is the irreversible
       step too, so if the change skipped `dw-check`, say so before pushing. A nudge, not a gate: the
       closing pass is deliberately not a review pipeline.
-- [ ] 3. **Land-before-CI, resolved where CI is observable.** `skills/dw-land/SKILL.md:61-65` (the
+- [x] 3. **Land-before-CI, resolved where CI is observable.** `skills/dw-land/SKILL.md:61-65` (the
       completion gate) gets the carve-out: a done-condition observable **only after push** is not an
       unmet Goal result at land time; it is verified at `dw-ship`'s stop, and the verdict says which
       task carries it. `skills/dw-ship/SKILL.md` gains the matching half in **both** paths — the PR path
@@ -97,6 +97,15 @@ silent about review.
 - Task 1 also renamed the diff placeholder to `<base>` in both borrowers (`dw-land:30`,
   `dw-check:32`), since `<default-branch>` reads as the local ref and the whole point is that the ref
   is a separate choice from the name.
+- **Task 3's carve-out is written generically, not against this repo's CI.** `dw-land` ships to any
+  consumer repo, so the condition is "the project's workflows only run on a pull request or a push to
+  the default branch", not a claim about `.github/workflows/` here. The bar is stated as _the evidence
+  does not exist yet_, never _gathering it is inconvenient_ — otherwise the carve-out becomes the
+  escape hatch the completion gate was built to close.
+- **Two candidate terms for `dw-land` to weigh** against `CONTEXT.md`: **base ref** (task 1's
+  local-vs-`origin` choice) and **pending on the push** (task 3's third state beside delivered and
+  undelivered). Neither is certain to earn a glossary line; the second is the stronger candidate,
+  since it names a verdict state the gate now has to distinguish.
 - **Ordering** — `shape-time-parking-for-the-left-out-list` is shaped alongside this and touches
   different bodies (`dw-shape` / `dw-grill`), but both bump `dw-solo`. Whichever lands second re-reads
   the version from `main`, never from a change doc.

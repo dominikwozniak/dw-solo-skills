@@ -2,7 +2,7 @@
 change: block-env-heredoc-escape
 branch: block-env-heredoc-escape
 created: 2026-08-12
-status: shaping # shaping | building | landed
+status: building # shaping | building | landed
 ---
 
 # Change — `block-env-access.sh` stops blocking commit messages that name a dotenv file
@@ -32,7 +32,7 @@ that tells you to route around the hook is gone.
 
 ## Tasks
 
-- [ ] 1. **Drop heredoc bodies before tokenizing, and pin it.** Add the `strip_heredocs` pass to
+- [x] 1. **Drop heredoc bodies before tokenizing, and pin it.** Add the `strip_heredocs` pass to
       `templates/hooks/block-env-access.sh` (between the `COMMAND=` read and `STRIPPED=`), correct the
       `:44-47` comment, mirror the file byte-for-byte into `.claude/hooks/`, and extend
       `scripts/tests/block-env-access.test.sh` with two allowed cases (heredoc commit body, quoted and
@@ -62,6 +62,14 @@ that tells you to route around the hook is gone.
   opener recognised by `(^|[^<])<<-?[[:space:]]*["'\\]?([A-Za-z_][A-Za-z0-9_]*)`. The `[^<]` guard is
   what keeps here-strings out; the alphanumeric-only delimiter class is what makes interpolating
   `$delim` into the terminator regex safe.
+- **The four new cases were measured against the pre-fix hook, not just the new one** — only
+  `heredoc-commit-bare` moved (2 → 0); `heredoc-redirect-target` and `after-heredoc-cat-env` read 2
+  before and after. Worth repeating if the pass is ever reworked: a blocked-case test that never
+  failed on the old code pins nothing, and three of these four would have passed either way.
+- **Verifying this hook from a session is awkward in a way that will recur.** Any Bash call carrying
+  a bare `.env` token is refused by the **main tree's** copy of the hook before it runs, so probes
+  must build the string (`D=$(printf ".%s" env)`) instead of writing it. That is also why the
+  end-to-end check is a synthetic payload, never an actual heredoc commit here.
 - **The same fix is owed in `dw-skills`** — `templates/hooks/block-env-access.sh` and
   `scripts/tests/block-env-access.test.sh` at
   `/Users/dominik.wozniak/workspace/private/byarcadia-packages/dominikwozniak-skills` are byte-identical

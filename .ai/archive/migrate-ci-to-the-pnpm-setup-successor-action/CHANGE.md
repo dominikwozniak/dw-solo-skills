@@ -2,7 +2,9 @@
 change: migrate-ci-to-the-pnpm-setup-successor-action
 branch: migrate-ci-to-the-pnpm-setup-successor-action
 created: 2026-08-12
-status: building # shaping | building | landed
+status: landed # shaping | building | landed
+landed: 2026-08-12
+pr: "#24"
 ---
 
 # Change — one action sets up CI, and `devEngines` holds both versions it reads

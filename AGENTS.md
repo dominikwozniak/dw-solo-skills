@@ -252,11 +252,16 @@ holds four traps.
   checklist only fires when a skill is added, and `dw-ship` never mentions versions at all. Bump the
   owning plugin by hand, in `marketplace.json` and its `plugin.json` together, whenever the diff
   touches the payload.
-- **The two lint hooks disagree with the gate, in opposite directions.**
+- **The lint hooks disagree with the gate, in more than one direction.**
   - **`.lintstagedrc.json`'s glob and `prettier --check .` disagree by construction.** Prettier checks
     every file it understands; lint-staged only formats the extensions listed, so a new file type is
     unformatted at commit and rejected at push — which reads as a lint failure in a green repo.
     Adding `evals/*.ts` needed `ts` in that glob. Add the extension with the first file of a kind.
+  - **Prettier is not idempotent on a paragraph nested inside a task-list item**, so `--write` and
+    `--check` can loop forever disagreeing — which `pnpm format` fails and `.husky/pre-commit` does
+    not, because lint-staged writes and re-stages, committing the very content the push gate then
+    refuses. It bites in `.ai/work/<slug>/CHANGE.md`, where writing findings under a `- [x] N.` box is
+    the natural thing to do. Keep task bodies to one paragraph; findings belong in `## Notes`.
   - **`evals/*.ts` must never get the executable bit.** `lint-on-edit.sh` `eval`s its resolved lint
     command against the file path; the pre-fix version resolved to a bare space and executed the
     target. Fixed and pinned by `scripts/tests/lint-on-edit.test.sh`.
@@ -295,6 +300,9 @@ holds four traps.
   tokenizing, so `git commit -F - <<'MSG'` no longer blocks. But that drop is unconditional: a
   literal `<<` anywhere in a command starts body mode and **nothing below it is scanned**. The other
   half is that a bare `.env` token still blocks anywhere, so a probe of the hook cannot be typed
-  literally — build the string (`D=$(printf ".%s" env)`) or your own test call never runs.
+  literally — build the string (`D=$(printf ".%s" env)`) or your own test call never runs. **The same
+  blindness sits in `block-non-pnpm.sh`**, which cannot tell a mention from an invocation either: a
+  `git grep "npm install" -- .github/` is refused for containing the string it is searching _for_.
+  Grep the shorter token, or build it.
 - **`templates/hooks/` and `scripts/runtime/slugify.sh` are vendored** from `dw-skills`. A fix here
   does not reach that repo, and no test can see across the boundary — apply it twice.

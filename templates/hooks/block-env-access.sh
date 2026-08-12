@@ -48,6 +48,11 @@ strip_heredocs() {
     printf '%s\n' "$line"
     [[ "$line" =~ $HEREDOC_OPEN ]] && { delim="${BASH_REMATCH[2]}"; body=1; }
   done
+  # The loop's status is that last test, false for any command not ending in an
+  # opener — which would make the pipeline below non-zero under `pipefail`.
+  # Harmless while this file has no `set -e`; the day it gets one, the Bash
+  # check would be skipped in full and silently. Pin it to 0 instead.
+  return 0
 }
 
 block() {

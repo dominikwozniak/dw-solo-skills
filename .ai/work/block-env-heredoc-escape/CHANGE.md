@@ -70,6 +70,11 @@ that tells you to route around the hook is gone.
   a bare `.env` token is refused by the **main tree's** copy of the hook before it runs, so probes
   must build the string (`D=$(printf ".%s" env)`) instead of writing it. That is also why the
   end-to-end check is a synthetic payload, never an actual heredoc commit here.
+- **`strip_heredocs` had to be pinned to `return 0`** — the loop's status is its trailing `[[ ]]`
+  test, so it returned 1 for any command not ending in an opener, making the pipeline non-zero under
+  `pipefail`. Harmless while the file has no `set -e`, and the tests never saw it; caught in the land
+  verdict. The general shape: a function whose last statement is a bare conditional leaks that
+  conditional as its exit status.
 - **The same fix is owed in `dw-skills`** — `templates/hooks/block-env-access.sh` and
   `scripts/tests/block-env-access.test.sh` at
   `/Users/dominik.wozniak/workspace/private/byarcadia-packages/dominikwozniak-skills` are byte-identical

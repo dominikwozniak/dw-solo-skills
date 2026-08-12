@@ -1,6 +1,6 @@
 ---
 change: loop-prose-disagrees-with-the-bodies
-branch: unclaimed
+branch: loop-prose-disagrees-with-the-bodies
 created: 2026-08-12
 status: shaping # shaping | building | landed
 ---

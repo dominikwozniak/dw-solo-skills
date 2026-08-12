@@ -35,7 +35,11 @@ worktree.
 ### 2. Pick the path
 
 - Already **on the default branch** (resolved the way `dw-git` does) and it isn't protected → **fast
-  path**: plain `git push`. Done — there's no worktree to clean.
+  path**: plain `git push`. Done — there's no worktree to clean. **The push is irreversible here
+  too** — nothing sits between it and the default branch — so if the change skipped `dw-check`, say so
+  and offer it before pushing. The nudge at step 3 belongs to both endings, not just the PR one; a
+  fast path that reaches the remote having never mentioned review is the defect, not the speed. A
+  nudge, not a gate: your go is enough.
 - On any other branch → the **PR path** below. `pr` in `$ARGUMENTS` forces it even where a direct
   push would work.
 - **No `origin` at all** → say so and offer the local ending instead: switch to the default

@@ -48,7 +48,7 @@ silent about review.
       prefer the local ref there, since the branch was cut from it. Then **shrink**
       `skills/dw-land/SKILL.md:31-33` and `skills/dw-check/SKILL.md:19-20` to a pointer ("the base ref
       resolved the way `dw-git` does"), deleting the stale-local justification from both.
-- [ ] 2. **`dw-ship`'s fast path owes the same nudge.** One sentence at `skills/dw-ship/SKILL.md:37-38`,
+- [x] 2. **`dw-ship`'s fast path owes the same nudge.** One sentence at `skills/dw-ship/SKILL.md:37-38`,
       **inside the step, not the preamble** — the standing lesson is that a constraint written as an
       intro sentence does not act like one. A fast-path push to the default branch is the irreversible
       step too, so if the change skipped `dw-check`, say so before pushing. A nudge, not a gate: the

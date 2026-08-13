@@ -43,26 +43,25 @@ dw-grill? → dw-shape → dw-start? → dw-next ↺ → dw-check? → dw-land �
 `?` marks the opt-in steps. The mandatory spine is `dw-shape → dw-next → dw-ship`; a small serial
 change never leaves the default branch, and `dw-ship` runs the closing pass itself when the change
 doc is still there — so a finished change needs one command. Skills connect through artifacts, never
-a forced sequence: the shared `CHANGE.md`, and a `**Next:**` pointer at the end of each body that
-`validate-docs.sh` checks names a skill existing **in this repo**.
+a forced sequence.
 
 ## Commands
 
-This repo is Markdown / JSON / Shell plus a little dependency-free TypeScript under `evals/` — there
-is no build step and no typecheck. Node runs the `.ts` files directly.
+Markdown / JSON / Shell plus dependency-free TypeScript under `evals/` that Node runs directly — no
+build step, no typecheck.
 
 - **Test**: `pnpm validate:artifacts` (the bash self-tests in `scripts/tests/`)
-- **Lint**: `pnpm lint`
 - **Format**: `pnpm format` (check) · `pnpm format:fix` (write)
-- **Routing evals**: `pnpm eval:routing` — free, deterministic, in CI. The one tier there is; the
-  paid tier was deleted, see [`evals/README.md`](evals/README.md).
+- **Routing evals**: `pnpm eval:routing` — free, deterministic, in CI ([`evals/README.md`](evals/README.md))
+
+Lint and typecheck are the two bullets under `## Solo lane` — **one copy each**, because the
+guardrail hooks grep for them under those exact names.
 
 ## Before you push
 
-Run every check in the `scripts` block of `package.json` — `lint`, `format`, each `validate:*` and
-`eval:routing`. That block is the gate; the list is deliberately not restated in prose, because the
-prose copies drifted from it (see `.ai/archive/contributing-pre-push-gate-list-is-stale/`). CI runs
-the same set plus a `trufflehog` secrets scan on every PR and push to `main`.
+Run every check in the `scripts` block of `package.json`. That block **is** the gate, deliberately
+not restated here — the prose copies drifted (`.ai/archive/contributing-pre-push-gate-list-is-stale/`).
+CI runs the same set plus a `trufflehog` secrets scan.
 
 ## Task Router
 
@@ -81,3 +80,37 @@ rows — read all of them. Explore on your own only what no row covers.
 | a follow-up worth keeping but not worth doing now                        | `.ai/backlog/README.md`             |
 | a landed change's reasoning, after the fact                              | `.ai/archive/README.md`             |
 | a blocked command, a hook that fired, a guardrail that looks wrong       | `.claude/hooks/`                    |
+
+## Solo lane
+
+`.ai/work/<slug>/CHANGE.md` is the state of the change in progress — tracked, so it survives a
+`/clear`. Where each step promotes its durable output is the Task Router above.
+
+The two below are **grep-read by the hooks**, which is why they live here and nowhere else:
+`lint-on-edit` appends one file path to the first, so it must accept one; `typecheck-on-stop` runs
+the second over the whole project. `none` is a declaration, not a command — the hooks read it as
+"skip", and it must stand alone on the line.
+
+- **Lint command**: `pnpm lint`
+- **Typecheck command**: none
+
+## Git conventions
+
+Read by `dw-git` — these override its defaults and the global user memory's.
+
+- `type(scope): subject` — [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/),
+  lowercase, imperative. Scope is the plugin or skill the change belongs to (`feat(dw-ship):`,
+  `fix(validate-docs):`); omit it for repo-wide work (`docs:`, `chore:`). No ticket prefix — this
+  repo has no external tracker.
+- **Body**: prose paragraphs explaining _why_, not a bullet list of files. Match the existing log.
+- **Trailer**: `Co-Authored-By: <the model that wrote it> <noreply@anthropic.com>`. No "Generated
+  with Claude Code" footer.
+- **Default branch**: `main` — also the PR target. Branch off it with a kebab-case slug of the
+  change.
+- **Rebase, never merge**: `git pull --rebase`, `git fetch origin && git rebase origin/main`.
+- **Modern verbs** — `git switch` / `git restore` over `git checkout`.
+- **Branch reads** — `git rev-parse --abbrev-ref HEAD`, never `git branch --show-current`, which
+  returns empty on a detached HEAD.
+- **One logical change per commit**, staged by name — never `git add -A`. Exception: a cycle of new
+  skills whose `**Next:**` pointers are mutual lands as one commit, because `validate:docs` fails a
+  pointer at a skill not yet on disk.

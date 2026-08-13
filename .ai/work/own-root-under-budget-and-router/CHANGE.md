@@ -37,7 +37,7 @@ row, and a fresh clone gets the git conventions and the lint command without any
       into routed topic files (`docs/agents/…`, 2–4 files, sized to the content).
 - [x] 2. **Gotchas out of the root.** Move the 12 entries into the topic files their router rows
       name, thematic groups intact; delete the root section.
-- [ ] 3. **Local memory in.** Move `## Git conventions` and the `**Lint/Typecheck/Test command**`
+- [x] 3. **Local memory in.** Move `## Git conventions` and the `**Lint/Typecheck/Test command**`
       bullets from `CLAUDE.local.md` into `AGENTS.md` (Solo-lane-style section) — **the bullet names
       are the contract**, so re-spell rather than assume the root's existing `## Commands` already
       did it (see Notes); update `CLAUDE.local.md`-naming prose in README/AGENTS.md; report what's
@@ -91,3 +91,19 @@ row, and a fresh clone gets the git conventions and the lint command without any
   in `AGENTS.md`/`CLAUDE.md` stays the home; **otherwise** the routed topic file" — so deleting the
   root section is exactly the switch that turns its fallback on. No shipped payload edited, so the
   no-bump note above still holds.
+- **Task 3's prose half was already done by the prerequisite.** `setup-lives-in-tracked-agents-md`
+  (d5027df) removed every `CLAUDE.local.md` mention from `README.md` and `AGENTS.md`; the ones left
+  in the tree are all deliberate — the decision records (history), `worktree.sh`'s explicitly
+  legacy-labelled `link_local_memory()`, and the hook self-test fixtures that pin the legacy
+  fallback. None of them wanted editing here.
+- **The root is at 117/120 lines, 7.1/10 KB.** Bytes have room; lines do not, which is the budget
+  binding as designed. Three paragraphs were compressed to buy the headroom back (the loop's
+  `**Next:**` sentence, the Commands preamble, the push-gate wording) — each of them said something
+  a topic file now says in full.
+- **What is left in `CLAUDE.local.md` for the user to delete.** Nothing tracked reads it any more.
+  Migrated out: `## Git conventions` and the lint/typecheck/test command bullets (now `AGENTS.md`),
+  `## Hooks installed` (now `docs/agents/tooling.md`), `## Gotchas`-adjacent material (the topic
+  files). Genuinely local and worth keeping somewhere personal if wanted: the `## About me` block,
+  which is still unfilled placeholders, and `## Tools active in this session` (gh, rtk, ctx7). The
+  rest — `## Workflow`, `## Project specifics`, `## Keep this file current` — is now duplicated by
+  tracked docs and is the stale-copy risk the whole change exists to remove.

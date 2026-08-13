@@ -14,7 +14,7 @@ ships in `templates/hooks/`; `scripts/tests/hooks-in-sync.test.sh` pins the two 
 | ----------------------------- | ------------------------------------------------- |
 | `block-dangerous-commands.sh` | PreToolUse(Bash) — destructive shell              |
 | `block-non-pnpm.sh`           | PreToolUse(Bash) — npm/yarn invocations           |
-| `block-env-access.sh`         | PreToolUse(Read/Edit/Write/Grep/Bash) — dotenv    |
+| `block-env-access.sh`         | PreToolUse(Read/Edit/Write/Grep/Bash) — `.env`    |
 | `lint-on-edit.sh`             | PostToolUse(Write/Edit) — the root's Lint command |
 | `link-local-memory.sh`        | SessionStart — worktree local-memory symlink      |
 
@@ -70,7 +70,7 @@ argument it is handed). Slow, and the OOM below applies. `.husky/pre-commit` is 
   messages are fine either way — quoted prose passes, and heredoc bodies are dropped before
   tokenizing, so `git commit -F - <<'MSG'` no longer blocks. But that drop is unconditional: a
   literal `<<` anywhere in a command starts body mode and **nothing below it is scanned**. The other
-  half is that a bare dotenv token still blocks anywhere, so a probe of the hook cannot be typed
+  half is that a bare `.env` token still blocks anywhere, so a probe of the hook cannot be typed
   literally — build the string (`D=$(printf ".%s" env)`) or your own test call never runs. **The same
   blindness sits in `block-non-pnpm.sh`**, which cannot tell a mention from an invocation either: a
   `git grep "npm install" -- .github/` is refused for containing the string it is searching _for_.

@@ -61,7 +61,7 @@ guardrail hooks grep for them under those exact names.
 
 Run every check in the `scripts` block of `package.json`. That block **is** the gate, deliberately
 not restated here — the prose copies drifted (`.ai/archive/contributing-pre-push-gate-list-is-stale/`).
-CI runs the same set plus a `trufflehog` secrets scan.
+CI runs the same set plus a `trufflehog` secrets scan, on every PR and push to `main`.
 
 ## Task Router
 

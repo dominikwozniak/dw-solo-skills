@@ -29,7 +29,8 @@ model-invocable. Which skills those currently are is the `⭑` list in `README.m
 
 ## Vendored from `dw-skills` — fix in both
 
-These are **copies**, not references, and nothing can detect drift across the repo boundary:
+These are **copies**, not references, and nothing can detect drift across the repo boundary — **a fix
+here does not reach that repo, so apply it twice**:
 
 - `templates/hooks/*.sh` (6 files — the team repo also ships a Ruby lint hook this Node-only lane
   deliberately drops; don't "re-sync" it back). `scripts/tests/hooks-in-sync.test.sh` only pins them

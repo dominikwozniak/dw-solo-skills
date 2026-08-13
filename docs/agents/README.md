@@ -36,6 +36,15 @@ The cost the cap was paying for is real, though, so keep it in mind without a va
 that stopped being true is deleted, and two entries with one root cause are one entry with
 sub-bullets. Growth is fine; sprawl of stale traps is not.
 
+## Gotchas
+
+- **`CLAUDE.md` is a symlink to `AGENTS.md`, not a synced copy — and the symlink bites twice.**
+  Claude Code's `Edit` tool **refuses to write through a symlink**, so an edit aimed at `CLAUDE.md`
+  fails in a way that reads as a permissions problem rather than as "you named the wrong file". And
+  a change doc that treats the two as separate files schedules the same edit twice, then reports the
+  second one as already done. There is one file: `AGENTS.md`. Everything — the Task Router, the
+  Commands block, the two hook-read bullets — lives in it.
+
 ## Editing the Task Router
 
 - The left column is keyword bait: task verbs, file names, script names — the words an agent would

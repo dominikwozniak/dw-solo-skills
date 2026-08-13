@@ -123,3 +123,9 @@ row, and a fresh clone gets the git conventions and the lint command without any
   warning.
 - **`CLAUDE.local.md` names a `pnpm validate:evals` that no longer exists** in `package.json` — one
   more piece of evidence that the file is now a stale second copy rather than a source of truth.
+- **A `dw-check` pass found four things the move dropped, and the count was not the way to find
+  them.** Entry counts were perfectly conserved — 12/12 top-level gotchas, 17/17 sub-bullets — while
+  four separate pieces of content had gone missing inside surviving text. What caught them was an
+  8-gram sweep of the old root against the new corpus, not reading the diff. Worth repeating on any
+  change that moves prose between files: conservation of _entries_ says nothing about conservation
+  of _content_.

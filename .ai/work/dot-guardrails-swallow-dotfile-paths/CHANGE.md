@@ -41,7 +41,7 @@ that `(^|[;&|][[:space:]]*)git restore (-- +)?\./? *($|[;&|])` splits the seven 
       `git restore .ai/work/x`, `git checkout .claude/settings.json`; `blocked` for `git restore ./`,
       `git checkout -- .` and the quoted `rtk run "git restore ."`. Keep the existing `restore-dot` /
       `checkout-dot` / `checkout-dashes-dot` / `restore-staged` cases passing.
-- [ ] 2. Bump `dw-solo-setup` 0.1.15 → 0.1.16 in `plugins/dw-solo-setup/.claude-plugin/plugin.json`
+- [x] 2. Bump `dw-solo-setup` 0.1.15 → 0.1.16 in `plugins/dw-solo-setup/.claude-plugin/plugin.json`
       **and** `.claude-plugin/marketplace.json` — the two must stay identical.
 - [ ] 3. `git rm .ai/backlog/apply-the-heredoc-fix-to-the-vendored-hook-in-dw-skills.md`.
 

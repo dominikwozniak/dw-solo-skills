@@ -172,7 +172,7 @@ single entry or retiring a trap that stopped being true, never appending. Sub-bu
 holds four traps.
 
 - **A `dw-start` worktree is not the main tree, and every way it differs reads as something else.**
-  Four traps, one root cause: the worktree gets tracked files and a branch, and nothing else.
+  Six traps, one root cause: the worktree gets tracked files and a branch, and nothing else.
   - **`CLAUDE.local.md` cannot be edited from one.** Link-class carry, so the harness refuses the
     write as leaving the worktree — and it is gitignored, so no commit delivers it either. A change
     touching the test/lint command lands its `AGENTS.md` half and silently drops the other. Do those
@@ -195,6 +195,13 @@ holds four traps.
     are gitignored, so a `CHANGE.md` whose `## Anchors` cites one — the standard a task is measured
     against, say — points at nothing from here. Read it through the main tree's absolute path; the
     harness allows the read even though it refuses writes outside the worktree.
+  - **That same absolute path silently reads `main`'s copy of anything _tracked_.** Both trees hold
+    identical relative paths, so `…/dw-solo-skills/skills/dw-git/SKILL.md` and
+    `…/worktrees/<slug>/skills/dw-git/SKILL.md` both exist and differ by every commit on the branch.
+    The asymmetry is the trap: `Edit` **refuses** the main-tree path, `Read` **succeeds silently** — so
+    nothing is corrupted and you reason about the wrong text. The tell is line numbers disagreeing with
+    a `grep` run in the worktree; the conclusion it invites is that a proxy is filtering the output.
+    Prefer relative paths — they cannot get this wrong.
 - **A self-test can be green for a reason that has nothing to do with the contract.** Two shapes, one
   root cause: the assertion never reaches the code it names.
   - **A fixture that is the live repo is a content gate under a unit test's name.** The case that

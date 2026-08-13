@@ -30,11 +30,19 @@ WRAPPER='(sudo[[:space:]]+|rtk[[:space:]]+([a-z-]+[[:space:]]+)?)*'
 # any wrapper prefixes, then an optional quote (`rtk run "git push --force"`).
 BOUNDARY="(^|[;&|][[:space:]]*)${WRAPPER}[\"']?"
 
-# End of a bare-`.` argument: an optional trailing slash, the closing quote whose
-# opener BOUNDARY absorbed, then end of command or a chain operator. Without this
-# the literal `.` also matched the leading dot of a dotted path, so restoring one
-# tracked file under `.ai/` or `.claude/` read as wiping the whole working tree.
-DOT_END="/?[[:space:]]*[\"']?[[:space:]]*(\$|[;&|])"
+# A `.` path argument meaning "the whole working tree", in every spelling: quoted
+# or bare, with or without a trailing slash, and ending on the closing quote whose
+# opener BOUNDARY absorbed (`rtk run "git restore ."`). The end anchor is the point
+# — a bare `\.` also matched the leading dot of a dotted path, so restoring one
+# tracked file under `.ai/` or `.claude/` read as wiping the whole tree. It has to
+# be one constant rather than inline: the patterns below are single-quoted, which
+# cannot carry the `'` this quote class needs.
+DOT_ARG="[\"']?\./?[\"']?[[:space:]]*[\"']?[[:space:]]*(\$|[;&|])"
+
+# `git -C <path> <cmd>` runs the command in another repo, so it is the same command
+# with the same blast radius. Only the patterns using DOT_ARG carry this so far —
+# `git -C sub push --force` and friends are still unmatched (backlogged).
+GIT="git( -C [^;&|]*)?"
 
 DANGEROUS_PATTERNS=(
   'git push( [^;&|]*)?( --force| -f\b)'                   # force push, any arg order (incl. --force-with-lease)
@@ -42,8 +50,8 @@ DANGEROUS_PATTERNS=(
   'git reset( [^;&|]*)? --hard'                           # discards index + working tree
   'git clean( +-[A-Za-z-]+)* +(-[A-Za-z]*[dfxX]|--force)' # deletes untracked files/dirs — any flag order (-fd, -f -d, -xdf, -d, --force)
   'git branch( [^;&|]*)?( -D\b| -f\b| --force\b)'         # force-deletes or force-repoints a branch
-  'git checkout (-- +)?\.'"$DOT_END"                      # discards all working-tree changes
-  'git restore (-- +)?\.'"$DOT_END"                       # discards all working-tree changes
+  "$GIT"' checkout (-- +)?'"$DOT_ARG"                     # discards all working-tree changes
+  "$GIT"' restore (-- +)?'"$DOT_ARG"                      # discards all working-tree changes
   'git stash clear\b'                                     # wipes every stash, unrecoverable
   'rm( [^;&|]*)? /\*? *($|[;&|])'                         # rm aimed at / or /*
   'rm( [^;&|]*)? (~|\$HOME)/? *($|[;&|])'                 # rm aimed at the home dir

@@ -44,6 +44,10 @@ that `(^|[;&|][[:space:]]*)git restore (-- +)?\./? *($|[;&|])` splits the seven 
 - [x] 2. Bump `dw-solo-setup` 0.1.15 → 0.1.16 in `plugins/dw-solo-setup/.claude-plugin/plugin.json`
       **and** `.claude-plugin/marketplace.json` — the two must stay identical.
 - [x] 3. `git rm .ai/backlog/apply-the-heredoc-fix-to-the-vendored-hook-in-dw-skills.md`.
+- [x] 4. Added at land time, from the verdict: close the two pre-existing holes the anchor work
+      exposed — a quoted `"."` / `'.'` argument, and the `git -C <path>` form — by folding the quote
+      class into a `DOT_ARG` constant and prefixing both patterns with a `GIT` one. Eight more cases.
+      The remaining `-C` gap on the other git patterns is parked, not fixed.
 
 ## Anchors
 
@@ -72,3 +76,9 @@ the block message prints the expanded regex.
 
 Nothing in the tree referenced the deleted backlog entry (grepped before removing it), so no pointer
 was left dangling. The backlog is 7/8 against the cap again, which buys the next change one slot.
+
+`DOT_END` became `DOT_ARG` in task 4 — once the leading quote class had to move inside, the constant
+was no longer a tail. The land-time verdict is what found the two holes, and it found them by running
+the same probe against the `origin/main` hook and the new one and diffing the exit codes; that
+old-vs-new comparison is worth more than reading a regex, and it is the reason the anchor could be
+called a one-row delta with any confidence.

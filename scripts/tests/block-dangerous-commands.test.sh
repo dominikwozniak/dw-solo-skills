@@ -57,6 +57,15 @@ blocked "restore-dot-chained" "git restore . && echo done"
 # The dot patterns end-anchor on a closing quote too, because BOUNDARY already
 # consumed the opening one — dropping it would trade a false positive for a hole.
 blocked "rtk-run-restore-dot" 'rtk run "git restore ."'
+# A quoted `.` argument is the same command. BOUNDARY's quote is at the start of
+# the line, so the dot's own quotes have to be part of DOT_ARG.
+blocked "restore-quoted-dot"  'git restore "."'
+blocked "restore-sq-dot"      "git restore '.'"
+blocked "checkout-quoted-dot" 'git checkout "."'
+blocked "restore-quoted-slash" 'git restore "./"'
+# `git -C <path>` is the same command aimed at another repo.
+blocked "restore-dash-C-dot"  "git -C sub restore ."
+blocked "checkout-dash-C-dot" "git -C ../other checkout -- ."
 blocked "stash-clear"         "git stash clear"
 blocked "rm-root"             "rm -rf /"
 blocked "rm-home-tilde"       "rm -rf ~"
@@ -96,6 +105,8 @@ allowed "restore-dotfile-dir" "git restore .ai/work/x/CHANGE.md"
 allowed "restore-dotfile-rel" "git restore .claude/settings.json"
 allowed "checkout-dotfile"    "git checkout .claude/settings.json"
 allowed "restore-dotted-file" "git restore .gitignore"
+allowed "restore-C-dotfile"   "git -C sub restore .ai/work/x"
+allowed "restore-quoted-path" 'git restore "./src/app.ts"'
 allowed "checkout-branch"     "git checkout main"
 allowed "checkout-feature"    "git checkout feature/x"
 allowed "rm-node-modules"     "rm -rf node_modules"

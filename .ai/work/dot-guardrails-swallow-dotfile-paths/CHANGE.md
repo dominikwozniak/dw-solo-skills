@@ -43,7 +43,7 @@ that `(^|[;&|][[:space:]]*)git restore (-- +)?\./? *($|[;&|])` splits the seven 
       `checkout-dot` / `checkout-dashes-dot` / `restore-staged` cases passing.
 - [x] 2. Bump `dw-solo-setup` 0.1.15 → 0.1.16 in `plugins/dw-solo-setup/.claude-plugin/plugin.json`
       **and** `.claude-plugin/marketplace.json` — the two must stay identical.
-- [ ] 3. `git rm .ai/backlog/apply-the-heredoc-fix-to-the-vendored-hook-in-dw-skills.md`.
+- [x] 3. `git rm .ai/backlog/apply-the-heredoc-fix-to-the-vendored-hook-in-dw-skills.md`.
 
 ## Anchors
 
@@ -69,3 +69,6 @@ That was forced, not stylistic: array elements are single-quoted, so the `["']?`
 tolerance needs cannot appear inline — a double-quoted constant with `[\"']` is the only spelling that
 carries both quote characters. The two patterns concatenate it (`'…\.'"$DOT_END"`), which also means
 the block message prints the expanded regex.
+
+Nothing in the tree referenced the deleted backlog entry (grepped before removing it), so no pointer
+was left dangling. The backlog is 7/8 against the cap again, which buys the next change one slot.

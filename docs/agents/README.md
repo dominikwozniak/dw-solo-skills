@@ -38,6 +38,15 @@ sub-bullets. Growth is fine; sprawl of stale traps is not.
 
 ## Gotchas
 
+- **Moving prose between files conserves entries while losing content, and counting proves
+  nothing.** Splitting the root into this directory moved twelve gotcha entries and seventeen
+  sub-bullets — every one of them accounted for, and four separate pieces of content gone anyway,
+  each lost inside a paragraph that survived: an instruction dropped from a section that kept the
+  fact it explains, a trap's "why" dropped from its "what". Reading the diff did not surface them
+  either, because every hunk looked like a faithful move. What surfaced them was diffing the old
+  file against the new corpus as a **word stream** — slide an 8-gram window over the old text and
+  report windows absent from the union of the new files, then judge each miss. Do that before
+  believing any large doc move.
 - **`CLAUDE.md` is a symlink to `AGENTS.md`, not a synced copy — and the symlink bites twice.**
   Claude Code's `Edit` tool **refuses to write through a symlink**, so an edit aimed at `CLAUDE.md`
   fails in a way that reads as a permissions problem rather than as "you named the wrong file". And

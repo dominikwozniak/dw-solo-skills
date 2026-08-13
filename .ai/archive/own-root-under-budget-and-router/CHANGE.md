@@ -2,7 +2,8 @@
 change: own-root-under-budget-and-router
 branch: worktree-own-root-under-budget-and-router
 created: 2026-08-12
-status: building # shaping | building | landed
+landed: 2026-08-13
+status: landed # shaping | building | landed
 ---
 
 # Change — this repo's own root under a declared budget, with a task router

@@ -28,6 +28,14 @@ argument it is handed). Slow, and the OOM below applies. `.husky/pre-commit` is 
 
 ## Gotchas
 
+- **A new check needs a new `paths:` entry, or it never runs on the commit shape it exists to
+  catch.** Every workflow here is path-filtered, so a check added to an existing script inherits that
+  script's triggers — which are the paths the _old_ checks cared about. `validate-docs.sh`'s
+  agent-docs check grades `AGENTS.md`, and `validate-docs.yaml` did not list `AGENTS.md`: a commit
+  that pushed the root over its budget — the exact regression the check exists for — matched no
+  filter and CI stayed green with nothing run. It has bitten twice; `validate-artifacts.yaml` carries
+  a comment about the first. When you add a check, add every path it _reads_ to both the
+  `pull_request` and `push` lists, not just the script you edited.
 - **pnpm here is three traps deep, and every one of them looks like a broken repo.**
   - **The lint script can be hijacked before it reaches `scripts/lint.sh`.** With the `rtk` proxy
     hook active it is rewritten to `rtk lint` — an _ESLint_ wrapper — and dies with

@@ -35,7 +35,7 @@ row, and a fresh clone gets the git conventions and the lint command without any
       `AGENTS.md`; carve the root to boundaries/commands/routing; move the procedure-weight prose
       (symlink-canon walkthrough, add-a-skill details beyond the checklist, `.ai/` layout detail)
       into routed topic files (`docs/agents/…`, 2–4 files, sized to the content).
-- [ ] 2. **Gotchas out of the root.** Move the 12 entries into the topic files their router rows
+- [x] 2. **Gotchas out of the root.** Move the 12 entries into the topic files their router rows
       name, thematic groups intact; delete the root section.
 - [ ] 3. **Local memory in.** Move `## Git conventions` and the `**Lint/Typecheck/Test command**`
       bullets from `CLAUDE.local.md` into `AGENTS.md` (Solo-lane-style section) — **the bullet names
@@ -83,3 +83,11 @@ row, and a fresh clone gets the git conventions and the lint command without any
   payload and needs the plugin bump this one avoids. Keep the `AGENTS.md`-first **fallback** in the
   two hooks regardless: one string per `for` loop, and it is what keeps them byte-identical with the
   `dw-skills` copies that still read the legacy file.
+- **Two of the twelve gotchas were retired rather than moved**, because the move made them true by
+  construction: the `CLAUDE.md`-is-a-symlink entry is now the root's first header line, and the
+  "`templates/hooks/` and `slugify.sh` are vendored" entry is the `## Vendored from dw-skills`
+  section of `docs/agents/skills-and-plugins.md`. Ten entries landed in four topic files.
+- **`dw-land` needed no change.** Its promotion step already reads "an existing `## Gotchas` section
+  in `AGENTS.md`/`CLAUDE.md` stays the home; **otherwise** the routed topic file" — so deleting the
+  root section is exactly the switch that turns its fallback on. No shipped payload edited, so the
+  no-bump note above still holds.

@@ -83,3 +83,35 @@ checklist by hand.
 3. Add the basename to `RUNTIME_SCRIPTS` in `scripts/validate-manifests.sh`, plus a
    `scripts/tests/<script>.test.sh` where it has logic worth pinning (anchor it to the repo root via
    `git rev-parse --show-toplevel`).
+
+## Gotchas
+
+- **The skill you are running is not the skill you are editing.** Claude Code serves
+  `~/.claude/plugins/cache/dw-solo-skills/dw-solo/<version>/`, which only changes on reinstall — so a
+  session can review, invoke and reason about a body several versions behind the canon it is editing,
+  with nothing announcing the gap. It cost a whole review pass here: `dw-check` ran from 0.4.0 while
+  the canon said something materially different, and the discrepancy read as a missing feature. Two
+  consequences: **never debug a skill by its behaviour in the session that edits it** — invoke the
+  canon's text by hand instead — and treat every canon skill edit as **unexercised** until a
+  post-reinstall run, because no test asserts skill body content by design.
+- **`${CLAUDE_PLUGIN_ROOT}` is substituted into skill _bodies_, not exported into the shell those
+  bodies run.** A skill body's `bash "${CLAUDE_PLUGIN_ROOT}/scripts/x.sh"` resolves because the text
+  is expanded before the call — but a **bundled script** reading `$CLAUDE_PLUGIN_ROOT` at runtime
+  gets an empty string, because it is not in the environment at all (confirmed by dumping `env` in a
+  live session; the only `CLAUDE_*` vars there are `CLAUDE_CODE_*`, `CLAUDE_PID` and friends). Under
+  `set -u` that is a hard error; without it, a silently wrong path. A bundled script that needs a
+  sibling shipped script must resolve from its own `$0`, and must cover three layouts, because
+  `skills/<name>/` and `plugins/<p>/skills/<name>/` sit at different depths from `scripts/runtime/`.
+- **`validate-manifests.sh` checks the two versions are _equal_, not that either moved.** Change a
+  shipped file — anything under `templates/` or `scripts/runtime/` — and CI stays green with no bump,
+  while every installed consumer keeps the old copy. Nothing else catches it: the add-a-skill
+  checklist only fires when a skill is added, and `dw-ship` never mentions versions at all. Bump the
+  owning plugin by hand, in `marketplace.json` and its `plugin.json` together, whenever the diff
+  touches the payload.
+- **`dw-land` is not a review pass, and the sentence saying so is easy to walk past.** Both
+  `skills/dw-land/SKILL.md` ("a last look, **not a review pipeline**") and `skills/dw-check/SKILL.md`
+  ("not a bottleneck this skill duplicates") forbid giving the closing verdict its own reviewer — and
+  it was built anyway, three lines below the first of them, then reverted. Review delegation belongs
+  to `dw-check`. The general lesson, worth more than the instance: **a constraint written as an intro
+  sentence does not act like a constraint** — if a boundary between two skills is load-bearing, put it
+  in the step itself, not in the paragraph that sets the tone.

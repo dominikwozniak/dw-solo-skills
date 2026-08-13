@@ -129,3 +129,12 @@ row, and a fresh clone gets the git conventions and the lint command without any
   8-gram sweep of the old root against the new corpus, not reading the diff. Worth repeating on any
   change that moves prose between files: conservation of _entries_ says nothing about conservation
   of _content_.
+- **`0006` had explicitly rejected a declared size budget, and this change adopts one** — so the
+  supersession is not bookkeeping. Its two objections are answered by what changed underneath, not by
+  argument: the enforcement now costs nothing new (`check-agents-docs.mjs` already ships for the
+  scaffolder, and one call from a script already in the gate is the whole wiring — no hook, no
+  version bump), and the budget is paired with a router, so being over it resolves by moving a topic
+  instead of by saying less. The objection that stands is that a budget still cannot see duplication;
+  `0006`'s single-source rule covers that, which is why `0008` restates it rather than retiring it.
+  The contract has no partial supersession, so `0008` also restates the backlog cap — otherwise
+  flipping `0006` would read as reopening halves of it that nothing here touched.

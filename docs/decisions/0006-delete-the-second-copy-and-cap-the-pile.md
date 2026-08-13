@@ -1,7 +1,8 @@
 ---
 decision: 0006
-status: active # active | superseded
+status: superseded # active | superseded
 date: 2026-08-12
+superseded-by: 0008
 ---
 
 # 0006 — A check whose only job is comparing two hand-kept copies is deleted with the copy, and the durable layer is capped by count

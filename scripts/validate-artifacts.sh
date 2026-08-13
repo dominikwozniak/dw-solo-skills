@@ -50,7 +50,7 @@ fi
 
 # --- the cap on the durable layer --------------------------------------------
 # This number is the single source. The prose beside the capped list says only THAT it is capped and
-# points here, so raising the cap is one edit rather than four that drift (0006).
+# points here, so raising the cap is one edit rather than four that drift (0006, still standing per 0008).
 BACKLOG_CAP=8
 
 echo

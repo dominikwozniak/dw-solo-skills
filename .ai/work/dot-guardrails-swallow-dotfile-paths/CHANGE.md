@@ -1,6 +1,6 @@
 ---
 change: dot-guardrails-swallow-dotfile-paths
-branch: unclaimed
+branch: main
 created: 2026-08-13
 status: shaping # shaping | building | landed
 ---

@@ -2,7 +2,7 @@
 change: dot-guardrails-swallow-dotfile-paths
 branch: main
 created: 2026-08-13
-status: shaping # shaping | building | landed
+status: building # shaping | building | landed
 ---
 
 # Change — the `.`-path guardrails stop swallowing every dotfile path
@@ -35,7 +35,7 @@ that `(^|[;&|][[:space:]]*)git restore (-- +)?\./? *($|[;&|])` splits the seven 
 
 ## Tasks
 
-- [ ] 1. Anchor both dot patterns in `templates/hooks/block-dangerous-commands.sh`, mirror the file
+- [x] 1. Anchor both dot patterns in `templates/hooks/block-dangerous-commands.sh`, mirror the file
       byte-for-byte into `.claude/hooks/block-dangerous-commands.sh` (`validate-artifacts.sh` enforces
       that), and add cases to `scripts/tests/block-dangerous-commands.test.sh`: `allowed` for
       `git restore .ai/work/x`, `git checkout .claude/settings.json`; `blocked` for `git restore ./`,
@@ -63,3 +63,9 @@ that `(^|[;&|][[:space:]]*)git restore (-- +)?\./? *($|[;&|])` splits the seven 
 
 `docs/agents/git-history.md:28` lists `git checkout .` / `git restore .` as blocked — still true after
 the fix, no edit needed.
+
+The end anchor became a named `DOT_END` constant beside `BOUNDARY` rather than being inlined twice.
+That was forced, not stylistic: array elements are single-quoted, so the `["']?` the closing-quote
+tolerance needs cannot appear inline — a double-quoted constant with `[\"']` is the only spelling that
+carries both quote characters. The two patterns concatenate it (`'…\.'"$DOT_END"`), which also means
+the block message prints the expanded regex.

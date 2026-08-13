@@ -30,14 +30,20 @@ WRAPPER='(sudo[[:space:]]+|rtk[[:space:]]+([a-z-]+[[:space:]]+)?)*'
 # any wrapper prefixes, then an optional quote (`rtk run "git push --force"`).
 BOUNDARY="(^|[;&|][[:space:]]*)${WRAPPER}[\"']?"
 
+# End of a bare-`.` argument: an optional trailing slash, the closing quote whose
+# opener BOUNDARY absorbed, then end of command or a chain operator. Without this
+# the literal `.` also matched the leading dot of a dotted path, so restoring one
+# tracked file under `.ai/` or `.claude/` read as wiping the whole working tree.
+DOT_END="/?[[:space:]]*[\"']?[[:space:]]*(\$|[;&|])"
+
 DANGEROUS_PATTERNS=(
   'git push( [^;&|]*)?( --force| -f\b)'                   # force push, any arg order (incl. --force-with-lease)
   'git push( [^;&|]*)?( --delete\b| :\S)'                 # remote branch deletion (push --delete / push origin :branch)
   'git reset( [^;&|]*)? --hard'                           # discards index + working tree
   'git clean( +-[A-Za-z-]+)* +(-[A-Za-z]*[dfxX]|--force)' # deletes untracked files/dirs — any flag order (-fd, -f -d, -xdf, -d, --force)
   'git branch( [^;&|]*)?( -D\b| -f\b| --force\b)'         # force-deletes or force-repoints a branch
-  'git checkout (-- +)?\.'                                # discards all working-tree changes
-  'git restore (-- +)?\.'                                 # discards all working-tree changes
+  'git checkout (-- +)?\.'"$DOT_END"                      # discards all working-tree changes
+  'git restore (-- +)?\.'"$DOT_END"                       # discards all working-tree changes
   'git stash clear\b'                                     # wipes every stash, unrecoverable
   'rm( [^;&|]*)? /\*? *($|[;&|])'                         # rm aimed at / or /*
   'rm( [^;&|]*)? (~|\$HOME)/? *($|[;&|])'                 # rm aimed at the home dir

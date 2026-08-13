@@ -50,6 +50,13 @@ blocked "branch-D"            "git branch -D feature"
 blocked "checkout-dot"        "git checkout ."
 blocked "checkout-dashes-dot" "git checkout -- ."
 blocked "restore-dot"         "git restore ."
+blocked "restore-dashes-dot"  "git restore -- ."
+blocked "restore-dot-slash"   "git restore ./"
+blocked "checkout-dot-slash"  "git checkout ./"
+blocked "restore-dot-chained" "git restore . && echo done"
+# The dot patterns end-anchor on a closing quote too, because BOUNDARY already
+# consumed the opening one — dropping it would trade a false positive for a hole.
+blocked "rtk-run-restore-dot" 'rtk run "git restore ."'
 blocked "stash-clear"         "git stash clear"
 blocked "rm-root"             "rm -rf /"
 blocked "rm-home-tilde"       "rm -rf ~"
@@ -83,6 +90,12 @@ allowed "clean-dry-run"       "git clean -n"
 allowed "clean-dry-run-long"  "git clean --dry-run"
 allowed "branch-d-merged"     "git branch -d merged"
 allowed "restore-staged"      "git restore --staged ."
+# A dotted path is a path, not the working tree: the bare-dot patterns used to
+# match its leading dot and refuse to restore a single tracked file.
+allowed "restore-dotfile-dir" "git restore .ai/work/x/CHANGE.md"
+allowed "restore-dotfile-rel" "git restore .claude/settings.json"
+allowed "checkout-dotfile"    "git checkout .claude/settings.json"
+allowed "restore-dotted-file" "git restore .gitignore"
 allowed "checkout-branch"     "git checkout main"
 allowed "checkout-feature"    "git checkout feature/x"
 allowed "rm-node-modules"     "rm -rf node_modules"

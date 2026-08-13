@@ -1,6 +1,6 @@
 ---
 change: own-root-under-budget-and-router
-branch: unclaimed
+branch: worktree-own-root-under-budget-and-router
 created: 2026-08-12
 status: shaping # shaping | building | landed
 ---

@@ -2,7 +2,8 @@
 change: dot-guardrails-swallow-dotfile-paths
 branch: main
 created: 2026-08-13
-status: building # shaping | building | landed
+status: landed # shaping | building | landed
+landed: 2026-08-13
 ---
 
 # Change — the `.`-path guardrails stop swallowing every dotfile path

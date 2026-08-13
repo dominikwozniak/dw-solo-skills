@@ -82,7 +82,18 @@ argument it is handed). Slow, and the OOM below applies. `.husky/pre-commit` is 
   literally — build the string (`D=$(printf ".%s" env)`) or your own test call never runs. **The same
   blindness sits in `block-non-pnpm.sh`**, which cannot tell a mention from an invocation either: a
   `git grep "npm install" -- .github/` is refused for containing the string it is searching _for_.
-  Grep the shorter token, or build it.
+  Grep the shorter token, or build it. **`block-dangerous-commands.sh` is the third**, and the worst
+  to probe by hand: its patterns anchor after `;`, `&` and `|`, so a one-liner looping over test cases
+  contains `; git restore .` by construction and blocks itself. Put the cases in a file under the
+  scratchpad and run that — which is what `scripts/tests/` already does, and the reason to reach for it
+  first.
+- **When you change one of these patterns, diff the old hook against the new one instead of reading
+  the regex.** `git show origin/main:templates/hooks/<hook>.sh > /tmp/old.sh`, run the same probe
+  through both, and compare exit codes: the answer you need is _which commands changed verdict_, and
+  nothing else. Anchoring the bare `.` was meant to be a one-row delta and was — but the same
+  comparison is what exposed the two holes that had been there all along (a quoted `"."`, and
+  `git -C <path>`), because those rows were identically wrong on both sides. A loosened guardrail is
+  invisible to a self-test that never had the case.
 - **A self-test can be green for a reason that has nothing to do with the contract.** Two shapes, one
   root cause: the assertion never reaches the code it names.
   - **A fixture that is the live repo is a content gate under a unit test's name.** The case that

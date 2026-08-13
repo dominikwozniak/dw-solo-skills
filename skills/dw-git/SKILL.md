@@ -85,7 +85,9 @@ dw-git writes **no `.ai/` artifact** — its durable output is the git history i
      `` `CHANGE.md` `` commits with that phrase simply **gone** — the commit succeeds, the
      error goes to stderr among the tool's other noise, and the gap is invisible until
      someone reads the log. Either write the message without backticks, or put it in a
-     file and use `-F`. Then read it back with `git log -1 --format=%B` before moving on.
+     file and use `-F`. Then read it back with `git cat-file -p HEAD` — **not `git log`**,
+     whose output a token-filtering proxy or a pager may shorten, which makes a real
+     truncation and a trimmed display indistinguishable in both directions.
 7. `git log --oneline -1` — confirm.
 
 ### push

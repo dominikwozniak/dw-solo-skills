@@ -5,11 +5,17 @@
 #      (slugify derives paths deterministically, worktree.sh creates and tears down), the guardrail
 #      hooks block what they claim, and this repo's own .claude/hooks/ stay byte-identical to the
 #      templates/ canon it ships.
-#   2. the two caps on the durable layer — `## Gotchas` entries and `.ai/backlog/` files. Both grow
-#      by append and nothing ever asked them to stop, which is how 21 gotchas and 12 queued ideas
-#      happen. The cap is not a size limit; it forces the choice the append silently skipped —
-#      merge this trap into the cousin it belongs with, absorb this entry into the change that found
-#      it, or admit an old one is no longer true.
+#   2. the cap on `.ai/backlog/`. It grows by append and nothing ever asked it to stop, which is how
+#      12 queued ideas happen. The cap is not a size limit; it forces the choice the append silently
+#      skipped — absorb this entry into the change that found it, bundle it with a cousin, or admit
+#      it failed the bar.
+#
+# There used to be a second cap here, over `## Gotchas` entries in AGENTS.md, and it is gone because
+# the section is: gotchas now live in the `docs/agents/<topic>.md` file the root's Task Router points
+# at, and the root is held by the byte-and-line budget it declares, checked by validate-docs.sh. The
+# cap and the budget were solving the same problem — traps crowding out rules in the one file every
+# session loads — and the budget solves it without the side effect the cap had, which was to force
+# unrelated traps to be merged into one entry purely to stay under a number.
 #
 # NOTE: pass 2 is a COUNT, not a schema, and it is not a precedent for one — there is still
 # deliberately no `.ai/` sweep here. A count knows nothing about what is inside the files; it only
@@ -42,26 +48,13 @@ if [ "$found" -eq 0 ]; then
   exit 1
 fi
 
-# --- the caps on the durable layer -------------------------------------------
-# These two numbers are the single source. The prose beside each capped list says only THAT it is
-# capped and points here, so raising a cap is one edit rather than four that drift (0006).
-GOTCHAS_CAP=12
+# --- the cap on the durable layer --------------------------------------------
+# This number is the single source. The prose beside the capped list says only THAT it is capped and
+# points here, so raising the cap is one edit rather than four that drift (0006).
 BACKLOG_CAP=8
 
 echo
-echo "Checking the durable layer against its caps..."
-
-# Top-level entries only: an entry opens at column 0 with `- **`, and a group's sub-bullets are
-# indented, so a merge of four traps into one entry counts as the one entry it reads as. Scoped to the
-# section because the same bullet style is used elsewhere in the file.
-gotchas="$(awk '/^## Gotchas/{f=1;next} f&&/^## /{exit} f&&/^- \*\*/{c++} END{print c+0}' "$ROOT/AGENTS.md")"
-if [ "$gotchas" -gt "$GOTCHAS_CAP" ]; then
-  echo "::error::AGENTS.md ## Gotchas has $gotchas entries, cap is $GOTCHAS_CAP — merge a trap into the"
-  echo "::error::  cousin it belongs with, or retire one that stopped being true. Never just append."
-  FAILED=1
-else
-  echo "• ## Gotchas: $gotchas/$GOTCHAS_CAP entries"
-fi
+echo "Checking the durable layer against its cap..."
 
 # README.md is the folder's own contract, not a queued idea.
 backlog=0

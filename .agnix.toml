@@ -21,6 +21,13 @@ exclude = [
     # out of what it hands over.
     "templates/**",
     "skills/*/references/templates/**",
+    # Routed topic docs. agnix classifies anything under a directory named `agents`
+    # as an agent DEFINITION and fails it for having no YAML frontmatter — but these
+    # are prose, reached on demand through the root's Task Router, and frontmatter on
+    # them would be metadata invented purely to satisfy the name collision. The root
+    # AGENTS.md itself is still linted, and `pnpm validate:docs` is what actually
+    # holds this directory to its contract (every file routed to, every path real).
+    "docs/agents/**",
 ]
 
 [rules]

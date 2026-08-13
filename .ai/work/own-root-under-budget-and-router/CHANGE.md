@@ -42,7 +42,7 @@ row, and a fresh clone gets the git conventions and the lint command without any
       are the contract**, so re-spell rather than assume the root's existing `## Commands` already
       did it (see Notes); update `CLAUDE.local.md`-naming prose in README/AGENTS.md; report what's
       left in the local file for the user to delete.
-- [ ] 4. **The checks.** `validate-docs.sh` gains root-budget and router-coverage checks (~2 checks
+- [x] 4. **The checks.** `validate-docs.sh` gains root-budget and router-coverage checks (~2 checks
       in the existing script, no new file); re-point or drop the root-gotcha cap in
       `validate-artifacts.sh` per the first decision; full gate.
 
@@ -107,3 +107,19 @@ row, and a fresh clone gets the git conventions and the lint command without any
   which is still unfilled placeholders, and `## Tools active in this session` (gh, rtk, ctx7). The
   rest — `## Workflow`, `## Project specifics`, `## Keep this file current` — is now duplicated by
   tracked docs and is the stale-copy risk the whole change exists to remove.
+- **Task 4 delegates instead of reimplementing, and the shape of task 4 changed because of it.** The
+  task was written before `setup-lives-in-tracked-agents-md` landed `templates/check-agents-docs.mjs`
+  (d5027df), which already implements the budget and router-coverage checks — and three more. So
+  `validate-docs.sh` gained one check that runs the shipped checker against this repo's own root,
+  rather than two bash reimplementations of it. The change doc's success criterion is met verbatim
+  (`pnpm validate:docs` fails on an over-budget root or an unrouted topic file), and the repo now
+  dogfoods its own payload the way `hooks-in-sync.test.sh` does for the hooks.
+- **Both new failure modes were proved, not assumed.** An unrouted `docs/agents/zz-orphan.md` and ten
+  junk lines appended to the root each produced one `::error::` and exit 1; both were reverted.
+- **`agnix` fails every `docs/agents/*.md` for having no YAML frontmatter** — it classifies anything
+  under a directory named `agents` as an agent _definition_. Excluded in `.agnix.toml` with the
+  reasoning inline; the root `AGENTS.md` is still linted, and `validate:docs` is what holds the
+  directory to its real contract. This was a genuine regression the gate caught, not a pre-existing
+  warning.
+- **`CLAUDE.local.md` names a `pnpm validate:evals` that no longer exists** in `package.json` — one
+  more piece of evidence that the file is now a stale second copy rather than a source of truth.

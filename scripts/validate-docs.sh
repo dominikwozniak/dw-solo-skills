@@ -8,6 +8,16 @@
 #   3. explicit-invoke sync  — a skill's `disable-model-invocation: true` <=> it is marked `⭑` in
 #                              the task-router AND named in README's explicit-only list
 #   4. no stale Next: target — every `**Next:**` pointer names a skill that exists on disk
+#   5. the agent-docs contract — AGENTS.md within the budget it declares, every docs/agents/ topic
+#      file routed to, every routed path real, every documented `pnpm <script>` a real script, and
+#      CLAUDE.md still a symlink
+#
+# Check 5 is not implemented here. It runs `templates/check-agents-docs.mjs` — the very checker this
+# repo SHIPS into repos that dw-init scaffolds — against this repo's own root. Reimplementing two of
+# its checks in bash was the obvious version and it was worse in both directions: a second
+# implementation to keep in step, and a payload whose only proof it works is that it works somewhere
+# else. This is the same bargain scripts/tests/hooks-in-sync.test.sh strikes for the hooks, and it
+# means a bug in the shipped checker fails this repo's own gate before a consumer ever sees it.
 #
 # There used to be two more, and their deletion is the point rather than a regression: one compared
 # each README Arguments cell to the skill's own `argument-hint`, the other compared the "Before you
@@ -146,6 +156,22 @@ for d in skills/*/; do
     fi
   done
 done
+
+# --- check 5: the agent-docs contract ----------------------------------------
+echo
+echo "Checking the agent-docs contract (budget, Task Router, symlink)..."
+# Run the shipped checker against ourselves. It resolves the repo root from its own location, so it
+# grades THIS repo whether it is a normal clone or a worktree. Its failures already name the file and
+# the fix, so they are passed through rather than re-worded; only the ::error:: prefix CI groups by
+# is added.
+agents_err="$(mktemp)"
+if ! node "$ROOT/templates/check-agents-docs.mjs" 2>"$agents_err"; then
+  while IFS= read -r line; do
+    [ -n "$line" ] && echo "::error::$line"
+  done <"$agents_err"
+  FAILED=1
+fi
+rm -f "$agents_err"
 
 echo
 if [ "$FAILED" -eq 0 ]; then

@@ -14,11 +14,13 @@ in [`AGENTS.md`](AGENTS.md) and the procedures in the skills themselves.
   (one file per idea). It **replaces rather than appends**: each target is read first, and what the
   change supersedes is deleted in the same edit. Decisions are the exception — there the replacement
   is a `superseded-by:` link and the old record stays.
-- **Cap** — the ceiling `validate-artifacts.sh` enforces on a durable list that would otherwise only
-  grow (`## Gotchas`, `.ai/backlog/`); that script holds the numbers. A count of entries, never of
-  bytes, and a forcing function rather than a quota — the way past a full list is to merge a trap into
-  its cousin, absorb an entry into the open change, or retire one that stopped being true. Set by
-  [`0006`](docs/decisions/0006-delete-the-second-copy-and-cap-the-pile.md).
+- **Cap** — the ceiling `validate-artifacts.sh` enforces on `.ai/backlog/`, the one durable list that
+  would otherwise only grow; that script holds the number. A count of entries, never of bytes, and a
+  forcing function rather than a quota — the way past a full list is to bundle an entry with a cousin
+  that ships alongside it, absorb one into the open change, or retire one that failed the month bar.
+  Set by [`0006`](docs/decisions/0006-delete-the-second-copy-and-cap-the-pile.md), which also capped
+  `## Gotchas` until [`0008`](docs/decisions/0008-root-budget-replaces-the-gotcha-cap.md) replaced
+  that half with the root's **Budget**.
 - **Completion gate** — the closing verdict's rule that a `## Goal` result the diff doesn't deliver
   makes a change **not ready**, never _ready with follow-ups_. Ticked boxes don't satisfy it; only
   the diff does, or a `## Goal` the user amends. One carve-out: a result that is **pending on the

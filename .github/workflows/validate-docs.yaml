@@ -6,6 +6,12 @@ on:
       - README.md
       - "docs/**"
       - "skills/**/SKILL.md"
+      # check 5 grades AGENTS.md itself — its budget, its Task Router, its `pnpm <script>`
+      # mentions. Without it here, the one commit shape the budget exists to catch (a root
+      # that grew, and nothing else) matches no filter and the check never runs.
+      - AGENTS.md
+      # check 5 IS this file, run against our own root.
+      - templates/check-agents-docs.mjs
       - scripts/validate-docs.sh
       - .github/workflows/validate-docs.yaml
   push:
@@ -14,6 +20,8 @@ on:
       - README.md
       - "docs/**"
       - "skills/**/SKILL.md"
+      - AGENTS.md
+      - templates/check-agents-docs.mjs
       - scripts/validate-docs.sh
       - .github/workflows/validate-docs.yaml
 
@@ -31,6 +39,10 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           fetch-depth: 1
+      # No pnpm/setup step on purpose, matching validate-artifacts.yaml: checks 1-4 are bash, and
+      # check 5 shells out to `node` for templates/check-agents-docs.mjs, which is deliberately
+      # zero-dependency and built to run on whatever Node a repo has — the runner image's is fine.
+      # Installing the pinned toolchain here would buy nothing and cost an install on every docs PR.
       - name: Validate docs
         shell: bash
         run: ./scripts/validate-docs.sh

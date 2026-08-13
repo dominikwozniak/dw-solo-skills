@@ -1,9 +1,13 @@
 # dw-solo-skills — agent instructions
 
-A Claude Code skills catalog for repos only you read, distributed as an installable plugin
-marketplace — not a code project.
+> `CLAUDE.md` is a symlink to this file — **edit `AGENTS.md`**. Budget: **120 lines / 10 KB**,
+> enforced by `pnpm validate:docs`. Over budget is not a licence to trim a rule: move a topic into
+> `docs/agents/<topic>.md` and add its Task Router row, in the same commit. A trap learned the hard
+> way is appended to that topic file's `## Gotchas`, never to this one. See
+> [`docs/agents/README.md`](docs/agents/README.md).
 
-The fuller, team-weight lane lives in a separate repo,
+A Claude Code skills catalog for repos only you read, distributed as an installable plugin
+marketplace — not a code project. The fuller, team-weight lane lives in a separate repo,
 [`dw-skills`](https://github.com/dominikwozniak/dw-skills). Keep this one thin: every skill here
 assumes **one reader**, and a change that needs a second reader's trust belongs there instead.
 
@@ -26,18 +30,8 @@ templates/                       payload copied INTO a target project (hooks, se
 
 **Always edit the canon above; use it instead of any `plugins/…` path**, since every one of those is
 a symlink back to it — `plugins/*/skills/`, `scripts/` and `templates/` alike. That rule is
-absolute. Every canon skill is shipped by exactly one plugin; `validate-manifests.sh` enforces the
-ownership in both directions, and `scripts/tests/hooks-in-sync.test.sh` pins this repo's own
-`.claude/hooks/` to the `templates/hooks/` canon it ships, so the hooks you run are the hooks you
-ship.
-
-The indirection works because `claude plugin install` **dereferences** symlinks — the plugin gets a
-real copy in the plugin cache. So skill bodies invoke a shipped script as
-`${CLAUDE_PLUGIN_ROOT}/scripts/<script>.sh` and the path resolves; `templates/` gets the same
-treatment (`plugins/dw-solo-setup/templates -> ../../templates`, read as
-`${CLAUDE_PLUGIN_ROOT}/templates/…`, since only the scaffolder consumes the payload). A script used
-by only **one** skill needs no canon: bundle it in `skills/<name>/scripts/` and invoke it via
-`<this-skill-dir>/…`.
+absolute. Why it works, and what a plugin must own for it to keep working:
+[`docs/agents/skills-and-plugins.md`](docs/agents/skills-and-plugins.md).
 
 ## The loop
 
@@ -52,100 +46,6 @@ doc is still there — so a finished change needs one command. Skills connect th
 a forced sequence: the shared `CHANGE.md`, and a `**Next:**` pointer at the end of each body that
 `validate-docs.sh` checks names a skill existing **in this repo**.
 
-## `.ai/` — tracked, one folder per change, no central index
-
-Artifacts are real work documents, committed with the code — not scratch.
-
-- **No shared index file.** A central registry becomes a merge-conflict magnet once tracked.
-  Discovery is by directory name + per-file frontmatter, so two branches never fight over one file.
-- **One folder per change** (`.ai/work/<slug>/`) — parallel branches and worktrees don't collide.
-- **One change is one independently shippable scope** — "could each piece land on its own and leave
-  the repo green?", asked at **shape time** rather than discovered mid-build. A request carrying two
-  such scopes is two folders, not one doc with two goals. Where two of them touch the same file,
-  that's an **ordering** sentence in the `## Notes` of whichever lands second — never a dependency
-  field, which would be the status column this lane exists to avoid.
-- **Branch-matched resume.** A change doc records its branch; the resume step globs the work dirs,
-  matches the current branch, and reports the first unticked box.
-- **Branch reads use `git rev-parse --abbrev-ref HEAD`**, never `git branch --show-current`, which
-  returns an empty string on a detached HEAD and silently turns a branch match into a no-match.
-- **The claim protocol.** A change shaped on the default branch records the literal sentinel
-  `branch: unclaimed`; `dw-start` claims right after creating the worktree, and `dw-next` offers a
-  claim when its branch-grep misses (stripping the `worktree-` prefix a `claude -w` session's branch
-  carries). A claim is one frontmatter edit — the sentinel flips to the verbatim
-  `git rev-parse --abbrev-ref HEAD` — committed **immediately**, because `.ai/` is tracked and an
-  uncommitted claim is invisible to every other session. Anything touching `.ai/work/` must respect
-  the sentinel.
-- **Worktrees live at `.claude/worktrees/<slug>` on branch `<slug>`** (`scripts/runtime/worktree.sh`
-  owns create/remove), and the closing pass's promotion commit lands **on the feature branch**, so a
-  squash-merge carries the durable residue to the default branch.
-
-## Explicit-only skills
-
-A skill is marked `disable-model-invocation: true` for either of two reasons: it **acts outward** —
-on branch topology, on the remote, or on a fresh repo's tooling — so the model never reaches for it
-unbidden, or **only you can see its moment has come**, where a model left to guess fires it at the
-wrong time or not at all. The cost is deliberate: an explicit-only skill is invisible to the model,
-so no other skill can reach it by prose either — anything the loop must be able to delegate to stays
-model-invocable. Which skills those currently are is the `⭑` list in `README.md`, kept in sync by
-`validate-docs.sh`.
-
-## Vendored from `dw-skills` — fix in both
-
-These are **copies**, not references, and nothing can detect drift across the repo boundary:
-
-- `templates/hooks/*.sh` (6 files — the team repo also ships a Ruby lint hook this Node-only lane
-  deliberately drops; don't "re-sync" it back). `scripts/tests/hooks-in-sync.test.sh` only pins them
-  to _this_ repo's `.claude/hooks/`.
-- `scripts/runtime/slugify.sh` — byte-identical.
-
-A skill copied from `dw-skills` is a **fork**, simplified for one reader — expected to diverge, never
-re-synced. Current forks: `dw-grill`, `dw-shape`, `dw-next`, `dw-land`, `dw-git`, `dw-doctor`,
-`dw-init` (which also absorbed the team lane's standalone pre-commit skill), and `dw-handoff` — which
-shares only the team skill's name: it writes one overwritten `HANDOFF.md` inside the change folder
-instead of a dated record under `.ai/handoffs/`, so treat the two as unrelated. `dw-start`,
-`dw-check`, `dw-ship` and `scripts/runtime/worktree.sh` are this lane's own — they have no upstream.
-
-## Adding a skill
-
-1. `skills/<name>/SKILL.md` — kebab-case `name` matching the directory (the validators' regex is
-   `dw-[a-z-]+` — lowercase letters and hyphens only, no digits), a `description` that is routing
-   signal only, `disable-model-invocation: true` if explicit-invoke only. For the shape, copy a near
-   neighbour and keep its section order — the skills on disk are the anatomy.
-2. `ln -s ../../../skills/<name> plugins/<plugin>/skills/<name>` in the **owning** plugin and
-   `git add` the symlink — exactly one plugin per skill.
-3. Bump the owning plugin's patch version in **both** `.claude-plugin/marketplace.json` and its
-   `plugin.json` — keep the two identical. One bump covers a train of skills landing together.
-4. Name the skill everywhere the docs list skills: the README **task-router** row, the **loop
-   diagram** in README + `## The loop` above if it joins the core loop (honor-system — no validator
-   reads the diagram), and — if explicit-invoke — the `⭑` marker plus the explicit-only list in
-   README.
-5. End the body with a `**Next:**` line naming a skill that exists **in this repo** — a pointer at a
-   team-lane skill is a dead end here, and `validate:docs` fails it. A cycle of new skills lands its
-   `**Next:**` lines in one wiring commit at the end; `validate:docs` only checks pointers that
-   exist.
-6. **Exactly one `evals/cases/<name>.json` per model-invocable skill, and none for an explicit-invoke
-   one** — at least 3 positives and 2 negatives, each negative naming the `owner` that should win
-   instead. Nothing validates that count any more, so it is yours to hold: a missing file is a skill
-   measured by nothing, an orphan file is a case file measuring nothing, and a file for a
-   `disable-model-invocation: true` skill reads as coverage while measuring a decision the model never
-   makes. Shape and conventions: [`evals/README.md`](evals/README.md).
-7. `pnpm lint && pnpm format && pnpm validate:manifests && pnpm validate:docs && pnpm eval:routing` —
-   the last one because a new description shifts every term's idf, so adding a skill can knock an
-   _existing_ one off rank-1 and fail CI's floor without your own case file scoring badly at all.
-
-Steps 2–6 are CI-enforced (bar the loop diagram, and CI checks the versions are _equal_, not that
-they changed). The validators name the exact missing entry — run them rather than re-deriving the
-checklist by hand.
-
-## Adding a shipped (plugin-level) script
-
-1. Put the real file once at `scripts/runtime/<script>.sh` and `chmod +x` it.
-2. `ln -s ../../../scripts/runtime/<script>.sh plugins/<plugin>/scripts/<script>.sh` in every plugin
-   whose skills invoke it, and `git add` the symlink (must be mode 120000).
-3. Add the basename to `RUNTIME_SCRIPTS` in `scripts/validate-manifests.sh`, plus a
-   `scripts/tests/<script>.test.sh` where it has logic worth pinning (anchor it to the repo root via
-   `git rev-parse --show-toplevel`).
-
 ## Commands
 
 This repo is Markdown / JSON / Shell plus a little dependency-free TypeScript under `evals/` — there
@@ -155,7 +55,7 @@ is no build step and no typecheck. Node runs the `.ts` files directly.
 - **Lint**: `pnpm lint`
 - **Format**: `pnpm format` (check) · `pnpm format:fix` (write)
 - **Routing evals**: `pnpm eval:routing` — free, deterministic, in CI. The one tier there is; the
-  paid `claude -p` tier was deleted, see [`evals/README.md`](evals/README.md).
+  paid tier was deleted, see [`evals/README.md`](evals/README.md).
 
 ## Before you push
 
@@ -163,6 +63,24 @@ Run every check in the `scripts` block of `package.json` — `lint`, `format`, e
 `eval:routing`. That block is the gate; the list is deliberately not restated in prose, because the
 prose copies drifted from it (see `.ai/archive/contributing-pre-push-gate-list-is-stale/`). CI runs
 the same set plus a `trufflehog` secrets scan on every PR and push to `main`.
+
+## Task Router
+
+Match the task against this table **before** researching or coding. One task often matches several
+rows — read all of them. Explore on your own only what no row covers.
+
+| task                                                                     | read                                |
+| ------------------------------------------------------------------------ | ----------------------------------- |
+| adding/renaming a skill, the symlink canon, plugin versions, evals cases | `docs/agents/skills-and-plugins.md` |
+| a `dw-start` worktree behaving unlike the main tree                      | `docs/agents/worktrees.md`          |
+| a rebase, a stray commit, rewinding a branch, a squash-merged base       | `docs/agents/git-history.md`        |
+| lint/format/prettier failures, hooks, the pnpm/Node pins, CI             | `docs/agents/tooling.md`            |
+| the loop, `.ai/work/`, what a `CHANGE.md` is and when it leaves          | `docs/agents/change-artifacts.md`   |
+| editing this file or `docs/agents/*` — what belongs where                | `docs/agents/README.md`             |
+| why the code is shaped this way; reopening a settled choice              | `docs/decisions/README.md`          |
+| a follow-up worth keeping but not worth doing now                        | `.ai/backlog/README.md`             |
+| a landed change's reasoning, after the fact                              | `.ai/archive/README.md`             |
+| a blocked command, a hook that fired, a guardrail that looks wrong       | `.claude/hooks/`                    |
 
 ## Gotchas
 

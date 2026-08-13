@@ -2,7 +2,7 @@
 change: own-root-under-budget-and-router
 branch: worktree-own-root-under-budget-and-router
 created: 2026-08-12
-status: shaping # shaping | building | landed
+status: building # shaping | building | landed
 ---
 
 # Change — this repo's own root under a declared budget, with a task router
@@ -31,7 +31,7 @@ row, and a fresh clone gets the git conventions and the lint command without any
 
 ## Tasks
 
-- [ ] 1. **Budget + router into the root.** Add the budget line and a `## Task Router` section to
+- [x] 1. **Budget + router into the root.** Add the budget line and a `## Task Router` section to
       `AGENTS.md`; carve the root to boundaries/commands/routing; move the procedure-weight prose
       (symlink-canon walkthrough, add-a-skill details beyond the checklist, `.ai/` layout detail)
       into routed topic files (`docs/agents/…`, 2–4 files, sized to the content).

@@ -28,9 +28,9 @@ smallest weight that still works:
 - **The process outweighs the change** — one artifact instead of spec + plan + notes, one gated pass
   instead of five auditors and a separate writer.
 - **A private repo rots** — the change doc is archived at merge (`.ai/archive/`), and what's durable
-  is **promoted** first: decisions to `docs/decisions/`, terms to `CONTEXT.md`, traps to `## Gotchas`
-  in `CLAUDE.md`, follow-ups to `.ai/backlog/`. Without that step you accumulate stale specs and lose
-  the decisions worth keeping.
+  is **promoted** first: decisions to `docs/decisions/`, terms to `CONTEXT.md`, traps to the routed
+  topic file that covers them, follow-ups to `.ai/backlog/`. Without that step you accumulate stale
+  specs and lose the decisions worth keeping.
 - **Commits drift from your conventions** — the repo's own `## Git conventions` are applied instead
   of generic defaults.
 
@@ -81,9 +81,9 @@ default branch, then one worktree + session each via `dw-start` or `claude -w <s
 
 **Anytime**
 
-| Skill                              | Task                                                     | What you get                       |
-| ---------------------------------- | -------------------------------------------------------- | ---------------------------------- |
-| [`dw-git`](skills/dw-git/SKILL.md) | All git ops — commit / push / PR / sync / branch / stash | commits / PR per `CLAUDE.local.md` |
+| Skill                              | Task                                                     | What you get                 |
+| ---------------------------------- | -------------------------------------------------------- | ---------------------------- |
+| [`dw-git`](skills/dw-git/SKILL.md) | All git ops — commit / push / PR / sync / branch / stash | commits / PR per `AGENTS.md` |
 
 **Off-loop** — the `dw-solo-extras` plugin; reached for when a session ends before the task does.
 
@@ -93,10 +93,10 @@ default branch, then one worktree + session each via `dw-start` or `claude -w <s
 
 **Setup** — the `dw-solo-setup` plugin; run once per repo.
 
-| Skill                                    | Task                                                  | What you get                             |
-| ---------------------------------------- | ----------------------------------------------------- | ---------------------------------------- |
-| [`dw-init`](skills/dw-init/SKILL.md) `⭑` | Scaffold a solo repo: `.ai/`, hooks, settings, memory | tracked scaffold (+ optional pre-commit) |
-| [`dw-doctor`](skills/dw-doctor/SKILL.md) | Diagnose tools, hooks, `.ai/` sanity (read-only)      | health report + copy-paste fixes         |
+| Skill                                    | Task                                                       | What you get                             |
+| ---------------------------------------- | ---------------------------------------------------------- | ---------------------------------------- |
+| [`dw-init`](skills/dw-init/SKILL.md) `⭑` | Scaffold a solo repo: `.ai/`, hooks, settings, `AGENTS.md` | tracked scaffold (+ optional pre-commit) |
+| [`dw-doctor`](skills/dw-doctor/SKILL.md) | Diagnose tools, hooks, `AGENTS.md`, `.ai/` (read-only)     | health report + copy-paste fixes         |
 
 ## ⚙ How it works — the design in one screen
 
@@ -114,16 +114,21 @@ default branch, then one worktree + session each via `dw-start` or `claude -w <s
 - **Thin harness, fat skills.** The process lives in the markdown, not in glue code — so every model
   upgrade improves the skills for free. (Inspired by
   ["Fat Skills"](https://x.com/garrytan/status/2042925773300908103).)
-- **Technology-agnostic.** Test/lint/run commands are read from your project (`## Commands` in
-  `CLAUDE.md` → manifests → the code), never hardcoded.
+- **One always-loaded file, under a budget it declares itself.** The scaffold writes a **tracked**
+  `AGENTS.md` with `CLAUDE.md` symlinked at it — rules, a Task Router into `docs/agents/`, and the two
+  command bullets the hooks read. Tracked because a gitignored memory file reaches neither a fresh
+  clone nor a worktree; one file because a second always-loaded one forks the corpus. A shipped
+  zero-dependency checker holds the budget and the router honest.
+- **Technology-agnostic.** Test/lint/run commands are read from your project (`AGENTS.md` →
+  manifests → the code), never hardcoded.
 
 ## ◈ Why two repos
 
 This lane started inside [`dw-skills`](https://github.com/dominikwozniak/dw-skills) alongside the
 team lane. It moved out because the shared `templates/` payload was shaped for the team scaffolder —
-the `CLAUDE.local.md` shipped the team loop, the `.ai/` README documented directories this lane
-doesn't have — and every scaffolding run patched those files after copying. Here the templates are
-this lane's own, copied as-is.
+the memory template shipped the team loop, the `.ai/` README documented directories this lane doesn't
+have — and every scaffolding run patched those files after copying. Here the templates are this lane's
+own, copied as-is.
 
 The cost, stated plainly: `templates/hooks/` (6 guardrail hooks — the team repo's Ruby lint hook is
 deliberately dropped in this Node-only lane) and `scripts/runtime/slugify.sh` are **vendored
@@ -143,7 +148,7 @@ plugins/dw-solo/                the loop plugin — git-tracked symlinks → ../
 plugins/dw-solo-setup/          the setup plugin — dw-init, dw-doctor, the templates symlink
 plugins/dw-solo-extras/         the off-loop plugin — dw-handoff
 scripts/runtime/                shipped scripts (slugify, worktree), symlinked into the owning plugin
-templates/                      payload copied INTO a target project (hooks, settings, CLAUDE.local.md)
+templates/                      payload copied INTO a target project (hooks, settings, AGENTS.md, the checker)
 .claude-plugin/marketplace.json makes the repo installable
 AGENTS.md                       layout, conventions, gotchas — the one doc (CLAUDE.md symlinks to it)
 ```

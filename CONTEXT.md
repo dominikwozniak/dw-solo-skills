@@ -49,8 +49,21 @@ in [`AGENTS.md`](AGENTS.md) and the procedures in the skills themselves.
   immediately. Done by `dw-start` (after creating the worktree) or offered by `dw-next` (when its
   branch-grep misses). A change shaped on the default branch is unclaimed until then.
 - **Carry class** — which treatment an untracked file gets when a worktree is created: **copy** (local
-  config, via `.worktreeinclude`), **link** (`CLAUDE.local.md`), **regenerate** (`node_modules/`,
-  `.husky/_/` — reported, never carried) or **absent** (caches). Set by [`0003`](docs/decisions/0003-worktree-carry-classes.md).
+  config, via `.worktreeinclude`), **regenerate** (`node_modules/`, `.husky/_/` — reported, never
+  carried) or **absent** (caches). A fourth, **link**, held only personal agent memory and is now
+  empty — that memory is tracked, so the checkout delivers it. Set by
+  [`0003`](docs/decisions/0003-worktree-carry-classes.md), the link class retired by
+  [`0007`](docs/decisions/0007-agent-memory-in-tracked-agents-md.md).
+- **Budget** — the line-and-byte ceiling a root `AGENTS.md` declares **about itself**, in its own prose
+  (`Budget: **120 lines / 10 KB**`), enforced by the `check-agents-docs.mjs` the payload ships. Not a
+  **Cap**: a cap counts entries in a durable list, a budget measures one always-loaded file. Over
+  budget, a topic moves out to a **routed topic file** — trimming a rule is not the way past it.
+- **Task Router** — the table in a root `AGENTS.md` mapping a kind of task to the doc to read. It is
+  the only thing that makes the topic layer reachable, so the checker holds it to both directions:
+  every `docs/agents/*.md` needs a row, and every path a row's `read` column names must exist.
+- **Routed topic file** — `docs/agents/<topic>.md`: prose lifted out of the root file, reached only
+  through its router row. Where a gotcha lands in a scaffolded repo, and created together with its row
+  in one commit — a topic file nothing routes to is a file nothing reads.
 - **Explicit-invoke** — a skill with `disable-model-invocation: true`; it fires only when named.
 - **Case file** — `evals/cases/<skill>.json`: prompts that should route to a skill (**positives**) and
   near-miss prompts that should not (**negatives**, each naming the `owner` that should win instead).

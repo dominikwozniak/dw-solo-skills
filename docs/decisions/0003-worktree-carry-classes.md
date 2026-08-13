@@ -1,7 +1,8 @@
 ---
 decision: 0003
-status: active # active | superseded
+status: superseded # active | superseded
 date: 2026-08-01
+superseded-by: 0007
 ---
 
 # 0003 — Untracked files are carried into a worktree by class, not by one mechanism

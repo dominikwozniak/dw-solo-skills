@@ -39,12 +39,24 @@ on exactly the files in the commit. Don't add a glob for a tool that isn't insta
 ```
 pnpm exec lint-staged
 
+# The agent-docs gate. Not an opt-in, and deliberately UNGUARDED: it reads
+# AGENTS.md plus the paths its Task Router names, so it costs a node startup
+# rather than a build.
+pnpm agents:check
+
 # Optional, opt-in at the dw-init gate. Uncomment only the lines whose script
 # exists and you asked for — both run the WHOLE project on every commit, so
 # they make commits slower and are often better left to CI.
 # pnpm run typecheck
 # pnpm run test
 ```
+
+**Do not add a staged-paths guard to that line.** The obvious one —
+`grep -qE '^(AGENTS\.md|docs/agents/|package\.json$)'` — has a hole big enough to matter: every check
+the gate runs can be broken by touching a file the guard doesn't name. Deleting `CONTEXT.md` or
+`.ai/README.md` breaks path sync; removing `CLAUDE.md` breaks the symlink check; renaming a script
+breaks command sync. Enumerating all of that means restating the router inside a shell pattern and
+keeping the two in step forever, which costs more than the node startup the guard was saving.
 
 ## The `.lintstagedrc.json` shape (prettier + eslint case)
 
@@ -65,5 +77,13 @@ pnpm exec lint-staged
   than overwriting; surface any glob whose command points at a tool that's no longer installed.
 - **husky / lint-staged already deps** — skip the install, keep the rest.
 - **`"prepare": "husky"` already present** — leave it.
+- **`agents:check` already in `package.json` or the hook** — leave both; only add the half that is
+  missing. A second copy of the guard block runs the checker twice per commit.
+
+One glob rule that has bitten: **`.lintstagedrc.json` and `prettier --check .` disagree by
+construction.** Prettier checks every extension it understands; lint-staged only formats the ones
+listed. So a file type that arrives without its extension being added is unformatted at commit and
+rejected at push — which reads as a lint failure in a green repo. Add the extension with the first
+file of its kind; `.mjs` is the one this scaffold introduces.
 
 Never blow away existing config blind. The contract is fill-the-gaps + show-diffs, not replace.

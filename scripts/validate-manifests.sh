@@ -150,7 +150,7 @@ for d in skills/*/; do
   fi
 done
 
-# The template payloads (settings.json, hooks/, CLAUDE.local.md, work-README.md, …) live once at
+# The template payloads (settings.json, hooks/, AGENTS.md, work-README.md, …) live once at
 # the repo root in templates/ and are exposed by a git-tracked symlink
 # plugins/dw-solo-setup/templates -> ../../templates, so ${CLAUDE_PLUGIN_ROOT}/templates/ resolves
 # after install dereferences it. Only the setup plugin consumes templates/ — the loop plugin ships

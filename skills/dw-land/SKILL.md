@@ -18,8 +18,8 @@ archive move.
 
 Reads the diff against the default branch, and `.ai/work/<slug>/CHANGE.md` (found by branch, the same
 way `dw-next` finds it — by land time the change is always claimed). Writes to four **tracked,
-durable** places — `docs/decisions/<NNNN>-<slug>.md`, `CONTEXT.md`, the `## Gotchas` section of
-`CLAUDE.md`, and `.ai/backlog/` (one file per follow-up) — and then moves the `CHANGE.md` scaffolding to
+durable** places — `docs/decisions/<NNNN>-<slug>.md`, `CONTEXT.md`, wherever this repo keeps its
+gotchas (below), and `.ai/backlog/` (one file per follow-up) — and then moves the `CHANGE.md` scaffolding to
 `.ai/archive/<slug>/`, flipping its `status:` to `landed`. `.ai/` is tracked in git; this is the one
 skill that takes something out of `work/` on purpose.
 
@@ -101,10 +101,21 @@ what makes the build fail.
   `CONTEXT.md` as a glossary line. Terms only — no implementation detail. Create the file if it
   doesn't exist. **If the change sharpened a term already defined there, rewrite that line** — two
   definitions of one word is worse than none, and a term the change retired comes out.
-- **Promote the gotchas.** A trap that cost real time, or repeated, becomes one entry under
-  `## Gotchas` in `CLAUDE.md`, newest first — the local trap, and what to do instead. Same bar as
-  decision records: **not every surprise.** A gotchas list that logs every small confusion teaches
-  you to stop reading it. Two things before you write:
+- **Promote the gotchas.** A trap that cost real time, or repeated, becomes one entry — the local
+  trap, and what to do instead. Same bar as decision records: **not every surprise.** A gotchas list
+  that logs every small confusion teaches you to stop reading it.
+
+  **Where it goes, in this order.** An existing `## Gotchas` section — in `AGENTS.md` or `CLAUDE.md`,
+  wherever the repo already keeps one — stays the home; newest first. Otherwise the home is the
+  **routed topic file** whose subject covers the trap: find the `## Task Router` row that matches and
+  append there. **No matching row means creating both halves in the same commit** — the topic file
+  under `docs/agents/` and its router row — because a topic file nothing routes to is a file nothing
+  reads, and the shipped `agents:check` fails on one.
+
+  Never the root file by default. It is loaded in full every session under a declared budget, so a
+  growing list of traps there is the one thing guaranteed to push a real rule out; a routed file is
+  read when its subject comes up, which is exactly when a trap about it matters. Two things before you
+  write:
   - **Delete what this trap replaces.** A gotcha the change made untrue — the tool is gone, the hook
     is fixed, the flag now defaults the other way — comes out in this edit. Leaving it beside its
     replacement is how the list stops being trustworthy: the reader can no longer tell which half is
@@ -112,6 +123,7 @@ what makes the build fail.
   - **Look for the cousin.** If an existing entry has the same root cause, make this a sub-bullet of
     it rather than another sibling. Where the repo caps the list, a merge is the only way to add to a
     full one, and appending fails the build.
+
 - **Promote the follow-ups.** Every follow-up named in the verdict, plus anything deliberately left
   out, becomes one file `.ai/backlog/<slug>.md` — slug from
   `bash "${CLAUDE_PLUGIN_ROOT}/scripts/slugify.sh" slug "<the follow-up>"`, frontmatter

@@ -1,7 +1,7 @@
 {
   "name": "dw-solo-setup",
-  "version": "0.1.14",
-  "description": "Project setup for the solo lane: scaffold the .ai/ state, guardrail hooks, settings, personal memory and an optional pre-commit in one gated pass — then diagnose that it all actually fires. Install alongside dw-solo; run once per repo.",
+  "version": "0.1.15",
+  "description": "Project setup for the solo lane: scaffold the .ai/ state, guardrail hooks, settings, a tracked AGENTS.md under a declared size budget with the checker that holds it, and an optional pre-commit — all in one gated pass, then diagnose that it actually fires. Install alongside dw-solo; run once per repo.",
   "author": {
     "name": "Dominik Wozniak"
   },

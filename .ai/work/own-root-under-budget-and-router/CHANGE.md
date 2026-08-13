@@ -38,9 +38,10 @@ row, and a fresh clone gets the git conventions and the lint command without any
 - [ ] 2. **Gotchas out of the root.** Move the 12 entries into the topic files their router rows
       name, thematic groups intact; delete the root section.
 - [ ] 3. **Local memory in.** Move `## Git conventions` and the `**Lint/Typecheck/Test command**`
-      bullets from `CLAUDE.local.md` into `AGENTS.md` (Solo-lane-style section); update
-      `CLAUDE.local.md`-naming prose in README/AGENTS.md; report what's left in the local file for
-      the user to delete.
+      bullets from `CLAUDE.local.md` into `AGENTS.md` (Solo-lane-style section) — **the bullet names
+      are the contract**, so re-spell rather than assume the root's existing `## Commands` already
+      did it (see Notes); update `CLAUDE.local.md`-naming prose in README/AGENTS.md; report what's
+      left in the local file for the user to delete.
 - [ ] 4. **The checks.** `validate-docs.sh` gains root-budget and router-coverage checks (~2 checks
       in the existing script, no new file); re-point or drop the root-gotcha cap in
       `validate-artifacts.sh` per the first decision; full gate.
@@ -66,3 +67,19 @@ row, and a fresh clone gets the git conventions and the lint command without any
   edits the same `AGENTS.md`.
 - No plugin bump: everything touched (own docs, `scripts/validate-*.sh`) is repo CI surface, not
   payload — unless task 3's prose edits reach a skill body; check at land time.
+- **The root's `## Commands` is a false friend for task 3.** `AGENTS.md:154-155` already reads
+  `- **Test**:` and `- **Lint**:` — neither matches the `Lint command` / `Typecheck command` the
+  guardrail hooks grep, and there is no typecheck bullet at all. So this repo's hooks are answered
+  **only** by `CLAUDE.local.md` today: the section looks migrated and answers nothing, which is what
+  makes the ordering note above load-bearing rather than tidy. Mirror the shipped
+  `templates/AGENTS.md` — one copy each of the two hook-read bullets under `## Solo lane`, with
+  `## Commands` pointing at them instead of repeating them.
+- **What landing this unblocks.** `link-local-memory` becomes subjectless here once `CLAUDE.local.md`
+  is gone: the hook (two copies, 90 lines), `worktree.sh`'s `link_local_memory()` (32) and its
+  `worktree.test.sh` group (60) are ~182 lines and one retired carry class, plus the
+  `.claude/settings.json` wiring, `dw-init`'s legacy-only offer clause and `dw-start`'s sentence. It
+  is already incoherent: `dw-init` **moves** a found `CLAUDE.local.md`, so the condition that offers
+  the hook is the one the same run eliminates. A separate change, not a task here — it edits shipped
+  payload and needs the plugin bump this one avoids. Keep the `AGENTS.md`-first **fallback** in the
+  two hooks regardless: one string per `for` loop, and it is what keeps them byte-identical with the
+  `dw-skills` copies that still read the legacy file.

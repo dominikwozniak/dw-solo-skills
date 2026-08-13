@@ -50,12 +50,10 @@ prints the new worktree's absolute path: `.claude/worktrees/<slug>`, branch `<sl
 main tree's current HEAD — so run it while the main tree sits on the default branch. Enter the
 worktree (the EnterWorktree tool where the session offers it, else `cd` to the printed path).
 
-On stdout it prints the path and nothing else. **Everything it says on stderr is for you to act
-on**: which `.worktreeinclude` files it copied in, whether it linked `CLAUDE.local.md`, and what the
-worktree still needs. `create` handles the link itself rather than leaving it to the
-`link-local-memory` hook, because that hook runs on `SessionStart` — which fires for `claude -w`,
-where the session starts inside the worktree, but not for a session that enters one mid-flight, the
-route this step takes.
+On stdout it prints the path and nothing else. **Everything it says on stderr is for you to act on**:
+which `.worktreeinclude` files it copied in, and what the worktree still needs. Agent memory needs no
+mention any more — it lives in tracked `AGENTS.md`, which the checkout delivers unaided; `create`
+still links a legacy `CLAUDE.local.md` where a repo has one, and says so on stderr when it does.
 
 ### 4. Claim, then install
 

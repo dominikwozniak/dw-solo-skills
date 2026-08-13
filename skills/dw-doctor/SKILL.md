@@ -33,14 +33,27 @@ assumed:
   for existence + the executable bit.
 - `.ai/work/` — the scaffold this lane runs on; its absence points at `dw-init`, and a `.ai/runs/`
   directory is flagged as the other lane's repo rather than half-checked.
-- `docs/decisions/`, `CONTEXT.md`, and `CLAUDE.md`'s `## Gotchas` / `## Commands` sections — the
-  promotion targets `dw-land` writes into. Presence only: the record contract is prose `dw-land` reads
-  while writing one, not something this skill parses.
-- `CLAUDE.local.md` — the file the hooks and `dw-git` read for commands and conventions.
+- `docs/decisions/` and `CONTEXT.md` — the promotion targets `dw-land` writes into. Presence only:
+  the record contract is prose `dw-land` reads while writing one, not something this skill parses.
+- **`AGENTS.md` — the one always-loaded file, and the block worth the most here.** Present? Does it
+  declare a `Budget:` line, is that line parseable, and is the file inside it? Is there a
+  `## Task Router` with rows, and does every `docs/agents/*.md` have one? Did a `{{PLACEHOLDER}}`
+  survive the render? Is `CLAUDE.md` the **symlink** to it rather than a second copy that will
+  diverge? And is `scripts/check-agents-docs.mjs` there to enforce any of it.
+- **The `- **Lint command**:` / `- **Typecheck command**:` bullets**, resolved in the hooks' own
+  order — `AGENTS.md`, then a legacy `CLAUDE.local.md` — and **extracted the way the hooks extract
+  them**, first backticked span else the rest of the line. Reporting a command the hook would not
+  actually run is the one failure mode a diagnostic cannot afford. A value of `none` reports OK: it
+  is what tells the hook to skip.
+- `CLAUDE.local.md` — informational only. Nothing writes it any more; where one exists it is a
+  legacy fallback, not a gap.
 - `.claude-plugin/marketplace.json` — only if present (a marketplace repo); a light
   plugin/version-sync glance.
-- Tool presence on `PATH` via `command -v`: `git`, `jq`, `gh`, `node`, `pnpm`, and the
-  project-local `agnix` / `prettier` / `tsc` binaries.
+- Tool presence on `PATH` via `command -v`: `git`, `jq`, `gh`, `codex`, `node`, `pnpm`, and the
+  project-local `agnix` / `prettier` / `tsc` binaries. `codex` is WARN-tier and **never** FAIL — the
+  loop works without it, only `dw-check`'s outside reviewer and `dw-ship`'s rescue route degrade —
+  and the check stops at "installed": probing auth would mean a network call from a read-only
+  diagnostic.
 
 ## Workflow
 

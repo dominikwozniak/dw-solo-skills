@@ -19,7 +19,8 @@ scripts/<script>.sh              repo CI tooling, never shipped (validate-*.sh, 
 scripts/tests/<script>.test.sh   bash self-tests
 evals/cases/<name>.json          routing cases — one per model-invocable skill, never shipped
 evals/routing.ts                 the routing eval — free, deterministic, in CI
-templates/                       payload copied verbatim INTO a target project (hooks, settings.json)
+templates/                       payload copied INTO a target project (hooks, settings.json, AGENTS.md,
+                                 check-agents-docs.mjs, the .ai/ and docs/decisions/ READMEs)
 .claude-plugin/marketplace.json  makes this repo installable as a plugin source
 ```
 
@@ -171,7 +172,7 @@ single entry or retiring a trap that stopped being true, never appending. Sub-bu
 holds four traps.
 
 - **A `dw-start` worktree is not the main tree, and every way it differs reads as something else.**
-  Four traps, one root cause: the worktree gets tracked files and a branch, and nothing else.
+  Six traps, one root cause: the worktree gets tracked files and a branch, and nothing else.
   - **`CLAUDE.local.md` cannot be edited from one.** Link-class carry, so the harness refuses the
     write as leaving the worktree — and it is gitignored, so no commit delivers it either. A change
     touching the test/lint command lands its `AGENTS.md` half and silently drops the other. Do those
@@ -194,11 +195,26 @@ holds four traps.
     are gitignored, so a `CHANGE.md` whose `## Anchors` cites one — the standard a task is measured
     against, say — points at nothing from here. Read it through the main tree's absolute path; the
     harness allows the read even though it refuses writes outside the worktree.
-- **A self-test whose fixture is the live repo is a content gate under a unit test's name.** The case
-  that taught this is gone with its script (`check-decisions.test.sh`), and the shape outlives it: a
-  `no-arg` case ran the script against this repo and demanded silence — gating `docs/decisions/` from
-  under the heading `arguments:`, and stricter than the contract it was testing. Use a synthetic
-  fixture; live-content checks belong in `validate-artifacts.sh`.
+  - **That same absolute path silently reads `main`'s copy of anything _tracked_.** Both trees hold
+    identical relative paths, so `…/dw-solo-skills/skills/dw-git/SKILL.md` and
+    `…/worktrees/<slug>/skills/dw-git/SKILL.md` both exist and differ by every commit on the branch.
+    The asymmetry is the trap: `Edit` **refuses** the main-tree path, `Read` **succeeds silently** — so
+    nothing is corrupted and you reason about the wrong text. The tell is line numbers disagreeing with
+    a `grep` run in the worktree; the conclusion it invites is that a proxy is filtering the output.
+    Prefer relative paths — they cannot get this wrong.
+- **A self-test can be green for a reason that has nothing to do with the contract.** Two shapes, one
+  root cause: the assertion never reaches the code it names.
+  - **A fixture that is the live repo is a content gate under a unit test's name.** The case that
+    taught this is gone with its script (`check-decisions.test.sh`), and the shape outlives it: a
+    `no-arg` case ran the script against this repo and demanded silence — gating `docs/decisions/`
+    from under the heading `arguments:`, and stricter than the contract it was testing. Use a
+    synthetic fixture; live-content checks belong in `validate-artifacts.sh`.
+  - **A case placed outside the region the code scans, or asserting the bug as the contract.** Both
+    shipped here and an outside reviewer found them, not the suite: a router row appended after
+    `## Solo lane` passed only because the check grepped the whole file, and a `value-matches-hook`
+    case asserted that explanatory backticks beat the `none` sentinel — pinning the defect as
+    intended behaviour. When a test passes first try, prove it can fail: break the code, or move the
+    fixture line, and watch it go red.
 - **`${CLAUDE_PLUGIN_ROOT}` is substituted into skill _bodies_, not exported into the shell those
   bodies run.** A skill body's `bash "${CLAUDE_PLUGIN_ROOT}/scripts/x.sh"` resolves because the text
   is expanded before the call — but a **bundled script** reading `$CLAUDE_PLUGIN_ROOT` at runtime

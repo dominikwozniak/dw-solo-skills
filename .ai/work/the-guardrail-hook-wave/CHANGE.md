@@ -59,7 +59,7 @@ Order is a hint. Each box leaves the repo green; the change ships when all are t
 - [x] 2. `- **Commit pattern**:` and `- **Commit trailer**:` in this repo's `AGENTS.md`
       (`## Solo lane`, beside the lint and typecheck bullets) and placeholders in `templates/AGENTS.md`.
       Mind the root doc budget (120 lines / 10 KB) — `pnpm validate:docs` enforces it.
-- [ ] 3. Trim `skills/dw-git/SKILL.md` commit Defaults to point at the declarations, shorten the
+- [x] 3. Trim `skills/dw-git/SKILL.md` commit Defaults to point at the declarations, shorten the
       backtick hazard note now that the hook catches it, and keep the mechanics (staging by name, `-F`,
       read-back via `git cat-file`).
 - [ ] 4. `templates/hooks/guard-plugin-canon.sh` — `PreToolUse` on `Edit|Write|MultiEdit`, refuses a
@@ -138,6 +138,11 @@ slack, because the next unrelated edit would otherwise fail the budget.
 
 The declared pattern is deliberately stricter than the hook's default: scopes are `[a-z0-9-]+`, not
 `[^)]+`, which is what this repo's log actually uses.
+
+**Task 3 surfaced a contradiction the hook creates.** `dw-git` step 5 prefixes `[TICKET-XXX] ` from
+the branch name, and a Conventional-Commits-anchored pattern refuses exactly that — so a repo with
+both would have every commit blocked. The step now says to name the contradiction rather than fight
+it. The `## Git conventions` "no ticket prefix" line means this repo never hits it.
 
 Task 5's two hooks are the ones with the weakest case (`block-env-access.sh` + the CI trufflehog
 scan already cover much of the credential ground). If the change starts to drag, they are the first

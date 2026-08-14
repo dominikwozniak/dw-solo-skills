@@ -57,13 +57,15 @@ dw-git writes **no `.ai/` artifact** — its durable output is the git history i
 
 **Defaults** (overridden by `## Git conventions`):
 
-- Format: `[TICKET-XXX] type: description` if the branch matches `^[A-Z]+-\d+`,
-  else `type: description`.
-- Subject: [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/)
-  type, imperative, lowercase, no trailing period, ≤72 chars.
+- Subject shape and trailer are **declared, not inferred**: read the `- **Commit pattern**:` and
+  `- **Commit trailer**:` bullets under `## Solo lane`. Those are what
+  `enforce-commit-hygiene.sh` enforces, so a message ignoring them is refused before it reaches git —
+  don't restate them here or guess at them from the log. With neither bullet the hook's own defaults
+  apply: [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) and no trailer.
+- What the pattern can't express, and you still owe: imperative mood, lowercase, no trailing period,
+  ≤72 chars — plus a `[TICKET-XXX] ` prefix when the branch matches `^[A-Z]+-\d+`.
 - Body: what + why for non-trivial changes; omit for trivial ones.
-- **NO** `Co-Authored-By` trailer, **NO** "Generated with Claude Code" footer
-  (unless the conventions say otherwise).
+- **NO** "Generated with Claude Code" footer.
 - One logical change per commit — split when session work spans concerns.
 
 **Workflow:**
@@ -71,23 +73,25 @@ dw-git writes **no `.ai/` artifact** — its durable output is the git history i
 1. `git status --short` — see everything.
 2. Classify: session work (created/edited this conversation) vs pre-existing /
    unrelated. **Stage session work by name** (`git add path1 path2`); never
-   `git add .` / `git add -A` unless the user explicitly asks.
+   `git add .` / `git add -A` — `enforce-commit-hygiene.sh` refuses both where installed, and where
+   it isn't the rule stands anyway. Only the user can run one.
 3. Exclude sensitive files (`.env`, credentials, keys) — warn, don't stage.
 4. `git diff --staged` — review what's actually staged.
 5. Ticket key from branch: `git rev-parse --abbrev-ref HEAD | grep -oE '^[A-Z]+-[0-9]+'`.
-   If found, prefix `[KEY] `.
+   If found, prefix `[KEY] ` — but only if the declared `- **Commit pattern**:` admits it. A pattern
+   anchored at `^(feat|fix|…)` does not, and the hook will refuse every commit; that is a
+   contradiction in the repo's own declarations, so say so rather than fighting it.
 6. Commit — `-m` for the subject, repeat `-m` for the body (no heredoc needed for a
    short body). Use plain `git commit` and follow the project's signing convention
    from `## Git conventions`; don't add `-S` or run `git config` to change signing.
    Surface an error only if the commit genuinely fails.
-   - **A backtick inside a `-m` string is command substitution, and it fails silently.**
-     The shell runs the backticked span and splices the output in, so a message quoting
-     `` `CHANGE.md` `` commits with that phrase simply **gone** — the commit succeeds, the
-     error goes to stderr among the tool's other noise, and the gap is invisible until
-     someone reads the log. Either write the message without backticks, or put it in a
-     file and use `-F`. Then read it back with `git cat-file -p HEAD` — **not `git log`**,
-     whose output a token-filtering proxy or a pager may shorten, which makes a real
-     truncation and a trimmed display indistinguishable in both directions.
+   - **A backtick inside a double-quoted `-m` is command substitution, and it fails silently** —
+     the phrase commits **gone** and the commit still succeeds.
+     `enforce-commit-hygiene.sh` refuses it where installed; where it isn't, single-quote the
+     message, escape the backticks, or put the message in a file and use `-F`.
+   - Read the message back with `git cat-file -p HEAD` — **not `git log`**, whose output a
+     token-filtering proxy or a pager may shorten, which makes a real truncation and a trimmed
+     display indistinguishable in both directions.
 7. `git log --oneline -1` — confirm.
 
 ### push

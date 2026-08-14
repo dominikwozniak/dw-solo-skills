@@ -62,7 +62,7 @@ Order is a hint. Each box leaves the repo green; the change ships when all are t
 - [x] 3. Trim `skills/dw-git/SKILL.md` commit Defaults to point at the declarations, shorten the
       backtick hazard note now that the hook catches it, and keep the mechanics (staging by name, `-F`,
       read-back via `git cat-file`).
-- [ ] 4. `templates/hooks/guard-plugin-canon.sh` — `PreToolUse` on `Edit|Write|MultiEdit`, refuses a
+- [x] 4. `templates/hooks/guard-plugin-canon.sh` — `PreToolUse` on `Edit|Write|MultiEdit`, refuses a
       path under `plugins/` and names the `skills/…` canon behind the symlink. Wire both settings, add
       the self-test. This is the `AGENTS.md` "absolute" rule, today prose-only.
 - [ ] 5. `templates/hooks/credential-leak-guard.sh` (`PreToolUse`/`Bash`: env scans for
@@ -138,6 +138,24 @@ slack, because the next unrelated edit would otherwise fail the budget.
 
 The declared pattern is deliberately stricter than the hook's default: scopes are `[a-z0-9-]+`, not
 `[^)]+`, which is what this repo's log actually uses.
+
+**Task 4's rule is not "every path under `plugins/`".** It is "every path under `plugins/` that is
+not a real, already-existing file", which is the layout invariant itself rather than a restatement of
+it. That matters twice: the three `plugins/*/.claude-plugin/plugin.json` files are genuinely
+plugin-owned, so task 8's version bump does not have to argue with the guardrail; and a brand-new
+regular file under `plugins/` is refused without needing an allowlist to keep current. The self-test
+asserts the invariant directly — if a fourth real file ever appears under `plugins/`, the test fails
+rather than the hook silently widening.
+
+`${path#"$repo_root"/}` is not a way to make a path repo-relative, and the fixture caught it: git
+reports the physical path while the tool hands over one still containing a symlinked ancestor
+(`/private/var/…` vs `/var/…` on macOS, or a symlinked home dir). The prefix test failed to strip, the
+path read as "outside the repo", and the hook exited 0 — not guarding, silently. It compares parent
+directories with `-ef` (device + inode) now. The walk stays textual, via `dirname`, so it cannot hop
+through the very symlink it is looking for.
+
+`guard-plugin-canon` is offered by `dw-init` only where a `plugins/` tree of symlinks exists —
+shape-specific rather than stack-specific, a distinction that section did not have before.
 
 **Task 3 surfaced a contradiction the hook creates.** `dw-git` step 5 prefixes `[TICKET-XXX] ` from
 the branch name, and a Conventional-Commits-anchored pattern refuses exactly that — so a repo with

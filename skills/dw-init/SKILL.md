@@ -75,6 +75,11 @@ Three are always offered because they're stack-agnostic: `block-dangerous-comman
 present: `block-non-pnpm`, `lint-on-edit`, `typecheck-on-stop`. On a stack with no lint or typecheck
 hook, offer the three alone and say the rest are stack-specific rather than silently writing nothing.
 
+`guard-plugin-canon` is **shape-specific, not stack-specific** — offer it only where step 1 found a
+`plugins/` directory whose entries are symlinks back into the tree. It refuses an edit aimed through
+one of those links and names the canon instead, so on a repo with no such layout it is a hook that
+can never fire.
+
 `link-local-memory` is **legacy-only** — offer it **only** when step 1 found a `CLAUDE.local.md`
 already there. It is a `SessionStart` hook that symlinks the main tree's gitignored copy into a
 `git worktree`, which is work that exists only while agent memory is gitignored. A repo scaffolded

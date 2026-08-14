@@ -69,6 +69,15 @@
             "command": "bash \"${CLAUDE_PROJECT_DIR}/.claude/hooks/block-env-access.sh\""
           }
         ]
+      },
+      {
+        "matcher": "Edit|Write|MultiEdit|NotebookEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"${CLAUDE_PROJECT_DIR}/.claude/hooks/guard-plugin-canon.sh\""
+          }
+        ]
       }
     ],
     "PostToolUse": [

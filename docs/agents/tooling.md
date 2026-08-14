@@ -59,8 +59,15 @@ argument it is handed). Slow, and the OOM below applies. `.husky/pre-commit` is 
     `devEngines.runtime` makes Node a **locked dependency** (a `node@runtime:…` entry with a hash per
     platform), so bumping it is the field **plus** a regenerated `pnpm-lock.yaml` — edit the version
     alone and CI's frozen install refuses it. Locally the pin reaches scripts run through pnpm only:
-    `pnpm exec node --version` is the pinned Node, a bare `node --version` is still whatever your
-    shell has.
+    `pnpm exec node --version` is the pinned Node, and a bare `node --version` is whatever your shell
+    has — **unless that `node` is a version-proxy shim, and then a version probe is not a read.**
+    A `vp`-style shim (and pnpm's own) resolves the declaration of whatever repo it is run _in_,
+    downloads a runtime to satisfy it, and answers as that version; `pnpm -v` likewise fetches the
+    pinned pnpm and rewrites `pnpm-lock.yaml` — `packageManagerDependencies`, `packages:`,
+    `snapshots:`, some 200 lines. Two consequences for any script probing versions: the answer is the
+    repo's own declaration compared against itself, and an unsatisfiable one makes the probe exit 1
+    with no version at all. Probe from `/` (`(cd / && pnpm -v)`), where no manifest applies —
+    `dw-doctor` does, and `scripts/tests/doctor.test.sh` fails if a probe moves back inside.
 - **The lint hooks disagree with the gate, in more than one direction.**
   - **`.lintstagedrc.json`'s glob and `prettier --check .` disagree by construction.** Prettier checks
     every file it understands; lint-staged only formats the extensions listed, so a new file type is

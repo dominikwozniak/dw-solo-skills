@@ -2,7 +2,8 @@
 change: doctor-version-probes-read-only-and-read-devengines
 branch: doctor-version-probes-read-only-and-read-devengines
 created: 2026-08-14
-status: building
+status: landed
+landed: 2026-08-14
 ---
 
 # Change — `doctor.sh`'s version block probes without mutating, and reads both `devEngines` pins

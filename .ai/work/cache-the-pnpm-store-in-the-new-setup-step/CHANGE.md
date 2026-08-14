@@ -2,7 +2,7 @@
 change: cache-the-pnpm-store-in-the-new-setup-step
 branch: cache-the-pnpm-store-in-the-new-setup-step
 created: 2026-08-14
-status: shaping # shaping | building | landed
+status: building # shaping | building | landed
 ---
 
 # Change — the pnpm store is cached in CI, and the numbers decide whether it stays
@@ -45,7 +45,7 @@ locked entries and the win was never assumed.
 
 ## Tasks
 
-- [ ] 1. **The input, in three files, and the comment that has to move with it.** Add
+- [x] 1. **The input, in three files, and the comment that has to move with it.** Add
       `with:` / `cache: true` under the `pnpm/setup` step in `agnix-lint.yaml:22`,
       `format-check.yaml:22` and `evals-routing.yaml:27`, and rewrite the shared comment's last
       sentence in each (`:21`, `:21`, and evals-routing's longer block) so it no longer claims inputs
@@ -91,3 +91,19 @@ locked entries and the win was never assumed.
 **The cache is over the store, not `node_modules`.** Worth holding onto while reading task 3's
 numbers: `pnpm store path` is what gets cached, so the saving is bounded by what pnpm downloads from
 a registry — not by linking time, and not by any postinstall that fetches its own binary.
+
+### From task 1 — the exclusion has no home in the file it is about
+
+**The replacement comment is three lines, not the fuller one the task implied**, and it deliberately
+stops before naming `validate-plugin-manifests`. Two facts earn their place in all three files: the
+versions still need no input, and the key has no job component, so the three share one entry. The
+second is the one that makes the exclusion legible without asserting it from a file that cannot show
+it.
+
+**Which leaves a gap a future session will read as an inconsistency.** Nothing in
+`validate-plugin-manifests.yaml` says its bare `pnpm/setup` step is uncached _on purpose_, and the
+obvious tidy-up — "three of four have `cache: true`, finish the job" — is precisely the change that
+poisons the shared key. The reasoning currently lives only in `## Decisions` here, which is archived
+at land time. **For `dw-land`:** this belongs in `docs/agents/tooling.md`, not in a fourth workflow
+comment, and it survives even if task 3 ends in a revert — a reverted cache still leaves the
+"why not just turn it on everywhere" question open.

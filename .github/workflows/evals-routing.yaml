@@ -18,11 +18,15 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       # pnpm, Node and `pnpm install` in one step, all three read from package.json#devEngines —
-      # `packageManager` for pnpm, `runtime` for Node. Inputs would only restate the file.
+      # `packageManager` for pnpm, `runtime` for Node — neither needs an input. `cache` does: it keeps
+      # `pnpm store path` between runs, keyed on the lockfile hash with no job component, so all three
+      # Node workflows share one entry.
       #
       # The install is not latency this eval could skip, though it has no dependencies of its own:
       # pnpm 11 runs a deps-status check before any script and installs when node_modules is stale,
       # so `pnpm eval:routing` on a bare runner installs anyway. `install: false` would only move
       # the same work inside this step and hide it.
       - uses: pnpm/setup@84cb39b217b10273981911c288cd62326dc7c6d2 # v2.0.2
+        with:
+          cache: true
       - run: pnpm eval:routing

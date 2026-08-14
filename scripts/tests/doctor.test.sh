@@ -372,15 +372,44 @@ else
   note_pass "no-pnpm-block-is-silent"
 fi
 
-# The pre-v11 LOCKFILE check has no case here, and the reason is worth more than the case would be:
-# it cannot be pinned while doctor.sh probes with `pnpm -v` inside the repo. In a repo declaring
-# `devEngines.packageManager`, that probe makes pnpm download itself and REWRITE pnpm-lock.yaml —
-# adding the very `packageManagerDependencies` key the check looks for, so the fixture is v11 by the
-# time the check reads it. Verified: the file's sha changes across one doctor run.
-#
-# That is a bug in the pnpm block, not in this test, and it breaks doctor.sh's headline promise to
-# never edit a file. Parked in .ai/backlog/ rather than fixed here — it belongs to the change that
-# introduced the devEngines read.
+# The pre-v11 LOCKFILE check was untestable until doctor.sh stopped probing with `pnpm -v` inside the
+# repo: in a repo declaring `devEngines.packageManager` that probe made pnpm download itself and
+# REWRITE pnpm-lock.yaml, adding the very `packageManagerDependencies` key this check looks for — so
+# the fixture was v11 by the time the check read it. The probe now runs from `/`, and these three
+# cases are what that bought. The last one is the guard: it asserts the fixture's lockfile is
+# byte-identical across a run, so a future repo-local probe fails here instead of shipping.
+lock_pre_v11() {
+  # No leading `---`, and neither of the two per-importer keys v11 writes. `lockfileVersion: '9.0'`
+  # is deliberately present and deliberately not the tell — v11 still writes exactly that.
+  printf "lockfileVersion: '9.0'\n\nimporters:\n  .: {}\n" >"$1/pnpm-lock.yaml"
+}
+
+repo="$(scaffold '120 lines / 10 KB')"
+pin_v11 "$repo"
+lock_pre_v11 "$repo"
+run "$repo" >/dev/null
+says "pre-v11-lockfile-warns" warn "pnpm-lock.yaml" "written before pnpm 11"
+
+repo="$(scaffold '120 lines / 10 KB')"
+pin_v11 "$repo"
+printf -- "---\nlockfileVersion: '9.0'\n\nimporters:\n  .:\n    packageManagerDependencies: {}\n" >"$repo/pnpm-lock.yaml"
+run "$repo" >/dev/null
+if grep -qF "written before pnpm 11" "$OUT"; then
+  note_fail "v11-lockfile-is-silent" "$(grep -F 'written before pnpm 11' "$OUT" | head -n1)"
+else
+  note_pass "v11-lockfile-is-silent"
+fi
+
+repo="$(scaffold '120 lines / 10 KB')"
+pin_v11 "$repo"
+lock_pre_v11 "$repo"
+before="$(cksum <"$repo/pnpm-lock.yaml")"
+run "$repo" >/dev/null
+if [ "$(cksum <"$repo/pnpm-lock.yaml")" = "$before" ]; then
+  note_pass "run-does-not-touch-the-lockfile"
+else
+  note_fail "run-does-not-touch-the-lockfile" "pnpm-lock.yaml changed across one doctor run"
+fi
 
 echo "lane detection still fires:"
 repo="$(scaffold '120 lines / 10 KB')"

@@ -35,7 +35,7 @@ line reports against `devEngines.runtime` when present; and the pre-v11 lockfile
 
 - [x] 1. Take `cur_pnpm` from outside the repo so the probe is read-only and measures the PATH pnpm;
       keep the empty-result branch and its message intact.
-- [ ] 2. Turn `scripts/tests/doctor.test.sh:375`'s comment into the pre-v11 LOCKFILE case it describes,
+- [x] 2. Turn `scripts/tests/doctor.test.sh:375`'s comment into the pre-v11 LOCKFILE case it describes,
       plus an assertion that a doctor run leaves the fixture's `pnpm-lock.yaml` sha unchanged.
 - [ ] 3. Read the Node pin from `devEngines.runtime.version` when present, falling back to
       `engines.node`; report it as a pin (`==`) vs a floor (`>=`) the way the pnpm block distinguishes
@@ -75,3 +75,9 @@ lockfile rewrite. Nothing asserted the old wording (`grep` over `skills/`, `docs
 
 Measured on this repo after the fix: `pnpm-lock.yaml`'s sha is identical across a doctor run, and the
 pin warning fires again (PATH 11.21.0 vs the 11.18.0 pin) — both halves of the two-bug report.
+
+**Task 2 — the three new cases were checked against the old probe, not just the new one.** A copy of
+`doctor.sh` with `cur_pnpm="$(pnpm -v)"` restored, run through a copy of the suite: `pre-v11-lockfile-warns`
+and `run-does-not-touch-the-lockfile` both fail there, `v11-lockfile-is-silent` passes either way (it is
+the negative). Worth repeating for any future guard here — a read-only assertion that passes against the
+mutating version is asserting nothing.

@@ -42,7 +42,7 @@ line reports against `devEngines.runtime` when present; and the pre-v11 lockfile
       an exact version from a range.
 - [x] 4. Make the `.nvmrc` mentions at `doctor.sh:111` and `:117` conditional on the file existing,
       and update `skills/dw-doctor/SKILL.md:29-31` to name `devEngines.runtime` as the Node source.
-- [ ] 5. Bump `plugins/dw-solo-setup/.claude-plugin/plugin.json` (0.1.17 → next) and run the full
+- [x] 5. Bump `plugins/dw-solo-setup/.claude-plugin/plugin.json` (0.1.17 → next) and run the full
       `scripts` block from `package.json`.
 
 ## Anchors
@@ -97,3 +97,13 @@ pnpm downloads it; a bare `node` can only _miss_ it by being older. Demanding eq
 forever on a machine a patch release ahead, which is this repo today (PATH 24.19.0, pin 24.16.0) and
 is not a fault. Ahead-of-pin gets its own OK wording naming both versions, since a reader who sees two
 numbers deserves to know which one runs what.
+
+**Task 5 — the bump is two files, and `validate:manifests` is what says so.** `plugin.json` alone fails
+the version-sync check; `.claude-plugin/marketplace.json` carries the same number and must move with it.
+
+**A session-local trap, not a repo one:** `pnpm lint` in this session came back
+`[ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL] Command "eslint" not found`. That is the rtk command-rewriting
+hook substituting a generic lint runner, not anything in this repo — `pnpm run` lists the script
+correctly and `bash scripts/lint.sh` reports 0 errors. Run the gate scripts directly here rather than
+believing that error. Full gate green: lint 0 errors, prettier clean, manifests, artifacts (62 doctor
+cases, 40 worktree), docs, routing eval.

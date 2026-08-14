@@ -57,9 +57,8 @@ rather than a deliverable**: `dw-land` archives it at merge, after promoting any
   already taken is not up for re-litigation, and reusing the established word is free.
 - `.ai/backlog/` if the project has one — `dw-land` and step 5 below park follow-ups there, one file
   per idea. An entry that matches this request is **prior context, not a fresh idea**: read it before
-  shaping, and
-  mention it if the request is narrower than what was parked. Neighbouring entries are also
-  candidates, but only offer them; never widen the change on your own.
+  shaping, and mention it if the request is narrower than what was parked. Neighbouring entries are
+  also candidates, but only offer them; never widen the change on your own.
 - The **real sibling patterns** this change should follow. Confirm each with Read or grep; these
   become the anchors.
 
@@ -127,9 +126,10 @@ declined, anything you narrowed away in step 2 — gets an explicit **three-way 
   ever?** and **should it have been done now?** Read them there; they are not restated here,
 - **dropped** — said out loud and gone, which is a real answer and often the right one.
 
-**Never file the pile wholesale.** Shape time is when the left-out list is longest and least tested, and
-the folder is capped — an automatic filer spends the whole cap on ideas that have survived one
-conversation. Forcing the choice is the point: it is the same move the land-side gate makes.
+**Never file the pile wholesale.** Shape time is when the left-out list is longest and least tested, so
+an automatic filer fills the folder with ideas that have survived exactly one conversation — and where
+the repo caps it, spends the whole cap on them. Forcing the choice is the point: it is the same move
+the land-side gate makes.
 
 **Only the parked ones become files**, one per entry at `.ai/backlog/<slug>.md`, mirroring what `dw-land`
 writes rather than inventing a second shape: slug from
@@ -143,10 +143,9 @@ session, for the same reason the `CHANGE.md` commit is load-bearing.
 ### 6. Commit
 
 Once the breakdown is confirmed and the left-out list is resolved, **commit** the way `dw-git` does,
-staged by name, with the backlog-file move, any files step 5 parked — and
-all N files together, since shaping them was one act. This is load-bearing, not hygiene: a worktree
-checks out committed state only, so an uncommitted `CHANGE.md` never reaches the session that would
-build it.
+staged by name, with the backlog-file move, any files step 5 parked — and all N files together, since
+shaping them was one act. This is load-bearing, not hygiene: a worktree checks out committed state
+only, so an uncommitted `CHANGE.md` never reaches the session that would build it.
 
 For anything beyond small, prefer a **fresh session per change** — the file you just committed is the
 handoff, and a build that starts clean reads it from disk instead of inheriting this conversation's

@@ -75,7 +75,7 @@ a split: it all lands together.
       `scripts/validate-artifacts.sh:12–17`; cut the CI-cache experiment narrative to its one
       actionable sentence; cut the three-occurrence `paths:` story to its one rule, since both
       workflows carry the explanation inline already.
-- [ ] 7. `docs/agents/change-artifacts.md` down to the ~8 lines only it holds (the no-index rationale,
+- [x] 7. `docs/agents/change-artifacts.md` down to the ~8 lines only it holds (the no-index rationale,
       the sentinel rule, the squash-merge consequence). Cut the claim protocol, the promotion-target
       list and the branch-read rule — owned by `dw-shape`/`dw-next`/`dw-land`, `CONTEXT.md` and
       `AGENTS.md:112` respectively.
@@ -183,6 +183,17 @@ a split: it all lands together.
   file has the mechanics (which probe each script falls back to, why `CLAUDE.md` is off the chain, why
   `none` is tested before backtick extraction). Named here because the next reader will see the
   overlap and should know it was looked at.
+
+- Task 7: 34 → 19 lines. Two things the task listed as cuttable were folded rather than dropped,
+  because each was the load-bearing half of a design this file does own. The branch-matched resume
+  mechanic is _how_ discovery works without an index, so it moved into the no-index bullet instead of
+  going with the rest of the claim protocol. And the sentinel keeps one line saying why it exists —
+  with no index it is the only thing distinguishing an unopened change — while who flips it and when
+  goes to the skills.
+- Task 7, left alone on purpose: the one-change-one-shippable-scope bullet, and the no-index rationale
+  that `README.md:106` also carries. The first was not listed for cutting and is defined nowhere else;
+  the second is duplicated only by the README's pitch version, which the "README keeps the sell"
+  decision protects.
 
 **Prior context:** `.ai/backlog/templates-ship-the-docs-agents-contract.md` is coupled to task 9 —
 cutting the template's prose removes the last place a scaffolded repo meets the `docs/agents/`

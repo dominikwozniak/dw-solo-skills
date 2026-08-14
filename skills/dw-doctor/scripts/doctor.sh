@@ -134,11 +134,18 @@ else
   fi
   if [ -f "$ROOT/pnpm-lock.yaml" ] || [ -n "$pmver" ]; then
     if have pnpm; then
-      cur_pnpm="$(pnpm -v 2>/dev/null)"
+      # Probed from OUTSIDE the repo, and both halves of that matter. Run with the repo as cwd,
+      # `pnpm -v` obeys devEngines.packageManager: it downloads the pinned pnpm and REWRITES
+      # pnpm-lock.yaml (packageManagerDependencies, packages:, snapshots:) — breaking this script's
+      # headline promise never to edit a file — and then answers with the pinned version, so the
+      # comparison below could only ever tie and the "pin is not in effect" warning could never fire.
+      # From `/` there is no package.json above it, so the answer is the PATH pnpm this check is about.
+      cur_pnpm="$( (cd / && pnpm -v) 2>/dev/null )"
       if [ -z "$cur_pnpm" ]; then
-        # `pnpm -v` itself failing means pnpm is refusing this repo — the usual cause is a
-        # devEngines onFail of "error", which rejects every bootstrap but the pinned version.
-        report warn "pnpm" "on PATH but refuses to run here — run: pnpm -v (an onFail of \"error\" rejects any version but the pin)"
+        # Empty from `/` no longer means "this repo rejects it" — no package.json applies there, so
+        # nothing repo-local can be the cause. It means the binary on PATH cannot run at all: a
+        # half-finished install, a broken shim, a node it can't find.
+        report warn "pnpm" "on PATH but does not run — check: cd / && pnpm -v"
       else
         case "$pmver" in
           # No pin to check against.

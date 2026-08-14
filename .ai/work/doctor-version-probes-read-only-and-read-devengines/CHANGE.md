@@ -2,7 +2,7 @@
 change: doctor-version-probes-read-only-and-read-devengines
 branch: doctor-version-probes-read-only-and-read-devengines
 created: 2026-08-14
-status: shaping
+status: building
 ---
 
 # Change — `doctor.sh`'s version block probes without mutating, and reads both `devEngines` pins
@@ -33,7 +33,7 @@ line reports against `devEngines.runtime` when present; and the pre-v11 lockfile
 
 ## Tasks
 
-- [ ] 1. Take `cur_pnpm` from outside the repo so the probe is read-only and measures the PATH pnpm;
+- [x] 1. Take `cur_pnpm` from outside the repo so the probe is read-only and measures the PATH pnpm;
       keep the empty-result branch and its message intact.
 - [ ] 2. Turn `scripts/tests/doctor.test.sh:375`'s comment into the pre-v11 LOCKFILE case it describes,
       plus an assertion that a doctor run leaves the fixture's `pnpm-lock.yaml` sha unchanged.
@@ -64,3 +64,14 @@ line reports against `devEngines.runtime` when present; and the pre-v11 lockfile
 
 The second backlog entry (`dw-doctor-reads-devengines-runtime-as-the-node-pin`) is folded in here and
 removed from `.ai/backlog/`; the file this doc was `git mv`'d from is the first.
+
+**Task 1 — the empty-result message could not stay intact, and the shaping decision was wrong about
+why.** It read "on PATH but refuses to run here", blaming a devEngines `onFail: "error"`. That is a
+repo-local diagnosis, and probing from `/` puts the probe where no repo applies — so the branch can no
+longer be reached for that reason, only by a pnpm that cannot run at all. Message reworded to say
+that instead. The refusal case is now undetectable without re-introducing the write, and that is the
+trade the goal takes deliberately: a wrong-but-visible pin beats a right diagnosis bought with a
+lockfile rewrite. Nothing asserted the old wording (`grep` over `skills/`, `docs/`, the self-tests).
+
+Measured on this repo after the fix: `pnpm-lock.yaml`'s sha is identical across a doctor run, and the
+pin warning fires again (PATH 11.21.0 vs the 11.18.0 pin) — both halves of the two-bug report.

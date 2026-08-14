@@ -58,7 +58,7 @@ locked entries and the win was never assumed.
       miss the same key and try to save it at the end, and only the first can. Whether the losers log
       it quietly or fail the step is the one thing the source does not settle — `saveCache` returning
       `-1` is handled, a throw is not.
-- [ ] 3. **The warm run, and the verdict.** Re-run the same PR with the lockfile unchanged so the key
+- [x] 3. **The warm run, and the verdict.** Re-run the same PR with the lockfile unchanged so the key
       hits, and put the three warm setup times beside the cold ones and beside the ~7s baseline. Then
       decide in `## Notes`, in writing: keep, with the number in the workflow comment from task 1, or
       revert the three files. Expect the honest answer to be small — the store covers pnpm's own
@@ -143,3 +143,34 @@ runtime as well as the eight dev packages. That is the number that decides this:
 download and extract ~45 MB to avoid fetching eight small packages and one Node tarball. It is
 entirely plausible that the restore is _slower_ than the misses it replaces, which is the outcome
 task 3 must be willing to report.
+
+### From task 3 — the verdict is revert, and the reason is structural
+
+**Confirmed at the user's call: the three `cache: true` lines are reverted.** What ships is the
+measurement plus a four-line comment in each workflow, so nobody re-derives this from scratch.
+
+**Setup step, group-open to next-group-open** (warm reruns `94711333318`, `94711343108`):
+
+| job             | baseline, no cache | cold, miss | warm, hit |
+| --------------- | ------------------ | ---------- | --------- |
+| `agnix lint`    | 37.1s              | 37.8s      | **38.3s** |
+| `Routing evals` | —                  | 37.2s      | **38.5s** |
+
+Narrowed to the window the cache targets — step start to `pnpm install` done — `agnix lint` runs
+**6.3s cold → 7.9s warm**. The cache is not broken: the install flips from
+`reused 1, downloaded 8` to `reused 8, downloaded 1`. Restoring the entry simply costs more than the
+eight small packages it spares.
+
+**The structural reason, and the thing worth remembering: the action installs the runtime _before_ it
+restores the cache.** In both warm jobs the runtime step still logs `downloaded 1` (`08:06:55.97` in
+`Routing evals`) while `Cache restored successfully` only lands at `08:06:58.59`. So the Node tarball
+— most of the 45.1 MB — is written into the cached store, uploaded, and restored on every hit, then
+never used, because by the time it arrives Node has already been fetched. **A store cache under
+`pnpm/setup@v2` carries its own largest object as dead weight.** That is not a nine-entry problem
+this repo would grow out of: a bigger dev tree would have to save more than the restore overhead
+_plus_ that payload before the input starts paying.
+
+**Two facts this run settled that outlive the revert.** Three concurrent jobs racing one key is safe
+— the losers warn, the winner saves. And the ~30s dominating every Node workflow here is `agnix`'s
+postinstall binary fetch, which no store cache touches. **If CI time is ever the real complaint, that
+postinstall is the target, not the store.**

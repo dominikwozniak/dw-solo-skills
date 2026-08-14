@@ -230,3 +230,36 @@ Versions: `dw-solo` 0.4.18 → 0.4.19 (dw-git, dw-start, `worktree.sh`), `dw-sol
 `pnpm lint` cannot be run through pnpm here — the rtk rewrite turns it into an ESLint wrapper that dies
 `Command "eslint" not found` on a green repo, exactly as `tooling.md` warns. `bash scripts/lint.sh` is
 the real gate: 0 errors, 53 warnings, 15 info — unchanged in kind from before.
+
+**`dw-check` found three false positives, all in `credential-leak-guard.sh`, all now fixed and
+pinned.** Every one was an ordinary command that a session types — which is the failure mode that
+hook's own header names as the thing that gets a guardrail unwired, so the review caught the design
+bet failing on its own terms.
+
+- A bare `auth` in `CRED_WORDS` swallowed the whole AUTHOR family: `echo $AUTHOR` was refused. The
+  same line's comment already argued `key` was excluded for matching keyboard and keychain — `auth`
+  failed that test identically and shipped anyway. It now has to end the word or hit a separator, with
+  `authorization` spelled out; ERE has no negative lookahead, so "not followed by a letter" is the
+  closest expressible thing.
+- `set` matched with arguments, so `set -e && grep -rn "password" src/` read as hunting the
+  environment. Only the argument-less form dumps anything; the pattern still catches
+  `set | grep -i token`, which is the real form.
+- A project-local `.npmrc` is committed registry config in most Node repos, and this hook ships to
+  every scaffolded one. Only `~/`, `$HOME/` or an absolute path counts now. Its siblings need no such
+  test — `.netrc` and `.pgpass` are home-dir files by convention.
+
+Also noted rather than fixed: `strip_heredocs` is byte-identical in two hooks and nothing detects the
+drift. No shared library on purpose — each hook is installed and pruned alone, so a `source` would
+make it depend on a file `dw-init` may not have copied. A cross-reference comment now says so in both
+directions.
+
+**Three things block `dw-ship`, none of them in the diff.** Local `main` was rebased onto merged PR
+#30 while this branch was building, so the base `9e241df` is now an orphaned twin of `94de606` and
+`main..HEAD` shows work this change did not write. `git-history.md:17-26` predicts exactly this:
+
+1. Rebase with `git rebase --onto main 9e241df the-guardrail-hook-wave`, not a plain rebase.
+2. `docs/agents/tooling.md` will conflict — #30 edited it too.
+3. **The new skill-corpus ratchet will fail.** Measured by running #30's checker against this tree:
+   +122 words over baseline (`dw-git` 1204 → 1292, `dw-init` 2409 → 2462). It needs
+   `node scripts/check-skill-corpus.mjs --update-baseline` in the same commit, which decision 0009
+   makes a deliberate recorded act. Version bumps are safe — `main` is still at 0.4.18 / 0.1.18.

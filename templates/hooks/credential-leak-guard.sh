@@ -35,10 +35,16 @@ COMMAND=$(jq -r '.tool_input.command // empty' <<<"$INPUT")
 [[ -z "$COMMAND" ]] && exit 0
 
 # Credential-ish name fragments, matched case-blind against a variable name or a
-# grep pattern. `auth` is here and `key` is not: a bare `key` matches keyboard,
-# keychain and keys(), where `access_key` and `private_key` are already listed in
-# full.
-CRED_WORDS='(token|secret|password|passwd|passphrase|api[_-]?key|access[_-]?key|private[_-]?key|credential|auth)'
+# grep pattern. A bare `key` is deliberately absent — it matches keyboard,
+# keychain and keys() — and `auth` failed that same test after shipping bare for
+# one commit: it swallowed `$AUTHOR`, `$AUTHORS` and `$AUTHOR_DATE`, which is
+# everyday git scripting, so `echo $AUTHOR` was refused. `auth` now has to end the
+# word (`$AUTH`, `$BASIC_AUTH`) or be followed by a separator (`$AUTH_TOKEN`),
+# with `authorization` spelled out because it continues into letters. ERE has no
+# negative lookahead, so "not followed by a letter" is the closest expressible
+# thing — and it consumes that character, which is safe only because nothing in
+# either regex below follows CRED_WORDS.
+CRED_WORDS='(token|secret|password|passwd|passphrase|api[_-]?key|access[_-]?key|private[_-]?key|credential|authorization|auth([^A-Za-z]|$))'
 
 block() {
   echo "BLOCKED: $1" >&2
@@ -50,6 +56,13 @@ block() {
 # Same two-stage strip as block-env-access.sh: heredoc bodies are prose and carry
 # no quoting to find, so they go first, by line; then quoted spans; then the
 # remainder is split into tokens.
+#
+# DUPLICATED, NOT SHARED: `HEREDOC_OPEN` and `strip_heredocs` are byte-identical
+# to block-env-access.sh's, and a fix to one belongs in both. There is no shared
+# library to put them in on purpose — each hook is installed and pruned on its
+# own, so a `source` would make every hook depend on a file dw-init may not have
+# copied. Nothing detects the drift, which is the same standing hazard
+# hooks-in-sync.test.sh's header records about the dw-skills vendored copies.
 HEREDOC_OPEN='(^|[^<])<<-?[[:space:]]*["'"'"'\]?([A-Za-z_][A-Za-z0-9_]*)'
 strip_heredocs() {
   local line delim="" body=0
@@ -78,7 +91,18 @@ strip_heredocs() {
 is_cred_path() {
   local tok="$1" comp
   case "${tok##*/}" in
-    .netrc | .git-credentials | .pypirc | .pgpass | .npmrc) return 0 ;;
+    .netrc | .git-credentials | .pypirc | .pgpass) return 0 ;;
+    # `.npmrc` is the one entry here with a legitimate PROJECT-LOCAL twin —
+    # committed registry config holding no secret — and this hook ships through
+    # templates/ to every scaffolded Node repo, so refusing `cat .npmrc` there
+    # would be wrong far more often than right. Only the user's own one counts.
+    # The siblings above need no such test: they are home-dir files by
+    # convention and a project-local `.netrc` is already a mistake.
+    .npmrc)
+      case "$tok" in
+        '~/'* | '$HOME/'* | /*) return 0 ;;
+      esac
+      ;;
   esac
   local IFS=/
   for comp in $tok; do
@@ -103,7 +127,15 @@ done < <(printf '%s\n' "$STRIPPED" | tr -s "[:space:];|&()<>=\`\"'" '\n')
 # --- 2. hunting the environment ----------------------------------------------
 # An env dump is fine on its own — `env` to see what is set is ordinary. Filtered
 # for a credential name it is not a look, it is a search.
-ENV_DUMP='(^|[;&|][[:space:]]*)(env|printenv|export -p|declare -x|set)([[:space:]]|$)'
+#
+# `set` only counts with NO ARGUMENTS, which is the spelling that dumps the
+# environment. `set -e` and `set -euo pipefail` set shell options and dump
+# nothing, and matching them meant `set -e && grep -rn "password" src/` was
+# refused — searching your own source for a field name is ordinary work, and that
+# is exactly the false positive that gets a hook unwired. The alternatives end
+# `($|[;&|])` rather than `$` so that `set | grep -i token`, the real hunting
+# form, still matches.
+ENV_DUMP='(^|[;&|][[:space:]]*)((env|printenv)([[:space:]]|$)|export -p|declare -x|set[[:space:]]*($|[;&|]))'
 env_hunt=0
 if printf '%s' "$COMMAND" | grep -qE "$ENV_DUMP" \
   && printf '%s' "$COMMAND" | grep -qiE "(grep|rg|ag|awk|sed|fgrep|egrep)[^;&|]*$CRED_WORDS"; then

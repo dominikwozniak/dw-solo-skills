@@ -70,7 +70,7 @@ a split: it all lands together.
 - [x] 5. Delete every hardcoded self-measurement: `docs/agents/tooling.md:80` ("51 warnings"), `:83`
       ("117/120 lines") and `docs/agents/README.md:25` ("117/120 lines and 7088/10240 B") — all three
       already stale at 118/7318. State the rule, let the checker report the number.
-- [ ] 6. `docs/agents/tooling.md` (227 lines / 19.3 KB, the largest doc) down to what only it can say.
+- [x] 6. `docs/agents/tooling.md` (227 lines / 19.3 KB, the largest doc) down to what only it can say.
       Cut the ratchet rationale that is a third copy of `docs/decisions/0009` and a fourth of
       `scripts/validate-artifacts.sh:12–17`; cut the CI-cache experiment narrative to its one
       actionable sentence; cut the three-occurrence `paths:` story to its one rule, since both
@@ -172,6 +172,17 @@ a split: it all lands together.
   A grep for the four patterns across `AGENTS.md`, `CONTEXT.md`, `README.md`, `docs/` and `templates/`
   now returns nothing. The `11 skills` badge and the `32 KB` Codex limit stay — one is verified against
   disk, the other is an external constant.
+
+- Task 6: 227 → 215 lines. All three named cuts made, plus one word: `:34` called this repo's
+  `.claude/hooks/` "vendored copies" of `templates/hooks/`, which collides head-on with the glossary
+  term settled in task 3 (`Vendored` = canon in `dw-skills`). The relationship it meant is
+  canon-and-copy _inside_ this repo, so it now says that.
+- Task 6, deliberately not cut: the declared-bullet resolution chain at `:56–75` overlaps
+  `CONTEXT.md`'s **Declared bullet** entry and `AGENTS.md:89–92`. Judged cross-reference rather than a
+  second home — the glossary defines the term, the root says why the four live there, and only this
+  file has the mechanics (which probe each script falls back to, why `CLAUDE.md` is off the chain, why
+  `none` is tested before backtick extraction). Named here because the next reader will see the
+  overlap and should know it was looked at.
 
 **Prior context:** `.ai/backlog/templates-ship-the-docs-agents-contract.md` is coupled to task 9 —
 cutting the template's prose removes the last place a scaffolded repo meets the `docs/agents/`

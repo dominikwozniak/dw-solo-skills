@@ -77,7 +77,7 @@ tokens, limit is 1500)`) while `pnpm validate:docs` calls the same file green at
       `cat skills/*/SKILL.md | wc -w`. Exit 1 over baseline naming total / baseline / delta / the
       per-skill deltas; exit 2 on a missing or malformed baseline, never a silent pass; the
       "now smaller — re-record to tighten" nudge when under.
-- [ ] 2. **`scripts/tests/check-skill-corpus.test.sh`.** Synthetic fixtures under `mktemp` driven
+- [x] 2. **`scripts/tests/check-skill-corpus.test.sh`.** Synthetic fixtures under `mktemp` driven
       through `--root`, **never the live tree** — `check-agents-docs.test.sh:2-4` states why, and a
       case asserting the real corpus would make the self-test a second content gate. Five cases: at
       baseline → 0; one word added → 1, naming the skill; one word removed → 0 plus the nudge;
@@ -140,6 +140,13 @@ tokens, limit is 1500)`) while `pnpm validate:docs` calls the same file green at
   Two of its statements were already stale when this file was written, both because three commits
   landed mid-session: `.ai/backlog/` is at **5/8**, not 8/8 (so task 6 is possible at all), and the
   corpus re-measured to the same 13 243 at `8ec8d98`.
+- **The test grew past the five cases the task named, to 23 assertions**, because three failure modes
+  only show up once the fixture has two skills: an unchanged skill must stay OUT of the report (or
+  every failure lists the whole corpus and names nothing), a skill absent from the baseline is growth
+  and must read as `new`, and `--update-baseline` must preserve the `$comment` — a re-record that
+  dropped it would leave the next reader a bare number with no route back to why it exists. There is
+  also a case asserting the checker's count equals `cat skills/*/SKILL.md | wc -w` over the fixture,
+  which is what keeps the baseline's "reproduce it with" line honest.
 - **The re-measure at HEAD came back 13 243**, the same number this document carried — and the
   checker agrees with `cat skills/*/SKILL.md | wc -w` exactly, which is what makes the baseline's
   "reproduce it with" line true rather than aspirational. `wc -w` per file also sums to the same

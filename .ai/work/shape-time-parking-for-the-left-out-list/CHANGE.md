@@ -44,7 +44,7 @@ backlog in what you get. `dw-solo` and `dw-solo-setup` are bumped in both manife
       context. Point at the two bars rather than restating them. Committed with the shape commit: an
       uncommitted park is invisible to every other session, the same reason the `CHANGE.md` commit is
       load-bearing.
-- [ ] 2. **`dw-grill`'s closing sentence.** `skills/dw-grill/SKILL.md:85-88` — "what stays out reaches
+- [x] 2. **`dw-grill`'s closing sentence.** `skills/dw-grill/SKILL.md:85-88` — "what stays out reaches
       `.ai/backlog/` at land time" becomes shape time. Keep "**This skill still writes nothing**": the
       playback is the deliverable and an interviewer that files things is one you cannot run to think
       out loud.

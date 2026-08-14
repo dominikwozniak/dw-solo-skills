@@ -1,6 +1,6 @@
 ---
 change: cache-the-pnpm-store-in-the-new-setup-step
-branch: unclaimed
+branch: cache-the-pnpm-store-in-the-new-setup-step
 created: 2026-08-14
 status: shaping # shaping | building | landed
 ---

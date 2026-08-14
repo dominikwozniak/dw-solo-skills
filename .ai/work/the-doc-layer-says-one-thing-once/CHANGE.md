@@ -54,7 +54,7 @@ a split: it all lands together.
       Correct the `validate:artifacts` parenthetical — it runs three passes, not just the self-tests.
       Pay for the added lines by cutting the positioning prose at `:9–12` to its one rule, since the
       file sits at 118 of 120 lines.
-- [ ] 2. `CONTEXT.md` back to the definitions-only promise its own line 3 makes. Fix `:13` — traps go
+- [x] 2. `CONTEXT.md` back to the definitions-only promise its own line 3 makes. Fix `:13` — traps go
       to the `## Gotchas` of the matching routed topic file, never a root `## Gotchas`, which does
       not exist and which `AGENTS.md:5` forbids. Delete the term-less "three governors are distinct"
       editorial bullet, which restates the three entries above it.
@@ -137,6 +137,10 @@ a split: it all lands together.
   (`scripts/<script>.{sh,mjs}`, dropping `lint.sh` from its examples) rather than growing a line, so
   the positioning prose only had to give up one line instead of two. 119/120 lines before and after,
   7283 B.
+
+- Task 2: the deleted "three governors are distinct" bullet was checked term by term before it went,
+  since a summary bullet can be the only home of a fact. It was not: "picks no number at all" is
+  already in **Ratchet** (`:66`), and the Cap/Budget halves in `:17` and `:61`. Nothing lost.
 
 **Prior context:** `.ai/backlog/templates-ship-the-docs-agents-contract.md` is coupled to task 9 —
 cutting the template's prose removes the last place a scaffolded repo meets the `docs/agents/`

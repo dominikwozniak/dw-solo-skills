@@ -10,8 +10,8 @@ in [`AGENTS.md`](AGENTS.md) and the procedures in the skills themselves.
 - **Change** — one unit of work, held in `.ai/work/<slug>/CHANGE.md`. Persistent (tracked, survives a
   `/clear`), archived at merge (`.ai/archive/<slug>/`, `status: landed`).
 - **Promotion** — moving the durable residue out of a `CHANGE.md` before it is archived: decisions to
-  `docs/decisions/`, terms here, traps to `## Gotchas` in `CLAUDE.md`, follow-ups to `.ai/backlog/`
-  (one file per idea). It **replaces rather than appends**: each target is read first, and what the
+  `docs/decisions/`, terms here, traps to the `## Gotchas` of the routed topic file that covers them,
+  follow-ups to `.ai/backlog/` (one file per idea). It **replaces rather than appends**: each target is read first, and what the
   change supersedes is deleted in the same edit. Decisions are the exception — there the replacement
   is a `superseded-by:` link and the old record stays.
 - **Cap** — the ceiling `validate-artifacts.sh` enforces on `.ai/backlog/`, the one durable list that
@@ -68,10 +68,6 @@ in [`AGENTS.md`](AGENTS.md) and the procedures in the skills themselves.
   `scripts/skill-corpus.baseline.json` plus pass 3 of `validate:artifacts`, set by
   [`0009`](docs/decisions/0009-skill-corpus-ratchet.md). Growth stays legal at the price of a
   re-record in the same commit.
-- The three governors are distinct and the words are not interchangeable: a **Cap** counts entries in
-  a durable list against a number somebody picked, a **Budget** measures one always-loaded file
-  against a number somebody picked, a **Ratchet** compares one measure against its own recorded past
-  and picks no number at all.
 - **Declared bullet** — a `- **<Name>**: <value>` line under `## Solo lane` that a hook **greps**
   rather than infers, so the rule the writer reads and the rule the enforcer applies are one line.
   Four exist: **Lint command**, **Typecheck command**, **Commit pattern**, **Commit trailer**. All

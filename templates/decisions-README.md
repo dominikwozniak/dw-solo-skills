@@ -6,11 +6,12 @@ shape.**
 
 No index here on purpose: `ls` sorts them and every slug states its decision.
 
-You don't have to keep the contract in your head, and it isn't restated here: `dw-land` reads it from
-`references/decision-record.md` inside the installed plugin every time it writes one. What it says, in
-one line each — a record needs **all three** of hard-to-reverse, surprising and a real trade-off, so
-most changes produce **zero**; and a replaced record is **never rewritten or renumbered**, only marked
-`status: superseded` with `superseded-by:` pointing at the new one.
+The contract — the three-part bar a decision has to clear, the frontmatter and section shape, and how a
+record is superseded rather than rewritten — is **not restated here**. It lives once, in
+`references/decision-record.md` inside the installed plugin, because that is the file `dw-land` reads
+every time it writes a record. A second copy here would be the one nobody reads and the one that goes
+stale.
 
-What a word _means_ goes in `CONTEXT.md`; a trap that cost real time goes in `## Gotchas` in
-`CLAUDE.md`. Both are common; a record is rare.
+What a word _means_ goes in `CONTEXT.md`; a trap that cost real time goes in a `## Gotchas` — an
+existing root section where the repo already keeps one, else the routed topic file covering the trap.
+Both are common; a record is rare.

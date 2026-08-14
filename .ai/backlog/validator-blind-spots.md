@@ -11,6 +11,9 @@ or `scripts/runtime/` that merges green with no bump. Needing a base ref may put
 rather than in the validator. Write the fixture alongside it — `717f1e5` is proof a validator can pass
 silently while broken. Detail: `.ai/archive/skill-routing-evals`.
 
+Hit again by `the-doc-layer-says-one-thing-once`, which edited `templates/` in two rounds and bumped
+`dw-solo-setup` by hand both times — twice relying on the reader the check cannot be.
+
 This entry was three bullets. `de-ratchet-the-solo-lane` closed the other two: the hardcoded
 `awk -F'|' '{print $4}'` Arguments-cell index went with the column, and the decision-record contract no
 longer states itself in three files.

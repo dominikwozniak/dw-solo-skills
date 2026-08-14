@@ -11,13 +11,11 @@ governors over the durable layer: the cap on `.ai/backlog/` (pass 2) and the rat
 `skills/*/SKILL.md` (pass 3, `scripts/check-skill-corpus.mjs` against
 `scripts/skill-corpus.baseline.json`).
 
-Pass 3 exists because the corpus grew 19% in three days with nothing looking. It sets **no
-threshold** — the baseline records what the corpus is, and the check fails only on an increase, so
-growth stays legal and costs one `node scripts/check-skill-corpus.mjs --update-baseline` in the same
-commit. Adding a skill therefore always touches two files. It counts words rather than bytes or
-lines because prettier reflows Markdown at 100 columns, which moves both of those on a pure
-reformat — ASCII whitespace only, so the count matches `cat skills/*/SKILL.md | wc -w` under the
-`LC_ALL=C` the gate exports.
+Pass 3 sets **no threshold**: the baseline records what the corpus is and the check fails only on an
+increase, so growth stays legal and costs one `node scripts/check-skill-corpus.mjs --update-baseline`
+in the same commit. Adding a skill therefore always touches two files. The unit is words; why words
+rather than lines or bytes, and why a ratchet rather than a number, are in
+[`0009`](../decisions/0009-skill-corpus-ratchet.md).
 
 A baseline it cannot trust exits **2**, never a silent pass: missing, unparseable, wrong-shaped, or
 internally inconsistent (`words` disagreeing with the sum of `perSkill`). The one exception is being
@@ -31,8 +29,9 @@ A new self-test needs no wiring: pass 1 globs `scripts/tests/*.test.sh`.
 ## The hooks
 
 Wired in tracked `.claude/settings.json`, with the scripts in `.claude/hooks/` — so a fresh clone and
-a `git worktree` checkout get the same guardrails. They are also vendored copies of what this repo
-ships in `templates/hooks/`; `scripts/tests/hooks-in-sync.test.sh` pins the two together.
+a `git worktree` checkout get the same guardrails. Each is a byte-identical copy of its template under
+`templates/hooks/`, the canon this repo ships; `scripts/tests/hooks-in-sync.test.sh` pins the two
+together.
 
 | hook                          | fires on                                                           |
 | ----------------------------- | ------------------------------------------------------------------ |
@@ -77,29 +76,22 @@ declaration either, and each script names the tokens it rejects.
 ## Gotchas
 
 - **agnix warnings do not fail the build, and one of them is true right now.** `scripts/lint.sh`
-  exits **0** with 51 warnings; only `Found N errors` gates. So a rule firing is not a rule
-  enforced — `CLAUDE.md:1:0 warning: File exceeds recommended token limit (~1752 tokens, limit is
-1500)` has been true and ignored the whole time `pnpm validate:docs` has been calling the same file
-  green at 117/120 lines. Two checkers, two units, one of them advisory, and the advisory one looks
-  identical to the binding one in the output. Before citing agnix as the thing that would have caught
-  something, check whether it gates: `severity` sets a reporting floor, and `[[overrides]]` can only
-  _disable_ a rule for a glob, never turn its threshold down. That is why the corpus ratchet is its
-  own checker rather than a tuned `AS-012`.
+  exits **0** with dozens of warnings; only `Found N errors` gates. So a rule firing is not a rule
+  enforced — agnix's `File exceeds recommended token limit` has been firing on `CLAUDE.md` and being
+  ignored the whole time `pnpm validate:docs` has been calling that same file green. Two checkers, two
+  units, one of them advisory, and the advisory one looks identical to the binding one in the output.
+  Run either to see where the file stands; no copy of those figures is kept here. Before citing agnix
+  as the thing that would have caught something, check whether it gates: `severity` sets a reporting
+  floor, and `[[overrides]]` can only _disable_ a rule for a glob, never turn its threshold down. That
+  is why the corpus ratchet is its own checker rather than a tuned `AS-012`.
 - **A new check needs a new `paths:` entry, or it never runs on the commit shape it exists to
   catch.** Every workflow here is path-filtered, so a check added to an existing script inherits that
-  script's triggers — which are the paths the _old_ checks cared about. `validate-docs.sh`'s
-  agent-docs check grades `AGENTS.md`, and `validate-docs.yaml` did not list `AGENTS.md`: a commit
-  that pushed the root over its budget — the exact regression the check exists for — matched no
-  filter and CI stayed green with nothing run. It has now bitten **three times**;
-  `validate-artifacts.yaml` carries a comment about the first. When you add a check, add every path it
-  _reads_ to both the `pull_request` and `push` lists, not just the script you edited.
-  - **The third bite was the corpus ratchet, and it is the one that shows how the trap hides.** Pass 3
-    reads `skills/**`, and `validate-artifacts.yaml` listed none of it — so appending words to a
-    `SKILL.md`, the exact shape the ratchet exists to catch, matched no filter. `.husky/pre-commit`
-    does not run `validate:artifacts` either, so there was no automatic path at all. What made it
-    invisible: `validate-docs.yaml` **does** list `skills/**`, so that commit still showed a green
-    tick — from a workflow that never measures the corpus. A green check on a skill edit does not mean
-    the corpus was measured; only the _Validate artifacts_ run does.
+  script's triggers — the paths the _old_ checks cared about. It has bitten repeatedly, and both
+  workflows now carry the reasoning inline beside the entries that were missing. When you add a check,
+  add every path it _reads_ to both the `pull_request` and `push` lists, not just the script you
+  edited. What makes it hide: some _other_ workflow's filter usually does match, so the commit still
+  shows a green tick — from a run that never performs the check in question. A green tick on a skill
+  edit does not mean the corpus was measured; only the _Validate artifacts_ run does.
 - **pnpm here is three traps deep, and every one of them looks like a broken repo.**
   - **The lint script can be hijacked before it reaches `scripts/lint.sh`.** With the `rtk` proxy
     hook active it is rewritten to `rtk lint` — an _ESLint_ wrapper — and dies with
@@ -119,16 +111,12 @@ declaration either, and each script names the tokens it rejects.
     survives), `"download"` fetches the pinned version and runs it — the behaviour the deleted
     `packageManager` field used to provide. (3) **CI reads both fields through one inputless
     `pnpm/setup@v2` step**, which installs pnpm, installs Node, and runs the install — so a workflow
-    needs no `with:` block. The one input that would not merely restate the manifest, `cache: true`,
-    was **measured on #28 and reverted: a hit is ~1.2s slower than no cache at all** (37.1s baseline →
-    38.3s warm on `agnix lint`), and the reason is structural rather than a matter of tree size — the
-    action installs the runtime _before_ it restores, so the Node tarball is most of a 45MB entry that
-    is uploaded and restored on every hit and then never used. The store cache also cannot touch the
-    ~30s that actually dominates these jobs, which is `agnix`'s postinstall fetching its prebuilt
-    binary. Don't re-add it without re-measuring; if CI time is the real complaint, that postinstall
-    is the target. (A related non-trap, since the key is `pnpm-cache-<os>-<arch>-<lockfile hash>` with
-    no job component: three jobs racing it is safe — the losers warn, the winner saves.) The Node half
-    carries a tail:
+    needs no `with:` block. **Don't add `cache: true` without re-measuring** — it was measured on #28
+    and reverted, because a cache hit came out slower than no cache at all: the action installs the
+    runtime _before_ it restores, so most of the entry is a Node tarball uploaded and restored on every
+    hit and then never used. If CI time is the real complaint, `agnix`'s postinstall fetching its
+    prebuilt binary is what dominates these jobs, and no store cache touches it. The Node half carries
+    a tail:
     `devEngines.runtime` makes Node a **locked dependency** (a `node@runtime:…` entry with a hash per
     platform), so bumping it is the field **plus** a regenerated `pnpm-lock.yaml` — edit the version
     alone and CI's frozen install refuses it. Locally the pin reaches scripts run through pnpm only:
@@ -151,6 +139,11 @@ declaration either, and each script names the tokens it rejects.
     not, because lint-staged writes and re-stages, committing the very content the push gate then
     refuses. It bites in `.ai/work/<slug>/CHANGE.md`, where writing findings under a `- [x] N.` box is
     the natural thing to do. Keep task bodies to one paragraph; findings belong in `## Notes`.
+  - **`prettier --check` never looks at prose width**, because `.prettierrc.json` sets
+    `proseWrap: "preserve"` — `printWidth: 100` governs code and reflowed tables, and Markdown
+    paragraphs are left exactly as authored. So the format gate passes a 128-column line in a file
+    hand-wrapped to 100, and an edit that rewraps only the line it touches pushes the overflow onto the
+    next one. Rewrap the whole paragraph, and check with `grep -nE '^.{108,}'` rather than the gate.
   - **`evals/*.ts` must never get the executable bit.** `lint-on-edit.sh` `eval`s its resolved lint
     command against the file path; the pre-fix version resolved to a bare space and executed the
     target. Fixed and pinned by `scripts/tests/lint-on-edit.test.sh`.

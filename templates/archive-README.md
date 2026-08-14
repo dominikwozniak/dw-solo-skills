@@ -9,7 +9,7 @@ part of such a doc worth keeping. An idea rejected before it was ever shaped is 
 here, having never passed through `.ai/work/`.
 
 **History, not guidance** — nothing browses this folder for advice; the durable layer lives in
-`docs/decisions/`, `CONTEXT.md` and `## Gotchas` in `CLAUDE.md`. It is reached by **exact slug**,
+`docs/decisions/`, `CONTEXT.md` and wherever the repo keeps its `## Gotchas`. It is reached by **exact slug**,
 never read in general: `dw-shape` treats a slug already here as taken, and when that doc is
 `status: rejected` it reads the `## Why rejected` and stops, so the same idea is not shaped twice.
 Backlog entries may point here for a change's findings (its `## Notes`).

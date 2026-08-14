@@ -10,10 +10,10 @@ in [`AGENTS.md`](AGENTS.md) and the procedures in the skills themselves.
 - **Change** — one unit of work, held in `.ai/work/<slug>/CHANGE.md`. Persistent (tracked, survives a
   `/clear`), archived at merge (`.ai/archive/<slug>/`, `status: landed`).
 - **Promotion** — moving the durable residue out of a `CHANGE.md` before it is archived: decisions to
-  `docs/decisions/`, terms here, traps to `## Gotchas` in `CLAUDE.md`, follow-ups to `.ai/backlog/`
-  (one file per idea). It **replaces rather than appends**: each target is read first, and what the
-  change supersedes is deleted in the same edit. Decisions are the exception — there the replacement
-  is a `superseded-by:` link and the old record stays.
+  `docs/decisions/`, terms here, traps to the `## Gotchas` of the routed topic file that covers them,
+  follow-ups to `.ai/backlog/` (one file per idea). It **replaces rather than appends**: each target
+  is read first, and what the change supersedes is deleted in the same edit. Decisions are the
+  exception — there the replacement is a `superseded-by:` link and the old record stays.
 - **Cap** — the ceiling `validate-artifacts.sh` enforces on `.ai/backlog/`, the one durable list that
   would otherwise only grow; that script holds the number. A count of entries, never of bytes, and a
   forcing function rather than a quota — the way past a full list is to bundle an entry with a cousin
@@ -42,11 +42,12 @@ in [`AGENTS.md`](AGENTS.md) and the procedures in the skills themselves.
   an edit script; re-verified when the work resumes.
 - **Payload** — `templates/`: files `dw-init` copies **verbatim into a target project**, never read
   from the plugin at runtime. Not canon; a payload file may have a hand-written twin here.
-- **Vendored** — a byte-identical copy of a file whose canon lives in `dw-skills`
-  (`templates/hooks/*`, `scripts/runtime/slugify.sh`). Fixes must be applied in both repos.
+- **Vendored** — a copy of a file whose canon is shared with `dw-skills`. A fix must be applied in
+  both repos, because nothing across the boundary can detect drift. Which files:
+  [`skills-and-plugins.md`](docs/agents/skills-and-plugins.md).
 - **Fork** — a skill copied from `dw-skills` and deliberately simplified for one reader. Expected to
-  diverge; not re-synced. Current forks: `dw-grill`, `dw-shape`, `dw-next`, `dw-land`, `dw-git`,
-  `dw-doctor`, `dw-init`.
+  diverge; not re-synced. Which skills:
+  [`skills-and-plugins.md`](docs/agents/skills-and-plugins.md).
 - **Claim** — flipping a change doc's `branch: unclaimed` sentinel to a real branch name, committed
   immediately. Done by `dw-start` (after creating the worktree) or offered by `dw-next` (when its
   branch-grep misses). A change shaped on the default branch is unclaimed until then.
@@ -68,10 +69,10 @@ in [`AGENTS.md`](AGENTS.md) and the procedures in the skills themselves.
   `scripts/skill-corpus.baseline.json` plus pass 3 of `validate:artifacts`, set by
   [`0009`](docs/decisions/0009-skill-corpus-ratchet.md). Growth stays legal at the price of a
   re-record in the same commit.
-- The three governors are distinct and the words are not interchangeable: a **Cap** counts entries in
-  a durable list against a number somebody picked, a **Budget** measures one always-loaded file
-  against a number somebody picked, a **Ratchet** compares one measure against its own recorded past
-  and picks no number at all.
+- **Self-measuring number** — a figure in prose that measures this repo against itself: a line count,
+  a byte size, a warning tally, a count of files in a directory. Deleted rather than corrected — the
+  prose states the rule and the checker reports the number, because two copies of a moving measure
+  drift apart. Distinct from a **Budget** or a **Cap**, which are numbers somebody chose.
 - **Declared bullet** — a `- **<Name>**: <value>` line under `## Solo lane` that a hook **greps**
   rather than infers, so the rule the writer reads and the rule the enforcer applies are one line.
   Four exist: **Lint command**, **Typecheck command**, **Commit pattern**, **Commit trailer**. All

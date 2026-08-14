@@ -6,10 +6,9 @@
 > way is appended to that topic file's `## Gotchas`, never to this one. See
 > [`docs/agents/README.md`](docs/agents/README.md).
 
-A Claude Code skills catalog for repos only you read, distributed as an installable plugin
-marketplace — not a code project. The fuller, team-weight lane lives in a separate repo,
-[`dw-skills`](https://github.com/dominikwozniak/dw-skills). Keep this one thin: every skill here
-assumes **one reader**, and a change that needs a second reader's trust belongs there instead.
+A skills catalog, not a code project. Keep it thin: every skill here assumes **one reader**, and a
+change needing a second reader's trust belongs in the team-weight lane,
+[`dw-skills`](https://github.com/dominikwozniak/dw-skills).
 
 ## Layout — and the one rule
 
@@ -19,12 +18,13 @@ plugins/dw-solo/                 the loop plugin — plugin.json + symlinks (mod
 plugins/dw-solo-setup/           the setup plugin — dw-init, dw-doctor, the templates symlink
 plugins/dw-solo-extras/          the off-loop plugin — dw-handoff
 scripts/runtime/<script>.sh      shipped scripts — symlinked into the owning plugin
-scripts/<script>.sh              repo CI tooling, never shipped (validate-*.sh, lint.sh)
+scripts/<script>.{sh,mjs}        repo CI tooling, never shipped (validate-*.sh, check-skill-corpus.mjs)
 scripts/tests/<script>.test.sh   bash self-tests
 evals/cases/<name>.json          routing cases — one per model-invocable skill, never shipped
 evals/routing.ts                 the routing eval — free, deterministic, in CI
-templates/                       payload copied INTO a target project (hooks, settings.json, AGENTS.md,
-                                 check-agents-docs.mjs, the .ai/ and docs/decisions/ READMEs)
+templates/                       payload copied INTO a target project — hooks, settings.json,
+                                 AGENTS.md, check-agents-docs.mjs, gitignore-block.txt,
+                                 worktreeinclude.txt, the .ai/ and docs/decisions/ READMEs
 .claude-plugin/marketplace.json  makes this repo installable as a plugin source
 ```
 
@@ -50,7 +50,7 @@ a forced sequence.
 Markdown / JSON / Shell plus dependency-free TypeScript under `evals/` that Node runs directly — no
 build step, no typecheck.
 
-- **Test**: `pnpm validate:artifacts` (the bash self-tests in `scripts/tests/`)
+- **Test**: `pnpm validate:artifacts` — self-tests, the backlog cap, the skill-corpus ratchet
 - **Format**: `pnpm format` (check) · `pnpm format:fix` (write)
 - **Routing evals**: `pnpm eval:routing` — free, deterministic, in CI ([`evals/README.md`](evals/README.md))
 

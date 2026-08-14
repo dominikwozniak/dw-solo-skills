@@ -16,7 +16,15 @@ threshold** — the baseline records what the corpus is, and the check fails onl
 growth stays legal and costs one `node scripts/check-skill-corpus.mjs --update-baseline` in the same
 commit. Adding a skill therefore always touches two files. It counts words rather than bytes or
 lines because prettier reflows Markdown at 100 columns, which moves both of those on a pure
-reformat. A missing or malformed baseline exits **2**, never a silent pass.
+reformat — ASCII whitespace only, so the count matches `cat skills/*/SKILL.md | wc -w` under the
+`LC_ALL=C` the gate exports.
+
+A baseline it cannot trust exits **2**, never a silent pass: missing, unparseable, wrong-shaped, or
+internally inconsistent (`words` disagreeing with the sum of `perSkill`). The one exception is being
+asked to create one — `--update-baseline` on a missing file bootstraps it. Bad flag spellings exit 2
+too, because the two that matter both look like success: `--update-baselines` would run a plain check
+and write nothing, and `--root ""` resolves relative to the cwd, so from the repo root it measures the
+live tree the fixture was meant to stand in for.
 
 A new self-test needs no wiring: pass 1 globs `scripts/tests/*.test.sh`.
 

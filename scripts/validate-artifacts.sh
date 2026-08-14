@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Two passes, both backing `pnpm validate:artifacts` and the validate-artifacts CI workflow:
+# Three passes, all backing `pnpm validate:artifacts` and the validate-artifacts CI workflow:
 #
 #   1. every self-test under scripts/tests/ — synthetic cases proving the shipped scripts behave
 #      (slugify derives paths deterministically, worktree.sh creates and tears down), the guardrail
@@ -9,6 +9,14 @@
 #      12 queued ideas happen. The cap is not a size limit; it forces the choice the append silently
 #      skipped — absorb this entry into the change that found it, bundle it with a cousin, or admit
 #      it failed the bar.
+#   3. the ratchet over skills/*/SKILL.md, via scripts/check-skill-corpus.mjs. The corpus grew 19% in
+#      three days with nothing looking, because the only mechanical check over skill size was
+#      decoration: agnix AS-012 fires at 500 body lines, the largest skill is 228, and agnix warnings
+#      do not gate anyway — this script's own `bash scripts/lint.sh` exits 0 with 50 of them.
+#
+# Passes 2 and 3 are the same bargain in two units. Neither sets a limit anybody chose: the cap
+# forces a decision when the backlog grows, and the baseline forces one when the corpus does. Growth
+# stays available in both, and costs a line in the diff that a reader can see and argue with.
 #
 # There used to be a second cap here, over `## Gotchas` entries in AGENTS.md, and it is gone because
 # the section is: gotchas now live in the `docs/agents/<topic>.md` file the root's Task Router points
@@ -17,13 +25,13 @@
 # session loads — and the budget solves it without the side effect the cap had, which was to force
 # unrelated traps to be merged into one entry purely to stay under a number.
 #
-# NOTE: pass 2 is a COUNT, not a schema, and it is not a precedent for one — there is still
-# deliberately no `.ai/` sweep here. A count knows nothing about what is inside the files; it only
-# refuses to let the pile grow without a decision. This lane's CHANGE.md is a goal, a decision list
-# and a task checklist — no status table, no SHA column, no edge graph — so a validator reading one
-# could only check that prose exists.
+# NOTE: passes 2 and 3 are COUNTS, not schemas, and they are not a precedent for one — there is still
+# deliberately no `.ai/` sweep here, and pass 3 reads no skill's prose, only its size. A count knows
+# nothing about what is inside the files; it only refuses to let the pile grow without a decision.
+# This lane's CHANGE.md is a goal, a decision list and a task checklist — no status table, no SHA
+# column, no edge graph — so a validator reading one could only check that prose exists.
 #
-# A third pass used to run check-decisions.sh over this repo's own docs/decisions/. The script, its
+# A pass over this repo's own docs/decisions/ used to run here too, via check-decisions.sh. The script, its
 # 235-line test and the pass all went in `de-ratchet-the-solo-lane`: 489 lines of enforcement over
 # 229 lines of records, in a repo with one reader who does not need a parser to notice a malformed
 # record they just wrote.
@@ -70,6 +78,17 @@ if [ "$backlog" -gt "$BACKLOG_CAP" ]; then
   FAILED=1
 else
   echo "• .ai/backlog/: $backlog/$BACKLOG_CAP entries"
+fi
+
+# --- the ratchet over the skill corpus ---------------------------------------
+# No number lives here: the baseline holds it, and the checker owns the comparison. Node absent is a
+# SKIP rather than a pass — the same guard the .mjs self-tests use, and for the same reason.
+echo
+echo "Checking the skill corpus against its baseline..."
+if command -v node >/dev/null; then
+  node "$ROOT/scripts/check-skill-corpus.mjs" --root "$ROOT" || FAILED=1
+else
+  echo "• skills/: SKIP (node missing — the checker is a .mjs)"
 fi
 
 echo

@@ -83,7 +83,7 @@ tokens, limit is 1500)`) while `pnpm validate:docs` calls the same file green at
       baseline → 0; one word added → 1, naming the skill; one word removed → 0 plus the nudge;
       `--update-baseline` → file rewritten, exit 0; malformed baseline → 2. Picked up by
       `validate-artifacts.sh` pass 1 with no wiring.
-- [ ] 3. **Wire pass 3** into `scripts/validate-artifacts.sh`, and extend its header comment. The
+- [x] 3. **Wire pass 3** into `scripts/validate-artifacts.sh`, and extend its header comment. The
       existing `NOTE:` — pass 2 is a count, not a precedent for a schema — stays true and gains the
       ratchet rather than being replaced.
 - [ ] 4. **The three doc edits.** `docs/agents/README.md:17-19` — what kind of number the budget is
@@ -140,6 +140,13 @@ tokens, limit is 1500)`) while `pnpm validate:docs` calls the same file green at
   Two of its statements were already stale when this file was written, both because three commits
   landed mid-session: `.ai/backlog/` is at **5/8**, not 8/8 (so task 6 is possible at all), and the
   corpus re-measured to the same 13 243 at `8ec8d98`.
+- **The backlog is at 7/8, not the 5/8 this document recorded** — measured by pass 2 itself once
+  pass 3 was wired. Task 6 therefore lands it at 8/8, exactly at the cap and still passing (the cap
+  refuses `> 8`). The next entry after it has to bundle, absorb or drop, which is the cap working
+  rather than a problem with this change.
+- **Pass 3 skips rather than passes when node is missing**, matching the `command -v node` guard the
+  `.mjs` self-tests already use. A ratchet that silently reports "within baseline" on a machine that
+  never measured anything is the one outcome worse than no ratchet.
 - **The test grew past the five cases the task named, to 23 assertions**, because three failure modes
   only show up once the fixture has two skills: an unchanged skill must stay OUT of the report (or
   every failure lists the whole corpus and names nothing), a skill absent from the baseline is growth

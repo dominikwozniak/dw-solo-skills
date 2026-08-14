@@ -5,69 +5,87 @@ created: 2026-08-14
 status: shaping # shaping | building | landed
 ---
 
-# Change — a PreToolUse hook validates the commit subject, and dw-git stops defending the format in prose
+# Change — a PreToolUse hook enforces commit hygiene, and dw-git stops defending in prose what a script can check
 
 ## Goal
 
-`templates/hooks/enforce-commit-pattern.sh` intercepts `git commit -m …` before it runs and exits 2
-when the subject does not match the pattern — default Conventional Commits baked into the script,
-overridden by a `- **Commit pattern**: <regex>` bullet in `AGENTS.md`, disabled by `none` (the
-`lint-on-edit.sh` resolution shape). You know it worked when
-`echo '{"tool_name":"Bash","tool_input":{"command":"git commit -m \"bad message\""}}' | bash .claude/hooks/enforce-commit-pattern.sh`
-exits 2, `feat(dw-git): …` and the `rtk git commit …` form exit 0, the self-test is green, and
-`skills/dw-git/SKILL.md`'s commit Defaults point at the pattern instead of restating it.
+`templates/hooks/enforce-commit-hygiene.sh` intercepts a `git commit`/`git add` Bash call before it
+runs and exits 2 on four things prose alone guards today: a subject that misses the commit pattern,
+a missing or forbidden trailer, a backtick inside a `-m` string, and `git add -A` / `git add .`.
+Both policies are declared, not inferred — `- **Commit pattern**: <regex>` and
+`- **Commit trailer**: required|forbidden|<regex>` in `AGENTS.md`, each disabled by `none`, the
+`lint-on-edit.sh` resolution shape. You know it worked when a bad subject, a missing trailer, a
+backticked `-m` and `git add -A` each exit 2 with a message naming the fix; when `feat(dw-git): …`
+with the repo's trailer, the `rtk git commit …` form, `-F`, editor commits and `Merge …` exit 0;
+when the self-test is green; and when `skills/dw-git/SKILL.md` points at the declarations instead
+of restating them.
 
 ## Decisions
 
-- Subject format only — no trailer, backtick-in-`-m`, or staging checks. Keeps the hook one regex
-  match, deterministic and testable; the rest stays prose in `dw-git`.
-- Pattern source is a hybrid: script default → `AGENTS.md` bullet override → `none` disables.
-  One source serves both the writer (model reads `AGENTS.md`) and the enforcer (hook greps the
-  same line); a pattern in `settings.json` the model never sees would force a second prose copy.
-- Hook and `dw-git` trim land as one change — the trim removes prose enforcement, so it can only
-  ship once the hook replaces it. Not a split: the trim is not independently shippable.
+- Four checks, one hook, one change — **supersedes the grill's "subject format only"**. The layers
+  share the script, the test file, the settings entry and the version bump, so splitting them meant
+  touching the same four files twice.
+- Every policy is a declared bullet, never inferred from `## Git conventions` prose. The trailer
+  needs its own `- **Commit trailer**:` bullet for the same reason the pattern does: one line both
+  the writer (model reads `AGENTS.md`) and the enforcer (hook greps it) can read without guessing.
+- Pattern default ships in the script (Conventional Commits); the trailer default is `none`, since
+  a trailer requirement that nobody declared should not start failing commits in existing repos.
+- Named `enforce-commit-hygiene.sh`, not `-pattern` — it grew past the subject. The change slug
+  stays `commit-pattern-hook`; it is already in the history.
+- `git add -A` is a staging call, not a commit, but it rides the same `PreToolUse`/`Bash` matcher
+  and the same declaration file, so it stays in this hook rather than earning a fourth one.
+- Hook and `dw-git` trim land together — the trim removes prose enforcement, so it can only ship
+  once the hook replaces it.
 - Pass through `-F`/`--file`, editor commits (no `-m`), and `Merge `/`Revert `/`fixup! `/`squash! `/
   `amend! ` subjects — same allowances as the buildwithclaude original; `dw-git` uses `-m`.
-- One task, not three — the user's call; the pieces only land together, so slicing them was
-  ceremony.
-- The `- **Commit pattern**:` bullet for this repo and the `templates/AGENTS.md` placeholder are in
-  scope (user promoted them from the left-out list).
+- The three _new_ hooks (guard on `plugins/**`, credential-leak, large-file) stay in
+  `.ai/backlog/guardrail-hooks-next-wave.md`: separate scripts, separate events, no shared code.
 
 ## Tasks
 
 One task by the user's call — the pieces only make sense landing together.
 
 - [ ] 1. The whole change in one slice:
-  - `templates/hooks/enforce-commit-pattern.sh` + byte-identical executable copy in
+  - `templates/hooks/enforce-commit-hygiene.sh` + byte-identical executable copy in
     `.claude/hooks/`, wired as the third `PreToolUse`/`Bash` command in both `.claude/settings.json`
     and `templates/settings.json`. Shape after `block-dangerous-commands.sh` (jq guard,
     wrapper-aware `git … commit` detection), `-m` extraction after the buildwithclaude script
-    (`xargs -n1` tokenization; `-m`/`--message`/`--message=`/`-mfix:`/clustered `-am`).
-  - `scripts/tests/enforce-commit-pattern.test.sh` after `block-env-access.test.sh`: default
-    allowed/blocked cases, `rtk` wrapper form, `-F`/editor/`Merge` pass-throughs, bullet override
-    (ticket-style regex) and `none` via a temp `AGENTS.md`.
-  - `- **Commit pattern**:` bullet in this repo's `AGENTS.md` (`## Solo lane`, beside the lint and
-    typecheck bullets) and a placeholder in `templates/AGENTS.md` so `dw-init` users see the
-    override exists.
-  - Trim `skills/dw-git/SKILL.md` commit Defaults to point at the pattern (subject per
-    `- **Commit pattern**:`, hook enforces; body what+why; trailer per `## Git conventions`; one
-    logical change), document the hook in `docs/agents/tooling.md`, bump the owning plugin versions
+    (`xargs -n1` tokenization; `-m`/`--message`/`--message=`/`-mfix:`/clustered `-am`). Four checks:
+    subject pattern, trailer policy, backtick inside `-m`, `git add -A` / `git add .`.
+  - `scripts/tests/enforce-commit-hygiene.test.sh` after `block-env-access.test.sh`: default
+    allowed/blocked subjects, trailer required/forbidden/none, backtick cases, `git add` forms,
+    `rtk` wrapper form, `-F`/editor/`Merge` pass-throughs, and both bullets overridden or set to
+    `none` via a temp `AGENTS.md`.
+  - `- **Commit pattern**:` and `- **Commit trailer**:` in this repo's `AGENTS.md` (`## Solo lane`,
+    beside the lint and typecheck bullets) and placeholders in `templates/AGENTS.md` so `dw-init`
+    users see the overrides exist. Watch the root doc budget (120 lines / 10 KB).
+  - Trim `skills/dw-git/SKILL.md` commit Defaults to point at the declarations (subject per
+    `- **Commit pattern**:`, trailer per `- **Commit trailer**:`, hook enforces both; body
+    what+why; one logical change), keep the backtick hazard note but shorten it now that the hook
+    catches it, document the hook in `docs/agents/tooling.md`, bump the owning plugin versions
     - `marketplace.json`.
 
 ## Anchors
 
 - `templates/hooks/block-dangerous-commands.sh:27-45` — the `WRAPPER`/`BOUNDARY`/`GIT` constants;
   the new hook must see through `sudo`/`rtk` the same way.
-- `templates/hooks/lint-on-edit.sh` — the `- **Lint command**:` bullet resolution this hook copies
-  for `- **Commit pattern**:` (including `none` as a standalone declaration).
+- `templates/hooks/lint-on-edit.sh` — the `- **Lint command**:` bullet resolution both new bullets
+  copy (including `none` as a standalone declaration).
 - `scripts/tests/block-env-access.test.sh` — the self-test shape: `jq -n --arg` payloads,
   blocked/allowed helpers, SKIP without jq, target = template.
 - `scripts/tests/hooks-in-sync.test.sh` — enforces template↔installed byte identity and +x; add the
   template first.
-- `skills/dw-git/SKILL.md:58-68` — the commit Defaults block being trimmed.
+- `skills/dw-git/SKILL.md:58-68` — the commit Defaults block being trimmed; `:83-90` — the backtick
+  hazard note the hook now enforces.
+- `AGENTS.md` `## Git conventions` — the trailer rule (`Co-Authored-By: <the model that wrote it>`)
+  the new bullet has to express machine-readably.
 - buildwithclaude.com/hook/conventional-commits — the `-m` extraction and pass-through list
   (tokenize via `xargs -n1`; allow `-F`, editor commits, `Merge`/`Revert`/`fixup!`).
 
 ## Notes
 
 Full grill/plan record: `/Users/dominik.wozniak/.claude/plans/zastanawiam-sie-nad-nowym-shimmying-gosling.md`.
+
+The hook enforcing the trailer will police this repo's own commits the moment it is installed —
+including the commit that installs it. Wire it after the message convention is confirmed working,
+or expect the first commit to bounce.

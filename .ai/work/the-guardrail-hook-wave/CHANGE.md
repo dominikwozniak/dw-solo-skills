@@ -2,7 +2,7 @@
 change: the-guardrail-hook-wave
 branch: the-guardrail-hook-wave
 created: 2026-08-14
-status: shaping # shaping | building | landed
+status: building # shaping | building | landed
 ---
 
 # Change — the hook layer's whole open list, done in one pass: three rules move from prose to script, three new guards land, one guardrail gap closes, one dead hook retires
@@ -49,7 +49,7 @@ audit` — none touch the hook layer.
 
 Order is a hint. Each box leaves the repo green; the change ships when all are ticked.
 
-- [ ] 1. `templates/hooks/enforce-commit-hygiene.sh` + byte-identical executable copy in
+- [x] 1. `templates/hooks/enforce-commit-hygiene.sh` + byte-identical executable copy in
       `.claude/hooks/`, wired into the `PreToolUse`/`Bash` block of both `.claude/settings.json` and
       `templates/settings.json`. Four checks: subject pattern, trailer policy, backtick inside `-m`,
       `git add -A` / `git add .`. Shape after `block-dangerous-commands.sh` (jq guard, wrapper-aware
@@ -106,6 +106,28 @@ The commit hook polices this repo's own commits the moment it is installed — i
 that installs it. Land task 1's wiring only once the message convention is confirmed working, or
 expect the first commit to bounce. Same for task 4: `guard-plugin-canon` will refuse edits under
 `plugins/`, which is correct but will surprise the session that wires it.
+
+**Task 1 dropped the `xargs -n1` extraction the plan called for.** BSD xargs (macOS) aborts with
+"unterminated quote" the moment a quoted argument contains a newline, and a multi-line `-m` body is
+this repo's normal shape — so tokenization stopped at `-m` and every commit read as "no message".
+Probed before writing anything: a two-`-m` command with a newline body yielded 3 tokens. The hook
+carries a ~40-line quote-tracking lexer instead, which the backtick check needed regardless: it has
+to know whether a backtick sat in a single-quoted span (inert) or a double-quoted one (live), and no
+token list can reconstruct that. Any future hook needing shell tokenization should copy the lexer,
+not reach for xargs.
+
+Two traps the lexer sprang, both worth not re-learning. `local s="$1" n=${#s}` does not work: every
+word of a `local` is expanded before the builtin runs, so `${#s}` read an unset `s`, and under
+`set -u` the hook died at **exit 1** — silently not guarding, since only exit 2 blocks. And bash 3.2
+errors on `"${arr[@]}"` for an empty array under `set -u`, which is why the per-commit message group
+is scalars rather than an array.
+
+The backtick check is deliberately narrow: it fires only on a backtick that is live in the raw
+command (outside single quotes, unescaped). Blocking every backtick was the first instinct and would
+have been wrong — 51 of the last 20 commits' body lines carry backticks, and all of them are inert.
+
+Verified before wiring, per the warning below: all 12 recent real subjects pass the default pattern,
+and the pattern/trailer bullets are not declared yet, so nothing changed for existing commits.
 
 Task 5's two hooks are the ones with the weakest case (`block-env-access.sh` + the CI trufflehog
 scan already cover much of the credential ground). If the change starts to drag, they are the first

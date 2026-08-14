@@ -7,7 +7,7 @@ active change is and where it stands.
 ## Layout
 
 ```
-backlog/<slug>.md       follow-ups not being done now   (dw-land parks, dw-shape takes)
+backlog/<slug>.md       follow-ups not being done now   (dw-land + dw-shape park, dw-shape takes)
                         created: frontmatter · H1 one-liner · ≤3 lines of context
 work/<slug>/CHANGE.md   the live state of ONE change    (dw-shape writes, dw-next ticks)
                         goal · decisions taken · task checklist · anchors

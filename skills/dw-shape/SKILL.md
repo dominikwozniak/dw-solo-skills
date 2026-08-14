@@ -55,10 +55,10 @@ rather than a deliverable**: `dw-land` archives it at merge, after promoting any
   seen.
 - `CONTEXT.md` and `docs/decisions/` if the project has them — a term already defined or a decision
   already taken is not up for re-litigation, and reusing the established word is free.
-- `.ai/backlog/` if the project has one — `dw-land` parks follow-ups there, one file per idea. An
-  entry that matches this request is **prior context, not a fresh idea**: read it before shaping, and
-  mention it if the request is narrower than what was parked. Neighbouring entries are also
-  candidates, but only offer them; never widen the change on your own.
+- `.ai/backlog/` if the project has one — `dw-land` and step 5 below park follow-ups there, one file
+  per idea. An entry that matches this request is **prior context, not a fresh idea**: read it before
+  shaping, and mention it if the request is narrower than what was parked. Neighbouring entries are
+  also candidates, but only offer them; never widen the change on your own.
 - The **real sibling patterns** this change should follow. Confirm each with Read or grep; these
   become the anchors.
 
@@ -103,7 +103,7 @@ committable, leave the project green, and be small enough that a fresh session c
 Order them so each builds on the last — but treat that order as a **hint, not a gate**. If task 3 is
 obviously doable before task 2, do it. Dependencies here are there to help you pick, never to refuse.
 
-### 4. Write the file, check it back, commit it
+### 4. Write the file and check it back
 
 Write `CHANGE.md` from the shape in `references/CHANGE.md`. If this change takes an entry from
 `.ai/backlog/`, create the folder first (`mkdir -p .ai/work/<slug>` — `git mv` won't), then **`git mv`
@@ -116,10 +116,36 @@ Then read the goal and the task list back in a few lines and ask whether the bre
 wrong granularity is far cheaper to fix now than after two commits. **Wait for that confirmation**,
 reading all N back in one pass where there are several.
 
-On confirmation, **commit** the way `dw-git` does, staged by name, with the backlog-file move — and
-all N files together, since shaping them was one act. This is load-bearing, not hygiene: a worktree
-checks out committed state only, so an uncommitted `CHANGE.md` never reaches the session that would
-build it.
+### 5. Give the left-out list its choice, one item at a time
+
+Everything the shaping deliberately left out — a `dw-grill` playback's closing list, the scopes a split
+declined, anything you narrowed away in step 2 — gets an explicit **three-way choice, forced per item**:
+
+- **into this change** — a task in the checklist you just read back,
+- **into `.ai/backlog/`** — parked as a file, if it clears both bars in that folder's README: **will you
+  ever?** and **should it have been done now?** Read them there; they are not restated here,
+- **dropped** — said out loud and gone, which is a real answer and often the right one.
+
+**Never file the pile wholesale.** Shape time is when the left-out list is longest and least tested, so
+an automatic filer fills the folder with ideas that have survived exactly one conversation — and where
+the repo caps it, spends the whole cap on them. Forcing the choice is the point: it is the same move
+the land-side gate makes.
+
+**Only the parked ones become files**, one per entry at `.ai/backlog/<slug>.md`, mirroring what `dw-land`
+writes rather than inventing a second shape: slug from
+`bash "${CLAUDE_PLUGIN_ROOT}/scripts/slugify.sh" slug "<short description>"`, frontmatter `created:`
+plus `source:` naming this change, an H1 saying what-and-why in one line, at most ~3 lines of context.
+A slug already in the folder means bundling into that entry, not a near-duplicate beside it.
+
+These ship **in the shape commit below**, not after it: an uncommitted park is invisible to every other
+session, for the same reason the `CHANGE.md` commit is load-bearing.
+
+### 6. Commit
+
+Once the breakdown is confirmed and the left-out list is resolved, **commit** the way `dw-git` does,
+staged by name, with the backlog-file move, any files step 5 parked — and all N files together, since
+shaping them was one act. This is load-bearing, not hygiene: a worktree checks out committed state
+only, so an uncommitted `CHANGE.md` never reaches the session that would build it.
 
 For anything beyond small, prefer a **fresh session per change** — the file you just committed is the
 handoff, and a build that starts clean reads it from disk instead of inheriting this conversation's

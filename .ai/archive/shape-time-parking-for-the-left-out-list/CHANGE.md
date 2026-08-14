@@ -1,8 +1,9 @@
 ---
 change: shape-time-parking-for-the-left-out-list
-branch: unclaimed
+branch: worktree-shape-time-parking-for-the-left-out-list
 created: 2026-08-12
-status: shaping # shaping | building | landed
+status: landed # shaping | building | landed
+landed: 2026-08-14
 ---
 
 # Change — the "deliberately left out" list gets its choice at shape time
@@ -37,26 +38,26 @@ backlog in what you get. `dw-solo` and `dw-solo-setup` are bumped in both manife
 
 ## Tasks
 
-- [ ] 1. **The step in `dw-shape`.** After the read-back and before the commit
+- [x] 1. **The step in `dw-shape`.** After the read-back and before the commit
       (`skills/dw-shape/SKILL.md:106-126`): walk the left-out list, force the three-way choice per item,
       and write only the parked ones as `.ai/backlog/<slug>.md` — slug from the shipped `slugify.sh`,
       frontmatter `created:` plus `source:` naming this change, an H1 in one line, at most ~3 lines of
       context. Point at the two bars rather than restating them. Committed with the shape commit: an
       uncommitted park is invisible to every other session, the same reason the `CHANGE.md` commit is
       load-bearing.
-- [ ] 2. **`dw-grill`'s closing sentence.** `skills/dw-grill/SKILL.md:85-88` — "what stays out reaches
+- [x] 2. **`dw-grill`'s closing sentence.** `skills/dw-grill/SKILL.md:85-88` — "what stays out reaches
       `.ai/backlog/` at land time" becomes shape time. Keep "**This skill still writes nothing**": the
       playback is the deliverable and an interviewer that files things is one you cannot run to think
       out loud.
-- [ ] 3. **Both backlog READMEs.** `.ai/backlog/README.md:3-4` and `templates/backlog-README.md:3-4` —
+- [x] 3. **Both backlog READMEs.** `.ai/backlog/README.md:3-4` and `templates/backlog-README.md:3-4` —
       "`dw-land` parks them here" becomes `dw-land` **and** `dw-shape`. They are **no longer
       byte-identical** (the repo copy carries a cap paragraph the template must not ship: 1692 B vs
       1217 B), so keep lines 1–18 identical and `diff` the two after editing. One commit — splitting it
       ships a disagreement between a skill and the README it copies out.
-- [ ] 4. **The README router row.** `README.md:76` — the `dw-shape` row's "What you get" column gains
+- [x] 4. **The README router row.** `README.md:76` — the `dw-shape` row's "What you get" column gains
       the backlog beside `.ai/work/<slug>/CHANGE.md`. The `## The loop` diagram is unchanged;
       `dw-shape`'s position in it does not move.
-- [ ] 5. **Two bumps, then the full gate.** `dw-solo` (tasks 1–2) and `dw-solo-setup` (task 3 touches
+- [x] 5. **Two bumps, then the full gate.** `dw-solo` (tasks 1–2) and `dw-solo-setup` (task 3 touches
       `templates/`, which is payload), each in `.claude-plugin/marketplace.json` **and** its
       `plugin.json`. Last on purpose: `validate-manifests.sh` only checks the pairs are _equal_, so a
       forgotten bump ships green. If task 1 touches `dw-shape`'s `description`, `eval:routing` is
@@ -86,9 +87,26 @@ backlog in what you get. `dw-solo` and `dw-solo-setup` are bumped in both manife
   `.ai/work/setup-lives-in-tracked-agents-md` bumps both plugins as well. Read every version off `main`
   at build time, and re-check after any rebase: the squash-merge trap is that another change may have
   taken the number this one targets.
-- **Cap headroom is a fact about today, not a licence.** `validate-artifacts.sh` reports 5/8 now that
-  `loop-prose-disagrees-with-the-bodies` has taken its seed. The whole point of task 1 is that shape
-  time could fill those three slots in one sitting.
+- **There is no cap headroom left, and that sharpened task 1.** The 5/8 this was shaped against is now
+  **8/8** — the folder is exactly full at build time. So the first real `dw-shape` run after this ships
+  cannot park anything at all without bundling, absorbing or deleting first, which is precisely why the
+  step forces the choice per item instead of filing the pile. Written as pointing at the README's cap
+  paragraph rather than restating the number, so this stays true when the cap moves.
+- **Versions taken off `origin/main`, both at `.16`.** `dw-solo` 0.4.16 → 0.4.17, `dw-solo-setup`
+  0.1.16 → 0.1.17. Nothing else was in flight — `.ai/work/` held only this change and both changes the
+  shaping named as neighbours are archived — so the numbers were uncontested. Re-check after a rebase
+  anyway.
+- **Task 1 landed as two steps, not one.** The parking step became step 5 and the commit moved out to
+  its own step 6. Folding a choice-forcing interaction into a step already titled "write, check back,
+  commit" buried it; the two-step split also makes "these ship in the shape commit below" a pointer at
+  a real neighbour. `dw-shape`'s `description` was **not** touched, so `eval:routing` stayed a
+  formality — it passes at 67%, exactly at the floor, unchanged.
+- **The closing verdict found four fixes, all taken here rather than parked** (`44ca140`). One had
+  substance: step 5 asserted the backlog cap as a fact, and the cap ships nowhere — promoted to
+  `docs/agents/skills-and-plugins.md`'s `## Gotchas`. The other three were the shipped
+  `templates/work-README.md` layout map still crediting `dw-land` alone, plus two paragraphs left broken
+  mid-line. None cleared the absorption bar, and the version bumps from `e2a2f76` still cover them since
+  the branch squash-merges into one commit.
 - **Unexercised on merge, by design.** Prose in skill bodies, and nothing asserts skill body content;
   any `dw-shape` run during the work serves the cached plugin, not the canon being edited. The first
   real exercise is the next shape after reinstall.

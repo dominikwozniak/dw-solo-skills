@@ -83,9 +83,10 @@ Stop when the remaining unknowns wouldn't change what gets built. Say so, and pl
 understanding in a few lines: what we're building, what we decided, what we deliberately left out.
 
 Keep that last list explicit and separate: `dw-shape` reads it back as a Decision in `CHANGE.md`, and
-what stays out reaches `.ai/backlog/` at land time. **This skill still writes nothing** — a playback
-the next step can act on is the deliverable, and an interviewer that also files things is one you
-can't run to think out loud.
+gives each item its own choice at shape time — into the change, into `.ai/backlog/`, or dropped. So
+name every one of them; an item you leave out of the playback never gets that choice. **This skill
+still writes nothing** — a playback the next step can act on is the deliverable, and an interviewer
+that also files things is one you can't run to think out loud.
 
 **Do not start implementing.** Getting agreement is the whole job here — writing it down is
 `dw-shape`'s, and building it is `dw-next`'s.

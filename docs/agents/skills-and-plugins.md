@@ -87,6 +87,16 @@ checklist by hand.
 
 ## Gotchas
 
+- **A skill body is read in two repos, and only one of them has this repo's tooling.** The canon is
+  authored here, where `validate-artifacts.sh` caps `.ai/backlog/` and a full gate runs in CI — none of
+  which ships. `dw-solo` ships `slugify.sh` and `worktree.sh`; `dw-solo-setup` ships `templates/`, and
+  the shipped `templates/backlog-README.md` deliberately omits the cap paragraph so a consumer sets its
+  own number. So prose asserting that tooling is **false on arrival**: a new `dw-shape` step said flatly
+  "the folder is capped", caught only in the closing verdict. `dw-land` had already got this right twice
+  — "where a cap exists", "where the repo caps the list" — which is the tell: **when a sibling skill
+  hedges a claim you are about to state flatly, the hedge is load-bearing, not throat-clearing.** Write
+  repo-specific mechanisms as conditions, and check the assertion against what the plugin actually ships
+  rather than against the repo you are standing in.
 - **The skill you are running is not the skill you are editing.** Claude Code serves
   `~/.claude/plugins/cache/dw-solo-skills/dw-solo/<version>/`, which only changes on reinstall — so a
   session can review, invoke and reason about a body several versions behind the canon it is editing,

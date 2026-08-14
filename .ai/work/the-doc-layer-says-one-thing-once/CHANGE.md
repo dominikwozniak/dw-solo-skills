@@ -1,0 +1,136 @@
+---
+change: the-doc-layer-says-one-thing-once
+branch: unclaimed
+created: 2026-08-14
+status: shaping # shaping | building | landed
+---
+
+# Change — every fact in the doc layer is true and lives in exactly one file, and a fresh scaffold gets room to grow
+
+## Goal
+
+The always-loaded and generated docs stop lying and stop repeating themselves. Afterwards: no claim
+in `AGENTS.md`, `README.md`, `CONTEXT.md`, `docs/agents/*.md` or `templates/*` is false against disk;
+no self-measuring number (`117/120 lines`, `7088 B`, `51 warnings`, `6 guardrail hooks`) is hardcoded
+in prose anywhere; the fork list, the vendored list, the layout block and the loop prose each have one
+home and a link from wherever else needs them; `docs/agents/tooling.md` no longer restates decision
+`0009`; and `templates/AGENTS.md` is a skeleton of ~55–65 lines so a scaffolded repo has real headroom
+under the 120-line budget instead of 15. `pnpm validate:docs`, `validate:artifacts`,
+`validate:manifests`, `format` and `lint` all stay green, and `AGENTS.md` stays inside the budget it
+declares.
+
+**This is a large change, deliberately.** Three layers (root docs, the routed topic files, the
+payload) would each ship on their own, and the user chose one pass over three so the whole doc corpus
+is judged against one standard in one context. The task list is progress tracking for `dw-next`, not
+a split: it all lands together.
+
+## Decisions
+
+- **One change, not three** — the user's call, reaffirmed when the split was offered with slugs. The
+  value is a single consistent standard across all three layers; splitting would let the second and
+  third drift from the first.
+- **Fix drift and cut noise; keep every rule.** No file is added, none removed, and no
+  `docs/agents/` topic is split or merged — a router row is the only thing making the topic layer
+  reachable, and restructuring it is a different change.
+- **`templates/` is in scope**, despite shipping verbatim into other repos. It is where the worst
+  crowding is.
+- **`README.md` keeps the sell** — hero, badges, the "how it works" pitch, "Why two repos". It has a
+  human audience that earns rationale. Only text duplicating `AGENTS.md` or `CONTEXT.md` is cut, and
+  replaced with a link.
+- **`templates/AGENTS.md` becomes a skeleton, not a worked example.** Keep what a hook greps, what
+  `check-agents-docs.mjs` enforces, and each heading with a one-line hint. The target repo writes its
+  own prose.
+- **The 120-line budget is not reopened** — that is `docs/decisions/0008`. The template gets smaller;
+  the ceiling stays.
+- **Self-measuring numbers are deleted, not corrected.** `scripts/validate-artifacts.sh:15` already
+  refuses to record one and says why: two copies of a drifting number drift apart. Prose gets the
+  rule; the checker reports the number.
+
+## Tasks
+
+- [ ] 1. `AGENTS.md` drift, net-neutral on lines. Layout block: name the `.mjs` checkers
+      (`scripts/check-skill-corpus.mjs`, `templates/check-agents-docs.mjs`) that the `<script>.sh`
+      glob hides, and the two payload files it omits (`gitignore-block.txt`, `worktreeinclude.txt`).
+      Correct the `validate:artifacts` parenthetical — it runs three passes, not just the self-tests.
+      Pay for the added lines by cutting the positioning prose at `:9–12` to its one rule, since the
+      file sits at 118 of 120 lines.
+- [ ] 2. `CONTEXT.md` back to the definitions-only promise its own line 3 makes. Fix `:13` — traps go
+      to the `## Gotchas` of the matching routed topic file, never a root `## Gotchas`, which does
+      not exist and which `AGENTS.md:5` forbids. Delete the term-less "three governors are distinct"
+      editorial bullet, which restates the three entries above it.
+- [ ] 3. One home for the duplicated enumerations. The fork list is in both `CONTEXT.md:48` and
+      `docs/agents/skills-and-plugins.md:41` and they already disagree on `dw-handoff`; the vendored
+      list is in `CONTEXT.md:46`, `README.md:133` and `skills-and-plugins.md`. Keep the definition in
+      `CONTEXT.md` and the enumeration in the topic file, link the other way, and settle
+      `dw-handoff` by reading the two skills.
+- [ ] 4. `README.md`: `:133` says 6 guardrail hooks, `templates/hooks/` holds 8. `:158` sends a
+      contributor to `AGENTS.md` for an add-a-skill checklist that lives in
+      `docs/agents/skills-and-plugins.md:47`. Drop the duplicated layout block (`:145–154`) and the
+      duplicated loop prose (`:58`, `:68–70`) in favour of links.
+- [ ] 5. Delete every hardcoded self-measurement: `docs/agents/tooling.md:80` ("51 warnings"), `:83`
+      ("117/120 lines") and `docs/agents/README.md:25` ("117/120 lines and 7088/10240 B") — all three
+      already stale at 118/7318. State the rule, let the checker report the number.
+- [ ] 6. `docs/agents/tooling.md` (227 lines / 19.3 KB, the largest doc) down to what only it can say.
+      Cut the ratchet rationale that is a third copy of `docs/decisions/0009` and a fourth of
+      `scripts/validate-artifacts.sh:12–17`; cut the CI-cache experiment narrative to its one
+      actionable sentence; cut the three-occurrence `paths:` story to its one rule, since both
+      workflows carry the explanation inline already.
+- [ ] 7. `docs/agents/change-artifacts.md` down to the ~8 lines only it holds (the no-index rationale,
+      the sentinel rule, the squash-merge consequence). Cut the claim protocol, the promotion-target
+      list and the branch-read rule — owned by `dw-shape`/`dw-next`/`dw-land`, `CONTEXT.md` and
+      `AGENTS.md:112` respectively.
+- [ ] 8. `docs/agents/skills-and-plugins.md`: qualify `:25–27`, which states as absolute that no skill
+      can reach an explicit-invoke one by prose while four shipped `**Next:**` pointers do exactly
+      that — a `**Next:**` is a suggestion to the user, not delegation. Cut the two war-story gotchas
+      (`:96–105`, `:128–134`) to their generalisable lines, and drop step 7's fifth copy of the
+      ratchet argument while keeping its command.
+- [ ] 9. `templates/AGENTS.md` from 105 lines to ~55–65. Keep the budget header, every heading, the
+      Task Router rows, the four hook-grepped bullets and the `{{...}}` placeholders; cut the worked
+      prose under `## Always` / `## Ask First` / `## Never` / `## Git conventions` to one-line hints.
+      Fix the loop at `:66`, which still omits `dw-grill` and `dw-land`, and add the hook-critical
+      detail `AGENTS.md:92` has and the template lacks: `none` must stand alone on the line.
+- [ ] 10. The other payload docs. `templates/decisions-README.md:9` says the bar "isn't restated here"
+      and then `:11–13` restates it — its live twin `docs/decisions/README.md:9–14` names this exact
+      problem. `templates/work-README.md:43` still sends traps to `## Gotchas` in `CLAUDE.md`, and
+      `:53–55` contradicts its own sibling `templates/backlog-README.md:12–14` on entry length.
+
+## Anchors
+
+- `AGENTS.md:16–29` — the layout block, and `:53` the `validate:artifacts` parenthetical. At 118 of
+  the 120 lines it declares at `:3`, so task 1 must not grow it.
+- `templates/check-agents-docs.mjs:70,124,162,175` — what "green" means: a declared budget line, a
+  `## Task Router` row per topic file, and every routed path real. Run against this repo's own root by
+  `scripts/validate-docs.sh` check 5.
+- `scripts/tests/check-agents-docs.test.sh:295,311` — renders `templates/AGENTS.md` against seeded
+  `.ai/README.md`, `.ai/backlog/README.md`, `.ai/archive/README.md`, `docs/decisions/README.md` and
+  `CONTEXT.md`. Task 9 must keep every router row whose path `dw-init` creates.
+- `scripts/validate-artifacts.sh:12–17` — the precedent task 5 follows: it refuses to record a warning
+  count and states the reason in place.
+- `docs/agents/git-history.md` (31 lines) — no duplication, no history, three traps with fixes. The
+  shape tasks 6–8 are aiming at.
+- `docs/decisions/0009-skill-corpus-ratchet.md` — what `tooling.md` should point at instead of
+  restating, and `0008` for the budget task 9 must not reopen.
+
+## Notes
+
+**Left out of this change, each decided explicitly at shape time:**
+
+- `scripts/lint.sh` ignores the file path `lint-on-edit` appends — it always runs `agnix .` over the
+  whole tree, so `AGENTS.md:89`'s "must accept one" is unsatisfied and `.husky/pre-commit` documents
+  the opposite. A code bug, not a doc bug; a docs change must not change lint behaviour.
+- `.ai/archive/design-rationale.md` (16 KB) — self-declared frozen, no router row, no pointer from
+  anywhere, and the only non-slug entry in `.ai/archive/`.
+- Nothing compares a `templates/*-README.md` to its live `.ai/` twin. `templates/archive-README.md`
+  and `.ai/archive/README.md` are byte-identical by hand; only `templates/hooks/` has a sync test.
+- `.ai/README.md` does not exist in this repo, so `templates/work-README.md` is never exercised here —
+  only `check-agents-docs.test.sh` opens it, and only to seed a dummy.
+- The stale `.ai/work/the-guardrail-hook-wave/CHANGE.md` on local `main`: `0/8` ticked and
+  `branch: unclaimed`, duplicating the `8/8` copy already in `.ai/archive/`. It exists only in four
+  unpushed local commits (`28b3e4b`..`8da3082`) made before the `#31` squash-merge; `origin/main` is
+  clean, so pushing `main` as it stands would resurrect it.
+
+**Prior context:** `.ai/backlog/templates-ship-the-docs-agents-contract.md` is coupled to task 9 —
+cutting the template's prose removes the last place a scaffolded repo meets the `docs/agents/`
+contract before hitting it as a red gate. Its candidate fix adds a `templates/agents-docs-README.md`,
+which the "no file added" decision above excludes. Left parked, and worth revisiting right after this
+lands.

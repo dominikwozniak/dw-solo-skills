@@ -2,7 +2,7 @@
 change: the-doc-layer-says-one-thing-once
 branch: the-doc-layer-says-one-thing-once
 created: 2026-08-14
-status: shaping # shaping | building | landed
+status: building # shaping | building | landed
 ---
 
 # Change — every fact in the doc layer is true and lives in exactly one file, and a fresh scaffold gets room to grow
@@ -48,7 +48,7 @@ a split: it all lands together.
 
 ## Tasks
 
-- [ ] 1. `AGENTS.md` drift, net-neutral on lines. Layout block: name the `.mjs` checkers
+- [x] 1. `AGENTS.md` drift, net-neutral on lines. Layout block: name the `.mjs` checkers
       (`scripts/check-skill-corpus.mjs`, `templates/check-agents-docs.mjs`) that the `<script>.sh`
       glob hides, and the two payload files it omits (`gitignore-block.txt`, `worktreeinclude.txt`).
       Correct the `validate:artifacts` parenthetical — it runs three passes, not just the self-tests.
@@ -128,6 +128,15 @@ a split: it all lands together.
   `branch: unclaimed`, duplicating the `8/8` copy already in `.ai/archive/`. It exists only in four
   unpushed local commits (`28b3e4b`..`8da3082`) made before the `#31` squash-merge; `origin/main` is
   clean, so pushing `main` as it stands would resurrect it.
+
+**While building:**
+
+- Task 1: only one `.mjs` checker was actually hidden. `templates/check-agents-docs.mjs` was already
+  named on the `templates/` layout line, so the shape's "name the two" was one edit, not two. The
+  line budget was bought differently than shaped: the `scripts/` glob absorbed `.mjs` in place
+  (`scripts/<script>.{sh,mjs}`, dropping `lint.sh` from its examples) rather than growing a line, so
+  the positioning prose only had to give up one line instead of two. 119/120 lines before and after,
+  7283 B.
 
 **Prior context:** `.ai/backlog/templates-ship-the-docs-agents-contract.md` is coupled to task 9 —
 cutting the template's prose removes the last place a scaffolded repo meets the `docs/agents/`

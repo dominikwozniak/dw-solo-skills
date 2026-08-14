@@ -67,7 +67,7 @@ a split: it all lands together.
       contributor to `AGENTS.md` for an add-a-skill checklist that lives in
       `docs/agents/skills-and-plugins.md:47`. Drop the duplicated layout block (`:145–154`) and the
       duplicated loop prose (`:58`, `:68–70`) in favour of links.
-- [ ] 5. Delete every hardcoded self-measurement: `docs/agents/tooling.md:80` ("51 warnings"), `:83`
+- [x] 5. Delete every hardcoded self-measurement: `docs/agents/tooling.md:80` ("51 warnings"), `:83`
       ("117/120 lines") and `docs/agents/README.md:25` ("117/120 lines and 7088/10240 B") — all three
       already stale at 118/7318. State the rule, let the checker report the number.
 - [ ] 6. `docs/agents/tooling.md` (227 lines / 19.3 KB, the largest doc) down to what only it can say.
@@ -163,6 +163,15 @@ a split: it all lands together.
   fact rather than a copy, against the decision that only duplicating text goes. `README.md` 163 →
   157 lines. The `11 skills` / `3 plugins` badges were checked against disk and are correct, so they
   stay: they are the sell, and unlike a line count they change only when a skill is added.
+
+- Task 5 found two more of the same kind and took them: the `~1752 tokens, limit is 1500` inside the
+  quoted agnix warning (a measurement wearing an example's clothes), and the `120 lines / 10 KB`
+  restated twice in `docs/agents/README.md`. That last one is a _chosen_ number rather than a measured
+  one, so it is not what the task was aimed at — but it is a second copy of a line the checker parses
+  out of `AGENTS.md`, sitting two lines above a new sentence promising no figures are kept in prose.
+  A grep for the four patterns across `AGENTS.md`, `CONTEXT.md`, `README.md`, `docs/` and `templates/`
+  now returns nothing. The `11 skills` badge and the `32 KB` Codex limit stay — one is verified against
+  disk, the other is an external constant.
 
 **Prior context:** `.ai/backlog/templates-ship-the-docs-agents-contract.md` is coupled to task 9 —
 cutting the template's prose removes the last place a scaffolded repo meets the `docs/agents/`

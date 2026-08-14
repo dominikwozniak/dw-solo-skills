@@ -14,17 +14,19 @@ Three tiers, three owners:
   boundary this repo keeps against `dw-skills`, the layout rule, the loop, the Commands block, the
   Task Router, and the two blocks the tooling reads directly: `## Solo lane` (whose
   `- **Lint command**:` line the `lint-on-edit` hook greps) and `## Git conventions` (which `dw-git`
-  applies). Hard budget: **120 lines / 10 KB**, enforced by `pnpm validate:docs`. If a rule is
+  applies). It declares its own hard budget in its header prose, and `pnpm validate:docs` enforces
+  exactly what that line says — so the number lives there and is not restated here. If a rule is
   topic-scoped it goes into a topic file and earns a router row instead. The budget caps only this
   one file; `docs/agents/*.md` are unbudgeted, which is where prose belongs.
 
   **What kind of number that is: chosen editorial discipline, not a harness ceiling.** Nothing
-  truncates at 120 lines. The nearest real limit is Codex's `project_doc_max_bytes`, 32 KB, so the
-  10 KB half is deliberately ~3× stricter than the platform requires — the point is a file a human
-  rereads in one sitting, not a file a tool can ingest. The line half is the half that has ever
-  bound: the root sits at 117/120 lines and 7088/10240 B — three lines of headroom against three
-  kilobytes — so every squeeze to date has been a line squeeze. Treat a breach as the prompt to move a topic out, never as a licence to compress a rule
-  into a shorter, vaguer one.
+  truncates where it is set. The nearest real limit is Codex's `project_doc_max_bytes`, 32 KB, and the
+  byte half is deliberately several times stricter than that — the point is a file a human rereads in
+  one sitting, not a file a tool can ingest. The line half is the one that has ever bound, with far
+  less headroom than the byte half, so every squeeze to date has been a line squeeze.
+  `pnpm validate:docs` prints where the file currently stands; no copy of those figures is kept in
+  prose, because two copies of a moving number drift apart. Treat a breach as the prompt to move a
+  topic out, never as a licence to compress a rule into a shorter, vaguer one.
 
 - **`docs/agents/<topic>.md`**: everything scoped to one topic — procedure, mechanics, and the
   traps that topic has actually sprung. One file per concept, sized to the concept; a 15-line file

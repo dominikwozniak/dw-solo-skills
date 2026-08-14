@@ -77,12 +77,12 @@ declaration either, and each script names the tokens it rejects.
 ## Gotchas
 
 - **agnix warnings do not fail the build, and one of them is true right now.** `scripts/lint.sh`
-  exits **0** with 51 warnings; only `Found N errors` gates. So a rule firing is not a rule
-  enforced — `CLAUDE.md:1:0 warning: File exceeds recommended token limit (~1752 tokens, limit is
-1500)` has been true and ignored the whole time `pnpm validate:docs` has been calling the same file
-  green at 117/120 lines. Two checkers, two units, one of them advisory, and the advisory one looks
-  identical to the binding one in the output. Before citing agnix as the thing that would have caught
-  something, check whether it gates: `severity` sets a reporting floor, and `[[overrides]]` can only
+  exits **0** with dozens of warnings; only `Found N errors` gates. So a rule firing is not a rule
+  enforced — agnix's `File exceeds recommended token limit` has been firing on `CLAUDE.md` and being
+  ignored the whole time `pnpm validate:docs` has been calling that same file green. Two checkers, two
+  units, one of them advisory, and the advisory one looks identical to the binding one in the output.
+  Run either to see where the file stands; no copy of those figures is kept here. Before citing agnix
+  as the thing that would have caught something, check whether it gates: `severity` sets a reporting floor, and `[[overrides]]` can only
   _disable_ a rule for a glob, never turn its threshold down. That is why the corpus ratchet is its
   own checker rather than a tuned `AS-012`.
 - **A new check needs a new `paths:` entry, or it never runs on the commit shape it exists to

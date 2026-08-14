@@ -372,15 +372,96 @@ else
   note_pass "no-pnpm-block-is-silent"
 fi
 
-# The pre-v11 LOCKFILE check has no case here, and the reason is worth more than the case would be:
-# it cannot be pinned while doctor.sh probes with `pnpm -v` inside the repo. In a repo declaring
-# `devEngines.packageManager`, that probe makes pnpm download itself and REWRITE pnpm-lock.yaml —
-# adding the very `packageManagerDependencies` key the check looks for, so the fixture is v11 by the
-# time the check reads it. Verified: the file's sha changes across one doctor run.
-#
-# That is a bug in the pnpm block, not in this test, and it breaks doctor.sh's headline promise to
-# never edit a file. Parked in .ai/backlog/ rather than fixed here — it belongs to the change that
-# introduced the devEngines read.
+# The pre-v11 LOCKFILE check was untestable until doctor.sh stopped probing with `pnpm -v` inside the
+# repo: in a repo declaring `devEngines.packageManager` that probe made pnpm download itself and
+# REWRITE pnpm-lock.yaml, adding the very `packageManagerDependencies` key this check looks for — so
+# the fixture was v11 by the time the check read it. The probe now runs from `/`, and these three
+# cases are what that bought. The last one is the guard: it asserts the fixture's lockfile is
+# byte-identical across a run, so a future repo-local probe fails here instead of shipping.
+lock_pre_v11() {
+  # No leading `---`, and neither of the two per-importer keys v11 writes. `lockfileVersion: '9.0'`
+  # is deliberately present and deliberately not the tell — v11 still writes exactly that.
+  printf "lockfileVersion: '9.0'\n\nimporters:\n  .: {}\n" >"$1/pnpm-lock.yaml"
+}
+
+repo="$(scaffold '120 lines / 10 KB')"
+pin_v11 "$repo"
+lock_pre_v11 "$repo"
+run "$repo" >/dev/null
+says "pre-v11-lockfile-warns" warn "pnpm-lock.yaml" "written before pnpm 11"
+
+repo="$(scaffold '120 lines / 10 KB')"
+pin_v11 "$repo"
+printf -- "---\nlockfileVersion: '9.0'\n\nimporters:\n  .:\n    packageManagerDependencies: {}\n" >"$repo/pnpm-lock.yaml"
+run "$repo" >/dev/null
+if grep -qF "written before pnpm 11" "$OUT"; then
+  note_fail "v11-lockfile-is-silent" "$(grep -F 'written before pnpm 11' "$OUT" | head -n1)"
+else
+  note_pass "v11-lockfile-is-silent"
+fi
+
+repo="$(scaffold '120 lines / 10 KB')"
+pin_v11 "$repo"
+lock_pre_v11 "$repo"
+before="$(cksum <"$repo/pnpm-lock.yaml")"
+run "$repo" >/dev/null
+if [ "$(cksum <"$repo/pnpm-lock.yaml")" = "$before" ]; then
+  note_pass "run-does-not-touch-the-lockfile"
+else
+  note_fail "run-does-not-touch-the-lockfile" "pnpm-lock.yaml changed across one doctor run"
+fi
+
+echo "the Node pin is read from devEngines.runtime first, engines.node second:"
+# The node on PATH is the machine's, so no case may assert a version — only WHICH declaration the
+# line quotes, and that the floor comparison is against that one. Every fixture below pins a version
+# no machine could plausibly have (99.x for the too-new case, 0.x for the satisfied one), which keeps
+# the verdict deterministic without asserting what `node -v` says.
+repo="$(scaffold '120 lines / 10 KB')"
+printf '{ "engines": { "node": ">=99.0.0" } }\n' >"$repo/package.json"
+run "$repo" >/dev/null
+says "engines-node-is-the-fallback-floor" warn "node" "engines >=99.0.0"
+# ...and the version it compared is a real one. A `node` on PATH that is a version-proxy shim answers
+# the REPO's declaration when run inside it, so an unsatisfiable floor makes it fail and print nothing
+# — leaving this line reading " < engines >=99.0.0" with the machine's version missing entirely. The
+# probe runs from `/` to avoid exactly that, and this is the case that says so.
+if grep -E '\[WARN\][[:space:]]+node[[:space:]]+[0-9]+\.' "$OUT" >/dev/null; then
+  note_pass "node-version-survives-an-impossible-floor"
+else
+  note_fail "node-version-survives-an-impossible-floor" "$(grep -F ' node ' "$OUT" | head -n1)"
+fi
+
+repo="$(scaffold '120 lines / 10 KB')"
+printf '{ "engines": { "node": ">=99.0.0" }, "devEngines": { "runtime": { "name": "node", "version": "0.1.0" } } }\n' >"$repo/package.json"
+run "$repo" >/dev/null
+says "devengines-runtime-wins" ok "node" "devEngines pins 0.1.0"
+
+repo="$(scaffold '120 lines / 10 KB')"
+printf '{ "engines": { "node": ">=0.1.0" }, "devEngines": { "runtime": { "name": "node", "version": "99.0.0" } } }\n' >"$repo/package.json"
+run "$repo" >/dev/null
+says "runtime-pin-below-is-the-warn" warn "node" "< devEngines 99.0.0"
+
+# The install hint points at .nvmrc only where the repo has one. A devEngines.runtime repo has none —
+# pnpm downloads the runtime — and naming a deleted file sends the reader hunting for it.
+repo="$(scaffold '120 lines / 10 KB')"
+printf '{ "engines": { "node": ">=99.0.0" } }\n' >"$repo/package.json"
+run "$repo" >/dev/null
+if grep -F ".nvmrc" "$OUT" >/dev/null; then
+  note_fail "no-nvmrc-no-nvmrc-hint" "$(grep -F '.nvmrc' "$OUT" | head -n1)"
+else
+  note_pass "no-nvmrc-no-nvmrc-hint"
+fi
+
+repo="$(scaffold '120 lines / 10 KB')"
+printf '{ "engines": { "node": ">=99.0.0" } }\n' >"$repo/package.json"
+printf '24\n' >"$repo/.nvmrc"
+run "$repo" >/dev/null
+says "nvmrc-present-is-named" warn "node" ".nvmrc"
+
+# A runtime entry for something else entirely must not be mistaken for the Node declaration.
+repo="$(scaffold '120 lines / 10 KB')"
+printf '{ "engines": { "node": ">=99.0.0" }, "devEngines": { "runtime": { "name": "bun", "version": "0.1.0" } } }\n' >"$repo/package.json"
+run "$repo" >/dev/null
+says "non-node-runtime-ignored" warn "node" "engines >=99.0.0"
 
 echo "lane detection still fires:"
 repo="$(scaffold '120 lines / 10 KB')"

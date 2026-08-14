@@ -19,6 +19,11 @@ call.
 
 **Read-only:** it probes (`command -v`, `--version`) and reads files, then reports. It never
 installs a tool, never edits a file, never runs the fixes it suggests — applying them is your call.
+The version probes deliberately run from `/`, not from the repo: `pnpm -v` and `node -v` inside a
+repo declaring `devEngines` resolve that declaration, download a runtime to satisfy it and rewrite
+`pnpm-lock.yaml` — and then answer with the pinned version, so the check would compare the pin
+against itself. From outside, the answer is the tool on PATH, which is what "is the pin in effect?"
+is asking about.
 
 ## What it reads
 
@@ -26,9 +31,11 @@ It diagnoses the **current git repo** (resolved via `git rev-parse --show-toplev
 skill's own location. Checks are conditional on what the repo declares, so nothing about a stack is
 assumed:
 
-- `package.json` — `engines.node`, the pnpm pin (`devEngines.packageManager` first, then the older
-  `packageManager`), declared deps, and `scripts.typecheck` (drives the JS/TS checks).
-- `tsconfig.json`, `.nvmrc` — presence informs the `tsc` / node checks.
+- `package.json` — the Node pin (`devEngines.runtime` first, then `engines.node`), the pnpm pin
+  (`devEngines.packageManager` first, then the older `packageManager`), declared deps, and
+  `scripts.typecheck` (drives the JS/TS checks).
+- `tsconfig.json`, `.nvmrc` — presence informs the `tsc` check and whether the node fix hint names
+  `.nvmrc` at all; a repo pinning through `devEngines.runtime` has no such file.
 - `.claude/settings.json` — parsed for every wired hook command; each referenced `*.sh` is checked
   for existence + the executable bit.
 - `.ai/work/` — the scaffold this lane runs on; its absence points at `dw-init`, and a `.ai/runs/`

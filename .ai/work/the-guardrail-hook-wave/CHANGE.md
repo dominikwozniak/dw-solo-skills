@@ -1,6 +1,6 @@
 ---
 change: the-guardrail-hook-wave
-branch: unclaimed
+branch: the-guardrail-hook-wave
 created: 2026-08-14
 status: shaping # shaping | building | landed
 ---

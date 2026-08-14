@@ -2,7 +2,8 @@
 change: shape-time-parking-for-the-left-out-list
 branch: worktree-shape-time-parking-for-the-left-out-list
 created: 2026-08-12
-status: building # shaping | building | landed
+status: landed # shaping | building | landed
+landed: 2026-08-14
 ---
 
 # Change — the "deliberately left out" list gets its choice at shape time
@@ -100,6 +101,12 @@ backlog in what you get. `dw-solo` and `dw-solo-setup` are bumped in both manife
   commit" buried it; the two-step split also makes "these ship in the shape commit below" a pointer at
   a real neighbour. `dw-shape`'s `description` was **not** touched, so `eval:routing` stayed a
   formality — it passes at 67%, exactly at the floor, unchanged.
+- **The closing verdict found four fixes, all taken here rather than parked** (`44ca140`). One had
+  substance: step 5 asserted the backlog cap as a fact, and the cap ships nowhere — promoted to
+  `docs/agents/skills-and-plugins.md`'s `## Gotchas`. The other three were the shipped
+  `templates/work-README.md` layout map still crediting `dw-land` alone, plus two paragraphs left broken
+  mid-line. None cleared the absorption bar, and the version bumps from `e2a2f76` still cover them since
+  the branch squash-merges into one commit.
 - **Unexercised on merge, by design.** Prose in skill bodies, and nothing asserts skill body content;
   any `dw-shape` run during the work serves the cached plugin, not the canon being edited. The first
   real exercise is the next shape after reinstall.

@@ -53,7 +53,7 @@ backlog in what you get. `dw-solo` and `dw-solo-setup` are bumped in both manife
       byte-identical** (the repo copy carries a cap paragraph the template must not ship: 1692 B vs
       1217 B), so keep lines 1–18 identical and `diff` the two after editing. One commit — splitting it
       ships a disagreement between a skill and the README it copies out.
-- [ ] 4. **The README router row.** `README.md:76` — the `dw-shape` row's "What you get" column gains
+- [x] 4. **The README router row.** `README.md:76` — the `dw-shape` row's "What you get" column gains
       the backlog beside `.ai/work/<slug>/CHANGE.md`. The `## The loop` diagram is unchanged;
       `dw-shape`'s position in it does not move.
 - [ ] 5. **Two bumps, then the full gate.** `dw-solo` (tasks 1–2) and `dw-solo-setup` (task 3 touches

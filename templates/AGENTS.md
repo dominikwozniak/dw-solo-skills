@@ -72,7 +72,8 @@ Read by `dw-git` — these override its defaults and the global user memory's.
   ([Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/)) _(ticket prefix, if any)_
 - **Trailer**: _(whether `Co-Authored-By` is wanted, and which footer, if any — state it outright)_
 - **Default branch**: `{{DEFAULT_BRANCH}}` — also the PR target; branch off it with a kebab-case slug
-- **Rebase, never merge** — `git pull --rebase`, `git rebase origin/{{DEFAULT_BRANCH}}`
+- **Rebase, never merge** — `git pull --rebase`,
+  `git fetch origin && git rebase origin/{{DEFAULT_BRANCH}}`
 - **Branch reads** — `git rev-parse --abbrev-ref HEAD`, never `git branch --show-current`, empty on a
   detached HEAD. _(add the rest: `git switch`/`git restore`, staging by name over `git add -A`)_
 

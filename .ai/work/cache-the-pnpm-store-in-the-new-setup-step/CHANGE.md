@@ -51,7 +51,7 @@ locked entries and the win was never assumed.
       sentence in each (`:21`, `:21`, and evals-routing's longer block) so it no longer claims inputs
       would only restate `package.json`. Leave `validate-plugin-manifests.yaml:35-37` untouched.
       Green when `pnpm format` passes locally — nothing else here is exercisable off a runner.
-- [ ] 2. **The cold run: push, open the PR, read all three setup steps.** Record per workflow: the
+- [x] 2. **The cold run: push, open the PR, read all three setup steps.** Record per workflow: the
       "Cache is not found" line, the setup step's wall time, `pnpm install`'s reused/downloaded split,
       and what `pnpm store prune` — which only runs when caching is on
       (`src/pnpm-store-prune/index.ts`) — costs. Also watch for the three-way save race: all three jobs
@@ -107,3 +107,39 @@ poisons the shared key. The reasoning currently lives only in `## Decisions` her
 at land time. **For `dw-land`:** this belongs in `docs/agents/tooling.md`, not in a fourth workflow
 comment, and it survives even if task 3 ends in a revert — a reverted cache still leaves the
 "why not just turn it on everywhere" question open.
+
+### From task 2 — the cold run, and the ~7s baseline was measuring the wrong thing
+
+PR [#28](https://github.com/dominikwozniak/dw-solo-skills/pull/28), run `31782343054`/`58`/`64`, all
+four checks green.
+
+**The baseline this change quotes is mis-scoped, and the correction shrinks the ceiling.** "The whole
+setup step is ~7s" in the parent change is really the time to `Progress: … added 9, done` — the pnpm
+download, the Node install and the package resolution. Measured on the baseline job itself
+(`94254808206`): the step opens at `20:36:54.35` and the next step opens at `20:37:31.47`, so the
+step is **37.1s**, of which ~6.7s is everything the archive was timing and the remaining **~30s is
+`agnix`'s postinstall** fetching its prebuilt binary. A store cache cannot touch that 30s. **The
+honest ceiling for this change is a fraction of ~7s, not of ~37s** — task 3's verdict has to be read
+against that, and the goal's "~7s baseline" should be read as "~7s of a 37s step".
+
+**Cold numbers, cache on** — setup step, group-open to next-group-open: `agnix lint` **37.8s**
+(`08:03:28.60` → `08:04:06.36`), `Routing evals` **37.2s**. All three logged `Cache is not found`
+and then the identical `resolved 9, reused 1, downloaded 8, added 9, done`, i.e. exactly the
+baseline's install. So enabling the cache costs nothing measurable on a miss.
+
+**The save race resolves as a warning, not a failure — the open question is answered.** All three
+jobs missed the same key concurrently; `Routing evals` won and logged `Cache saved with the key:
+pnpm-cache-Linux-x64-58e0f01…`. The other two logged
+`##[warning]Failed to save: Unable to reserve cache with key … another job may be creating this
+cache.` and stayed green. `@actions/cache` swallows the `ReserveCacheError` itself, so the action not
+catching it never mattered. **Three concurrent jobs on one key is safe**, and that is what makes the
+shared-key design tolerable rather than merely tolerated.
+
+**`pnpm store prune` runs before the save and is cheap but not free:** each job removed all cached
+metadata files, `6 files (7.31 MB)` and `1 package`, in about 1s.
+
+**The saved cache is 45.1 MB** (`gh cache list`), because `pnpm store path` holds the Node 24.16.0
+runtime as well as the eight dev packages. That is the number that decides this: the warm run has to
+download and extract ~45 MB to avoid fetching eight small packages and one Node tarball. It is
+entirely plausible that the restore is _slower_ than the misses it replaces, which is the outcome
+task 3 must be willing to report.

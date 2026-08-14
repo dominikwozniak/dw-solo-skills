@@ -2,7 +2,7 @@
 change: skill-corpus-ratchet
 branch: worktree-skill-corpus-ratchet
 created: 2026-08-14
-status: shaping # shaping | building | landed
+status: building # shaping | building | landed
 ---
 
 # Change — the skill corpus can only shrink unless growth is recorded on purpose, and the budgets say what kind of number they are
@@ -67,7 +67,7 @@ tokens, limit is 1500)`) while `pnpm validate:docs` calls the same file green at
 
 ## Tasks
 
-- [ ] 1. **The baseline + the checker.** `scripts/skill-corpus.baseline.json` — `$comment` carrying
+- [x] 1. **The baseline + the checker.** `scripts/skill-corpus.baseline.json` — `$comment` carrying
       the rationale (ratchet, words not bytes, how to re-record), `words`, and `perSkill` as a
       name→words map. **Re-measure at HEAD**; do not trust the 13 243 in this document, since task 4
       edits no skill but a rebase might. Then `scripts/check-skill-corpus.mjs`, ~70 lines,
@@ -140,6 +140,15 @@ tokens, limit is 1500)`) while `pnpm validate:docs` calls the same file green at
   Two of its statements were already stale when this file was written, both because three commits
   landed mid-session: `.ai/backlog/` is at **5/8**, not 8/8 (so task 6 is possible at all), and the
   corpus re-measured to the same 13 243 at `8ec8d98`.
+- **The re-measure at HEAD came back 13 243**, the same number this document carried — and the
+  checker agrees with `cat skills/*/SKILL.md | wc -w` exactly, which is what makes the baseline's
+  "reproduce it with" line true rather than aspirational. `wc -w` per file also sums to the same
+  total, since prettier gives every `SKILL.md` a trailing newline.
+- **This document was written in the shared checkout and the worktree branched before it was
+  committed**, so the branch that was supposed to build it could not see it (`git status` in the
+  worktree was clean, `.ai/work/` empty but for `.gitkeep`). It was copied in and claimed in `77d46db`.
+  The untracked original is still sitting in the shared checkout and wants deleting by hand — a
+  `dw-start` that shapes and worktrees in one session should commit the doc before branching.
 - **`pnpm lint` is not the lint command here** — the `rtk` proxy hook rewrites it to an ESLint
   wrapper and it dies with `Command "eslint" not found` while the repo is green
   (`docs/agents/tooling.md:41-44`). Use `bash scripts/lint.sh`.

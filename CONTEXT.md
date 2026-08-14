@@ -11,9 +11,9 @@ in [`AGENTS.md`](AGENTS.md) and the procedures in the skills themselves.
   `/clear`), archived at merge (`.ai/archive/<slug>/`, `status: landed`).
 - **Promotion** — moving the durable residue out of a `CHANGE.md` before it is archived: decisions to
   `docs/decisions/`, terms here, traps to the `## Gotchas` of the routed topic file that covers them,
-  follow-ups to `.ai/backlog/` (one file per idea). It **replaces rather than appends**: each target is read first, and what the
-  change supersedes is deleted in the same edit. Decisions are the exception — there the replacement
-  is a `superseded-by:` link and the old record stays.
+  follow-ups to `.ai/backlog/` (one file per idea). It **replaces rather than appends**: each target
+  is read first, and what the change supersedes is deleted in the same edit. Decisions are the
+  exception — there the replacement is a `superseded-by:` link and the old record stays.
 - **Cap** — the ceiling `validate-artifacts.sh` enforces on `.ai/backlog/`, the one durable list that
   would otherwise only grow; that script holds the number. A count of entries, never of bytes, and a
   forcing function rather than a quota — the way past a full list is to bundle an entry with a cousin
@@ -69,6 +69,10 @@ in [`AGENTS.md`](AGENTS.md) and the procedures in the skills themselves.
   `scripts/skill-corpus.baseline.json` plus pass 3 of `validate:artifacts`, set by
   [`0009`](docs/decisions/0009-skill-corpus-ratchet.md). Growth stays legal at the price of a
   re-record in the same commit.
+- **Self-measuring number** — a figure in prose that measures this repo against itself: a line count,
+  a byte size, a warning tally, a count of files in a directory. Deleted rather than corrected — the
+  prose states the rule and the checker reports the number, because two copies of a moving measure
+  drift apart. Distinct from a **Budget** or a **Cap**, which are numbers somebody chose.
 - **Declared bullet** — a `- **<Name>**: <value>` line under `## Solo lane` that a hook **greps**
   rather than infers, so the rule the writer reads and the rule the enforcer applies are one line.
   Four exist: **Lint command**, **Typecheck command**, **Commit pattern**, **Commit trailer**. All

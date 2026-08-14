@@ -81,9 +81,9 @@ declaration either, and each script names the tokens it rejects.
   ignored the whole time `pnpm validate:docs` has been calling that same file green. Two checkers, two
   units, one of them advisory, and the advisory one looks identical to the binding one in the output.
   Run either to see where the file stands; no copy of those figures is kept here. Before citing agnix
-  as the thing that would have caught something, check whether it gates: `severity` sets a reporting floor, and `[[overrides]]` can only
-  _disable_ a rule for a glob, never turn its threshold down. That is why the corpus ratchet is its
-  own checker rather than a tuned `AS-012`.
+  as the thing that would have caught something, check whether it gates: `severity` sets a reporting
+  floor, and `[[overrides]]` can only _disable_ a rule for a glob, never turn its threshold down. That
+  is why the corpus ratchet is its own checker rather than a tuned `AS-012`.
 - **A new check needs a new `paths:` entry, or it never runs on the commit shape it exists to
   catch.** Every workflow here is path-filtered, so a check added to an existing script inherits that
   script's triggers — the paths the _old_ checks cared about. It has bitten repeatedly, and both
@@ -139,6 +139,11 @@ declaration either, and each script names the tokens it rejects.
     not, because lint-staged writes and re-stages, committing the very content the push gate then
     refuses. It bites in `.ai/work/<slug>/CHANGE.md`, where writing findings under a `- [x] N.` box is
     the natural thing to do. Keep task bodies to one paragraph; findings belong in `## Notes`.
+  - **`prettier --check` never looks at prose width**, because `.prettierrc.json` sets
+    `proseWrap: "preserve"` — `printWidth: 100` governs code and reflowed tables, and Markdown
+    paragraphs are left exactly as authored. So the format gate passes a 128-column line in a file
+    hand-wrapped to 100, and an edit that rewraps only the line it touches pushes the overflow onto the
+    next one. Rewrap the whole paragraph, and check with `grep -nE '^.{108,}'` rather than the gate.
   - **`evals/*.ts` must never get the executable bit.** `lint-on-edit.sh` `eval`s its resolved lint
     command against the file path; the pre-fix version resolved to a bare space and executed the
     target. Fixed and pinned by `scripts/tests/lint-on-edit.test.sh`.

@@ -58,6 +58,12 @@ sub-bullets. Growth is fine; sprawl of stale traps is not.
   file against the new corpus as a **word stream** — slide an 8-gram window over the old text and
   report windows absent from the union of the new files, then judge each miss. Do that before
   believing any large doc move.
+  - **A line target buys itself out of the content, and the format gate cannot see the bill.**
+    Compressing `templates/AGENTS.md` toward a shaped line count dropped `git fetch origin &&` from a
+    rebase command — a payload teaching a rebase onto a stale ref, caught by a reviewer and not by any
+    check. Prose has no compiler, so shrinking it is not refactoring: it silently trades tokens that
+    matter for tokens that don't. Where a line count and a correct instruction conflict, the count is
+    the thing to renegotiate — and a floor worth keeping is worth writing into the goal.
 - **`CLAUDE.md` is a symlink to `AGENTS.md`, not a synced copy — and the symlink bites twice.**
   Claude Code's `Edit` tool **refuses to write through a symlink**, so an edit aimed at `CLAUDE.md`
   fails in a way that reads as a permissions problem rather than as "you named the wrong file". And

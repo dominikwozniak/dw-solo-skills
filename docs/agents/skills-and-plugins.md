@@ -110,6 +110,12 @@ checklist by hand.
   plugin actually ships rather than against the repo you are standing in. The tell that catches it
   early: **when a sibling skill hedges a claim you are about to state flatly, the hedge is load-bearing,
   not throat-clearing.**
+  - **An _ordering_ is a hedge, and it is the shape that gets missed.** `dw-land` says an existing root
+    `## Gotchas` stays the home "in this order", falling back to the routed topic file — and four
+    payload files were rewritten to name the topic file flat, in the same change that rewrote the entry
+    above. A numbered fallback reads like procedure rather than a caveat, so it survives a search for
+    hedge words and still breaks when you flatten it. Before restating any rule a skill owns, check
+    whether the skill states one destination or a sequence of them.
 - **The skill you are running is not the skill you are editing.** Claude Code serves
   `~/.claude/plugins/cache/dw-solo-skills/dw-solo/<version>/`, which only changes on reinstall — so a
   session can review, invoke and reason about a body several versions behind the canon it is editing,

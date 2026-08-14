@@ -2,7 +2,8 @@
 change: the-doc-layer-says-one-thing-once
 branch: the-doc-layer-says-one-thing-once
 created: 2026-08-14
-status: building # shaping | building | landed
+status: landed # shaping | building | landed
+landed: 2026-08-14
 ---
 
 # Change — every fact in the doc layer is true and lives in exactly one file, and a fresh scaffold gets room to grow
@@ -14,8 +15,13 @@ in `AGENTS.md`, `README.md`, `CONTEXT.md`, `docs/agents/*.md` or `templates/*` i
 no self-measuring number (`117/120 lines`, `7088 B`, `51 warnings`, `6 guardrail hooks`) is hardcoded
 in prose anywhere; the fork list, the vendored list, the layout block and the loop prose each have one
 home and a link from wherever else needs them; `docs/agents/tooling.md` no longer restates decision
-`0009`; and `templates/AGENTS.md` is a skeleton of ~55–65 lines so a scaffolded repo has real headroom
-under the 120-line budget instead of 15. `pnpm validate:docs`, `validate:artifacts`,
+`0009`; and `templates/AGENTS.md` is a skeleton with **real headroom** under the 120-line budget instead of
+15 lines of it — every section reduced to a one-line hint, with only what a hook greps, what
+`check-agents-docs.mjs` enforces and what `dw-init` substitutes left standing. **Amended at land
+time**: this read "~55–65 lines" and that floor is unreachable while keeping those three things —
+ten headings with their blanks, the six-row router table, the ten placeholder-bearing bullets and the
+hook-grep contract paragraph are ~80 lines before any hint is written. The measurable claim is now
+the headroom, which came out at 34 lines. `pnpm validate:docs`, `validate:artifacts`,
 `validate:manifests`, `format` and `lint` all stay green, and `AGENTS.md` stays inside the budget it
 declares.
 
@@ -235,7 +241,10 @@ a split: it all lands together.
   caught it and the author did not.
 - `dw-solo-setup` → `0.1.21` for the second round of payload edits.
 
-**OPEN AGAINST THE GOAL — task 9 landed at 86 lines, not ~55–65.** Every substantive instruction in
+**RESOLVED — the `## Goal` was amended at land time; the verdict re-ran clean against it.** What
+follows is why, kept because the floor is the reusable part.
+
+**Task 9 landed at 86 lines, against a shaped ~55–65.** Every substantive instruction in
 task 9 is done: worked prose under `## Always` / `## Ask First` / `## Never` / `## Git conventions` is
 now one-line hints, the loop gained `dw-grill` and `dw-land`, `none` gained "standing alone on the
 line", and all ten placeholders plus every heading, router row and hook-grepped bullet survive (the
@@ -248,7 +257,8 @@ bullets, and five prose blocks that are contracts rather than examples — the h
 all, which tells the author that the Lint command must accept an appended file path and that `none`
 must stand alone. Cutting to 65 means dropping one of those, and each is protected either by the
 checker, by a hook, or by this task's own "keep" list. The number needs amending or the constraint
-does; that is the user's call, not a note to bury. Nothing else in the `## Goal` is outstanding.
+does. The user chose to amend the number, on the grounds that the objective was headroom and that
+buying twenty more lines would come out of the same pocket as the `git fetch` the reviewer caught.
 
 **Prior context:** `.ai/backlog/templates-ship-the-docs-agents-contract.md` is coupled to task 9 —
 cutting the template's prose removes the last place a scaffolded repo meets the `docs/agents/`

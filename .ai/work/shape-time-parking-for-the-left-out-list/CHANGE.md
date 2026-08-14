@@ -56,7 +56,7 @@ backlog in what you get. `dw-solo` and `dw-solo-setup` are bumped in both manife
 - [x] 4. **The README router row.** `README.md:76` — the `dw-shape` row's "What you get" column gains
       the backlog beside `.ai/work/<slug>/CHANGE.md`. The `## The loop` diagram is unchanged;
       `dw-shape`'s position in it does not move.
-- [ ] 5. **Two bumps, then the full gate.** `dw-solo` (tasks 1–2) and `dw-solo-setup` (task 3 touches
+- [x] 5. **Two bumps, then the full gate.** `dw-solo` (tasks 1–2) and `dw-solo-setup` (task 3 touches
       `templates/`, which is payload), each in `.claude-plugin/marketplace.json` **and** its
       `plugin.json`. Last on purpose: `validate-manifests.sh` only checks the pairs are _equal_, so a
       forgotten bump ships green. If task 1 touches `dw-shape`'s `description`, `eval:routing` is
@@ -86,9 +86,20 @@ backlog in what you get. `dw-solo` and `dw-solo-setup` are bumped in both manife
   `.ai/work/setup-lives-in-tracked-agents-md` bumps both plugins as well. Read every version off `main`
   at build time, and re-check after any rebase: the squash-merge trap is that another change may have
   taken the number this one targets.
-- **Cap headroom is a fact about today, not a licence.** `validate-artifacts.sh` reports 5/8 now that
-  `loop-prose-disagrees-with-the-bodies` has taken its seed. The whole point of task 1 is that shape
-  time could fill those three slots in one sitting.
+- **There is no cap headroom left, and that sharpened task 1.** The 5/8 this was shaped against is now
+  **8/8** — the folder is exactly full at build time. So the first real `dw-shape` run after this ships
+  cannot park anything at all without bundling, absorbing or deleting first, which is precisely why the
+  step forces the choice per item instead of filing the pile. Written as pointing at the README's cap
+  paragraph rather than restating the number, so this stays true when the cap moves.
+- **Versions taken off `origin/main`, both at `.16`.** `dw-solo` 0.4.16 → 0.4.17, `dw-solo-setup`
+  0.1.16 → 0.1.17. Nothing else was in flight — `.ai/work/` held only this change and both changes the
+  shaping named as neighbours are archived — so the numbers were uncontested. Re-check after a rebase
+  anyway.
+- **Task 1 landed as two steps, not one.** The parking step became step 5 and the commit moved out to
+  its own step 6. Folding a choice-forcing interaction into a step already titled "write, check back,
+  commit" buried it; the two-step split also makes "these ship in the shape commit below" a pointer at
+  a real neighbour. `dw-shape`'s `description` was **not** touched, so `eval:routing` stayed a
+  formality — it passes at 67%, exactly at the floor, unchanged.
 - **Unexercised on merge, by design.** Prose in skill bodies, and nothing asserts skill body content;
   any `dw-shape` run during the work serves the cached plugin, not the canon being edited. The first
   real exercise is the next shape after reinstall.

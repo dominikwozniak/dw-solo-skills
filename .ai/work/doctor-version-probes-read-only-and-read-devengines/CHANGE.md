@@ -40,7 +40,7 @@ line reports against `devEngines.runtime` when present; and the pre-v11 lockfile
 - [x] 3. Read the Node pin from `devEngines.runtime.version` when present, falling back to
       `engines.node`; report it as a pin (`==`) vs a floor (`>=`) the way the pnpm block distinguishes
       an exact version from a range.
-- [ ] 4. Make the `.nvmrc` mentions at `doctor.sh:111` and `:117` conditional on the file existing,
+- [x] 4. Make the `.nvmrc` mentions at `doctor.sh:111` and `:117` conditional on the file existing,
       and update `skills/dw-doctor/SKILL.md:29-31` to name `devEngines.runtime` as the Node source.
 - [ ] 5. Bump `plugins/dw-solo-setup/.claude-plugin/plugin.json` (0.1.17 → next) and run the full
       `scripts` block from `package.json`.

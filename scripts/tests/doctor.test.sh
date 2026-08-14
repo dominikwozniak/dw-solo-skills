@@ -440,6 +440,23 @@ printf '{ "engines": { "node": ">=0.1.0" }, "devEngines": { "runtime": { "name":
 run "$repo" >/dev/null
 says "runtime-pin-below-is-the-warn" warn "node" "< devEngines 99.0.0"
 
+# The install hint points at .nvmrc only where the repo has one. A devEngines.runtime repo has none —
+# pnpm downloads the runtime — and naming a deleted file sends the reader hunting for it.
+repo="$(scaffold '120 lines / 10 KB')"
+printf '{ "engines": { "node": ">=99.0.0" } }\n' >"$repo/package.json"
+run "$repo" >/dev/null
+if grep -F ".nvmrc" "$OUT" >/dev/null; then
+  note_fail "no-nvmrc-no-nvmrc-hint" "$(grep -F '.nvmrc' "$OUT" | head -n1)"
+else
+  note_pass "no-nvmrc-no-nvmrc-hint"
+fi
+
+repo="$(scaffold '120 lines / 10 KB')"
+printf '{ "engines": { "node": ">=99.0.0" } }\n' >"$repo/package.json"
+printf '24\n' >"$repo/.nvmrc"
+run "$repo" >/dev/null
+says "nvmrc-present-is-named" warn "node" ".nvmrc"
+
 # A runtime entry for something else entirely must not be mistaken for the Node declaration.
 repo="$(scaffold '120 lines / 10 KB')"
 printf '{ "engines": { "node": ">=99.0.0" }, "devEngines": { "runtime": { "name": "bun", "version": "0.1.0" } } }\n' >"$repo/package.json"

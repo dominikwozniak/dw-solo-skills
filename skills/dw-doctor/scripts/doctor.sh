@@ -120,6 +120,11 @@ else
   # pnpm downloads it; the pin can only be *missed* by a bare `node` older than it. Demanding equality
   # would warn forever on a machine one patch release ahead, which is the normal case, not a fault.
   ndmin="$(printf '%s' "$ndver" | grep -oE '[0-9]+(\.[0-9]+)*' | head -n1)"
+  # The install hint names `.nvmrc` only where there is one to read. A repo pinning through
+  # devEngines.runtime has no such file — pnpm downloads the runtime itself — and pointing at it
+  # sends the reader looking for something that was deliberately deleted.
+  node_fix="brew install node"
+  [ -f "$ROOT/.nvmrc" ] && node_fix="nvm use (see .nvmrc), or brew install node"
   if have node; then
     # Probed from `/`, and for the same reason as pnpm below. A `node` on PATH may be a version-proxy
     # shim (pnpm's own, or a `vp`-style one): run inside the repo it resolves the repo's declaration,
@@ -132,7 +137,7 @@ else
     elif [ -z "$ndmin" ]; then
       report ok "node" "$cur"
     elif ! ver_ge "$ndmin" "$cur"; then
-      report warn "node" "$cur < $ndsrc $ndver — upgrade (see .nvmrc, or brew install node)"
+      report warn "node" "$cur < $ndsrc $ndver — upgrade: $node_fix"
     elif [ "$cur" = "$ndmin" ] || [ "$ndsrc" = "engines" ]; then
       report ok "node" "$cur ($ndsrc: $ndver)"
     else
@@ -141,7 +146,7 @@ else
       report ok "node" "$cur on PATH ($ndsrc pins $ndver, which pnpm downloads for its own scripts)"
     fi
   else
-    report fail "node" "missing — install via nvm (.nvmrc) or brew install node"
+    report fail "node" "missing — install: $node_fix"
   fi
 
   # pnpm vs the version the repo pins. devEngines.packageManager first — pnpm 11 reads it and

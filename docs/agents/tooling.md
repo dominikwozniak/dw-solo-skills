@@ -55,7 +55,16 @@ argument it is handed). Slow, and the OOM below applies. `.husky/pre-commit` is 
     survives), `"download"` fetches the pinned version and runs it — the behaviour the deleted
     `packageManager` field used to provide. (3) **CI reads both fields through one inputless
     `pnpm/setup@v2` step**, which installs pnpm, installs Node, and runs the install — so a workflow
-    needs no `with:` block, and adding one only restates the manifest. The Node half carries a tail:
+    needs no `with:` block. The one input that would not merely restate the manifest, `cache: true`,
+    was **measured on #28 and reverted: a hit is ~1.2s slower than no cache at all** (37.1s baseline →
+    38.3s warm on `agnix lint`), and the reason is structural rather than a matter of tree size — the
+    action installs the runtime _before_ it restores, so the Node tarball is most of a 45MB entry that
+    is uploaded and restored on every hit and then never used. The store cache also cannot touch the
+    ~30s that actually dominates these jobs, which is `agnix`'s postinstall fetching its prebuilt
+    binary. Don't re-add it without re-measuring; if CI time is the real complaint, that postinstall
+    is the target. (A related non-trap, since the key is `pnpm-cache-<os>-<arch>-<lockfile hash>` with
+    no job component: three jobs racing it is safe — the losers warn, the winner saves.) The Node half
+    carries a tail:
     `devEngines.runtime` makes Node a **locked dependency** (a `node@runtime:…` entry with a hash per
     platform), so bumping it is the field **plus** a regenerated `pnpm-lock.yaml` — edit the version
     alone and CI's frozen install refuses it. Locally the pin reaches scripts run through pnpm only:

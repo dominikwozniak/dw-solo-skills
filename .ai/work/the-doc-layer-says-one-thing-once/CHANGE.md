@@ -89,7 +89,7 @@ a split: it all lands together.
       prose under `## Always` / `## Ask First` / `## Never` / `## Git conventions` to one-line hints.
       Fix the loop at `:66`, which still omits `dw-grill` and `dw-land`, and add the hook-critical
       detail `AGENTS.md:92` has and the template lacks: `none` must stand alone on the line.
-- [ ] 10. The other payload docs. `templates/decisions-README.md:9` says the bar "isn't restated here"
+- [x] 10. The other payload docs. `templates/decisions-README.md:9` says the bar "isn't restated here"
       and then `:11–13` restates it — its live twin `docs/decisions/README.md:9–14` names this exact
       problem. `templates/work-README.md:43` still sends traps to `## Gotchas` in `CLAUDE.md`, and
       `:53–55` contradicts its own sibling `templates/backlog-README.md:12–14` on entry length.
@@ -205,6 +205,18 @@ a split: it all lands together.
 - Task 8's cuts (~11 lines) run against task 3's addition (~16), so this file ends at 139 lines,
   slightly _up_ from the 134 it started at. That is the intended trade — it is now the one home for two
   enumerations that were living in three files.
+
+- Task 10 found a fourth copy of the same bug and a version obligation. `templates/archive-README.md`
+  **and** its hand-kept twin `.ai/archive/README.md` both sent the durable layer to `## Gotchas` in
+  `CLAUDE.md`; both are fixed identically and `cmp` confirms they are still byte-identical, which is
+  the only thing keeping them in step (nothing tests it — see the shape's Notes). And tasks 9 + 10 edit
+  `templates/`, which is payload, so `dw-solo-setup` is bumped `0.1.19` → `0.1.20` in
+  `marketplace.json` and its `plugin.json` together. `validate-manifests.sh` checks the two are
+  _equal_, never that either moved, so nothing would have caught the omission.
+- Gate run at the end of task 10, all green: `format`, `validate:docs`, `validate:artifacts` (including
+  the 59-case `check-agents-docs.test.sh`), `validate:manifests`, `eval:routing`, and
+  `bash scripts/lint.sh` at 0 errors. `pnpm lint` itself dies with `Command "eslint" not found` — the
+  rtk-proxy hijack `tooling.md` documents, not a repo failure.
 
 **OPEN AGAINST THE GOAL — task 9 landed at 85 lines, not ~55–65.** Every substantive instruction in
 task 9 is done: worked prose under `## Always` / `## Ask First` / `## Never` / `## Git conventions` is

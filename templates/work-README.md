@@ -8,7 +8,7 @@ active change is and where it stands.
 
 ```
 backlog/<slug>.md       follow-ups not being done now   (dw-land + dw-shape park, dw-shape takes)
-                        created: frontmatter · H1 one-liner · ≤3 lines of context
+                        entry shape and the two bars: backlog/README.md
 work/<slug>/CHANGE.md   the live state of ONE change    (dw-shape writes, dw-next ticks)
                         goal · decisions taken · task checklist · anchors
                         branch: unclaimed until dw-start / dw-next claims it into a branch
@@ -32,7 +32,8 @@ into `archive/<slug>/` (`status: landed`, stamped `landed:` + `pr:`).
   leftover one before archiving. Only ever one at a time; a new handoff overwrites
   the old.
 - **`archive/` is history, not guidance.** Nothing reads it to decide anything; the
-  durable layer lives in `docs/decisions/`, `CONTEXT.md` and `## Gotchas`.
+  durable layer lives in `docs/decisions/`, `CONTEXT.md` and the topic files'
+  `## Gotchas`.
 
 ## Where the durable parts go
 
@@ -40,8 +41,8 @@ into `archive/<slug>/` (`status: landed`, stamped `landed:` + `pr:`).
 
 - `docs/decisions/` — hard-to-reverse decisions, one record each
 - `CONTEXT.md` — domain terms, glossary only
-- `## Gotchas` in `CLAUDE.md` — traps that cost real time (auto-loaded, so the next
-  session reads them unasked)
+- the `## Gotchas` of the matching `docs/agents/<topic>.md` — traps that cost real
+  time, kept beside the topic that sprang them rather than in the always-loaded root
 - `.ai/backlog/<slug>.md` — ordinary follow-ups that clear none of the above bars;
   findings by pointer to `.ai/archive/<slug>`, never inlined
 
@@ -50,6 +51,6 @@ into `archive/<slug>/` (`status: landed`, stamped `landed:` + `pr:`).
 - **Tracked on purpose** — `git add` and commit these alongside the code.
 - Skills own these files; don't hand-edit mid-change.
 - Safe to read anytime. To pick up after a `/clear`: `dw-next` bare reads from disk.
-- Backlog entries stay minimal — `created:` plus an H1; no status, no priority. The
-  moment the backlog grows a schema it is the validated plan this lane exists to
-  avoid, and nothing validates it, deliberately.
+- Nothing here is validated, deliberately: the moment these files grow a schema they
+  are the validated plan this lane exists to avoid. The backlog entry's shape and the
+  two bars it clears are in `backlog/README.md`, which owns them.

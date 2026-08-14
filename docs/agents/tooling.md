@@ -66,9 +66,16 @@ argument it is handed). Slow, and the OOM below applies. `.husky/pre-commit` is 
   script's triggers — which are the paths the _old_ checks cared about. `validate-docs.sh`'s
   agent-docs check grades `AGENTS.md`, and `validate-docs.yaml` did not list `AGENTS.md`: a commit
   that pushed the root over its budget — the exact regression the check exists for — matched no
-  filter and CI stayed green with nothing run. It has bitten twice; `validate-artifacts.yaml` carries
-  a comment about the first. When you add a check, add every path it _reads_ to both the
-  `pull_request` and `push` lists, not just the script you edited.
+  filter and CI stayed green with nothing run. It has now bitten **three times**;
+  `validate-artifacts.yaml` carries a comment about the first. When you add a check, add every path it
+  _reads_ to both the `pull_request` and `push` lists, not just the script you edited.
+  - **The third bite was the corpus ratchet, and it is the one that shows how the trap hides.** Pass 3
+    reads `skills/**`, and `validate-artifacts.yaml` listed none of it — so appending words to a
+    `SKILL.md`, the exact shape the ratchet exists to catch, matched no filter. `.husky/pre-commit`
+    does not run `validate:artifacts` either, so there was no automatic path at all. What made it
+    invisible: `validate-docs.yaml` **does** list `skills/**`, so that commit still showed a green
+    tick — from a workflow that never measures the corpus. A green check on a skill edit does not mean
+    the corpus was measured; only the _Validate artifacts_ run does.
 - **pnpm here is three traps deep, and every one of them looks like a broken repo.**
   - **The lint script can be hijacked before it reaches `scripts/lint.sh`.** With the `rtk` proxy
     hook active it is rewritten to `rtk lint` — an _ESLint_ wrapper — and dies with

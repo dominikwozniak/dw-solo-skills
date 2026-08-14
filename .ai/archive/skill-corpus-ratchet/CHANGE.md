@@ -2,7 +2,8 @@
 change: skill-corpus-ratchet
 branch: worktree-skill-corpus-ratchet
 created: 2026-08-14
-status: building # shaping | building | landed
+landed: 2026-08-14
+status: landed # shaping | building | landed
 ---
 
 # Change — the skill corpus can only shrink unless growth is recorded on purpose, and the budgets say what kind of number they are

@@ -63,9 +63,28 @@ blocked "restore-quoted-dot"  'git restore "."'
 blocked "restore-sq-dot"      "git restore '.'"
 blocked "checkout-quoted-dot" 'git checkout "."'
 blocked "restore-quoted-slash" 'git restore "./"'
-# `git -C <path>` is the same command aimed at another repo.
+# `git -C <path>` is the same command aimed at another repo — and in a repo with
+# worktrees that other repo is often a sibling checkout of this one. One case per
+# git pattern, because the prefix used to be on the DOT_ARG pair alone and the
+# rest were silently exempt.
 blocked "restore-dash-C-dot"  "git -C sub restore ."
 blocked "checkout-dash-C-dot" "git -C ../other checkout -- ."
+blocked "push-force-dash-C"   "git -C sub push --force"
+blocked "push-f-dash-C"       "git -C ../other push -f origin main"
+blocked "push-delete-dash-C"  "git -C sub push origin --delete old-branch"
+blocked "push-colon-dash-C"   "git -C sub push origin :old-branch"
+blocked "reset-hard-dash-C"   "git -C sub reset --hard HEAD~1"
+blocked "clean-fd-dash-C"     "git -C sub clean -fd"
+blocked "branch-D-dash-C"     "git -C ../other branch -D feature"
+blocked "stash-clear-dash-C"  "git -C sub stash clear"
+# The wrappers compose with it: BOUNDARY eats `rtk`, then GIT eats the `-C`.
+blocked "rtk-dash-C-push"     "rtk git -C sub push --force"
+blocked "dash-C-abs-path"     "git -C /Users/someone/repo push --force"
+blocked "dash-C-worktree"     "git -C .claude/worktrees/other push --force"
+blocked "dash-C-chained"      "pnpm test && git -C sub reset --hard"
+# A `-C` path containing a space is still one argument, so it still blocks.
+blocked "dash-C-quoted-path"  "git -C 'my repo' push --force"
+blocked "dash-C-dq-path"      'git -C "my repo" reset --hard'
 blocked "stash-clear"         "git stash clear"
 blocked "rm-root"             "rm -rf /"
 blocked "rm-home-tilde"       "rm -rf ~"
@@ -106,6 +125,22 @@ allowed "restore-dotfile-rel" "git restore .claude/settings.json"
 allowed "checkout-dotfile"    "git checkout .claude/settings.json"
 allowed "restore-dotted-file" "git restore .gitignore"
 allowed "restore-C-dotfile"   "git -C sub restore .ai/work/x"
+# The `-C` prefix widens what matches, so the safe forms of each pattern have to
+# stay safe with it — otherwise every read of a sibling worktree starts bouncing.
+allowed "dash-C-plain-push"   "git -C sub push"
+allowed "dash-C-status"       "git -C sub status --short"
+allowed "dash-C-clean-dry"    "git -C sub clean -n"
+allowed "dash-C-branch-d"     "git -C sub branch -d merged"
+allowed "dash-C-reset-soft"   "git -C sub reset --soft HEAD~1"
+allowed "dash-C-stash-list"   "git -C sub stash list"
+allowed "dash-C-rev-parse"    "git -C .claude/worktrees/other rev-parse HEAD"
+# What keeps `git commit -m "never reset --hard"` from matching the reset pattern
+# is that `git` and the verb are ADJACENT. A `-C` group swallowing spaces destroys
+# that, and the first spelling of it refused every -C command whose message quoted
+# a dangerous phrase. These three are the regression, not decoration.
+allowed "dash-C-prose-reset"  "git -C sub commit -m 'docs: never reset --hard'"
+allowed "dash-C-prose-push"   'git -C sub commit -m "docs: never push --force"'
+allowed "dash-C-prose-branch" "git -C sub commit -m 'docs: branch -D is rude'"
 allowed "restore-quoted-path" 'git restore "./src/app.ts"'
 allowed "checkout-branch"     "git checkout main"
 allowed "checkout-feature"    "git checkout feature/x"

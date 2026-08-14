@@ -70,7 +70,7 @@ Order is a hint. Each box leaves the repo green; the change ships when all are t
       (`PostToolUse`/`Write`, size threshold). Both wired in both settings, both self-tested. Adapted
       from davepoon/buildwithclaude `plugins/hooks-safety` — rewrite to this repo's conventions, don't
       paste.
-- [ ] 6. Apply the `GIT` prefix in `block-dangerous-commands.sh` to `push`, `reset --hard`, `clean`,
+- [x] 6. Apply the `GIT` prefix in `block-dangerous-commands.sh` to `push`, `reset --hard`, `clean`,
       `branch -D` and `stash clear`, so `git -C sub …` blocks like the bare form; extend
       `block-dangerous-commands.test.sh` with a `-C` case per pattern.
 - [ ] 7. Retire `link-local-memory.sh`: both hook copies, `worktree.sh`'s `link_local_memory()`, its
@@ -174,6 +174,14 @@ Its design bet is the **allowed** list, not the blocked one: exfil is "curl carr
 "curl". A hook that blocked every network call, or every reference to `$GITHUB_TOKEN` by the command
 that needs it, gets unwired inside a day — so referencing a secret variable is fine and only printing
 its value is refused. Two thirds of that self-test is false-positive cases for exactly that reason.
+
+**Task 6 could not just paste `$GIT` onto the five patterns — that widening opens a false positive
+the bare patterns never had.** What keeps `git commit -m "never reset --hard"` from matching the reset
+pattern is that `git` and the verb must be ADJACENT; `-C [^;&|]*` swallows spaces and destroys it, so
+the first spelling refused every `-C` command whose message quoted a dangerous phrase. Probed, caught,
+and fixed by making the path ONE argument — a quoted span or a run of non-space characters — which
+also keeps a path containing a space blocking. Three prose cases are pinned in the test as the
+regression.
 
 `large-file-guard.sh` is `PostToolUse`, so the bytes are already on disk and it cannot prevent
 anything — it puts the real measured size in front of the model while deleting the file is still

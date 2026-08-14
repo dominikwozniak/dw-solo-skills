@@ -141,6 +141,17 @@ tokens, limit is 1500)`) while `pnpm validate:docs` calls the same file green at
   Two of its statements were already stale when this file was written, both because three commits
   landed mid-session: `.ai/backlog/` is at **5/8**, not 8/8 (so task 6 is possible at all), and the
   corpus re-measured to the same 13 243 at `8ec8d98`.
+- **The ratchet's first real firing was on its own PR, and it was a true positive.** CI failed
+  _Validate artifacts_ with `13336 words, baseline 13243, +93 — dw-doctor: 911 (was 818, +93)` while
+  the branch measured a clean 13243 locally. Not a bug in either: `actions/checkout` on a
+  `pull_request` builds the **merge ref**, so CI measured this branch merged with a `main` that had
+  moved four commits ahead — one of them `ae9ad53`, which grew `dw-doctor` by 93 words. That change
+  landed _before_ pass 3 existed, so nothing measured it, which is precisely the gap this change
+  closes. Resolved by rebasing onto `origin/main` (which reproduced the same failure locally, so CI
+  and the tree agreed) and re-recording: those 93 words are **grandfathered**, adopted as the starting
+  point rather than approved, because a ratchet cannot retroactively ask for a decision that was never
+  offered. Worth keeping for two reasons: a local pass is not a CI pass whenever `main` has moved, and
+  the very first thing this gate did was catch unrecorded growth.
 - **A Codex review pass found five input-validation holes; four were worth closing, and one of the
   fixes made another one moot.** None was critical — the gate held in every case, because `words` is
   validated as a number and it alone decides the verdict, so the malformed-baseline shapes degraded

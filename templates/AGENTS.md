@@ -43,8 +43,8 @@
 - **Test**: {{TEST_COMMAND}}
 - _(add the rest as they appear: format, build, migrate, the one command CI runs)_
 
-Lint and typecheck are the two bullets under `## Solo lane` — **one copy each**, because the
-guardrail hooks grep for them under those exact names.
+Lint, typecheck and the two commit policies are the bullets under `## Solo lane` — **one copy
+each**, because the guardrail hooks grep for them under those exact names.
 
 ## Task Router
 
@@ -67,13 +67,18 @@ rows — read all of them. Explore on your own only what no row covers.
 runs `/dw-land` itself while the change doc is still open. Where each step promotes its durable
 output is the Task Router above.
 
-The two below are **grep-read by the hooks**, which is why they live here and nowhere else:
+The four below are **grep-read by the hooks**, which is why they live here and nowhere else:
 `lint-on-edit` appends one file path to the first, so it must accept one; `typecheck-on-stop` runs
-the second over the whole project. Write `none` where the project genuinely has neither — the hooks
-read that as "skip", and a stale command is worse than an honest gap.
+the second over the whole project; `enforce-commit-hygiene` matches the third as an ERE against a
+`-m` subject and requires the fourth as a trailer line. Write `none` where the project genuinely has
+none — the hooks read that as "skip", and a stale rule is worse than an honest gap. The commit
+pattern falls back to Conventional Commits if you delete its bullet; the trailer falls back to
+`none`, so leave it `none` unless the project really wants one on every commit.
 
 - **Lint command**: {{LINT_COMMAND}}
 - **Typecheck command**: {{TYPECHECK_COMMAND}}
+- **Commit pattern**: {{COMMIT_PATTERN}}
+- **Commit trailer**: {{COMMIT_TRAILER}}
 
 ## Git conventions
 

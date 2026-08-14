@@ -52,8 +52,7 @@ worktree (the EnterWorktree tool where the session offers it, else `cd` to the p
 
 On stdout it prints the path and nothing else. **Everything it says on stderr is for you to act on**:
 which `.worktreeinclude` files it copied in, and what the worktree still needs. Agent memory needs no
-mention any more — it lives in tracked `AGENTS.md`, which the checkout delivers unaided; `create`
-still links a legacy `CLAUDE.local.md` where a repo has one, and says so on stderr when it does.
+mention at all — it lives in tracked `AGENTS.md`, which the checkout delivers unaided.
 
 ### 4. Claim, then install
 

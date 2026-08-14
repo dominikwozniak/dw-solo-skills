@@ -34,21 +34,45 @@ Wired in tracked `.claude/settings.json`, with the scripts in `.claude/hooks/` �
 a `git worktree` checkout get the same guardrails. They are also vendored copies of what this repo
 ships in `templates/hooks/`; `scripts/tests/hooks-in-sync.test.sh` pins the two together.
 
-| hook                          | fires on                                          |
-| ----------------------------- | ------------------------------------------------- |
-| `block-dangerous-commands.sh` | PreToolUse(Bash) — destructive shell              |
-| `block-non-pnpm.sh`           | PreToolUse(Bash) — npm/yarn invocations           |
-| `block-env-access.sh`         | PreToolUse(Read/Edit/Write/Grep/Bash) — `.env`    |
-| `lint-on-edit.sh`             | PostToolUse(Write/Edit) — the root's Lint command |
-| `link-local-memory.sh`        | SessionStart — worktree local-memory symlink      |
+| hook                          | fires on                                                           |
+| ----------------------------- | ------------------------------------------------------------------ |
+| `block-dangerous-commands.sh` | PreToolUse(Bash) — destructive shell                               |
+| `block-non-pnpm.sh`           | PreToolUse(Bash) — npm/yarn/bun invocations                        |
+| `enforce-commit-hygiene.sh`   | PreToolUse(Bash) — commit subject, trailer, backtick, `git add -A` |
+| `credential-leak-guard.sh`    | PreToolUse(Bash) — credential stores, env hunting, exfil           |
+| `block-env-access.sh`         | PreToolUse(Read/Edit/Write/Grep/Bash) — `.env`                     |
+| `guard-plugin-canon.sh`       | PreToolUse(Edit/Write) — an edit aimed through a plugin symlink    |
+| `lint-on-edit.sh`             | PostToolUse(Write/Edit) — the root's Lint command                  |
+| `large-file-guard.sh`         | PostToolUse(Write) — an oversized write, after the fact            |
 
 Every one opens with `command -v jq >/dev/null || exit 0` — **without `jq` on `PATH` they all
-silently no-op**, and nothing says so. `/dw-doctor` is the check. `templates/hooks/` ships a sixth,
+silently no-op**, and nothing says so. `/dw-doctor` is the check. `templates/hooks/` ships a ninth,
 `typecheck-on-stop.sh`, deliberately not wired here — this repo has no typecheck.
 
 `lint-on-edit.sh` is no longer inert: `evals/*.ts` matches its `.ts/.tsx/.js/.jsx/.mjs/.cjs` filter,
 so every edit there runs the lint command over the whole tree (`scripts/lint.sh` ignores the file
 argument it is handed). Slow, and the OOM below applies. `.husky/pre-commit` is still the real gate.
+
+## The four declared bullets
+
+Four values under the root's `## Solo lane` are **grep-read** rather than inferred, which is why they
+live there and nowhere else: `- **Lint command**:`, `- **Typecheck command**:`, `- **Commit
+pattern**:` and `- **Commit trailer**:`. Every one resolves the same way, in four separate scripts
+that deliberately share the extraction shape — one bug fixed once:
+
+1. `AGENTS.md`, the tracked file the scaffold writes.
+2. `CLAUDE.local.md`, legacy only — a repo scaffolded before decision 0007 still keeps its own there.
+   `CLAUDE.md` is absent from the chain on purpose: it is a symlink to `AGENTS.md`, so reading it is
+   reading step 1 twice.
+3. The script's own default. For lint and typecheck that is a probe (eslint / `tsc`); for the commit
+   pattern it is Conventional Commits, and for the trailer it is `none` — a requirement nobody
+   declared must not start failing commits in a repo that never asked for one.
+
+The value is **the first backticked span** on the line, and a standalone `none` **disables the check
+and stops the chain**. `none` is tested on the raw remainder _before_ any backtick extraction, because
+it has to win over explanatory prose: `none — see `scripts/lint.sh`` must skip, and the version that
+picked the backticks first ran that script on every edit. An unrendered `{{…}}` placeholder is not a
+declaration either, and each script names the tokens it rejects.
 
 ## Gotchas
 
@@ -136,9 +160,13 @@ argument it is handed). Slow, and the OOM below applies. `.husky/pre-commit` is 
   literal `<<` anywhere in a command starts body mode and **nothing below it is scanned**. The other
   half is that a bare `.env` token still blocks anywhere, so a probe of the hook cannot be typed
   literally — build the string (`D=$(printf ".%s" env)`) or your own test call never runs. **The same
-  blindness sits in `block-non-pnpm.sh`**, which cannot tell a mention from an invocation either: a
-  `git grep "npm install" -- .github/` is refused for containing the string it is searching _for_.
-  Grep the shorter token, or build it. **`block-dangerous-commands.sh` is the third**, and the worst
+  blindness sits in `block-non-pnpm.sh`**, which cannot tell a mention from an invocation either —
+  though only when the quoted text carries a command separator, since the patterns anchor after `;`,
+  `&` and `|`. `git grep "npm install"` is fine; `git grep "; npm install"` and
+  `grep -rn "npm install\|yarn add" .` are both refused for containing the string they search _for_,
+  and so is `git commit -m "ci: replace | yarn with pnpm"`. Grep the shorter token, or build it. (This
+  entry named the harmless spelling as the trap for a while — the example was never reproducible, and
+  the fix was to probe both hooks rather than re-read the sentence.) **`block-dangerous-commands.sh` is the third**, and the worst
   to probe by hand: its patterns anchor after `;`, `&` and `|`, so a one-liner looping over test cases
   contains `; git restore .` by construction and blocks itself. Put the cases in a file under the
   scratchpad and run that — which is what `scripts/tests/` already does, and the reason to reach for it
@@ -150,6 +178,40 @@ argument it is handed). Slow, and the OOM below applies. `.husky/pre-commit` is 
   comparison is what exposed the two holes that had been there all along (a quoted `"."`, and
   `git -C <path>`), because those rows were identically wrong on both sides. A loosened guardrail is
   invisible to a self-test that never had the case.
+- **Only exit 2 blocks, so a hook that fails any other way is a hook that is silently off.** Every one
+  of these runs `set -uo pipefail`, and each of the three ways below aborts it at exit 1 — which the
+  harness reads as "not a block" and never mentions. The lesson is not the individual traps; it is that
+  a guardrail's failure mode is indistinguishable from its happy path, so every hook needs a case
+  proving it still refuses something.
+  - **`local a="$1" n=${#a}` does not work.** Every word of a `local` is expanded _before_ the builtin
+    runs, so `${#a}` reads an `a` that is not set yet. Two statements, always.
+  - **bash 3.2 errors on `"${arr[@]}"` for an EMPTY array under `set -u`.** Which is why
+    `enforce-commit-hygiene.sh` carries its per-commit message group as scalars rather than an array.
+  - **A `while read` loop's exit status is its last test**, false for the ordinary case, which sinks
+    the enclosing pipeline under `pipefail`. `strip_heredocs` ends in a bare `return 0` for exactly
+    this reason, in two hooks now.
+  - **A hook that exits before consuming stdin kills its caller with SIGPIPE.** `large-file-guard.sh`
+    resolved its threshold above `input=$(cat)`, so the disable path returned without draining the
+    payload and the writer took the signal — `zero-disables` exiting 141. It surfaced **once**, under
+    the full suite's load, and would not reproduce in 20 standalone runs: the payload fits the pipe
+    buffer, so the writer normally finishes before the hook can exit and the race only opens when the
+    hook wins. Read stdin first, then decide. The other hooks are safe only because they happen to
+    read immediately — treat that as the rule, not the accident.
+- **`${path#"$repo_root"/}` is not "make this path repo-relative".** It is a string-prefix test, and
+  the two strings routinely name the same directory in different spellings: git reports the physical
+  path while the tool hands over one that still contains a symlinked ancestor — `/private/var/…`
+  against `/var/…` on macOS is the everyday case, and a repo under a symlinked home dir is another.
+  The strip then silently does nothing, the path reads as "outside the repo", and the hook exits 0
+  without guarding. Compare directories with `-ef`, which is device-and-inode and answers the question
+  actually being asked; keep the walk itself textual (`dirname`) so it cannot resolve the very symlink
+  it is looking for. `guard-plugin-canon.sh` is the worked example.
+- **Reaching for `xargs -n1` to re-tokenize a shell command does not survive a newline.** BSD xargs
+  (macOS) aborts with "unterminated quote" the moment a quoted argument contains one — and a
+  multi-line `-m` commit body is this repo's normal shape, so tokenization stopped at the flag and
+  every commit read as having no message. `enforce-commit-hygiene.sh` carries a ~40-line quote-tracking
+  lexer instead; copy that rather than re-deriving this. It also earns its keep twice, because
+  distinguishing an inert single-quoted backtick from a live double-quoted one needs the quote state
+  that no token list retains.
 - **A self-test can be green for a reason that has nothing to do with the contract.** Two shapes, one
   root cause: the assertion never reaches the code it names.
   - **A fixture that is the live repo is a content gate under a unit test's name.** The case that

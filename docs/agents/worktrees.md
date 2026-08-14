@@ -8,10 +8,12 @@ is why `dw-next` strips that prefix before matching a change doc.
 
 - **A `dw-start` worktree is not the main tree, and every way it differs reads as something else.**
   Six traps, one root cause: the worktree gets tracked files and a branch, and nothing else.
-  - **`CLAUDE.local.md` cannot be edited from one.** Link-class carry, so the harness refuses the
-    write as leaving the worktree — and it is gitignored, so no commit delivers it either. A change
-    touching the test/lint command lands its `AGENTS.md` half and silently drops the other. Do those
-    edits in the main tree.
+  - **A legacy `CLAUDE.local.md` is simply absent from one.** It is gitignored, so no checkout
+    delivers it, and nothing links it in any more — the link class retired with decision 0007, taking
+    the `SessionStart` hook and `worktree.sh`'s link step with it. A repo still keeping its lint or
+    typecheck bullet there resolves neither inside a worktree, and both hooks fall through to their
+    probes without a word. Move those bullets into tracked `AGENTS.md`, which is where they belong and
+    what a checkout delivers.
   - **It runs no git hooks at all.** `core.hooksPath` is `.husky/_`, which `husky init` generates and
     gitignores — so the checkout has `.husky/pre-commit` and no `_/`, git finds no hooks directory,
     and every commit skips prettier, agnix and the manifest version check **without printing

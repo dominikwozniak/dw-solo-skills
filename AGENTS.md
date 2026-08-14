@@ -54,8 +54,8 @@ build step, no typecheck.
 - **Format**: `pnpm format` (check) · `pnpm format:fix` (write)
 - **Routing evals**: `pnpm eval:routing` — free, deterministic, in CI ([`evals/README.md`](evals/README.md))
 
-Lint and typecheck are the two bullets under `## Solo lane` — **one copy each**, because the
-guardrail hooks grep for them under those exact names.
+Lint, typecheck and the two commit policies are the bullets under `## Solo lane` — **one copy
+each**, because the guardrail hooks grep for them under those exact names.
 
 ## Before you push
 
@@ -86,13 +86,15 @@ rows — read all of them. Explore on your own only what no row covers.
 `.ai/work/<slug>/CHANGE.md` is the state of the change in progress — tracked, so it survives a
 `/clear`. Where each step promotes its durable output is the Task Router above.
 
-The two below are **grep-read by the hooks**, which is why they live here and nowhere else:
-`lint-on-edit` appends one file path to the first, so it must accept one; `typecheck-on-stop` runs
-the second over the whole project. `none` is a declaration, not a command — the hooks read it as
-"skip", and it must stand alone on the line.
+The four below are **grep-read by the hooks**, so they live here and nowhere else: `lint-on-edit`
+appends one file path to the first, so it must accept one; `typecheck-on-stop` runs the second over
+the whole project; `enforce-commit-hygiene` matches the third as an ERE against a `-m` subject and
+requires the fourth as a trailer line. `none` disables any of them, standing alone on the line.
 
 - **Lint command**: `pnpm lint`
 - **Typecheck command**: none
+- **Commit pattern**: `^(build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test)(\([a-z0-9-]+\))?!?: .+`
+- **Commit trailer**: `Co-Authored-By:`
 
 ## Git conventions
 

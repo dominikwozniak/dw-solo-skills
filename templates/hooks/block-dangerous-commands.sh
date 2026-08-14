@@ -40,19 +40,28 @@ BOUNDARY="(^|[;&|][[:space:]]*)${WRAPPER}[\"']?"
 DOT_ARG="[\"']?\./?[\"']?[[:space:]]*[\"']?[[:space:]]*(\$|[;&|])"
 
 # `git -C <path> <cmd>` runs the command in another repo, so it is the same command
-# with the same blast radius. Only the patterns using DOT_ARG carry this so far —
-# `git -C sub push --force` and friends are still unmatched (backlogged).
-GIT="git( -C [^;&|]*)?"
+# with the same blast radius — and in a repo with worktrees, `sub` is very often a
+# sibling checkout of the very tree the guardrail is protecting. EVERY git pattern
+# below carries it; for a while only the DOT_ARG pair did, which meant
+# `git -C sub push --force` sailed through while `git push --force` was refused.
+#
+# The path is ONE argument — a quoted span, or a run of non-space characters — and
+# not the `[^;&|]*` it started as. What protects `git commit -m "never reset
+# --hard"` from matching the reset pattern is that `git` and `reset` have to be
+# ADJACENT; a prefix that swallows spaces destroys exactly that, and the loosest
+# form quietly refused every `-C` command whose message quoted a dangerous phrase.
+# Keeping the quoted alternatives means a path containing a space still blocks.
+GIT="git( -C (\"[^\"]*\"|'[^']*'|[^[:space:];&|]+))?"
 
 DANGEROUS_PATTERNS=(
-  'git push( [^;&|]*)?( --force| -f\b)'                   # force push, any arg order (incl. --force-with-lease)
-  'git push( [^;&|]*)?( --delete\b| :\S)'                 # remote branch deletion (push --delete / push origin :branch)
-  'git reset( [^;&|]*)? --hard'                           # discards index + working tree
-  'git clean( +-[A-Za-z-]+)* +(-[A-Za-z]*[dfxX]|--force)' # deletes untracked files/dirs — any flag order (-fd, -f -d, -xdf, -d, --force)
-  'git branch( [^;&|]*)?( -D\b| -f\b| --force\b)'         # force-deletes or force-repoints a branch
-  "$GIT"' checkout (-- +)?'"$DOT_ARG"                     # discards all working-tree changes
-  "$GIT"' restore (-- +)?'"$DOT_ARG"                      # discards all working-tree changes
-  'git stash clear\b'                                     # wipes every stash, unrecoverable
+  "$GIT"' push( [^;&|]*)?( --force| -f\b)'                    # force push, any arg order (incl. --force-with-lease)
+  "$GIT"' push( [^;&|]*)?( --delete\b| :\S)'                  # remote branch deletion (push --delete / push origin :branch)
+  "$GIT"' reset( [^;&|]*)? --hard'                            # discards index + working tree
+  "$GIT"' clean( +-[A-Za-z-]+)* +(-[A-Za-z]*[dfxX]|--force)'  # deletes untracked files/dirs — any flag order (-fd, -f -d, -xdf, -d, --force)
+  "$GIT"' branch( [^;&|]*)?( -D\b| -f\b| --force\b)'          # force-deletes or force-repoints a branch
+  "$GIT"' checkout (-- +)?'"$DOT_ARG"                         # discards all working-tree changes
+  "$GIT"' restore (-- +)?'"$DOT_ARG"                          # discards all working-tree changes
+  "$GIT"' stash clear\b'                                      # wipes every stash, unrecoverable
   'rm( [^;&|]*)? /\*? *($|[;&|])'                         # rm aimed at / or /*
   'rm( [^;&|]*)? (~|\$HOME)/? *($|[;&|])'                 # rm aimed at the home dir
   'rm( [^;&|]*)? \.\.?/? *($|[;&|])'                      # rm aimed at . or .. (cwd wipe)

@@ -1,0 +1,282 @@
+---
+change: the-guardrail-hook-wave
+branch: the-guardrail-hook-wave
+created: 2026-08-14
+landed: 2026-08-14
+status: landed # shaping | building | landed
+---
+
+# Change — the hook layer's whole open list, done in one pass: three rules move from prose to script, three new guards land, one guardrail gap closes, one dead hook retires
+
+## Goal
+
+Every rule this repo states in prose and enforces on trust gets a script, and the hook layer's
+backlog empties in the same pass. Afterwards: a `git commit` that misses the declared subject
+pattern, drops the declared trailer, hides a backtick in `-m`, or a `git add -A`, each exits 2 with
+the fix named; an `Edit`/`Write` under `plugins/**` is refused and points at the canon; credential
+hunting and oversized writes are guarded; `git -C sub push --force` blocks like the bare form;
+`link-local-memory.sh` is gone and `block-non-pnpm.sh` has a self-test. Both new policies are
+**declared, not inferred** — `- **Commit pattern**:` and `- **Commit trailer**:` in `AGENTS.md`,
+each disabled by `none`, the `lint-on-edit.sh` resolution shape. `pnpm validate:artifacts` covers
+every new hook, `hooks-in-sync.test.sh` stays green, and `skills/dw-git/SKILL.md` points at the
+declarations instead of restating them.
+
+**This is a large change, deliberately** — the user chose one feature over five items, to keep the
+context in one place and close the hook layer at once. The task list below is progress tracking for
+`dw-next`, not a split: it all lands together.
+
+## Decisions
+
+- One change, not five — the user's call, twice reaffirmed. Every piece edits
+  `templates/hooks/` + both `settings.json` + `scripts/tests/` and needs the same plugin version
+  bump, so separate changes meant paying that tax five times and re-deriving the context each time.
+- Every policy is a declared bullet, never inferred from `## Git conventions` prose. The trailer
+  needs its own `- **Commit trailer**:` for the same reason the pattern does: one line both the
+  writer (model reads `AGENTS.md`) and the enforcer (hook greps it) read without guessing.
+- Pattern default ships in the script (Conventional Commits); the trailer default is `none`, since
+  a requirement nobody declared must not start failing commits in existing repos.
+- The commit hook is `enforce-commit-hygiene.sh` — it outgrew "pattern". The change slug moved from
+  `commit-pattern-hook` for the same reason; the old slug survives in two commit messages.
+- `git add -A` is a staging call, not a commit, but it rides the same `PreToolUse`/`Bash` matcher
+  and the same declaration file, so it stays in the commit hook rather than earning its own.
+- Absorbed from `.ai/backlog/`: `guardrail-hooks-next-wave`, `the-other-git-guardrails-still-miss-
+the-dash-c-form`, `shell-test-sweep`. Left there: `start-branch-check-ignores-remote` (claim
+  protocol, not hooks), `validator-blind-spots`, `doctor-version-blocks-…`, `stemmer-derivational-
+audit` — none touch the hook layer.
+- Pass through `-F`/`--file`, editor commits (no `-m`), and `Merge `/`Revert `/`fixup! `/`squash! `/
+  `amend! ` subjects — same allowances as the buildwithclaude original; `dw-git` uses `-m`.
+
+## Tasks
+
+Order is a hint. Each box leaves the repo green; the change ships when all are ticked.
+
+- [x] 1. `templates/hooks/enforce-commit-hygiene.sh` + byte-identical executable copy in
+      `.claude/hooks/`, wired into the `PreToolUse`/`Bash` block of both `.claude/settings.json` and
+      `templates/settings.json`. Four checks: subject pattern, trailer policy, backtick inside `-m`,
+      `git add -A` / `git add .`. Shape after `block-dangerous-commands.sh` (jq guard, wrapper-aware
+      `git … commit` detection); `-m` extraction after the buildwithclaude script (`xargs -n1`
+      tokenization; `-m`/`--message`/`--message=`/`-mfix:`/clustered `-am`). Plus
+      `scripts/tests/enforce-commit-hygiene.test.sh`.
+- [x] 2. `- **Commit pattern**:` and `- **Commit trailer**:` in this repo's `AGENTS.md`
+      (`## Solo lane`, beside the lint and typecheck bullets) and placeholders in `templates/AGENTS.md`.
+      Mind the root doc budget (120 lines / 10 KB) — `pnpm validate:docs` enforces it.
+- [x] 3. Trim `skills/dw-git/SKILL.md` commit Defaults to point at the declarations, shorten the
+      backtick hazard note now that the hook catches it, and keep the mechanics (staging by name, `-F`,
+      read-back via `git cat-file`).
+- [x] 4. `templates/hooks/guard-plugin-canon.sh` — `PreToolUse` on `Edit|Write|MultiEdit`, refuses a
+      path under `plugins/` and names the `skills/…` canon behind the symlink. Wire both settings, add
+      the self-test. This is the `AGENTS.md` "absolute" rule, today prose-only.
+- [x] 5. `templates/hooks/credential-leak-guard.sh` (`PreToolUse`/`Bash`: env scans for
+      token/secret, `~/.ssh`, `~/.aws`, `curl`/`wget` exfil) and `templates/hooks/large-file-guard.sh`
+      (`PostToolUse`/`Write`, size threshold). Both wired in both settings, both self-tested. Adapted
+      from davepoon/buildwithclaude `plugins/hooks-safety` — rewrite to this repo's conventions, don't
+      paste.
+- [x] 6. Apply the `GIT` prefix in `block-dangerous-commands.sh` to `push`, `reset --hard`, `clean`,
+      `branch -D` and `stash clear`, so `git -C sub …` blocks like the bare form; extend
+      `block-dangerous-commands.test.sh` with a `-C` case per pattern.
+- [x] 7. Retire `link-local-memory.sh`: both hook copies, `worktree.sh`'s `link_local_memory()`, its
+      `worktree.test.sh` group, the `SessionStart` wire in both settings, `dw-init`'s legacy-only offer
+      and `dw-start`'s sentence. Keep the `AGENTS.md`-first fallback in `lint-on-edit` and
+      `typecheck-on-stop`. Add `scripts/tests/block-non-pnpm.test.sh` while the hook layer is open.
+- [x] 8. `docs/agents/tooling.md`: the new hooks, the two declaration bullets and the resolution
+      order; `docs/agents/worktrees.md` where it names the retired hook. Bump the owning plugin
+      versions + `.claude-plugin/marketplace.json` (`pnpm validate:manifests` pins the pair).
+
+## Anchors
+
+- `templates/hooks/block-dangerous-commands.sh:27-45` — `WRAPPER`/`BOUNDARY`/`GIT`; the new hooks
+  must see through `sudo`/`rtk` the same way, and task 6 lives here.
+- `templates/hooks/lint-on-edit.sh` — the `- **Lint command**:` bullet resolution both new bullets
+  copy, including `none` as a standalone declaration.
+- `scripts/tests/block-env-access.test.sh` — the self-test shape every new test follows:
+  `jq -n --arg` payloads, blocked/allowed helpers, SKIP without jq, target = template.
+- `scripts/tests/hooks-in-sync.test.sh` — template↔installed byte identity and +x; add each
+  template first, then `cp` and `chmod +x`.
+- `skills/dw-git/SKILL.md:58-68` — the commit Defaults being trimmed; `:83-90` — the backtick note.
+- `AGENTS.md` `## Git conventions` — the trailer rule the new bullet must express machine-readably.
+- `scripts/runtime/worktree.sh` `link_local_memory()` + `scripts/tests/worktree.test.sh` — task 7's
+  other half; `docs/decisions/0007-agent-memory-in-tracked-agents-md.md` is why it is retirable
+  (`CLAUDE.local.md` is already gone from this repo — verified).
+- buildwithclaude.com/hook/conventional-commits — `-m` extraction and the pass-through list.
+
+## Notes
+
+Full grill/plan record: `/Users/dominik.wozniak/.claude/plans/zastanawiam-sie-nad-nowym-shimmying-gosling.md`.
+
+The commit hook polices this repo's own commits the moment it is installed — including the commit
+that installs it. Land task 1's wiring only once the message convention is confirmed working, or
+expect the first commit to bounce. Same for task 4: `guard-plugin-canon` will refuse edits under
+`plugins/`, which is correct but will surprise the session that wires it.
+
+**Task 1 dropped the `xargs -n1` extraction the plan called for.** BSD xargs (macOS) aborts with
+"unterminated quote" the moment a quoted argument contains a newline, and a multi-line `-m` body is
+this repo's normal shape — so tokenization stopped at `-m` and every commit read as "no message".
+Probed before writing anything: a two-`-m` command with a newline body yielded 3 tokens. The hook
+carries a ~40-line quote-tracking lexer instead, which the backtick check needed regardless: it has
+to know whether a backtick sat in a single-quoted span (inert) or a double-quoted one (live), and no
+token list can reconstruct that. Any future hook needing shell tokenization should copy the lexer,
+not reach for xargs.
+
+Two traps the lexer sprang, both worth not re-learning. `local s="$1" n=${#s}` does not work: every
+word of a `local` is expanded before the builtin runs, so `${#s}` read an unset `s`, and under
+`set -u` the hook died at **exit 1** — silently not guarding, since only exit 2 blocks. And bash 3.2
+errors on `"${arr[@]}"` for an empty array under `set -u`, which is why the per-commit message group
+is scalars rather than an array.
+
+The backtick check is deliberately narrow: it fires only on a backtick that is live in the raw
+command (outside single quotes, unescaped). Blocking every backtick was the first instinct and would
+have been wrong — 51 of the last 20 commits' body lines carry backticks, and all of them are inert.
+
+Verified before wiring, per the warning below: all 12 recent real subjects pass the default pattern,
+and the pattern/trailer bullets are not declared yet, so nothing changed for existing commits.
+
+**Task 2 reached past `AGENTS.md`, and had to.** A placeholder nothing renders is a bug, so
+`dw-init`'s placeholder list, its per-placeholder guidance and its always-offered hook trio all name
+the new pieces; and `check-agents-docs.test.sh` renders the shipped template with a fixed
+substitution list, so it failed until the two tokens were added there. The root doc sat at exactly
+120/120 lines after the two bullets went in — one line of prose was condensed to leave a line of
+slack, because the next unrelated edit would otherwise fail the budget.
+
+The declared pattern is deliberately stricter than the hook's default: scopes are `[a-z0-9-]+`, not
+`[^)]+`, which is what this repo's log actually uses.
+
+**Task 4's rule is not "every path under `plugins/`".** It is "every path under `plugins/` that is
+not a real, already-existing file", which is the layout invariant itself rather than a restatement of
+it. That matters twice: the three `plugins/*/.claude-plugin/plugin.json` files are genuinely
+plugin-owned, so task 8's version bump does not have to argue with the guardrail; and a brand-new
+regular file under `plugins/` is refused without needing an allowlist to keep current. The self-test
+asserts the invariant directly — if a fourth real file ever appears under `plugins/`, the test fails
+rather than the hook silently widening.
+
+`${path#"$repo_root"/}` is not a way to make a path repo-relative, and the fixture caught it: git
+reports the physical path while the tool hands over one still containing a symlinked ancestor
+(`/private/var/…` vs `/var/…` on macOS, or a symlinked home dir). The prefix test failed to strip, the
+path read as "outside the repo", and the hook exited 0 — not guarding, silently. It compares parent
+directories with `-ef` (device + inode) now. The walk stays textual, via `dirname`, so it cannot hop
+through the very symlink it is looking for.
+
+`guard-plugin-canon` is offered by `dw-init` only where a `plugins/` tree of symlinks exists —
+shape-specific rather than stack-specific, a distinction that section did not have before.
+
+**Task 3 surfaced a contradiction the hook creates.** `dw-git` step 5 prefixes `[TICKET-XXX] ` from
+the branch name, and a Conventional-Commits-anchored pattern refuses exactly that — so a repo with
+both would have every commit blocked. The step now says to name the contradiction rather than fight
+it. The `## Git conventions` "no ticket prefix" line means this repo never hits it.
+
+Task 5's two hooks were the ones with the weakest case (`block-env-access.sh` + the CI trufflehog
+scan already cover much of the credential ground), and the plan allowed dropping them if the change
+dragged. It didn't, so they landed — but the overlap was answered rather than ignored:
+`credential-leak-guard.sh` opens by stating the boundary between the three guards, and owns only what
+neither sibling does. `block-env-access` has `.env`; trufflehog reads what was committed, so it fires
+after the fact and never sees a value that only passed through a shell; this hook takes the non-dotenv
+stores, environment hunting, and exfil.
+
+Its design bet is the **allowed** list, not the blocked one: exfil is "curl carrying a secret", never
+"curl". A hook that blocked every network call, or every reference to `$GITHUB_TOKEN` by the command
+that needs it, gets unwired inside a day — so referencing a secret variable is fine and only printing
+its value is refused. Two thirds of that self-test is false-positive cases for exactly that reason.
+
+**Task 7 went one step past its own text, deliberately.** Writing `block-non-pnpm.test.sh` found that
+the hook stripped exactly one leading `sudo ` and knew nothing about `rtk` — so `rtk npm install`,
+`sudo sudo npm install` and `NODE_ENV=production npm ci` all went straight through. The rtk form is the
+one that matters: this repo runs an rtk rewrite over its own commands, so the guardrail was bypassed on
+every one of them. The gaps were first pinned as `allowed` and a backlog entry drafted, then closed
+instead — `.ai/backlog/README.md`'s second bar says a fix smaller than the entry describing it is a
+commit in the open change, and this one was six lines reusing `block-dangerous-commands.sh`'s
+`WRAPPER`/`BOUNDARY` shape. The `\s` in its patterns went to POSIX classes at the same time: BSD grep
+on macOS does honour it, verified rather than assumed, and that is exactly the accident to stop relying
+on once seen.
+
+The worktree test's legacy group is not deleted but INVERTED — it now pins that a legacy
+`CLAUDE.local.md` in the main tree is _not_ carried in, and that `create` says nothing about it either
+way. A retirement is a behaviour worth a test, not just an absence.
+
+**Task 6 could not just paste `$GIT` onto the five patterns — that widening opens a false positive
+the bare patterns never had.** What keeps `git commit -m "never reset --hard"` from matching the reset
+pattern is that `git` and the verb must be ADJACENT; `-C [^;&|]*` swallows spaces and destroys it, so
+the first spelling refused every `-C` command whose message quoted a dangerous phrase. Probed, caught,
+and fixed by making the path ONE argument — a quoted span or a run of non-space characters — which
+also keeps a path containing a space blocking. Three prose cases are pinned in the test as the
+regression.
+
+`large-file-guard.sh` is `PostToolUse`, so the bytes are already on disk and it cannot prevent
+anything — it puts the real measured size in front of the model while deleting the file is still
+cheap. Threshold 256 KiB, `CLAUDE_MAX_WRITE_BYTES` overrides, `0` disables without unwiring. `Write`
+only: charging an `Edit` the whole file's size would fire on every edit to a file that was always big.
+`wc -c` rather than `stat`, whose size flag has no spelling common to GNU and BSD.
+
+**Task 8 corrected a gotcha that had never been reproducible.** `tooling.md` claimed
+`block-non-pnpm.sh` refuses `git grep "npm install" -- .github/` for containing the string it searches
+for. It does not, and neither did the pre-change version — the patterns anchor after `;`, `&` and `|`,
+so a plain quoted mention was always fine. The trap is real in the spellings that carry a separator
+(`git grep "; npm install"`, `grep -rn "npm install\|yarn add" .`,
+`git commit -m "ci: replace | yarn with pnpm"`), and those are what the entry names now. Found by
+probing both hooks rather than re-reading the sentence, which is the method that entry's neighbour
+already recommends.
+
+Three traps this change learned are appended to `tooling.md`'s `## Gotchas`: only exit 2 blocks so a
+hook failing any other way is silently off (with the three `set -u` / `pipefail` ways to get there);
+`${path#"$repo_root"/}` is not a way to make a path repo-relative; and `xargs` cannot re-tokenize a
+command carrying a newline.
+
+**For `dw-land`: decision 0007 is completed by this change, not superseded by it.** It decided memory
+moves to tracked `AGENTS.md` and knowingly kept `link-local-memory` plus `worktree.sh`'s link step as
+compatibility shims; task 7 removed them. Its prose saying they "survive as compatibility" is now stale,
+but records are append-only, so it was left untouched — whether the retirement earns a record of its own
+is the closing pass's call.
+
+Versions: `dw-solo` 0.4.18 → 0.4.19 (dw-git, dw-start, `worktree.sh`), `dw-solo-setup` 0.1.18 → 0.1.19
+(dw-init, every `templates/` payload). `dw-solo-extras` is untouched and unbumped.
+
+`pnpm lint` cannot be run through pnpm here — the rtk rewrite turns it into an ESLint wrapper that dies
+`Command "eslint" not found` on a green repo, exactly as `tooling.md` warns. `bash scripts/lint.sh` is
+the real gate: 0 errors, 53 warnings, 15 info — unchanged in kind from before.
+
+**`dw-check` found three false positives, all in `credential-leak-guard.sh`, all now fixed and
+pinned.** Every one was an ordinary command that a session types — which is the failure mode that
+hook's own header names as the thing that gets a guardrail unwired, so the review caught the design
+bet failing on its own terms.
+
+- A bare `auth` in `CRED_WORDS` swallowed the whole AUTHOR family: `echo $AUTHOR` was refused. The
+  same line's comment already argued `key` was excluded for matching keyboard and keychain — `auth`
+  failed that test identically and shipped anyway. It now has to end the word or hit a separator, with
+  `authorization` spelled out; ERE has no negative lookahead, so "not followed by a letter" is the
+  closest expressible thing.
+- `set` matched with arguments, so `set -e && grep -rn "password" src/` read as hunting the
+  environment. Only the argument-less form dumps anything; the pattern still catches
+  `set | grep -i token`, which is the real form.
+- A project-local `.npmrc` is committed registry config in most Node repos, and this hook ships to
+  every scaffolded one. Only `~/`, `$HOME/` or an absolute path counts now. Its siblings need no such
+  test — `.netrc` and `.pgpass` are home-dir files by convention.
+
+Also noted rather than fixed: `strip_heredocs` is byte-identical in two hooks and nothing detects the
+drift. No shared library on purpose — each hook is installed and pruned alone, so a `source` would
+make it depend on a file `dw-init` may not have copied. A cross-reference comment now says so in both
+directions.
+
+**Three things block `dw-ship`, none of them in the diff.** Local `main` was rebased onto merged PR
+#30 while this branch was building, so the base `9e241df` is now an orphaned twin of `94de606` and
+`main..HEAD` shows work this change did not write. `git-history.md:17-26` predicts exactly this:
+
+1. Rebase with `git rebase --onto main 9e241df the-guardrail-hook-wave`, not a plain rebase.
+2. `docs/agents/tooling.md` will conflict — #30 edited it too.
+   **`dw-land` found two more, both fixed at close.** Creating a **new plugin** was refused —
+   `plugins/<new>/.claude-plugin/plugin.json` does not exist yet, so the existing-file test could not
+   cover it — and the refusal told you to put the manifest under `skills/`, which no `plugin.json` can
+   follow. That exact path is now the one creatable thing under `plugins/`. And `worktree.sh`'s readiness
+   comment still said "Copy and link are handled above; the third class", naming a carry class this
+   change deleted.
+
+**And the gate caught a race the tests had been passing through.** `large-file-guard.sh` resolved its
+threshold _before_ `input=$(cat)`, so `CLAUDE_MAX_WRITE_BYTES=0` returned without draining stdin and
+the writer took SIGPIPE — surfacing as `zero-disables` exiting 141. It appeared once, under the full
+suite's load, and would not reproduce in 20 standalone runs: the payload fits the pipe buffer, so the
+writer normally finishes first and the race only opens when the hook wins. The read now precedes every
+early exit. Three consecutive full-suite runs clean. The general form is worth keeping: **a hook that
+exits without consuming its payload can kill its caller**, and the sibling hooks are safe only because
+they read stdin immediately.
+
+3. **The new skill-corpus ratchet will fail.** Measured by running #30's checker against this tree:
+   +122 words over baseline (`dw-git` 1204 → 1292, `dw-init` 2409 → 2462). It needs
+   `node scripts/check-skill-corpus.mjs --update-baseline` in the same commit, which decision 0009
+   makes a deliberate recorded act. Version bumps are safe — `main` is still at 0.4.18 / 0.1.18.

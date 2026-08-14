@@ -58,7 +58,7 @@ a split: it all lands together.
       to the `## Gotchas` of the matching routed topic file, never a root `## Gotchas`, which does
       not exist and which `AGENTS.md:5` forbids. Delete the term-less "three governors are distinct"
       editorial bullet, which restates the three entries above it.
-- [ ] 3. One home for the duplicated enumerations. The fork list is in both `CONTEXT.md:48` and
+- [x] 3. One home for the duplicated enumerations. The fork list is in both `CONTEXT.md:48` and
       `docs/agents/skills-and-plugins.md:41` and they already disagree on `dw-handoff`; the vendored
       list is in `CONTEXT.md:46`, `README.md:133` and `skills-and-plugins.md`. Keep the definition in
       `CONTEXT.md` and the enumeration in the topic file, link the other way, and settle
@@ -141,6 +141,21 @@ a split: it all lands together.
 - Task 2: the deleted "three governors are distinct" bullet was checked term by term before it went,
   since a summary bullet can be the only home of a fact. It was not: "picks no number at all" is
   already in **Ratchet** (`:66`), and the Cap/Budget halves in `:17` and `:61`. Nothing lost.
+
+- Task 3: `dw-handoff` is **not a fork** — settled from its origin commit `bd3c286`, which records
+  that the team lane dropped handoffs deliberately and this skill answers a different question. It
+  was written here; it shares a name with a team-lane skill and nothing else. So `CONTEXT.md`'s
+  omission was right and the topic file's fork-list entry was wrong, which is the opposite of the way
+  the shape guessed.
+- Task 3, two facts neither doc had: `templates/hooks/` holds **9** scripts, not the 6 both copies
+  claimed nor the 8 the shape counted (8 is `.claude/hooks/` — `typecheck-on-stop.sh` ships as a
+  template but is pruned here, since the Typecheck command is `none`). And only **5** are vendored:
+  the wave's four (`credential-leak-guard`, `enforce-commit-hygiene`, `guard-plugin-canon`,
+  `large-file-guard`) were authored here from a survey, per `40da922`, so their canon is local. The
+  vendored five have also been fixed here in five commits since `19811ac`, so "byte-identical today"
+  was an over-claim and now reads "assume diverged".
+- Task 3 took `README.md:133` with it, since that line is the vendored enumeration and the
+  `6 guardrail hooks` number in one sentence. Task 4 covers the rest of `README.md`.
 
 **Prior context:** `.ai/backlog/templates-ship-the-docs-agents-contract.md` is coupled to task 9 —
 cutting the template's prose removes the last place a scaffolded repo meets the `docs/agents/`

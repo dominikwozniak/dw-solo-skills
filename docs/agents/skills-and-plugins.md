@@ -29,20 +29,28 @@ model-invocable. Which skills those currently are is the `⭑` list in `README.m
 
 ## Vendored from `dw-skills` — fix in both
 
-These are **copies**, not references, and nothing can detect drift across the repo boundary — **a fix
-here does not reach that repo, so apply it twice**:
+This is the enumeration; `CONTEXT.md` defines the two terms. These are **copies**, not references,
+and nothing can detect drift across the repo boundary — **a fix here does not reach that repo, so
+apply it twice**:
 
-- `templates/hooks/*.sh` (6 files — the team repo also ships a Ruby lint hook this Node-only lane
-  deliberately drops; don't "re-sync" it back). `scripts/tests/hooks-in-sync.test.sh` only pins them
-  to _this_ repo's `.claude/hooks/`.
-- `scripts/runtime/slugify.sh` — byte-identical.
+- The hooks this lane forked with: `block-dangerous-commands.sh`, `block-env-access.sh`,
+  `block-non-pnpm.sh`, `lint-on-edit.sh`, `typecheck-on-stop.sh`. Several have been fixed here since,
+  so assume diverged rather than identical. The team repo also ships a Ruby lint hook this Node-only
+  lane deliberately drops; don't "re-sync" it back.
+- `scripts/runtime/slugify.sh`.
+
+Everything else under `templates/hooks/` — `credential-leak-guard.sh`, `enforce-commit-hygiene.sh`,
+`guard-plugin-canon.sh`, `large-file-guard.sh` — was written here in the guardrail hook wave and has
+no upstream at all. `scripts/tests/hooks-in-sync.test.sh` pins the templates to _this_ repo's
+`.claude/hooks/` and to nothing in `dw-skills`.
 
 A skill copied from `dw-skills` is a **fork**, simplified for one reader — expected to diverge, never
-re-synced. Current forks: `dw-grill`, `dw-shape`, `dw-next`, `dw-land`, `dw-git`, `dw-doctor`,
-`dw-init` (which also absorbed the team lane's standalone pre-commit skill), and `dw-handoff` — which
-shares only the team skill's name: it writes one overwritten `HANDOFF.md` inside the change folder
-instead of a dated record under `.ai/handoffs/`, so treat the two as unrelated. `dw-start`,
-`dw-check`, `dw-ship` and `scripts/runtime/worktree.sh` are this lane's own — they have no upstream.
+re-synced. Current forks: `dw-grill`, `dw-shape`, `dw-next`, `dw-land`, `dw-git`, `dw-doctor` and
+`dw-init` (which also absorbed the team lane's standalone pre-commit skill). `dw-start`, `dw-check`,
+`dw-ship`, `dw-handoff` and `scripts/runtime/worktree.sh` are this lane's own — they have no upstream.
+`dw-handoff` is the one to watch: it shares a name with a team-lane skill and nothing else, having
+been written here after the team lane dropped handoffs on purpose, and it writes one overwritten
+`HANDOFF.md` inside the change folder rather than a dated record under `.ai/handoffs/`.
 
 ## Adding a skill
 

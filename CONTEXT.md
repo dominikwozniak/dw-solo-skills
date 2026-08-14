@@ -42,11 +42,12 @@ in [`AGENTS.md`](AGENTS.md) and the procedures in the skills themselves.
   an edit script; re-verified when the work resumes.
 - **Payload** — `templates/`: files `dw-init` copies **verbatim into a target project**, never read
   from the plugin at runtime. Not canon; a payload file may have a hand-written twin here.
-- **Vendored** — a byte-identical copy of a file whose canon lives in `dw-skills`
-  (`templates/hooks/*`, `scripts/runtime/slugify.sh`). Fixes must be applied in both repos.
+- **Vendored** — a copy of a file whose canon is shared with `dw-skills`. A fix must be applied in
+  both repos, because nothing across the boundary can detect drift. Which files:
+  [`skills-and-plugins.md`](docs/agents/skills-and-plugins.md).
 - **Fork** — a skill copied from `dw-skills` and deliberately simplified for one reader. Expected to
-  diverge; not re-synced. Current forks: `dw-grill`, `dw-shape`, `dw-next`, `dw-land`, `dw-git`,
-  `dw-doctor`, `dw-init`.
+  diverge; not re-synced. Which skills:
+  [`skills-and-plugins.md`](docs/agents/skills-and-plugins.md).
 - **Claim** — flipping a change doc's `branch: unclaimed` sentinel to a real branch name, committed
   immediately. Done by `dw-start` (after creating the worktree) or offered by `dw-next` (when its
   branch-grep misses). A change shaped on the default branch is unclaimed until then.

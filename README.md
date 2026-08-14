@@ -130,10 +130,10 @@ the memory template shipped the team loop, the `.ai/` README documented director
 have — and every scaffolding run patched those files after copying. Here the templates are this lane's
 own, copied as-is.
 
-The cost, stated plainly: `templates/hooks/` (6 guardrail hooks — the team repo's Ruby lint hook is
-deliberately dropped in this Node-only lane) and `scripts/runtime/slugify.sh` are **vendored
+The cost, stated plainly: some of `templates/hooks/`, and `scripts/runtime/slugify.sh`, are **vendored
 copies** of the same files in `dw-skills`. A fix must be applied in both — nothing across the repo
-boundary can detect drift.
+boundary can detect drift. Which files those are is in
+[`docs/agents/skills-and-plugins.md`](docs/agents/skills-and-plugins.md).
 
 **Install one lane per repo, not both.** `dw-git`, `dw-doctor` and `dw-init` exist in both lanes as
 deliberately diverging forks, so two lanes in one project means two skills competing for the same

@@ -137,15 +137,12 @@ writes rather than inventing a second shape: slug from
 plus `source:` naming this change, an H1 saying what-and-why in one line, at most ~3 lines of context.
 A slug already in the folder means bundling into that entry, not a near-duplicate beside it.
 
-These ship **in the shape commit below**, not after it: an uncommitted park is invisible to every other
-session, for the same reason the `CHANGE.md` commit is load-bearing.
-
 ### 6. Commit
 
 Once the breakdown is confirmed and the left-out list is resolved, **commit** the way `dw-git` does,
 staged by name, with the backlog-file move, any files step 5 parked — and all N files together, since
 shaping them was one act. This is load-bearing, not hygiene: a worktree checks out committed state
-only, so an uncommitted `CHANGE.md` never reaches the session that would build it.
+only, so an uncommitted `CHANGE.md` — or park — never reaches the session that would build it.
 
 For anything beyond small, prefer a **fresh session per change** — the file you just committed is the
 handoff, and a build that starts clean reads it from disk instead of inheriting this conversation's

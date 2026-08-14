@@ -1,6 +1,6 @@
 ---
 change: shape-time-parking-for-the-left-out-list
-branch: unclaimed
+branch: worktree-shape-time-parking-for-the-left-out-list
 created: 2026-08-12
 status: shaping # shaping | building | landed
 ---

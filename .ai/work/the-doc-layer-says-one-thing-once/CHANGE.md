@@ -63,7 +63,7 @@ a split: it all lands together.
       list is in `CONTEXT.md:46`, `README.md:133` and `skills-and-plugins.md`. Keep the definition in
       `CONTEXT.md` and the enumeration in the topic file, link the other way, and settle
       `dw-handoff` by reading the two skills.
-- [ ] 4. `README.md`: `:133` says 6 guardrail hooks, `templates/hooks/` holds 8. `:158` sends a
+- [x] 4. `README.md`: `:133` says 6 guardrail hooks, `templates/hooks/` holds 8. `:158` sends a
       contributor to `AGENTS.md` for an add-a-skill checklist that lives in
       `docs/agents/skills-and-plugins.md:47`. Drop the duplicated layout block (`:145–154`) and the
       duplicated loop prose (`:58`, `:68–70`) in favour of links.
@@ -156,6 +156,13 @@ a split: it all lands together.
   was an over-claim and now reads "assume diverged".
 - Task 3 took `README.md:133` with it, since that line is the vendored enumeration and the
   `6 guardrail hooks` number in one sentence. Task 4 covers the rest of `README.md`.
+
+- Task 4 kept one sentence the task listed for deletion. Of `:68–70`, only the spine half duplicated
+  `AGENTS.md`; the parallel-changes recipe (shape several, then a worktree + session each) is nowhere
+  in `AGENTS.md` or `CONTEXT.md` — it lives in `dw-start`'s body — so cutting it would have removed a
+  fact rather than a copy, against the decision that only duplicating text goes. `README.md` 163 →
+  157 lines. The `11 skills` / `3 plugins` badges were checked against disk and are correct, so they
+  stay: they are the sell, and unlike a line count they change only when a skill is added.
 
 **Prior context:** `.ai/backlog/templates-ship-the-docs-agents-contract.md` is coupled to task 9 —
 cutting the template's prose removes the last place a scaffolded repo meets the `docs/agents/`

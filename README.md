@@ -55,7 +55,8 @@ arguments it takes in its own `argument-hint` — neither is copied here.
 router; they never auto-fire — say the name. Being invisible to the model, they also can't be reached
 by other skills' prose.
 
-**The loop** — the mandatory spine is shape → next → ship; everything marked `?` is opt-in.
+**The loop** — `?` marks the opt-in steps; the spine and what it guarantees are in
+[`AGENTS.md`](AGENTS.md).
 
 <p align="center">
   <img
@@ -65,9 +66,8 @@ by other skills' prose.
   >
 </p>
 
-A small serial change never leaves the default branch: shape → next → ship (`dw-ship` runs the
-closing pass itself when the change doc is still there). Parallel changes: shape several on the
-default branch, then one worktree + session each via `dw-start` or `claude -w <slug>`.
+Parallel changes: shape several on the default branch, then one worktree + session each via
+`dw-start` or `claude -w <slug>`.
 
 | Skill                                      | Task                                                       | What you get                                                |
 | ------------------------------------------ | ---------------------------------------------------------- | ----------------------------------------------------------- |
@@ -142,21 +142,15 @@ enable this lane's two plugins and disable the team lane's.
 
 ## ▤ Project structure
 
-```
-skills/<name>/SKILL.md          canonical skill (edit here)
-plugins/dw-solo/                the loop plugin — git-tracked symlinks → ../../../skills/<name>
-plugins/dw-solo-setup/          the setup plugin — dw-init, dw-doctor, the templates symlink
-plugins/dw-solo-extras/         the off-loop plugin — dw-handoff
-scripts/runtime/                shipped scripts (slugify, worktree), symlinked into the owning plugin
-templates/                      payload copied INTO a target project (hooks, settings, AGENTS.md, the checker)
-.claude-plugin/marketplace.json makes the repo installable
-AGENTS.md                       layout, conventions, gotchas — the one doc (CLAUDE.md symlinks to it)
-```
+The layout, and the one rule that comes with it — a skill is edited at `skills/<name>/SKILL.md` and
+never through the `plugins/…` symlinks that point at it — are in
+[`AGENTS.md`](AGENTS.md#layout--and-the-one-rule).
 
 ## ◆ Contributing
 
-Layout, conventions, the add-a-skill checklist, and CI all live in [`AGENTS.md`](AGENTS.md)
-(`CLAUDE.md` is a symlink to it).
+Layout, conventions and the gate live in [`AGENTS.md`](AGENTS.md) (`CLAUDE.md` is a symlink to it),
+which routes onward — the add-a-skill checklist is in
+[`docs/agents/skills-and-plugins.md`](docs/agents/skills-and-plugins.md).
 
 ## ▪ License
 

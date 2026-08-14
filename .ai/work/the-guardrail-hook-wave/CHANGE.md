@@ -77,7 +77,7 @@ Order is a hint. Each box leaves the repo green; the change ships when all are t
       `worktree.test.sh` group, the `SessionStart` wire in both settings, `dw-init`'s legacy-only offer
       and `dw-start`'s sentence. Keep the `AGENTS.md`-first fallback in `lint-on-edit` and
       `typecheck-on-stop`. Add `scripts/tests/block-non-pnpm.test.sh` while the hook layer is open.
-- [ ] 8. `docs/agents/tooling.md`: the new hooks, the two declaration bullets and the resolution
+- [x] 8. `docs/agents/tooling.md`: the new hooks, the two declaration bullets and the resolution
       order; `docs/agents/worktrees.md` where it names the retired hook. Bump the owning plugin
       versions + `.claude-plugin/marketplace.json` (`pnpm validate:manifests` pins the pair).
 
@@ -203,3 +203,30 @@ anything — it puts the real measured size in front of the model while deleting
 cheap. Threshold 256 KiB, `CLAUDE_MAX_WRITE_BYTES` overrides, `0` disables without unwiring. `Write`
 only: charging an `Edit` the whole file's size would fire on every edit to a file that was always big.
 `wc -c` rather than `stat`, whose size flag has no spelling common to GNU and BSD.
+
+**Task 8 corrected a gotcha that had never been reproducible.** `tooling.md` claimed
+`block-non-pnpm.sh` refuses `git grep "npm install" -- .github/` for containing the string it searches
+for. It does not, and neither did the pre-change version — the patterns anchor after `;`, `&` and `|`,
+so a plain quoted mention was always fine. The trap is real in the spellings that carry a separator
+(`git grep "; npm install"`, `grep -rn "npm install\|yarn add" .`,
+`git commit -m "ci: replace | yarn with pnpm"`), and those are what the entry names now. Found by
+probing both hooks rather than re-reading the sentence, which is the method that entry's neighbour
+already recommends.
+
+Three traps this change learned are appended to `tooling.md`'s `## Gotchas`: only exit 2 blocks so a
+hook failing any other way is silently off (with the three `set -u` / `pipefail` ways to get there);
+`${path#"$repo_root"/}` is not a way to make a path repo-relative; and `xargs` cannot re-tokenize a
+command carrying a newline.
+
+**For `dw-land`: decision 0007 is completed by this change, not superseded by it.** It decided memory
+moves to tracked `AGENTS.md` and knowingly kept `link-local-memory` plus `worktree.sh`'s link step as
+compatibility shims; task 7 removed them. Its prose saying they "survive as compatibility" is now stale,
+but records are append-only, so it was left untouched — whether the retirement earns a record of its own
+is the closing pass's call.
+
+Versions: `dw-solo` 0.4.18 → 0.4.19 (dw-git, dw-start, `worktree.sh`), `dw-solo-setup` 0.1.18 → 0.1.19
+(dw-init, every `templates/` payload). `dw-solo-extras` is untouched and unbumped.
+
+`pnpm lint` cannot be run through pnpm here — the rtk rewrite turns it into an ESLint wrapper that dies
+`Command "eslint" not found` on a green repo, exactly as `tooling.md` warns. `bash scripts/lint.sh` is
+the real gate: 0 errors, 53 warnings, 15 info — unchanged in kind from before.

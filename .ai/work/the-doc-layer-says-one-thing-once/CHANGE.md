@@ -1,6 +1,6 @@
 ---
 change: the-doc-layer-says-one-thing-once
-branch: unclaimed
+branch: the-doc-layer-says-one-thing-once
 created: 2026-08-14
 status: shaping # shaping | building | landed
 ---

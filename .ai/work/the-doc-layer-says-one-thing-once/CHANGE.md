@@ -84,7 +84,7 @@ a split: it all lands together.
       that — a `**Next:**` is a suggestion to the user, not delegation. Cut the two war-story gotchas
       (`:96–105`, `:128–134`) to their generalisable lines, and drop step 7's fifth copy of the
       ratchet argument while keeping its command.
-- [ ] 9. `templates/AGENTS.md` from 105 lines to ~55–65. Keep the budget header, every heading, the
+- [x] 9. `templates/AGENTS.md` from 105 lines to ~55–65. Keep the budget header, every heading, the
       Task Router rows, the four hook-grepped bullets and the `{{...}}` placeholders; cut the worked
       prose under `## Always` / `## Ask First` / `## Never` / `## Git conventions` to one-line hints.
       Fix the loop at `:66`, which still omits `dw-grill` and `dw-land`, and add the hook-critical
@@ -205,6 +205,21 @@ a split: it all lands together.
 - Task 8's cuts (~11 lines) run against task 3's addition (~16), so this file ends at 139 lines,
   slightly _up_ from the 134 it started at. That is the intended trade — it is now the one home for two
   enumerations that were living in three files.
+
+**OPEN AGAINST THE GOAL — task 9 landed at 85 lines, not ~55–65.** Every substantive instruction in
+task 9 is done: worked prose under `## Always` / `## Ask First` / `## Never` / `## Git conventions` is
+now one-line hints, the loop gained `dw-grill` and `dw-land`, `none` gained "standing alone on the
+line", and all ten placeholders plus every heading, router row and hook-grepped bullet survive (the
+59-case `check-agents-docs.test.sh` passes, including the render case). 105 → 85 lines, 5.5 → 4.6 KB;
+headroom went from 15 lines to 35.
+
+~55–65 is not reachable while keeping what the same task requires kept. The floor is structural: ten
+headings with their blank lines (~20), the six-row router table (8), the ten placeholder-bearing
+bullets, and five prose blocks that are contracts rather than examples — the hook-grep paragraph above
+all, which tells the author that the Lint command must accept an appended file path and that `none`
+must stand alone. Cutting to 65 means dropping one of those, and each is protected either by the
+checker, by a hook, or by this task's own "keep" list. The number needs amending or the constraint
+does; that is the user's call, not a note to bury. Nothing else in the `## Goal` is outstanding.
 
 **Prior context:** `.ai/backlog/templates-ship-the-docs-agents-contract.md` is coupled to task 9 —
 cutting the template's prose removes the last place a scaffolded repo meets the `docs/agents/`

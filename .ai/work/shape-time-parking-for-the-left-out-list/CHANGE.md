@@ -48,7 +48,7 @@ backlog in what you get. `dw-solo` and `dw-solo-setup` are bumped in both manife
       `.ai/backlog/` at land time" becomes shape time. Keep "**This skill still writes nothing**": the
       playback is the deliverable and an interviewer that files things is one you cannot run to think
       out loud.
-- [ ] 3. **Both backlog READMEs.** `.ai/backlog/README.md:3-4` and `templates/backlog-README.md:3-4` —
+- [x] 3. **Both backlog READMEs.** `.ai/backlog/README.md:3-4` and `templates/backlog-README.md:3-4` —
       "`dw-land` parks them here" becomes `dw-land` **and** `dw-shape`. They are **no longer
       byte-identical** (the repo copy carries a cap paragraph the template must not ship: 1692 B vs
       1217 B), so keep lines 1–18 identical and `diff` the two after editing. One commit — splitting it

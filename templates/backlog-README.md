@@ -1,7 +1,8 @@
 # `.ai/backlog/` — one file per follow-up
 
-Ideas not being worked on now. `dw-land` parks them here; `dw-shape` takes one as the seed of a new
-change (`git mv` → `.ai/work/<slug>/CHANGE.md`) — the slug travels backlog → work → archive.
+Ideas not being worked on now. `dw-land` and `dw-shape` both park them here — the first at land time,
+the second when shaping decides an item is out of the change. `dw-shape` also takes one as the seed of
+a new change (`git mv` → `.ai/work/<slug>/CHANGE.md`) — the slug travels backlog → work → archive.
 
 Shape of an entry, `<slug>.md`: frontmatter `created: YYYY-MM-DD` (optional `source:` naming the
 change that parked it), an H1 saying what-and-why in one line, at most ~3 lines of context.

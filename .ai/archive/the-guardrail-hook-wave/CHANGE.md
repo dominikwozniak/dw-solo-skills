@@ -2,7 +2,8 @@
 change: the-guardrail-hook-wave
 branch: the-guardrail-hook-wave
 created: 2026-08-14
-status: building # shaping | building | landed
+landed: 2026-08-14
+status: landed # shaping | building | landed
 ---
 
 # Change — the hook layer's whole open list, done in one pass: three rules move from prose to script, three new guards land, one guardrail gap closes, one dead hook retires
@@ -259,6 +260,22 @@ directions.
 
 1. Rebase with `git rebase --onto main 9e241df the-guardrail-hook-wave`, not a plain rebase.
 2. `docs/agents/tooling.md` will conflict — #30 edited it too.
+   **`dw-land` found two more, both fixed at close.** Creating a **new plugin** was refused —
+   `plugins/<new>/.claude-plugin/plugin.json` does not exist yet, so the existing-file test could not
+   cover it — and the refusal told you to put the manifest under `skills/`, which no `plugin.json` can
+   follow. That exact path is now the one creatable thing under `plugins/`. And `worktree.sh`'s readiness
+   comment still said "Copy and link are handled above; the third class", naming a carry class this
+   change deleted.
+
+**And the gate caught a race the tests had been passing through.** `large-file-guard.sh` resolved its
+threshold _before_ `input=$(cat)`, so `CLAUDE_MAX_WRITE_BYTES=0` returned without draining stdin and
+the writer took SIGPIPE — surfacing as `zero-disables` exiting 141. It appeared once, under the full
+suite's load, and would not reproduce in 20 standalone runs: the payload fits the pipe buffer, so the
+writer normally finishes first and the race only opens when the hook wins. The read now precedes every
+early exit. Three consecutive full-suite runs clean. The general form is worth keeping: **a hook that
+exits without consuming its payload can kill its caller**, and the sibling hooks are safe only because
+they read stdin immediately.
+
 3. **The new skill-corpus ratchet will fail.** Measured by running #30's checker against this tree:
    +122 words over baseline (`dw-git` 1204 → 1292, `dw-init` 2409 → 2462). It needs
    `node scripts/check-skill-corpus.mjs --update-baseline` in the same commit, which decision 0009

@@ -52,10 +52,12 @@ in [`AGENTS.md`](AGENTS.md) and the procedures in the skills themselves.
   branch-grep misses). A change shaped on the default branch is unclaimed until then.
 - **Carry class** — which treatment an untracked file gets when a worktree is created: **copy** (local
   config, via `.worktreeinclude`), **regenerate** (`node_modules/`, `.husky/_/` — reported, never
-  carried) or **absent** (caches). A fourth, **link**, held only personal agent memory and is now
-  empty — that memory is tracked, so the checkout delivers it. Set by
+  carried) or **absent** (caches). A fourth, **link**, held only personal agent memory; it is gone,
+  not merely empty — the machinery implementing it (`link-local-memory.sh` and `worktree.sh`'s link
+  step) is deleted, because that memory is tracked and the checkout delivers it. Set by
   [`0003`](docs/decisions/0003-worktree-carry-classes.md), the link class retired by
-  [`0007`](docs/decisions/0007-agent-memory-in-tracked-agents-md.md).
+  [`0007`](docs/decisions/0007-agent-memory-in-tracked-agents-md.md) and its code removed with the
+  hook wave.
 - **Budget** — the line-and-byte ceiling a root `AGENTS.md` declares **about itself**, in its own prose
   (`Budget: **120 lines / 10 KB**`), enforced by the `check-agents-docs.mjs` the payload ships. Chosen
   editorial discipline, not a harness ceiling: nothing truncates there, and it is ~3× stricter than
@@ -70,6 +72,12 @@ in [`AGENTS.md`](AGENTS.md) and the procedures in the skills themselves.
   a durable list against a number somebody picked, a **Budget** measures one always-loaded file
   against a number somebody picked, a **Ratchet** compares one measure against its own recorded past
   and picks no number at all.
+- **Declared bullet** — a `- **<Name>**: <value>` line under `## Solo lane` that a hook **greps**
+  rather than infers, so the rule the writer reads and the rule the enforcer applies are one line.
+  Four exist: **Lint command**, **Typecheck command**, **Commit pattern**, **Commit trailer**. All
+  resolve alike — `AGENTS.md`, then a legacy `CLAUDE.local.md`, then a default in the script — with the
+  value the line's first backticked span, and a standalone `none` disabling the check. Set by
+  [`0010`](docs/decisions/0010-policies-the-hooks-enforce-are-declared-bullets.md).
 - **Task Router** — the table in a root `AGENTS.md` mapping a kind of task to the doc to read. It is
   the only thing that makes the topic layer reachable, so the checker holds it to both directions:
   every `docs/agents/*.md` needs a row, and every path a row's `read` column names must exist.

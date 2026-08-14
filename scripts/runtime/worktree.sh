@@ -120,7 +120,7 @@ EOF
 # `lint-on-edit` and `typecheck-on-stop` is a different thing and stays. A legacy repo still reads its
 # own file; nothing carries it into a worktree any more, because nothing needs to.
 #
-# Name what the worktree still hasn't got. Copy and link are handled above; the third class —
+# Name what the worktree still hasn't got. Copy is handled above; the other class —
 # installed dependencies and the tooling generated from them — must be *regenerated*, never copied,
 # so the only honest thing this script can do is say so.
 #

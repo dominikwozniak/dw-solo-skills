@@ -116,12 +116,20 @@ canon="$(canon_of "$abs" || true)"
 
 if [[ -z "$canon" ]]; then
   # No symlinked ancestor. A real file that is already there is plugin-owned and
-  # fine to edit; anything else would be a NEW regular file under plugins/.
+  # fine to edit.
   [[ -f "$abs" ]] && exit 0
+  # A manifest that does not exist yet is a NEW PLUGIN, which is the one thing
+  # legitimately created under plugins/ — and refusing it while saying "put it
+  # under skills/" was advice that could not be followed, since a plugin.json is
+  # exactly what no canon directory holds. The existing-file test above cannot
+  # cover this: the whole point is that the file is not there yet.
+  case "$rel" in
+    plugins/*/.claude-plugin/plugin.json) exit 0 ;;
+  esac
   {
-    echo "BLOCKED: '$rel' would create a new file under plugins/, which owns nothing but its plugin.json."
-    echo "Everything else a plugin ships is a symlink to the canon — add the file under skills/,"
-    echo "scripts/runtime/ or templates/ and symlink it in from the plugin."
+    echo "BLOCKED: '$rel' would create a new file under plugins/, and a plugin owns nothing but its"
+    echo "own .claude-plugin/plugin.json. Everything else it ships is a symlink to the canon — add the"
+    echo "file under skills/, scripts/runtime/ or templates/ and symlink it in from the plugin."
     echo "Refused by a dw-* guardrail hook. See the layout rule in AGENTS.md."
   } >&2
   exit 2

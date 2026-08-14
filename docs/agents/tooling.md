@@ -190,6 +190,13 @@ declaration either, and each script names the tokens it rejects.
   - **A `while read` loop's exit status is its last test**, false for the ordinary case, which sinks
     the enclosing pipeline under `pipefail`. `strip_heredocs` ends in a bare `return 0` for exactly
     this reason, in two hooks now.
+  - **A hook that exits before consuming stdin kills its caller with SIGPIPE.** `large-file-guard.sh`
+    resolved its threshold above `input=$(cat)`, so the disable path returned without draining the
+    payload and the writer took the signal — `zero-disables` exiting 141. It surfaced **once**, under
+    the full suite's load, and would not reproduce in 20 standalone runs: the payload fits the pipe
+    buffer, so the writer normally finishes before the hook can exit and the race only opens when the
+    hook wins. Read stdin first, then decide. The other hooks are safe only because they happen to
+    read immediately — treat that as the rule, not the accident.
 - **`${path#"$repo_root"/}` is not "make this path repo-relative".** It is a string-prefix test, and
   the two strings routinely name the same directory in different spellings: git reports the physical
   path while the tool hands over one that still contains a symlinked ancestor — `/private/var/…`

@@ -26,6 +26,16 @@ set -uo pipefail
 
 command -v jq >/dev/null || exit 0
 
+# DRAIN STDIN BEFORE ANY EARLY EXIT. This read used to sit below the threshold
+# resolution, so `CLAUDE_MAX_WRITE_BYTES=0` returned without ever consuming the
+# payload — and the writer on the other end of the pipe took SIGPIPE for it. The
+# self-test caught it as `zero-disables` exiting 141 instead of 0, but only once,
+# under the load of the full suite: the payload is small enough to fit the pipe
+# buffer, so the writer normally finishes before the hook can exit, and the race
+# only opens when the hook wins. A guardrail that kills its caller some of the
+# time is worse than one that no-ops, so the cheap checks come after the read.
+input=$(cat)
+
 DEFAULT_MAX_BYTES=262144 # 256 KiB
 MAX_BYTES="${CLAUDE_MAX_WRITE_BYTES:-$DEFAULT_MAX_BYTES}"
 # A non-numeric or absent override must not become `[[ 0 -gt "" ]]`, which under
@@ -35,7 +45,6 @@ case "$MAX_BYTES" in
 esac
 [[ "$MAX_BYTES" -eq 0 ]] && exit 0
 
-input=$(cat)
 tool_name=$(jq -r '.tool_name // empty' <<<"$input")
 file_path=$(jq -r '.tool_input.file_path // empty' <<<"$input")
 

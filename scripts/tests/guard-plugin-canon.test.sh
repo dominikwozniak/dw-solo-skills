@@ -90,6 +90,16 @@ blocked "new-file-under-plugin" Write "$FIX/plugins/dw-p/skills/dw-new/SKILL.md"
 blocked "new-file-beside-plugin-json" Write "$FIX/plugins/dw-p/.claude-plugin/other.json"
 blocked "new-file-at-plugin-root" Write "$FIX/plugins/dw-p/README.md"
 
+echo "a NEW plugin's manifest is the one creatable path (exit 0):"
+# Adding a plugin means writing a plugin.json that does not exist yet, so the
+# existing-file test cannot cover it — and the refusal used to tell you to put it
+# under skills/, which is advice no plugin.json can follow.
+allowed "new-plugin-manifest" Write "$FIX/plugins/dw-new/.claude-plugin/plugin.json"
+allowed "new-plugin-manifest-relative" Write "plugins/dw-new/.claude-plugin/plugin.json"
+# …but only that exact path, and still never through a symlink.
+blocked "new-plugin-other-manifest" Write "$FIX/plugins/dw-new/.claude-plugin/marketplace.json"
+blocked "new-plugin-stray-file" Write "$FIX/plugins/dw-new/README.md"
+
 echo "the refusal names the canon behind the link:"
 names_canon "names-skill-canon" "$FIX/plugins/dw-p/skills/dw-thing/SKILL.md" "skills/dw-thing/SKILL.md"
 names_canon "names-script-canon" "$FIX/plugins/dw-p/scripts/worktree.sh" "scripts/runtime/worktree.sh"

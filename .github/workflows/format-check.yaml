@@ -20,7 +20,7 @@ jobs:
       # pnpm, Node and `pnpm install` in one step, all three read from package.json#devEngines —
       # `packageManager` for pnpm, `runtime` for Node. Inputs would only restate the file — `cache`
       # included: measured on #28 over a nine-entry tree and reverted, because a hit was ~1.2s
-      # slower than no cache. The action installs the runtime before it restores, so Node is 45MB of
-      # store the cache carries and never reuses. Don't re-add it without re-measuring.
+      # slower than no cache. The action installs the runtime before it restores, so the Node tarball is
+      # most of a 45MB entry the cache carries and never reuses. Don't re-add it without re-measuring.
       - uses: pnpm/setup@84cb39b217b10273981911c288cd62326dc7c6d2 # v2.0.2
       - run: pnpm format

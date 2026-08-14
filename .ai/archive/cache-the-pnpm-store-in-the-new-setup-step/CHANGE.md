@@ -2,7 +2,9 @@
 change: cache-the-pnpm-store-in-the-new-setup-step
 branch: cache-the-pnpm-store-in-the-new-setup-step
 created: 2026-08-14
-status: building # shaping | building | landed
+status: landed # shaping | building | landed
+landed: 2026-08-14
+pr: "#28"
 ---
 
 # Change — the pnpm store is cached in CI, and the numbers decide whether it stays

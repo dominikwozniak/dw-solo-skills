@@ -113,19 +113,31 @@ expect_says "update-reports-the-new-total" "re-recorded at 6 words"
 # Re-recorded means the same tree now passes a plain run — the check that the write actually landed,
 # rather than that the process said it did.
 expect_rc "update-makes-the-next-run-pass" 0 "$(check "$fx")"
-if grep -qF -- '"dw-alpha": 4' "$fx/scripts/skill-corpus.baseline.json"; then
-  note_pass "update-rewrote-the-per-skill-entry"
-else
-  note_fail "update-rewrote-the-per-skill-entry" "baseline: $(tr '\n' ' ' <"$fx/scripts/skill-corpus.baseline.json")"
-fi
-# The $comment carries the whole rationale — a re-record that dropped it would leave the next reader a
-# bare number with no way back to why it exists.
+# The WHOLE rewritten object, not one substring: asserting only `"dw-alpha": 4` would still pass an
+# implementation that dropped dw-beta entirely, or that renamed $comment while keeping its text.
 fx="$(corpus '{"$comment":"why this exists","words":5,"perSkill":{"dw-alpha":3,"dw-beta":2}}')"
+printf 'one two three four\n' >"$fx/skills/dw-alpha/SKILL.md"
 node "$CHECKER" --root "$fx" --update-baseline >"$OUT" 2>&1
-if grep -qF -- "why this exists" "$fx/scripts/skill-corpus.baseline.json"; then
-  note_pass "update-preserves-the-comment"
+got="$(tr -d ' \n' <"$fx/scripts/skill-corpus.baseline.json")"
+want='{"$comment":"whythisexists","words":6,"perSkill":{"dw-alpha":4,"dw-beta":2}}'
+if [ "$got" = "$want" ]; then
+  note_pass "update-rewrites-the-whole-object"
 else
-  note_fail "update-preserves-the-comment" "the \$comment did not survive the rewrite"
+  note_fail "update-rewrites-the-whole-object" "want $want, got $got"
+fi
+
+echo "--update-baseline also BOOTSTRAPS a missing baseline:"
+# The old behaviour refused and advised the very flag that had just failed, which left no way to
+# regenerate a deleted baseline. Without the flag a missing file is still exit 2.
+fx="$(corpus "$AT_BASELINE")"
+rm "$fx/scripts/skill-corpus.baseline.json"
+node "$CHECKER" --root "$fx" --update-baseline >"$OUT" 2>&1
+expect_rc "bootstrap-exit-0" 0 "$?"
+expect_rc "bootstrap-makes-the-next-run-pass" 0 "$(check "$fx")"
+if grep -qF -- '"$comment"' "$fx/scripts/skill-corpus.baseline.json"; then
+  note_pass "bootstrap-seeds-a-comment"
+else
+  note_fail "bootstrap-seeds-a-comment" "no \$comment in the seeded baseline"
 fi
 
 echo "a baseline that cannot be read is exit 2, never a silent pass:"
@@ -133,15 +145,53 @@ fx="$(corpus 'not json at all')"
 expect_rc "malformed-json-exit-2" 2 "$(check "$fx")"
 expect_says "malformed-json-named" "not valid JSON"
 
-# Valid JSON, wrong shape — the failure mode a JSON.parse guard alone would wave through.
-fx="$(corpus '{"words":"5"}')"
-expect_rc "wrong-shape-exit-2" 2 "$(check "$fx")"
-expect_says "wrong-shape-named" "malformed"
+# Valid JSON, wrong shape — the failure mode a JSON.parse guard alone would wave through. One
+# violation per fixture: `{"words":"5"}` breaks BOTH rules at once, so it survives the deletion of
+# either check and proves only that some check remains.
+fx="$(corpus '{"words":"5","perSkill":{}}')"
+expect_rc "non-numeric-words-exit-2" 2 "$(check "$fx")"
+expect_says "non-numeric-words-named" "malformed"
+
+fx="$(corpus '{"words":5}')"
+expect_rc "absent-per-skill-exit-2" 2 "$(check "$fx")"
+
+# An array satisfies `typeof === "object"`, and every lookup by skill name into one yields undefined —
+# so this shape reads as valid while every skill silently resolves to 0.
+fx="$(corpus '{"words":5,"perSkill":[]}')"
+expect_rc "array-per-skill-exit-2" 2 "$(check "$fx")"
+expect_says "array-per-skill-named" "malformed"
+
+# Halves that disagree still gate on `words`, but the failure names no skill — the report promises a
+# file to open and delivers a number to argue with.
+fx="$(corpus '{"words":2,"perSkill":{"dw-alpha":3,"dw-beta":2}}')"
+expect_rc "inconsistent-baseline-exit-2" 2 "$(check "$fx")"
+expect_says "inconsistent-baseline-names-both-numbers" "sums to 5"
 
 fx="$(corpus "$AT_BASELINE")"
 rm "$fx/scripts/skill-corpus.baseline.json"
 expect_rc "missing-baseline-exit-2" 2 "$(check "$fx")"
 expect_says "missing-baseline-named" "no baseline at"
+
+fx="$(corpus "$AT_BASELINE")"
+rm -rf "$fx/skills"
+expect_rc "no-skills-dir-exit-2" 2 "$(check "$fx")"
+expect_says "no-skills-dir-named" "no skills/ directory"
+
+echo "the flags are validated, because two bad spellings look like success:"
+# An empty --root resolves the baseline relative to the CWD, so from the repo root it measures — and
+# with --update-baseline rewrites — the live tracked baseline while the caller named a fixture.
+node "$CHECKER" --root "" >"$OUT" 2>&1
+expect_rc "empty-root-exit-2" 2 "$?"
+expect_says "empty-root-named" "--root needs a directory"
+
+node "$CHECKER" --root --update-baseline >"$OUT" 2>&1
+expect_rc "flag-shaped-root-exit-2" 2 "$?"
+
+# A typo'd flag otherwise runs a plain CHECK and writes nothing, silently.
+fx="$(corpus "$AT_BASELINE")"
+node "$CHECKER" --root "$fx" --update-baselines >"$OUT" 2>&1
+expect_rc "unknown-flag-exit-2" 2 "$?"
+expect_says "unknown-flag-named" "unexpected argument"
 
 echo "the count is the one a reader can reproduce:"
 # `cat skills/*/SKILL.md | wc -w` over the fixture, frontmatter and all — if these ever disagree, the
@@ -154,6 +204,21 @@ if grep -qF -- "re-recorded at $want words" "$OUT"; then
   note_pass "count-matches-wc-w"
 else
   note_fail "count-matches-wc-w" "wc -w says $want: $(tr '\n' '|' <"$OUT")"
+fi
+
+# The ASCII case above passes under either spelling of the separator class. This one does not:
+# JavaScript's `\s` matches NBSP, `wc -w` under the LC_ALL=C this file exports does not, so `\s` made
+# the checker count one word MORE than the command the baseline tells you to reproduce it with — a
+# phantom +1 in a diff that looks whitespace-only.
+fx="$(corpus "$AT_BASELINE")"
+printf 'alpha\xc2\xa0beta\n' >"$fx/skills/dw-alpha/SKILL.md"
+printf 'four five\n' >"$fx/skills/dw-beta/SKILL.md"
+want="$(cat "$fx"/skills/*/SKILL.md | wc -w | tr -d ' ')"
+node "$CHECKER" --root "$fx" --update-baseline >"$OUT" 2>&1
+if grep -qF -- "re-recorded at $want words" "$OUT"; then
+  note_pass "count-matches-wc-w-with-unicode-whitespace ($want)"
+else
+  note_fail "count-matches-wc-w-with-unicode-whitespace" "wc -w says $want: $(tr '\n' '|' <"$OUT")"
 fi
 
 echo

@@ -140,6 +140,32 @@ tokens, limit is 1500)`) while `pnpm validate:docs` calls the same file green at
   Two of its statements were already stale when this file was written, both because three commits
   landed mid-session: `.ai/backlog/` is at **5/8**, not 8/8 (so task 6 is possible at all), and the
   corpus re-measured to the same 13 243 at `8ec8d98`.
+- **A Codex review pass found five input-validation holes; four were worth closing, and one of the
+  fixes made another one moot.** None was critical — the gate held in every case, because `words` is
+  validated as a number and it alone decides the verdict, so the malformed-baseline shapes degraded
+  only the diagnostics. What mattered: (1) `--root ""` — a quoted unset shell variable — resolved the
+  baseline relative to the cwd, so from the repo root it measured the live tree and with
+  `--update-baseline` would have rewritten the tracked baseline while the caller believed it named a
+  fixture; (2) a typo'd `--update-baselines` silently ran a plain check and wrote nothing; (3)
+  `--update-baseline` could not create a missing baseline while its error advised exactly that flag.
+  **Fixing (3) is what shrank the rest**: once the script is the only writer of that file, "somebody
+  hand-edited `perSkill` into an array" stops being a scenario, so the answer was `Array.isArray` plus
+  a `words === sum(perSkill)` consistency check — three lines — rather than per-entry schema
+  validation. That restraint is `0006`/`0008`'s cost test applied to this change's own tooling: this
+  repo has already deleted 489 lines of enforcement once for being disproportionate.
+- **`\s` was the wrong separator class, and the bug was invisible by construction.** JavaScript's `\s`
+  matches NBSP; `wc -w` under the `LC_ALL=C` that `validate-artifacts.sh` exports does not. So one
+  pasted NBSP made the checker count one word more than the command the baseline tells you to verify
+  it with — a phantom `+1` inside a diff that looks whitespace-only. Latent, not live: a sweep of 19
+  Unicode whitespace code points across all eleven `SKILL.md` files found zero, which is why
+  narrowing to `[ \t\n\v\f\r]` moved no number. The **mutation test is the part worth keeping**: with
+  `\s` restored, the new NBSP case fails 37/1 reporting 4 words against `wc -w`'s 3, so the case
+  genuinely pins the class rather than passing alongside it.
+- **Three of the original self-test cases passed for the wrong reason**, which is the trap
+  `tooling.md:113-118` already documents and this suite walked into anyway: `{"words":"5"}` violated
+  both shape rules at once (so it survived deleting either check), the `--update-baseline` case pinned
+  one substring rather than the rewritten object (so dropping a skill would pass), and the `wc -w`
+  equivalence case was ASCII-only (so it missed the divergence above). 23 assertions → 38.
 - **The ratchet shipped inert in CI, and the landing verdict caught it.** `validate-artifacts.yaml`
   listed neither `skills/**` nor the checker nor the baseline, so a commit appending words to a
   `SKILL.md` — the exact shape pass 3 exists to catch — matched no path filter and CI would have gone

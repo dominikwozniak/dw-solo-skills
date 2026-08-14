@@ -79,7 +79,7 @@ a split: it all lands together.
       the sentinel rule, the squash-merge consequence). Cut the claim protocol, the promotion-target
       list and the branch-read rule — owned by `dw-shape`/`dw-next`/`dw-land`, `CONTEXT.md` and
       `AGENTS.md:112` respectively.
-- [ ] 8. `docs/agents/skills-and-plugins.md`: qualify `:25–27`, which states as absolute that no skill
+- [x] 8. `docs/agents/skills-and-plugins.md`: qualify `:25–27`, which states as absolute that no skill
       can reach an explicit-invoke one by prose while four shipped `**Next:**` pointers do exactly
       that — a `**Next:**` is a suggestion to the user, not delegation. Cut the two war-story gotchas
       (`:96–105`, `:128–134`) to their generalisable lines, and drop step 7's fifth copy of the
@@ -194,6 +194,17 @@ a split: it all lands together.
   that `README.md:106` also carries. The first was not listed for cutting and is defined nowhere else;
   the second is duplicated only by the README's pitch version, which the "README keeps the sell"
   decision protects.
+
+- Task 8: **three** shipped `**Next:**` pointers name an explicit-invoke skill, not four —
+  `dw-shape` → `dw-start`, `dw-land` → `dw-ship`, `dw-doctor` → `dw-init`. Nothing points at
+  `dw-handoff`. The fix names no count, so the correction is only recorded here.
+- Task 8 also fixed the same false absolute in `README.md:56` ("can't be reached by other skills'
+  prose"), which the task list did not mention. The distinction that resolves both: a skill cannot
+  **delegate** to an invisible one, but naming it is the one route in, and that is what a `**Next:**`
+  line is.
+- Task 8's cuts (~11 lines) run against task 3's addition (~16), so this file ends at 139 lines,
+  slightly _up_ from the 134 it started at. That is the intended trade — it is now the one home for two
+  enumerations that were living in three files.
 
 **Prior context:** `.ai/backlog/templates-ship-the-docs-agents-contract.md` is coupled to task 9 —
 cutting the template's prose removes the last place a scaffolded repo meets the `docs/agents/`

@@ -52,8 +52,8 @@ never auto-fires). The phrases that trigger each skill live in its own `descript
 arguments it takes in its own `argument-hint` — neither is copied here.
 
 **Explicit-only skills**: `dw-start`, `dw-ship`, `dw-init` and `dw-handoff`. Marked `⭑` in the
-router; they never auto-fire — say the name. Being invisible to the model, they also can't be reached
-by other skills' prose.
+router; they never auto-fire — say the name. Being invisible to the model, no other skill can delegate
+to one; another skill suggesting you run it is the route in.
 
 **The loop** — `?` marks the opt-in steps; the spine and what it guarantees are in
 [`AGENTS.md`](AGENTS.md).

@@ -22,10 +22,12 @@ it via `<this-skill-dir>/…`.
 A skill is marked `disable-model-invocation: true` for either of two reasons: it **acts outward** —
 on branch topology, on the remote, or on a fresh repo's tooling — so the model never reaches for it
 unbidden, or **only you can see its moment has come**, where a model left to guess fires it at the
-wrong time or not at all. The cost is deliberate: an explicit-only skill is invisible to the model,
-so no other skill can reach it by prose either — anything the loop must be able to delegate to stays
-model-invocable. Which skills those currently are is the `⭑` list in `README.md`, kept in sync by
-`validate-docs.sh`.
+wrong time or not at all. The cost is deliberate: an explicit-only skill is invisible to the model, so
+**no other skill can delegate to it** — anything the loop must be able to hand work off to stays
+model-invocable. _Naming_ one is a different act and stays legal: a `**Next:**` line is a suggestion
+the reader acts on by typing the name, which is the one route into an invisible skill, and several of
+the shipped pointers do exactly that. Which skills those currently are is the `⭑` list in `README.md`,
+kept in sync by `validate-docs.sh`.
 
 ## Vendored from `dw-skills` — fix in both
 
@@ -77,11 +79,10 @@ been written here after the team lane dropped handoffs on purpose, and it writes
    `disable-model-invocation: true` skill reads as coverage while measuring a decision the model never
    makes. Shape and conventions: [`evals/README.md`](../../evals/README.md).
 7. **Re-record the corpus baseline in the same commit**: `node scripts/check-skill-corpus.mjs
---update-baseline`. A new skill is corpus growth, and pass 3 of `validate:artifacts` refuses
-   growth it was not told about — deliberately, so the size of the catalog stays somebody's decision
-   rather than a side effect. The re-record is the decision, visible in the diff. Same when an
-   existing `SKILL.md` legitimately gets longer; when it gets shorter, re-record too, or the slack is
-   free growth for the next append.
+--update-baseline`. A new skill is corpus growth, which pass 3 of `validate:artifacts` refuses
+   until told. Same when an existing `SKILL.md` legitimately gets longer — and when it gets shorter,
+   or the slack is free growth for the next append. Why it works this way:
+   [`0009`](../decisions/0009-skill-corpus-ratchet.md).
 8. Run the gate (the `scripts` block of `package.json`) — `eval:routing` included, because a new
    description shifts every term's idf, so adding a skill can knock an _existing_ one off rank-1 and
    fail CI's floor without your own case file scoring badly at all.
@@ -103,14 +104,12 @@ checklist by hand.
 
 - **A skill body is read in two repos, and only one of them has this repo's tooling.** The canon is
   authored here, where `validate-artifacts.sh` caps `.ai/backlog/` and a full gate runs in CI — none of
-  which ships. `dw-solo` ships `slugify.sh` and `worktree.sh`; `dw-solo-setup` ships `templates/`, and
-  the shipped `templates/backlog-README.md` deliberately omits the cap paragraph so a consumer sets its
-  own number. So prose asserting that tooling is **false on arrival**: a new `dw-shape` step said flatly
-  "the folder is capped", caught only in the closing verdict. `dw-land` had already got this right twice
-  — "where a cap exists", "where the repo caps the list" — which is the tell: **when a sibling skill
-  hedges a claim you are about to state flatly, the hedge is load-bearing, not throat-clearing.** Write
-  repo-specific mechanisms as conditions, and check the assertion against what the plugin actually ships
-  rather than against the repo you are standing in.
+  which ships; `templates/backlog-README.md` even omits the cap paragraph on purpose, so a consumer sets
+  its own number. So prose asserting that tooling is **false on arrival**. Write repo-specific
+  mechanisms as conditions ("where the repo caps the list"), and check the assertion against what the
+  plugin actually ships rather than against the repo you are standing in. The tell that catches it
+  early: **when a sibling skill hedges a claim you are about to state flatly, the hedge is load-bearing,
+  not throat-clearing.**
 - **The skill you are running is not the skill you are editing.** Claude Code serves
   `~/.claude/plugins/cache/dw-solo-skills/dw-solo/<version>/`, which only changes on reinstall — so a
   session can review, invoke and reason about a body several versions behind the canon it is editing,
@@ -133,10 +132,8 @@ checklist by hand.
   checklist only fires when a skill is added, and `dw-ship` never mentions versions at all. Bump the
   owning plugin by hand, in `marketplace.json` and its `plugin.json` together, whenever the diff
   touches the payload.
-- **`dw-land` is not a review pass, and the sentence saying so is easy to walk past.** Both
-  `skills/dw-land/SKILL.md` ("a last look, **not a review pipeline**") and `skills/dw-check/SKILL.md`
-  ("not a bottleneck this skill duplicates") forbid giving the closing verdict its own reviewer — and
-  it was built anyway, three lines below the first of them, then reverted. Review delegation belongs
-  to `dw-check`. The general lesson, worth more than the instance: **a constraint written as an intro
-  sentence does not act like a constraint** — if a boundary between two skills is load-bearing, put it
-  in the step itself, not in the paragraph that sets the tone.
+- **A constraint written as an intro sentence does not act like a constraint.** Review delegation
+  belongs to `dw-check`, and both it and `dw-land` say so in their opening prose — which did not stop
+  the closing verdict from getting its own reviewer built three lines below one of those sentences,
+  then reverted. If a boundary between two skills is load-bearing, put it in the step itself, not in the
+  paragraph that sets the tone.

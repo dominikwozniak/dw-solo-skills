@@ -53,6 +53,10 @@
           {
             "type": "command",
             "command": "bash \"${CLAUDE_PROJECT_DIR}/.claude/hooks/enforce-commit-hygiene.sh\""
+          },
+          {
+            "type": "command",
+            "command": "bash \"${CLAUDE_PROJECT_DIR}/.claude/hooks/credential-leak-guard.sh\""
           }
         ]
       },
@@ -84,6 +88,15 @@
             "command": "bash \"${CLAUDE_PROJECT_DIR}/.claude/hooks/lint-on-edit.sh\"",
             "timeout": 30,
             "statusMessage": "Linting changed file..."
+          }
+        ]
+      },
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"${CLAUDE_PROJECT_DIR}/.claude/hooks/large-file-guard.sh\""
           }
         ]
       }

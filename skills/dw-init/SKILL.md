@@ -70,10 +70,11 @@ Claude Code substitutes to this plugin's install dir.)
 
 ### 2. Pick the hooks
 
-Three are always offered because they're stack-agnostic: `block-dangerous-commands`,
-`block-env-access` and `enforce-commit-hygiene`. Add the JS/TS ones only where that stack is actually
-present: `block-non-pnpm`, `lint-on-edit`, `typecheck-on-stop`. On a stack with no lint or typecheck
-hook, offer the three alone and say the rest are stack-specific rather than silently writing nothing.
+Five are always offered because they're stack-agnostic: `block-dangerous-commands`,
+`block-env-access`, `enforce-commit-hygiene`, `credential-leak-guard` and `large-file-guard`. Add the
+JS/TS ones only where that stack is actually present: `block-non-pnpm`, `lint-on-edit`,
+`typecheck-on-stop`. On a stack with no lint or typecheck hook, offer the five alone and say the rest
+are stack-specific rather than silently writing nothing.
 
 `guard-plugin-canon` is **shape-specific, not stack-specific** — offer it only where step 1 found a
 `plugins/` directory whose entries are symlinks back into the tree. It refuses an edit aimed through

@@ -65,7 +65,7 @@ Order is a hint. Each box leaves the repo green; the change ships when all are t
 - [x] 4. `templates/hooks/guard-plugin-canon.sh` — `PreToolUse` on `Edit|Write|MultiEdit`, refuses a
       path under `plugins/` and names the `skills/…` canon behind the symlink. Wire both settings, add
       the self-test. This is the `AGENTS.md` "absolute" rule, today prose-only.
-- [ ] 5. `templates/hooks/credential-leak-guard.sh` (`PreToolUse`/`Bash`: env scans for
+- [x] 5. `templates/hooks/credential-leak-guard.sh` (`PreToolUse`/`Bash`: env scans for
       token/secret, `~/.ssh`, `~/.aws`, `curl`/`wget` exfil) and `templates/hooks/large-file-guard.sh`
       (`PostToolUse`/`Write`, size threshold). Both wired in both settings, both self-tested. Adapted
       from davepoon/buildwithclaude `plugins/hooks-safety` — rewrite to this repo's conventions, don't
@@ -162,6 +162,21 @@ the branch name, and a Conventional-Commits-anchored pattern refuses exactly tha
 both would have every commit blocked. The step now says to name the contradiction rather than fight
 it. The `## Git conventions` "no ticket prefix" line means this repo never hits it.
 
-Task 5's two hooks are the ones with the weakest case (`block-env-access.sh` + the CI trufflehog
-scan already cover much of the credential ground). If the change starts to drag, they are the first
-thing to drop back to the backlog — say so rather than half-doing them.
+Task 5's two hooks were the ones with the weakest case (`block-env-access.sh` + the CI trufflehog
+scan already cover much of the credential ground), and the plan allowed dropping them if the change
+dragged. It didn't, so they landed — but the overlap was answered rather than ignored:
+`credential-leak-guard.sh` opens by stating the boundary between the three guards, and owns only what
+neither sibling does. `block-env-access` has `.env`; trufflehog reads what was committed, so it fires
+after the fact and never sees a value that only passed through a shell; this hook takes the non-dotenv
+stores, environment hunting, and exfil.
+
+Its design bet is the **allowed** list, not the blocked one: exfil is "curl carrying a secret", never
+"curl". A hook that blocked every network call, or every reference to `$GITHUB_TOKEN` by the command
+that needs it, gets unwired inside a day — so referencing a secret variable is fine and only printing
+its value is refused. Two thirds of that self-test is false-positive cases for exactly that reason.
+
+`large-file-guard.sh` is `PostToolUse`, so the bytes are already on disk and it cannot prevent
+anything — it puts the real measured size in front of the model while deleting the file is still
+cheap. Threshold 256 KiB, `CLAUDE_MAX_WRITE_BYTES` overrides, `0` disables without unwiring. `Write`
+only: charging an `Edit` the whole file's size would fire on every edit to a file that was always big.
+`wc -c` rather than `stat`, whose size flag has no spelling common to GNU and BSD.

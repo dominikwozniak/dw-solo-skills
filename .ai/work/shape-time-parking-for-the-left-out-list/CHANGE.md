@@ -2,7 +2,7 @@
 change: shape-time-parking-for-the-left-out-list
 branch: worktree-shape-time-parking-for-the-left-out-list
 created: 2026-08-12
-status: shaping # shaping | building | landed
+status: building # shaping | building | landed
 ---
 
 # Change — the "deliberately left out" list gets its choice at shape time
@@ -37,7 +37,7 @@ backlog in what you get. `dw-solo` and `dw-solo-setup` are bumped in both manife
 
 ## Tasks
 
-- [ ] 1. **The step in `dw-shape`.** After the read-back and before the commit
+- [x] 1. **The step in `dw-shape`.** After the read-back and before the commit
       (`skills/dw-shape/SKILL.md:106-126`): walk the left-out list, force the three-way choice per item,
       and write only the parked ones as `.ai/backlog/<slug>.md` — slug from the shipped `slugify.sh`,
       frontmatter `created:` plus `source:` naming this change, an H1 in one line, at most ~3 lines of

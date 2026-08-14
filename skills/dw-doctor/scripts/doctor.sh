@@ -99,19 +99,46 @@ if [ ! -f "$pkg" ]; then
 elif have jq && ! jq empty "$pkg" 2>/dev/null; then
   report fail "package.json" "present but not valid JSON"
 else
-  # node vs engines.node
+  # node vs the version the repo declares. devEngines.runtime first, then engines.node — the same
+  # precedence the pnpm block below applies to devEngines.packageManager, and for the same reason:
+  # pnpm 11 reads the devEngines entry, downloads that runtime and runs every script under it, so a
+  # repo migrated to it may carry the exact version there and only a floor in engines.
+  ndver=""; ndsrc=""
+  if have jq; then
+    if [ "$(jq -r '.devEngines.runtime.name // empty' "$pkg" 2>/dev/null)" = "node" ]; then
+      ndver="$(jq -r '.devEngines.runtime.version // empty' "$pkg" 2>/dev/null)"
+      [ -n "$ndver" ] && ndsrc="devEngines"
+    fi
+    if [ -z "$ndver" ]; then
+      ndver="$(jq -r '.engines.node // empty' "$pkg" 2>/dev/null)"
+      [ -n "$ndver" ] && ndsrc="engines"
+    fi
+  fi
+  # Whatever the source, the comparison is a FLOOR, never an equality — and that is the one place
+  # this block deliberately parts from the pnpm block it otherwise mirrors. An exact
+  # devEngines.runtime pin IS in effect for everything pnpm runs, whatever `node` on PATH says, since
+  # pnpm downloads it; the pin can only be *missed* by a bare `node` older than it. Demanding equality
+  # would warn forever on a machine one patch release ahead, which is the normal case, not a fault.
+  ndmin="$(printf '%s' "$ndver" | grep -oE '[0-9]+(\.[0-9]+)*' | head -n1)"
   if have node; then
-    cur="$(node -v 2>/dev/null | sed 's/^v//')"
-    min=""
-    have jq && min="$(jq -r '.engines.node // empty' "$pkg" 2>/dev/null | grep -oE '[0-9]+(\.[0-9]+)*' | head -n1)"
-    if [ -n "$min" ]; then
-      if ver_ge "$min" "$cur"; then
-        report ok "node" "$cur (engines: >=$min)"
-      else
-        report warn "node" "$cur < required $min — upgrade (see .nvmrc, or brew install node)"
-      fi
-    else
+    # Probed from `/`, and for the same reason as pnpm below. A `node` on PATH may be a version-proxy
+    # shim (pnpm's own, or a `vp`-style one): run inside the repo it resolves the repo's declaration,
+    # downloads a runtime to satisfy it and answers as THAT version — so the check would compare the
+    # declaration against itself, and a declaration nothing can satisfy makes it answer nothing at all.
+    # Measured: `node -v` in a fixture declaring `>=99.0.0` prints a resolve failure and exits 1.
+    cur="$( (cd / && node -v) 2>/dev/null | sed 's/^v//')"
+    if [ -z "$cur" ]; then
+      report warn "node" "on PATH but does not run — check: cd / && node -v"
+    elif [ -z "$ndmin" ]; then
       report ok "node" "$cur"
+    elif ! ver_ge "$ndmin" "$cur"; then
+      report warn "node" "$cur < $ndsrc $ndver — upgrade (see .nvmrc, or brew install node)"
+    elif [ "$cur" = "$ndmin" ] || [ "$ndsrc" = "engines" ]; then
+      report ok "node" "$cur ($ndsrc: $ndver)"
+    else
+      # Ahead of an exact pin: fine, and worth spelling out — pnpm-run scripts get $ndver, a bare
+      # `node` gets this one, and someone reading two different versions deserves to know why.
+      report ok "node" "$cur on PATH ($ndsrc pins $ndver, which pnpm downloads for its own scripts)"
     fi
   else
     report fail "node" "missing — install via nvm (.nvmrc) or brew install node"

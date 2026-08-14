@@ -37,7 +37,7 @@ line reports against `devEngines.runtime` when present; and the pre-v11 lockfile
       keep the empty-result branch and its message intact.
 - [x] 2. Turn `scripts/tests/doctor.test.sh:375`'s comment into the pre-v11 LOCKFILE case it describes,
       plus an assertion that a doctor run leaves the fixture's `pnpm-lock.yaml` sha unchanged.
-- [ ] 3. Read the Node pin from `devEngines.runtime.version` when present, falling back to
+- [x] 3. Read the Node pin from `devEngines.runtime.version` when present, falling back to
       `engines.node`; report it as a pin (`==`) vs a floor (`>=`) the way the pnpm block distinguishes
       an exact version from a range.
 - [ ] 4. Make the `.nvmrc` mentions at `doctor.sh:111` and `:117` conditional on the file existing,
@@ -81,3 +81,19 @@ pin warning fires again (PATH 11.21.0 vs the 11.18.0 pin) — both halves of the
 and `run-does-not-touch-the-lockfile` both fail there, `v11-lockfile-is-silent` passes either way (it is
 the negative). Worth repeating for any future guard here — a read-only assertion that passes against the
 mutating version is asserting nothing.
+
+**Task 3 — `node -v` had the same bug as `pnpm -v`, and nobody had noticed.** The `node` on this PATH is
+a version-proxy shim (`vp`): run inside the target repo it resolves that repo's own declaration,
+downloads a runtime to satisfy it, and answers as that version. So the node check was comparing the
+declaration against itself, exactly as the pnpm one was. It surfaced as a fixture pinning `>=99.0.0`
+reporting `node  < engines >=99.0.0` — the machine's version missing entirely, because the shim had
+exited 1 with a resolve failure. Same fix, `(cd / && node -v)`, plus the empty-result branch the pnpm
+side already had. Any future `<tool> --version` probe in this script belongs outside the repo by
+default; being inside it is the exception that needs the argument.
+
+**The node comparison is a floor even against an exact `devEngines.runtime` pin** — the one place this
+block does not mirror the pnpm block. The pin is genuinely in effect for everything pnpm runs, since
+pnpm downloads it; a bare `node` can only _miss_ it by being older. Demanding equality would warn
+forever on a machine a patch release ahead, which is this repo today (PATH 24.19.0, pin 24.16.0) and
+is not a fault. Ahead-of-pin gets its own OK wording naming both versions, since a reader who sees two
+numbers deserves to know which one runs what.

@@ -411,6 +411,41 @@ else
   note_fail "run-does-not-touch-the-lockfile" "pnpm-lock.yaml changed across one doctor run"
 fi
 
+echo "the Node pin is read from devEngines.runtime first, engines.node second:"
+# The node on PATH is the machine's, so no case may assert a version — only WHICH declaration the
+# line quotes, and that the floor comparison is against that one. Every fixture below pins a version
+# no machine could plausibly have (99.x for the too-new case, 0.x for the satisfied one), which keeps
+# the verdict deterministic without asserting what `node -v` says.
+repo="$(scaffold '120 lines / 10 KB')"
+printf '{ "engines": { "node": ">=99.0.0" } }\n' >"$repo/package.json"
+run "$repo" >/dev/null
+says "engines-node-is-the-fallback-floor" warn "node" "engines >=99.0.0"
+# ...and the version it compared is a real one. A `node` on PATH that is a version-proxy shim answers
+# the REPO's declaration when run inside it, so an unsatisfiable floor makes it fail and print nothing
+# — leaving this line reading " < engines >=99.0.0" with the machine's version missing entirely. The
+# probe runs from `/` to avoid exactly that, and this is the case that says so.
+if grep -E '\[WARN\][[:space:]]+node[[:space:]]+[0-9]+\.' "$OUT" >/dev/null; then
+  note_pass "node-version-survives-an-impossible-floor"
+else
+  note_fail "node-version-survives-an-impossible-floor" "$(grep -F ' node ' "$OUT" | head -n1)"
+fi
+
+repo="$(scaffold '120 lines / 10 KB')"
+printf '{ "engines": { "node": ">=99.0.0" }, "devEngines": { "runtime": { "name": "node", "version": "0.1.0" } } }\n' >"$repo/package.json"
+run "$repo" >/dev/null
+says "devengines-runtime-wins" ok "node" "devEngines pins 0.1.0"
+
+repo="$(scaffold '120 lines / 10 KB')"
+printf '{ "engines": { "node": ">=0.1.0" }, "devEngines": { "runtime": { "name": "node", "version": "99.0.0" } } }\n' >"$repo/package.json"
+run "$repo" >/dev/null
+says "runtime-pin-below-is-the-warn" warn "node" "< devEngines 99.0.0"
+
+# A runtime entry for something else entirely must not be mistaken for the Node declaration.
+repo="$(scaffold '120 lines / 10 KB')"
+printf '{ "engines": { "node": ">=99.0.0" }, "devEngines": { "runtime": { "name": "bun", "version": "0.1.0" } } }\n' >"$repo/package.json"
+run "$repo" >/dev/null
+says "non-node-runtime-ignored" warn "node" "engines >=99.0.0"
+
 echo "lane detection still fires:"
 repo="$(scaffold '120 lines / 10 KB')"
 mkdir -p "$repo/.ai/runs"

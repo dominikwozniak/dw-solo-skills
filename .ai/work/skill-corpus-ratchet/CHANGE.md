@@ -93,7 +93,7 @@ tokens, limit is 1500)`) while `pnpm validate:docs` calls the same file green at
       them is currently true. `docs/agents/skills-and-plugins.md` — a new skill raises the baseline,
       re-recorded in the same commit. Root `AGENTS.md` gets **nothing**: it is at 116/120 and the Task
       Router already routes self-tests and CI to `tooling.md`.
-- [ ] 5. **Prove both directions, then revert** — the way `own-root-under-budget-and-router` proved
+- [x] 5. **Prove both directions, then revert** — the way `own-root-under-budget-and-router` proved
       its two failure modes rather than assuming them. Append a word to a `SKILL.md` → one `::error::`
       naming it, exit 1; delete a word → exit 0 plus the nudge; `pnpm format:fix` → word count
       unchanged. Then the full gate from the `scripts` block of `package.json`, with
@@ -140,6 +140,18 @@ tokens, limit is 1500)`) while `pnpm validate:docs` calls the same file green at
   Two of its statements were already stale when this file was written, both because three commits
   landed mid-session: `.ai/backlog/` is at **5/8**, not 8/8 (so task 6 is possible at all), and the
   corpus re-measured to the same 13 243 at `8ec8d98`.
+- **`pnpm format:fix` proves nothing about invariance on a tree prettier already agrees with** — it
+  moves no file, so "the word count did not change" is true of a no-op. The real proof needed a tree
+  prettier would actually reflow: unwrapping `dw-ship/SKILL.md`'s soft line breaks took it 80 lines →
+  66, then `prettier --write` reflowed it to **68** lines / 4101 B, against the original 80 / 4100.
+  Lines moved twice and bytes moved once; words sat at 699 through all three states. That is the
+  words-not-bytes-or-lines decision demonstrated rather than asserted. Both live-tree directions also
+  behaved: +1 word → exit 1 naming `dw-ship: 700 (was 699, +1)`, −1 word → exit 0 plus the nudge.
+- **A first attempt at the shrink case deleted a word that was not in the file**, so the checker
+  reported "no change" and the run looked like a passing shrink when nothing had been edited. Confirm
+  the fixture actually moved (`git diff --stat`) before reading the checker's verdict as evidence —
+  the same trap `tooling.md`'s "a self-test can be green for a reason that has nothing to do with the
+  contract" gotcha describes, met by hand rather than in a test.
 - **The root is at 117/120 lines, not the 116 this document and the `## Why now` section recorded** —
   that is what `check-agents-docs.mjs` prints, and it counts `split("\n").length`, so a trailing
   newline reads as a line. The prose in `docs/agents/README.md` now quotes the checker's number

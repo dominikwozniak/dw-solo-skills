@@ -68,11 +68,17 @@ instead of a dated record under `.ai/handoffs/`, so treat the two as unrelated. 
    measured by nothing, an orphan file is a case file measuring nothing, and a file for a
    `disable-model-invocation: true` skill reads as coverage while measuring a decision the model never
    makes. Shape and conventions: [`evals/README.md`](../../evals/README.md).
-7. Run the gate (the `scripts` block of `package.json`) — `eval:routing` included, because a new
+7. **Re-record the corpus baseline in the same commit**: `node scripts/check-skill-corpus.mjs
+--update-baseline`. A new skill is corpus growth, and pass 3 of `validate:artifacts` refuses
+   growth it was not told about — deliberately, so the size of the catalog stays somebody's decision
+   rather than a side effect. The re-record is the decision, visible in the diff. Same when an
+   existing `SKILL.md` legitimately gets longer; when it gets shorter, re-record too, or the slack is
+   free growth for the next append.
+8. Run the gate (the `scripts` block of `package.json`) — `eval:routing` included, because a new
    description shifts every term's idf, so adding a skill can knock an _existing_ one off rank-1 and
    fail CI's floor without your own case file scoring badly at all.
 
-Steps 2–6 are CI-enforced (bar the loop diagram, and CI checks the versions are _equal_, not that
+Steps 2–7 are CI-enforced (bar the loop diagram, and CI checks the versions are _equal_, not that
 they changed). The validators name the exact missing entry — run them rather than re-deriving the
 checklist by hand.
 

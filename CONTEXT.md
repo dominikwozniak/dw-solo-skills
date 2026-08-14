@@ -57,9 +57,19 @@ in [`AGENTS.md`](AGENTS.md) and the procedures in the skills themselves.
   [`0003`](docs/decisions/0003-worktree-carry-classes.md), the link class retired by
   [`0007`](docs/decisions/0007-agent-memory-in-tracked-agents-md.md).
 - **Budget** — the line-and-byte ceiling a root `AGENTS.md` declares **about itself**, in its own prose
-  (`Budget: **120 lines / 10 KB**`), enforced by the `check-agents-docs.mjs` the payload ships. Not a
-  **Cap**: a cap counts entries in a durable list, a budget measures one always-loaded file. Over
-  budget, a topic moves out to a **routed topic file** — trimming a rule is not the way past it.
+  (`Budget: **120 lines / 10 KB**`), enforced by the `check-agents-docs.mjs` the payload ships. Chosen
+  editorial discipline, not a harness ceiling: nothing truncates there, and it is ~3× stricter than
+  Codex's 32 KB `project_doc_max_bytes`. Over budget, a topic moves out to a **routed topic file** —
+  trimming a rule is not the way past it.
+- **Ratchet** — a governor that records what a measure currently **is** and refuses only an increase,
+  so no threshold is ever chosen. Over the skill corpus:
+  `scripts/skill-corpus.baseline.json` plus pass 3 of `validate:artifacts`, set by
+  [`0009`](docs/decisions/0009-skill-corpus-ratchet.md). Growth stays legal at the price of a
+  re-record in the same commit.
+- The three governors are distinct and the words are not interchangeable: a **Cap** counts entries in
+  a durable list against a number somebody picked, a **Budget** measures one always-loaded file
+  against a number somebody picked, a **Ratchet** compares one measure against its own recorded past
+  and picks no number at all.
 - **Task Router** — the table in a root `AGENTS.md` mapping a kind of task to the doc to read. It is
   the only thing that makes the topic layer reachable, so the checker holds it to both directions:
   every `docs/agents/*.md` needs a row, and every path a row's `read` column names must exist.

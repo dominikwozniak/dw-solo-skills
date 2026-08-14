@@ -73,7 +73,7 @@ Order is a hint. Each box leaves the repo green; the change ships when all are t
 - [x] 6. Apply the `GIT` prefix in `block-dangerous-commands.sh` to `push`, `reset --hard`, `clean`,
       `branch -D` and `stash clear`, so `git -C sub …` blocks like the bare form; extend
       `block-dangerous-commands.test.sh` with a `-C` case per pattern.
-- [ ] 7. Retire `link-local-memory.sh`: both hook copies, `worktree.sh`'s `link_local_memory()`, its
+- [x] 7. Retire `link-local-memory.sh`: both hook copies, `worktree.sh`'s `link_local_memory()`, its
       `worktree.test.sh` group, the `SessionStart` wire in both settings, `dw-init`'s legacy-only offer
       and `dw-start`'s sentence. Keep the `AGENTS.md`-first fallback in `lint-on-edit` and
       `typecheck-on-stop`. Add `scripts/tests/block-non-pnpm.test.sh` while the hook layer is open.
@@ -174,6 +174,21 @@ Its design bet is the **allowed** list, not the blocked one: exfil is "curl carr
 "curl". A hook that blocked every network call, or every reference to `$GITHUB_TOKEN` by the command
 that needs it, gets unwired inside a day — so referencing a secret variable is fine and only printing
 its value is refused. Two thirds of that self-test is false-positive cases for exactly that reason.
+
+**Task 7 went one step past its own text, deliberately.** Writing `block-non-pnpm.test.sh` found that
+the hook stripped exactly one leading `sudo ` and knew nothing about `rtk` — so `rtk npm install`,
+`sudo sudo npm install` and `NODE_ENV=production npm ci` all went straight through. The rtk form is the
+one that matters: this repo runs an rtk rewrite over its own commands, so the guardrail was bypassed on
+every one of them. The gaps were first pinned as `allowed` and a backlog entry drafted, then closed
+instead — `.ai/backlog/README.md`'s second bar says a fix smaller than the entry describing it is a
+commit in the open change, and this one was six lines reusing `block-dangerous-commands.sh`'s
+`WRAPPER`/`BOUNDARY` shape. The `\s` in its patterns went to POSIX classes at the same time: BSD grep
+on macOS does honour it, verified rather than assumed, and that is exactly the accident to stop relying
+on once seen.
+
+The worktree test's legacy group is not deleted but INVERTED — it now pins that a legacy
+`CLAUDE.local.md` in the main tree is _not_ carried in, and that `create` says nothing about it either
+way. A retirement is a behaviour worth a test, not just an absence.
 
 **Task 6 could not just paste `$GIT` onto the five patterns — that widening opens a false positive
 the bare patterns never had.** What keeps `git commit -m "never reset --hard"` from matching the reset

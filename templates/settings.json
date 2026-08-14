@@ -28,16 +28,6 @@
     "deny": ["Read(./.env)", "Read(./**/.env)", "Edit(./.env)", "Edit(./**/.env)"]
   },
   "hooks": {
-    "SessionStart": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash \"${CLAUDE_PROJECT_DIR}/.claude/hooks/link-local-memory.sh\""
-          }
-        ]
-      }
-    ],
     "PreToolUse": [
       {
         "matcher": "Bash",

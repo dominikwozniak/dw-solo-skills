@@ -81,12 +81,6 @@ are stack-specific rather than silently writing nothing.
 one of those links and names the canon instead, so on a repo with no such layout it is a hook that
 can never fire.
 
-`link-local-memory` is **legacy-only** — offer it **only** when step 1 found a `CLAUDE.local.md`
-already there. It is a `SessionStart` hook that symlinks the main tree's gitignored copy into a
-`git worktree`, which is work that exists only while agent memory is gitignored. A repo scaffolded
-now keeps its memory in tracked `AGENTS.md`, and `git worktree add` delivers that unaided — so
-offering the hook on a fresh repo wires a guardrail whose whole job is a file nothing writes.
-
 ### 3. HARD STOP — show what you're about to write
 
 List every path, marked **tracked** or **ignored**, with a diff for anything that already exists.

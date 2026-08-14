@@ -86,7 +86,7 @@ tokens, limit is 1500)`) while `pnpm validate:docs` calls the same file green at
 - [x] 3. **Wire pass 3** into `scripts/validate-artifacts.sh`, and extend its header comment. The
       existing `NOTE:` — pass 2 is a count, not a precedent for a schema — stays true and gains the
       ratchet rather than being replaced.
-- [ ] 4. **The three doc edits.** `docs/agents/README.md:17-19` — what kind of number the budget is
+- [x] 4. **The three doc edits.** `docs/agents/README.md:17-19` — what kind of number the budget is
       (chosen editorial discipline; Codex truncates project docs near 32 KB, so this is deliberately
       ~3× stricter; the line half is the half that binds). `docs/agents/tooling.md` — pass 3 under the
       gate material, plus a `## Gotchas` entry that agnix warnings do not fail the build and one of
@@ -140,6 +140,12 @@ tokens, limit is 1500)`) while `pnpm validate:docs` calls the same file green at
   Two of its statements were already stale when this file was written, both because three commits
   landed mid-session: `.ai/backlog/` is at **5/8**, not 8/8 (so task 6 is possible at all), and the
   corpus re-measured to the same 13 243 at `8ec8d98`.
+- **The root is at 117/120 lines, not the 116 this document and the `## Why now` section recorded** —
+  that is what `check-agents-docs.mjs` prints, and it counts `split("\n").length`, so a trailing
+  newline reads as a line. The prose in `docs/agents/README.md` now quotes the checker's number
+  rather than a hand count, because those are the two numbers a reader would compare. `AGENTS.md`
+  itself was not touched, as task 4 required. The warning count in the new tooling gotcha is 51, not
+  the 50 the Decisions section quoted, for the same "measured at HEAD" reason.
 - **The backlog is at 7/8, not the 5/8 this document recorded** — measured by pass 2 itself once
   pass 3 was wired. Task 6 therefore lands it at 8/8, exactly at the cap and still passing (the cap
   refuses `> 8`). The next entry after it has to bundle, absorb or drop, which is the cap working

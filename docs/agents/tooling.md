@@ -4,6 +4,22 @@ The commands themselves are in the root's `## Commands`; the gate is the `script
 `package.json`. This file is how that tooling misbehaves, and what the misbehaviour looks like when
 it is not what it appears to be.
 
+## `pnpm validate:artifacts` — three passes
+
+`scripts/validate-artifacts.sh` runs every self-test under `scripts/tests/` (pass 1), then two
+governors over the durable layer: the cap on `.ai/backlog/` (pass 2) and the ratchet over
+`skills/*/SKILL.md` (pass 3, `scripts/check-skill-corpus.mjs` against
+`scripts/skill-corpus.baseline.json`).
+
+Pass 3 exists because the corpus grew 19% in three days with nothing looking. It sets **no
+threshold** — the baseline records what the corpus is, and the check fails only on an increase, so
+growth stays legal and costs one `node scripts/check-skill-corpus.mjs --update-baseline` in the same
+commit. Adding a skill therefore always touches two files. It counts words rather than bytes or
+lines because prettier reflows Markdown at 100 columns, which moves both of those on a pure
+reformat. A missing or malformed baseline exits **2**, never a silent pass.
+
+A new self-test needs no wiring: pass 1 globs `scripts/tests/*.test.sh`.
+
 ## The hooks
 
 Wired in tracked `.claude/settings.json`, with the scripts in `.claude/hooks/` — so a fresh clone and
@@ -28,6 +44,15 @@ argument it is handed). Slow, and the OOM below applies. `.husky/pre-commit` is 
 
 ## Gotchas
 
+- **agnix warnings do not fail the build, and one of them is true right now.** `scripts/lint.sh`
+  exits **0** with 51 warnings; only `Found N errors` gates. So a rule firing is not a rule
+  enforced — `CLAUDE.md:1:0 warning: File exceeds recommended token limit (~1752 tokens, limit is
+1500)` has been true and ignored the whole time `pnpm validate:docs` has been calling the same file
+  green at 117/120 lines. Two checkers, two units, one of them advisory, and the advisory one looks
+  identical to the binding one in the output. Before citing agnix as the thing that would have caught
+  something, check whether it gates: `severity` sets a reporting floor, and `[[overrides]]` can only
+  _disable_ a rule for a glob, never turn its threshold down. That is why the corpus ratchet is its
+  own checker rather than a tuned `AS-012`.
 - **A new check needs a new `paths:` entry, or it never runs on the commit shape it exists to
   catch.** Every workflow here is path-filtered, so a check added to an existing script inherits that
   script's triggers — which are the paths the _old_ checks cared about. `validate-docs.sh`'s

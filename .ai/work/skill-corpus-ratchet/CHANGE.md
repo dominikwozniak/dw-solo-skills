@@ -98,8 +98,8 @@ tokens, limit is 1500)`) while `pnpm validate:docs` calls the same file green at
       naming it, exit 1; delete a word → exit 0 plus the nudge; `pnpm format:fix` → word count
       unchanged. Then the full gate from the `scripts` block of `package.json`, with
       `bash scripts/lint.sh` in place of `pnpm lint`.
-- [ ] 6. **Park the follow-up**: `.ai/backlog/templates-ship-the-docs-agents-contract.md`. Backlog
-      goes 5 → 6 of 8.
+- [x] 6. **Park the follow-up**: `.ai/backlog/templates-ship-the-docs-agents-contract.md`. Backlog
+      goes 7 → 8 of 8 (not the 5 → 6 shaped here — see Notes).
 
 ## Anchors
 

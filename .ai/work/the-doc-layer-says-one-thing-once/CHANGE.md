@@ -218,12 +218,29 @@ a split: it all lands together.
   `bash scripts/lint.sh` at 0 errors. `pnpm lint` itself dies with `Command "eslint" not found` — the
   rtk-proxy hijack `tooling.md` documents, not a repo failure.
 
-**OPEN AGAINST THE GOAL — task 9 landed at 85 lines, not ~55–65.** Every substantive instruction in
+**`dw-check` via `/codex:review`, after task 10 — two findings, both confirmed and fixed:**
+
+- The Git conventions compression in task 9 dropped `git fetch origin &&` from the rebase command, so
+  the payload taught a rebase onto a stale tracking ref. The bullet wraps to two lines again; the
+  template is 86 lines.
+- Four payload files stated the trap destination flatly where `dw-land:108–109` states an **ordering**:
+  an existing root `## Gotchas` stays the home where a repo already keeps one, and only otherwise the
+  routed topic file. Codex found one instance (`work-README.md:44`); the same claim was in
+  `work-README.md:36`, `decisions-README.md:15` and `archive-README.md:12` with its twin
+  `.ai/archive/README.md:12`. All hedged, twins still `cmp`-identical. **`CONTEXT.md:13` deliberately
+  keeps the absolute form** — this repo has no root `## Gotchas` and `AGENTS.md:5` forbids one.
+- Worth keeping for its own sake: this is exactly the gotcha task 8 edited — _when a sibling skill
+  hedges a claim you are about to state flatly, the hedge is load-bearing_ — walked into inside the same
+  change, by the same hand that had just rewritten it. The entry is not paranoid enough; a reviewer
+  caught it and the author did not.
+- `dw-solo-setup` → `0.1.21` for the second round of payload edits.
+
+**OPEN AGAINST THE GOAL — task 9 landed at 86 lines, not ~55–65.** Every substantive instruction in
 task 9 is done: worked prose under `## Always` / `## Ask First` / `## Never` / `## Git conventions` is
 now one-line hints, the loop gained `dw-grill` and `dw-land`, `none` gained "standing alone on the
 line", and all ten placeholders plus every heading, router row and hook-grepped bullet survive (the
-59-case `check-agents-docs.test.sh` passes, including the render case). 105 → 85 lines, 5.5 → 4.6 KB;
-headroom went from 15 lines to 35.
+59-case `check-agents-docs.test.sh` passes, including the render case). 105 → 86 lines, 5.5 → 4.6 KB;
+headroom went from 15 lines to 34.
 
 ~55–65 is not reachable while keeping what the same task requires kept. The floor is structural: ten
 headings with their blank lines (~20), the six-row router table (8), the ten placeholder-bearing

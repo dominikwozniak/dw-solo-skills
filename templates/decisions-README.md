@@ -12,5 +12,6 @@ record is superseded rather than rewritten — is **not restated here**. It live
 every time it writes a record. A second copy here would be the one nobody reads and the one that goes
 stale.
 
-What a word _means_ goes in `CONTEXT.md`; a trap that cost real time goes in the `## Gotchas` of the
-topic file that covers it. Both are common; a record is rare.
+What a word _means_ goes in `CONTEXT.md`; a trap that cost real time goes in a `## Gotchas` — an
+existing root section where the repo already keeps one, else the routed topic file covering the trap.
+Both are common; a record is rare.

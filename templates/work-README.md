@@ -32,8 +32,8 @@ into `archive/<slug>/` (`status: landed`, stamped `landed:` + `pr:`).
   leftover one before archiving. Only ever one at a time; a new handoff overwrites
   the old.
 - **`archive/` is history, not guidance.** Nothing reads it to decide anything; the
-  durable layer lives in `docs/decisions/`, `CONTEXT.md` and the topic files'
-  `## Gotchas`.
+  durable layer lives in `docs/decisions/`, `CONTEXT.md` and wherever this repo keeps
+  its `## Gotchas`.
 
 ## Where the durable parts go
 
@@ -41,8 +41,9 @@ into `archive/<slug>/` (`status: landed`, stamped `landed:` + `pr:`).
 
 - `docs/decisions/` — hard-to-reverse decisions, one record each
 - `CONTEXT.md` — domain terms, glossary only
-- the `## Gotchas` of the matching `docs/agents/<topic>.md` — traps that cost real
-  time, kept beside the topic that sprang them rather than in the always-loaded root
+- `## Gotchas` — traps that cost real time. An existing root section stays the home
+  where the repo already keeps one; otherwise the matching `docs/agents/<topic>.md`,
+  beside the topic that sprang the trap rather than in the always-loaded root
 - `.ai/backlog/<slug>.md` — ordinary follow-ups that clear none of the above bars;
   findings by pointer to `.ai/archive/<slug>`, never inlined
 

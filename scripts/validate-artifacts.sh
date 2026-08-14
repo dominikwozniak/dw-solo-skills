@@ -12,7 +12,9 @@
 #   3. the ratchet over skills/*/SKILL.md, via scripts/check-skill-corpus.mjs. The corpus grew 19% in
 #      three days with nothing looking, because the only mechanical check over skill size was
 #      decoration: agnix AS-012 fires at 500 body lines, the largest skill is 228, and agnix warnings
-#      do not gate anyway — this script's own `bash scripts/lint.sh` exits 0 with 50 of them.
+#      do not gate anyway — `bash scripts/lint.sh` exits 0 with dozens of them. The count and the
+#      standing exception are in docs/agents/tooling.md's Gotchas; no number is repeated here,
+#      because a warning count drifts and two copies of it drift apart.
 #
 # Passes 2 and 3 are the same bargain in two units. Neither sets a limit anybody chose: the cap
 # forces a decision when the backlog grows, and the baseline forces one when the corpus does. Growth

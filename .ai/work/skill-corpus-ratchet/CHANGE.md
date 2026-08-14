@@ -140,6 +140,19 @@ tokens, limit is 1500)`) while `pnpm validate:docs` calls the same file green at
   Two of its statements were already stale when this file was written, both because three commits
   landed mid-session: `.ai/backlog/` is at **5/8**, not 8/8 (so task 6 is possible at all), and the
   corpus re-measured to the same 13 243 at `8ec8d98`.
+- **The ratchet shipped inert in CI, and the landing verdict caught it.** `validate-artifacts.yaml`
+  listed neither `skills/**` nor the checker nor the baseline, so a commit appending words to a
+  `SKILL.md` — the exact shape pass 3 exists to catch — matched no path filter and CI would have gone
+  green with the check never invoked. `.husky/pre-commit` does not run `validate:artifacts` either
+  (lint-staged, scoped agnix, manifests only), so there was **no automatic path at all**: the ratchet
+  worked only for someone who ran the gate by hand, which is the "nothing was looking" this change
+  exists to end. Worse, `validate-docs.yaml` **does** list `skills/**`, so a skill edit would show a
+  green tick from a workflow that never measures the corpus. This is the third bite of the trap in
+  `docs/agents/tooling.md` — a check added to an existing script inherits that script's triggers.
+  Fixed in the same change, both lists.
+- **The header of `validate-artifacts.sh` no longer repeats the agnix warning count.** It said 50
+  while `tooling.md` said 51 — one diff, two numbers for one fact. A count that drifts belongs in one
+  place; the script now points at the gotcha instead of restating it.
 - **`pnpm format:fix` proves nothing about invariance on a tree prettier already agrees with** — it
   moves no file, so "the word count did not change" is true of a no-op. The real proof needed a tree
   prettier would actually reflow: unwrapping `dw-ship/SKILL.md`'s soft line breaks took it 80 lines →

@@ -15,6 +15,13 @@ on:
       # the dogfood pass reads these records — without the folder here, a commit that only adds
       # or edits one matches no filter and the check that exists for it never runs.
       - docs/decisions/**
+      # pass 3 measures these. A commit that appends words to a SKILL.md is the exact shape the
+      # ratchet exists to catch, and without skills/** here it matches no filter — CI goes green
+      # with the check never invoked, while validate-docs.yaml (which does list skills/**) runs
+      # and ticks. The baseline and the checker are here for the same reason.
+      - skills/**
+      - scripts/check-skill-corpus.mjs
+      - scripts/skill-corpus.baseline.json
       - scripts/validate-artifacts.sh
       - .github/workflows/validate-artifacts.yaml
   push:
@@ -25,6 +32,9 @@ on:
       - templates/**
       - .claude/hooks/**
       - docs/decisions/**
+      - skills/**
+      - scripts/check-skill-corpus.mjs
+      - scripts/skill-corpus.baseline.json
       - scripts/validate-artifacts.sh
       - .github/workflows/validate-artifacts.yaml
 

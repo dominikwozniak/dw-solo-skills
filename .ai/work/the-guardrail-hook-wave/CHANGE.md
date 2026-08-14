@@ -56,7 +56,7 @@ Order is a hint. Each box leaves the repo green; the change ships when all are t
       `git … commit` detection); `-m` extraction after the buildwithclaude script (`xargs -n1`
       tokenization; `-m`/`--message`/`--message=`/`-mfix:`/clustered `-am`). Plus
       `scripts/tests/enforce-commit-hygiene.test.sh`.
-- [ ] 2. `- **Commit pattern**:` and `- **Commit trailer**:` in this repo's `AGENTS.md`
+- [x] 2. `- **Commit pattern**:` and `- **Commit trailer**:` in this repo's `AGENTS.md`
       (`## Solo lane`, beside the lint and typecheck bullets) and placeholders in `templates/AGENTS.md`.
       Mind the root doc budget (120 lines / 10 KB) — `pnpm validate:docs` enforces it.
 - [ ] 3. Trim `skills/dw-git/SKILL.md` commit Defaults to point at the declarations, shorten the
@@ -128,6 +128,16 @@ have been wrong — 51 of the last 20 commits' body lines carry backticks, and a
 
 Verified before wiring, per the warning below: all 12 recent real subjects pass the default pattern,
 and the pattern/trailer bullets are not declared yet, so nothing changed for existing commits.
+
+**Task 2 reached past `AGENTS.md`, and had to.** A placeholder nothing renders is a bug, so
+`dw-init`'s placeholder list, its per-placeholder guidance and its always-offered hook trio all name
+the new pieces; and `check-agents-docs.test.sh` renders the shipped template with a fixed
+substitution list, so it failed until the two tokens were added there. The root doc sat at exactly
+120/120 lines after the two bullets went in — one line of prose was condensed to leave a line of
+slack, because the next unrelated edit would otherwise fail the budget.
+
+The declared pattern is deliberately stricter than the hook's default: scopes are `[a-z0-9-]+`, not
+`[^)]+`, which is what this repo's log actually uses.
 
 Task 5's two hooks are the ones with the weakest case (`block-env-access.sh` + the CI trufflehog
 scan already cover much of the credential ground). If the change starts to drag, they are the first

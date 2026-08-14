@@ -70,10 +70,10 @@ Claude Code substitutes to this plugin's install dir.)
 
 ### 2. Pick the hooks
 
-Two are always offered because they're stack-agnostic: `block-dangerous-commands` and
-`block-env-access`. Add the JS/TS ones only where that stack is actually present: `block-non-pnpm`,
-`lint-on-edit`, `typecheck-on-stop`. On a stack with no lint or typecheck hook, offer the two alone
-and say the rest are stack-specific rather than silently writing nothing.
+Three are always offered because they're stack-agnostic: `block-dangerous-commands`,
+`block-env-access` and `enforce-commit-hygiene`. Add the JS/TS ones only where that stack is actually
+present: `block-non-pnpm`, `lint-on-edit`, `typecheck-on-stop`. On a stack with no lint or typecheck
+hook, offer the three alone and say the rest are stack-specific rather than silently writing nothing.
 
 `link-local-memory` is **legacy-only** — offer it **only** when step 1 found a `CLAUDE.local.md`
 already there. It is a `SessionStart` hook that symlinks the main tree's gitignored copy into a
@@ -115,13 +115,19 @@ light.
   as valid JSON.
 - `AGENTS.md` — if absent, render `${CLAUDE_PLUGIN_ROOT}/templates/AGENTS.md`, substituting
   `{{PROJECT_NAME}}` `{{DEFAULT_BRANCH}}` `{{STACK}}` `{{TEST_COMMAND}}` `{{LINT_COMMAND}}`
-  `{{TYPECHECK_COMMAND}}` `{{HOOKS_INSTALLED}}` `{{AGENTS_CHECK_COMMAND}}`. **Every placeholder gets
+  `{{TYPECHECK_COMMAND}}` `{{COMMIT_PATTERN}}` `{{COMMIT_TRAILER}}` `{{HOOKS_INSTALLED}}`
+  `{{AGENTS_CHECK_COMMAND}}`. **Every placeholder gets
   a value or the line goes** — a `{{…}}` left in the file is read as content by the next session and
   `eval`ed as a command by the hooks, which is why they carry an explicit guard against exactly
   these tokens.
   - The commands come from step 1 **verbatim**; `none` where the manifests had none. Write `none`,
     not a plausible guess and not `_(none detected)_`: the hooks read `none` as "skip", and a command
     that doesn't exist fails on every edit.
+  - `{{COMMIT_PATTERN}}` and `{{COMMIT_TRAILER}}` are policy, not detected commands, so ask rather
+    than probe: derive the pattern from the log the repo already has (`git log --format=%s -30`) and
+    propose it, and write `none` for the trailer unless the user says every commit must carry one.
+    Both defaults live in `enforce-commit-hygiene.sh` — Conventional Commits for the pattern, `none`
+    for the trailer — so an honest `none` is always a safe answer here.
   - `{{LINT_COMMAND}}` is the **per-file** form (`pnpm exec eslint --fix`, `ruff check --fix`), since
     `lint-on-edit` appends one path to it — not the whole-project script, which would re-lint the
     tree on every edit. Where the project only has the whole-project form, say so at the gate and

@@ -39,7 +39,7 @@ full-tree walk into a single-file check. Verified by a new `scripts/tests/lint.t
 - [x] 2. Add `scripts/tests/lint.test.sh` — a temp dir with a stub `node_modules/.bin/agnix` that
       records its argv, asserting: no args → `.`; one path → exactly that path; two paths → both, no
       `.`; a stub printing `terminated abnormally` still exits 1 even at exit code 0.
-- [ ] 3. Correct the docs the fix falsifies: `docs/agents/tooling.md:51–53` (the `lint-on-edit.sh`
+- [x] 3. Correct the docs the fix falsifies: `docs/agents/tooling.md:51–53` (the `lint-on-edit.sh`
       paragraph asserting the argument is ignored), its OOM gotcha at `:103` (the workaround is now
       `pnpm lint <path>`), and the stale rationale comment in `.husky/pre-commit`.
 
@@ -76,6 +76,21 @@ the hardcoded dot fails exactly the three argv cases (`one-path-forwarded`, `two
 Two cases beyond the shape earned their place: the spaced path (a `"$@"` that degrades to `$@` splits
 it, and nothing else would notice) and `NODE_OPTIONS` reaching the stub (dropping the memory bump
 looks harmless and re-opens the OOM). 13 cases, all green.
+
+**Task 3 — a gotcha the capability creates, worth promoting to `docs/agents/tooling.md`'s Gotchas at
+land time:** scoping now makes the `.agnix.toml` exclude list bypassable in practice, not just in
+theory. `bash scripts/lint.sh docs/agents/tooling.md` reports **1 error** ("Agent file must have YAML
+frontmatter") on a file the bare run never touches, because `docs/agents/**` is excluded from the
+project walk and an explicit path is linted regardless. Bare `pnpm lint` is unchanged at 0 errors, 57
+warnings. Nothing in the automated path hits this — `lint-on-edit` filters to `.ts/.js` and
+`.husky/pre-commit` filters `templates/` itself — but a human scoping a lint by hand will.
+
+Task 3 stayed off `.agnix.toml` and the shipped `templates/hooks/lint-on-edit.sh` on purpose. The
+config comment ("an exclude only applies to the project walk") is still true, and the shipped hook's
+"there is no `package.json scripts.lint` fallback: `pnpm lint` lints the whole project" is a claim
+about an arbitrary target repo, not about this one — editing it would be a payload change needing a
+plugin bump, for a sentence that has not become false. No manifest bump in this change: `scripts/`
+and `docs/agents/` are repo tooling, and `.husky/pre-commit` is repo-local, none of them payload.
 
 In this repo `lint-on-edit.sh` only ever fires on `evals/*.ts`, `scripts/*.mjs` and
 `templates/check-agents-docs.mjs` — none of which agnix has rules for — so the practical win here is

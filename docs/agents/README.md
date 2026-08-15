@@ -49,6 +49,12 @@ sub-bullets. Growth is fine; sprawl of stale traps is not.
 
 ## Gotchas
 
+- **A header written to explain a fix is where a fact gets re-copied, because there it reads as
+  context rather than duplication.** The commit after the one that made every fact live in exactly
+  one file added a script header restating a caveat `.agnix.toml` and `.husky/pre-commit` already
+  carried — three homes, written by the hand that had just finished deduplicating the doc layer.
+  When a comment explains _why a fix was needed_, the background belongs to whatever file already
+  owns it: name that file and stop. What the header may state is what its own file does.
 - **Moving prose between files conserves entries while losing content, and counting proves
   nothing.** Splitting the root into this directory moved twelve gotcha entries and seventeen
   sub-bullets — every one of them accounted for, and four separate pieces of content gone anyway,

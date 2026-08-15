@@ -2,7 +2,8 @@
 change: lint-sh-ignores-the-file-path-lint-on-edit-appends
 branch: lint-sh-ignores-the-file-path-lint-on-edit-appends
 created: 2026-08-15
-status: building
+status: landed
+landed: 2026-08-15
 ---
 
 # Change — `scripts/lint.sh` lints the paths it is handed, instead of always walking the tree
@@ -112,6 +113,14 @@ without `--` (1 info on the named file vs the tree's 57 warnings), and the real 
 — the rtk hijack `tooling.md:96` documents, not a repo failure.
 
 In this repo `lint-on-edit.sh` only ever fires on `evals/*.ts`, `scripts/*.mjs` and
-`templates/check-agents-docs.mjs` — none of which agnix has rules for — so the practical win here is
-speed and a true contract, not new findings. The contract matters for repos scaffolded from
-`templates/`, where the same bullet is read by the same hook.
+`templates/check-agents-docs.mjs` — none of which agnix has rules for — so the win here is a true
+contract, not new findings. The contract matters for repos scaffolded from `templates/`, where the
+same bullet is read by the same hook.
+
+**Corrected at land time: the speed argument was wrong, and the shape and the early Notes both made
+it.** Measured on this repo, the full walk is **0.395s** and the hook's scoped path is **1.898s** —
+`pnpm`'s startup dominates, and agnix's walk is trivially cheap once `.inspirations/**` is excluded.
+Scoping buys no measurable time here. It was worth doing anyway, on the contract alone; but "every
+edit pays for a full-tree walk" was an assumption nobody had timed, and it survived a shape, three
+task commits and a review before anyone did. **The general trap: a performance premise stated in a
+`## Goal` is load-bearing prose that no gate checks.**

@@ -1,6 +1,6 @@
 ---
 change: lint-sh-ignores-the-file-path-lint-on-edit-appends
-branch: unclaimed
+branch: lint-sh-ignores-the-file-path-lint-on-edit-appends
 created: 2026-08-15
 status: shaping
 ---

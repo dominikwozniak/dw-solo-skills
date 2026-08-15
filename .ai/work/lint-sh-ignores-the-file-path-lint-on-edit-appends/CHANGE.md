@@ -2,7 +2,7 @@
 change: lint-sh-ignores-the-file-path-lint-on-edit-appends
 branch: lint-sh-ignores-the-file-path-lint-on-edit-appends
 created: 2026-08-15
-status: shaping
+status: building
 ---
 
 # Change — `scripts/lint.sh` lints the paths it is handed, instead of always walking the tree
@@ -32,7 +32,7 @@ full-tree walk into a single-file check. Verified by a new `scripts/tests/lint.t
 
 ## Tasks
 
-- [ ] 1. Forward arguments in `scripts/lint.sh`, defaulting to `.` when none are given, and drop the
+- [x] 1. Forward arguments in `scripts/lint.sh`, defaulting to `.` when none are given, and drop the
       hardcoded `.` from `lint:fix` in `package.json`. Must be bash 3.2 safe: `set -u` plus an empty
       `"$@"` is an unbound-variable error on macOS's system bash, so branch on `$#` into an array
       rather than expanding `"$@"` bare.
@@ -63,6 +63,12 @@ full-tree walk into a single-file check. Verified by a new `scripts/tests/lint.t
 Prior context: this was parked at shape time by `the-doc-layer-says-one-thing-once`
 (`.ai/archive/the-doc-layer-says-one-thing-once/CHANGE.md:124`) on the grounds that a docs change
 must not change lint behaviour. Task 3 is the other half of that entry finally landing.
+
+**Task 1:** `lint:fix` lost the dot outright rather than gaining a `"$@"` — `agnix`'s own
+`[PATHS]... [default: .]` already walks the tree when handed nothing, so `agnix --fix` covers both
+the bare and the pathed call with no wrapper. Only `lint` needs a script, and only because of the
+`terminated abnormally` grep. Scoping confirmed against the real binary: bare is 57 warnings,
+`skills/dw-next/SKILL.md` is 1 info message.
 
 In this repo `lint-on-edit.sh` only ever fires on `evals/*.ts`, `scripts/*.mjs` and
 `templates/check-agents-docs.mjs` — none of which agnix has rules for — so the practical win here is

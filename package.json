@@ -6,7 +6,7 @@
   "description": "The thin lane — Claude Code skills for repos only you read, distributed as an installable plugin marketplace.",
   "scripts": {
     "lint": "scripts/lint.sh",
-    "lint:fix": "agnix --fix .",
+    "lint:fix": "agnix --fix",
     "format": "prettier --check .",
     "format:fix": "prettier --write .",
     "validate:manifests": "scripts/validate-manifests.sh",

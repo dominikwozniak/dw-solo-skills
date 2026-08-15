@@ -6,10 +6,9 @@
 # this script that hardcoded `.` swallowed that argument and walked the whole tree on every single
 # edit — slow, exposed to the OOM below, and a silent lie about what the root file claims.
 #
-# NOTE: agnix's `exclude` list in .agnix.toml governs the project walk ONLY. A path handed over
-# explicitly is linted regardless of the excludes, which is why .husky/pre-commit filters templates/
-# out of the staged set before handing it over. This script deliberately does no such filtering: an
-# explicitly named path is an explicit request, and silently dropping arguments is the bug above.
+# This script filters nothing on the way through: an explicitly named path is an explicit request,
+# and silently dropping arguments is the bug above. Before assuming a path you hand over is covered
+# by .agnix.toml's `exclude` list, read the NOTE there — .husky/pre-commit is where filtering lives.
 set -uo pipefail
 
 # Bash 3.2 (macOS system bash) errors on an empty `"$@"` under `set -u`, so pick the argv rather

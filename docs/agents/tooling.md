@@ -49,8 +49,8 @@ silently no-op**, and nothing says so. `/dw-doctor` is the check. `templates/hoo
 `typecheck-on-stop.sh`, deliberately not wired here — this repo has no typecheck.
 
 `lint-on-edit.sh` is no longer inert: `evals/*.ts` matches its `.ts/.tsx/.js/.jsx/.mjs/.cjs` filter,
-so every edit there runs the lint command over the whole tree (`scripts/lint.sh` ignores the file
-argument it is handed). Slow, and the OOM below applies. `.husky/pre-commit` is still the real gate.
+so every edit there runs the lint command over that one file — `scripts/lint.sh` forwards the path it
+is appended, and only walks the tree when handed nothing. `.husky/pre-commit` is still the real gate.
 
 ## The four declared bullets
 
@@ -100,7 +100,13 @@ declaration either, and each script names the tokens it rejects.
     `bash scripts/lint.sh` or `node_modules/.bin/agnix .`. CI has no rtk.
   - **It also OOMs locally.** `agnix` over the whole tree can die with "terminated abnormally" under
     memory pressure; `scripts/lint.sh` turns that into a hard error rather than a silent pass.
-    Re-run it, or lint only the staged paths the way `.husky/pre-commit` does. CI has the headroom.
+    Re-run it, or scope it — `pnpm lint <path>...` checks only those paths. CI has the headroom.
+    **But a scoped run is not a subset of the full one**, and this is the surprise: `.agnix.toml`'s
+    `exclude` list governs the project walk only, so a path named explicitly is linted even when the
+    walk skips it. `pnpm lint docs/agents/tooling.md` reports an error the bare run never sees
+    (`Agent file must have YAML frontmatter` — that directory is excluded for exactly that reason).
+    Scope to debug an OOM, not to decide whether a file is clean. Nothing automated hits this —
+    `lint-on-edit` filters to `.ts/.js` and `.husky/pre-commit` filters `templates/` itself.
   - **Both versions this repo pins live in one field, and three things have to line up for it to
     hold.** `devEngines.packageManager` states pnpm `11.18.0` and `devEngines.runtime` Node
     `24.16.0`; there is no `packageManager` field and no `.nvmrc` any more. (1) The **bootstrap on

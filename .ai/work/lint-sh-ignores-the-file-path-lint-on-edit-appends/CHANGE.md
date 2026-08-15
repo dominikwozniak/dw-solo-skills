@@ -36,7 +36,7 @@ full-tree walk into a single-file check. Verified by a new `scripts/tests/lint.t
       hardcoded `.` from `lint:fix` in `package.json`. Must be bash 3.2 safe: `set -u` plus an empty
       `"$@"` is an unbound-variable error on macOS's system bash, so branch on `$#` into an array
       rather than expanding `"$@"` bare.
-- [ ] 2. Add `scripts/tests/lint.test.sh` — a temp dir with a stub `node_modules/.bin/agnix` that
+- [x] 2. Add `scripts/tests/lint.test.sh` — a temp dir with a stub `node_modules/.bin/agnix` that
       records its argv, asserting: no args → `.`; one path → exactly that path; two paths → both, no
       `.`; a stub printing `terminated abnormally` still exits 1 even at exit code 0.
 - [ ] 3. Correct the docs the fix falsifies: `docs/agents/tooling.md:51–53` (the `lint-on-edit.sh`
@@ -69,6 +69,13 @@ must not change lint behaviour. Task 3 is the other half of that entry finally l
 the bare and the pathed call with no wrapper. Only `lint` needs a script, and only because of the
 `terminated abnormally` grep. Scoping confirmed against the real binary: bare is 57 warnings,
 `skills/dw-next/SKILL.md` is 1 info message.
+
+**Task 2:** the test was run against the pre-fix script before being trusted — reverting `lint.sh` to
+the hardcoded dot fails exactly the three argv cases (`one-path-forwarded`, `two-paths-forwarded`,
+`spaced-path-not-split`) and passes the other ten, which is the shape a regression test should have.
+Two cases beyond the shape earned their place: the spaced path (a `"$@"` that degrades to `$@` splits
+it, and nothing else would notice) and `NODE_OPTIONS` reaching the stub (dropping the memory bump
+looks harmless and re-opens the OOM). 13 cases, all green.
 
 In this repo `lint-on-edit.sh` only ever fires on `evals/*.ts`, `scripts/*.mjs` and
 `templates/check-agents-docs.mjs` — none of which agnix has rules for — so the practical win here is

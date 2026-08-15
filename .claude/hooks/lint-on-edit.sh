@@ -14,11 +14,12 @@
 # what the file says. Before that was handled, the honest value a repo without a
 # linter writes was `eval`ed as a command and failed on every single edit.
 #
-# There is no package.json scripts.lint fallback: `pnpm lint` lints the whole
-# project, and this hook must lint one file. So on a repo with neither the
-# AGENTS.md line nor eslint, step 3 finds nothing and the hook exits 0 having
-# linted NOTHING — silently. Treat the "- **Lint command**:" bullet as
-# load-bearing, not decorative.
+# There is no package.json scripts.lint fallback: a `lint` script is free to walk
+# the whole project and ignore an appended path, and this hook must lint one file.
+# A DECLARED Lint command is a promise that it accepts one; a script found by
+# guessing promises nothing. So on a repo with neither the AGENTS.md line nor
+# eslint, step 3 finds nothing and the hook exits 0 having linted NOTHING —
+# silently. Treat the "- **Lint command**:" bullet as load-bearing, not decorative.
 # Exits 0 on success, 2 + stderr on lint failure so Claude self-corrects.
 
 set -uo pipefail

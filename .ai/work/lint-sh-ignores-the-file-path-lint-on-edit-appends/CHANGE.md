@@ -92,6 +92,25 @@ about an arbitrary target repo, not about this one — editing it would be a pay
 plugin bump, for a sentence that has not become false. No manifest bump in this change: `scripts/`
 and `docs/agents/` are repo tooling, and `.husky/pre-commit` is repo-local, none of them payload.
 
+**`dw-check` (bare, self-review) — no correctness findings, two fit findings, both shipped:**
+
+- The header added in task 1 made `scripts/lint.sh` a **third** home for "an exclude governs the
+  project walk only" — after `.agnix.toml`'s NOTE and `.husky/pre-commit`'s local restatement. Landed
+  one commit after `43c367c`, the change whose entire subject is that a fact lives in exactly one
+  file. Trimmed to what the script owns, plus a pointer. **The trap generalises: a header written to
+  explain a fix is the easiest place to re-copy a fact, because at that moment restating it feels
+  like context rather than duplication.**
+- `templates/hooks/lint-on-edit.sh:17` said `pnpm lint` lints the whole project — true of an
+  arbitrary target repo, no longer true of this one, and this repo is an instance of what the
+  template scaffolds. Reworded to the claim that survives: a **declared** Lint command is a promise
+  it accepts a path, a script found by guessing is not. `.claude/hooks/` re-synced (`cmp`-identical,
+  `hooks-in-sync` 33/33) and `dw-solo-setup` bumped `0.1.21` → `0.1.22` in both manifests.
+
+**Contract verified end to end, not just unit-tested:** `pnpm lint <path>` forwards through pnpm
+without `--` (1 info on the named file vs the tree's 57 warnings), and the real hook fed a real
+`Write` event for `evals/routing.ts` exits 0. Locally `pnpm lint` must be run as `rtk proxy pnpm lint`
+— the rtk hijack `tooling.md:96` documents, not a repo failure.
+
 In this repo `lint-on-edit.sh` only ever fires on `evals/*.ts`, `scripts/*.mjs` and
 `templates/check-agents-docs.mjs` — none of which agnix has rules for — so the practical win here is
 speed and a true contract, not new findings. The contract matters for repos scaffolded from

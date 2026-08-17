@@ -4,7 +4,7 @@ branch: start-builds-and-next-builds-by-default
 created: 2026-08-17
 status: landed # shaping | building | landed | rejected
 landed: 2026-08-17
-pr: "#TBD"
+pr: "#35"
 ---
 
 # Change — dw-start flows into the build; dw-next builds by default

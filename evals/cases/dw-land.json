@@ -23,7 +23,8 @@
     },
     {
       "prompt": "push it and open the pull request",
-      "owner": "dw-git"
+      "owner": "dw-git",
+      "note": "Load-bearing since dw-land started ending with an open PR: the closing pass owns the PR of a change it just graded, never a bare push-and-PR. Adding \"open\" to dw-land's description diluted the only term dw-git matched here and handed this prompt to dw-shape — fixed by dw-git's description naming \"pull request\" instead of \"PR\"."
     },
     {
       "prompt": "record the goal and the steps for a feature I have not started yet",

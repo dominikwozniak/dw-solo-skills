@@ -17,3 +17,9 @@ Artifacts are real work documents, committed with the code — not scratch.
 - **The promotion commit lands on the feature branch**, so a squash-merge carries it to the default
   branch — as it does the change folder's move to `.ai/archive/<slug>/`, which is the same commit. What
   gets promoted where is `CONTEXT.md`'s **Promotion** entry.
+- **A work doc can come back from the dead, and the archive twin is how you tell.** Where the shaping
+  commit was still local-only when the PR squashed, the rebase replays it on top of the squash and
+  re-creates `.ai/work/<slug>/CHANGE.md` at its shaping-time state, for a change that has landed. Both
+  halves of the pair then exist, and the `work/` one is the stale half — the check is whether
+  `.ai/archive/<slug>/` is already there, never the date or the `status:`. `dw-ship` sweeps it as its
+  last step; the procedure is there.

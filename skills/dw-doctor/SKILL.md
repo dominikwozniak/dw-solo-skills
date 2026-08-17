@@ -58,7 +58,7 @@ assumed:
   plugin/version-sync glance.
 - Tool presence on `PATH` via `command -v`: `git`, `jq`, `gh`, `codex`, `node`, `pnpm`, and the
   project-local `agnix` / `prettier` / `tsc` binaries. `codex` is WARN-tier and **never** FAIL — the
-  loop works without it, only `dw-check`'s outside reviewer and `dw-ship`'s rescue route degrade —
+  loop works without it, only `dw-check`'s outside reviewer and `dw-land`'s review offer on the PR degrade —
   and the check stops at "installed": probing auth would mean a network call from a read-only
   diagnostic.
 

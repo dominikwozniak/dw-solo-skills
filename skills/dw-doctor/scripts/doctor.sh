@@ -68,10 +68,10 @@ group "Optional tools"
 if have gh; then
   report ok "gh" "$(gh --version 2>/dev/null | head -n1)"
 else
-  report warn "gh" "absent — dw-git PRs and dw-ship merges need it. Install: brew install gh"
+  report warn "gh" "absent — dw-land PRs and dw-ship merges need it. Install: brew install gh"
 fi
 # Codex is the only companion the skills route to by name — dw-check delegates an outside review to
-# it, dw-ship reaches for it on a stuck merge. WARN tier and never FAIL: the whole loop works without
+# it, and dw-land offers it on the PR when the change skipped dw-check. WARN tier and never FAIL: the whole loop works without
 # it, only those two routes degrade. Depth stops at "installed": probing auth would mean a network
 # call from a read-only diagnostic, and a logged-out codex is the user's business, not this script's.
 codex_plugin=""
@@ -88,7 +88,7 @@ elif have codex; then
 elif [ -n "$codex_plugin" ]; then
   report warn "codex" "plugin installed but the codex CLI is not on PATH; fix: /codex:setup"
 else
-  report warn "codex" "absent — dw-check's outside reviewer and dw-ship's rescue route need it; fix: /codex:setup"
+  report warn "codex" "absent — dw-check's outside reviewer and dw-land's review offer on the PR need it; fix: /codex:setup"
 fi
 
 # --- JavaScript / TypeScript (only if package.json) ---------------------------

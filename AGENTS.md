@@ -37,13 +37,13 @@ absolute. Why it works, and what a plugin must own for it to keep working:
 
 ```
 dw-grill? → dw-shape → dw-start? → dw-next ↺ → dw-check? → dw-land → dw-ship
-  fuzzy      plan it    worktree     build        gate       close     merge
+  fuzzy      plan it    worktree     build        gate      close+PR    merge
 ```
 
-`?` marks the opt-in steps. The mandatory spine is `dw-shape → dw-next → dw-ship`; a small serial
-change never leaves the default branch, and `dw-ship` runs the closing pass itself when the change
-doc is still there — so a finished change needs one command. Skills connect through artifacts, never
-a forced sequence.
+`?` marks the opt-in steps. The mandatory spine is `dw-shape → dw-next → dw-land → dw-ship`; a small
+serial change never leaves the default branch. Closing takes the last two, **one decision each**:
+`dw-land` grades the diff and, on your go, promotes, archives and opens the PR; `dw-ship` merges it.
+Skills connect through artifacts, never a forced sequence.
 
 ## Commands
 

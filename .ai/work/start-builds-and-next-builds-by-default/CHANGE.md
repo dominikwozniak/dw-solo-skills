@@ -1,6 +1,6 @@
 ---
 change: start-builds-and-next-builds-by-default
-branch: unclaimed
+branch: start-builds-and-next-builds-by-default
 created: 2026-08-17
 status: shaping # shaping | building | landed | rejected
 ---

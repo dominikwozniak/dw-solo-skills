@@ -1,60 +1,55 @@
 ---
 name: dw-start
 description: >-
-  Open a shaped change for building: create its worktree and branch, enter it, and claim the change
-  by writing the branch into its `CHANGE.md`. Bare lists what's unclaimed. Explicit-invoke only —
-  creating branch topology is your call, never the model's.
-argument-hint: "bare lists the unclaimed changes · <slug> opens that one · a description shapes it first"
+  Open a shaped change and build it: create its worktree and branch, claim the change by writing the
+  branch into its `CHANGE.md`, install, then hand straight to `dw-next`, which builds every task.
+  Bare lists what's unclaimed. Explicit-invoke only — creating branch topology is your call, never
+  the model's.
+argument-hint: "bare lists the unclaimed changes · <slug> opens and builds that one · a description shapes it first"
 disable-model-invocation: true
 ---
 
-# dw-start — a worktree per change, claimed before building
+# dw-start — a worktree per change, built as soon as it's claimed
 
-Mechanics plus one field write: a shaped change gets its own worktree and branch, so several run at
-once, each in its own session reading its own `CHANGE.md` from disk. The thinking already happened in
-`dw-shape`; the building happens in `dw-next`.
+Mechanics plus one field write, then straight into the build: a shaped change gets its own worktree
+and branch, the claim is committed, and `dw-next` takes over. The approved `CHANGE.md` from
+`dw-shape` was the checkpoint — nothing here asks again.
 
 ## What it reads and writes
 
 Reads `.ai/work/*/CHANGE.md` (written by `dw-shape`) to find the unclaimed changes. Writes exactly
-one thing: the chosen change's `branch:` flips from `unclaimed` to the new branch — the **claim** —
-committed immediately. `.ai/` is tracked in git, and an uncommitted claim is invisible to every
-other session, which is the race this protocol closes.
+one thing itself: the chosen change's `branch:` flips from `unclaimed` to the new branch — the
+**claim** — committed immediately. `.ai/` is tracked in git, and an uncommitted claim is invisible
+to every other session, which is the race this protocol closes. Everything after that is
+`dw-next`'s.
 
 ## Workflow
 
 ### 1. Pick the change
 
-- `$ARGUMENTS` names a slug → that change.
+- `$ARGUMENTS` names a slug → that change — but if its `branch:` is no longer `unclaimed`, say
+  which branch owns it and **stop**: stealing a change is the user's edit to make, never yours.
 - Bare → list every `CHANGE.md` with `branch: unclaimed`, newest first, and ask.
 - A description with no shaped change behind it → shape first: offer `dw-shape` here in the main
   tree, then come back.
 
-### 2. Check it isn't taken
-
-Taken means any of: its `branch:` is no longer `unclaimed`; a branch named `<slug>` or
-`worktree-<slug>` already exists (`git branch --list`); a worktree already sits at
-`.claude/worktrees/<slug>` (`git worktree list`). If taken, say which branch owns it and **stop** —
-stealing a change is the user's edit to make, never yours.
-
 Then confirm the doc is committed: `git status --porcelain .ai/work/<slug>/`. A worktree checks out
 committed state only — if `dw-shape`'s commit step was skipped, do it now, the way `dw-git` does.
 
-### 3. Create and enter
+### 2. Create and enter
 
 ```bash
 bash "${CLAUDE_PLUGIN_ROOT}/scripts/worktree.sh" create <slug>
 ```
 
-prints the new worktree's absolute path: `.claude/worktrees/<slug>`, branch `<slug>`, based on the
-main tree's current HEAD — so run it while the main tree sits on the default branch. Enter the
+Run it from the main tree while it sits on the default branch. The script refuses everything
+already started — a branch named `<slug>` locally **or on origin**, a worktree already at
+`.claude/worktrees/<slug>` — so a refusal means report and stop, never retry. On stdout it prints
+the worktree's absolute path and nothing else; **everything it says on stderr is for you to act
+on**: which `.worktreeinclude` files it copied in, and what the worktree still needs. Enter the
 worktree (the EnterWorktree tool where the session offers it, else `cd` to the printed path).
 
-On stdout it prints the path and nothing else. **Everything it says on stderr is for you to act on**:
-which `.worktreeinclude` files it copied in, and what the worktree still needs. Agent memory needs no
-mention at all — it lives in tracked `AGENTS.md`, which the checkout delivers unaided.
-
-### 4. Claim, then install
+### 3. Claim, then install
 
 - In the worktree, flip the change's `branch: unclaimed` to the verbatim output of
   `git rev-parse --abbrev-ref HEAD`, change nothing else, and commit that one edit — the way
@@ -66,11 +61,14 @@ mention at all — it lives in tracked `AGENTS.md`, which the checkout delivers 
   the pre-commit gate without printing a thing**. Committing before installing produces
   unformatted, unlinted commits that look fine.
 
-### 5. Report, and the parallel recipe
+### 4. Build — and the parallel recipe
 
-Say which change is open where, and what its first task is. For each change still unclaimed, print
-the recipe: **new terminal → `claude -w <slug>`**, run while the main tree is on the default branch
-(the branch will be `worktree-<slug>`, a spelling the loop's claim matching strips) — then
-`dw-next` in that session offers the claim.
+If other changes are still unclaimed, first print the recipe for each: **new terminal →
+`claude -w <slug>`**, run while the main tree is on the default branch (the branch will be
+`worktree-<slug>`, a spelling the loop's claim matching strips) — then `dw-next` in that session
+offers the claim.
 
-**Next:** `dw-next` to build the first task.
+Then invoke `dw-next` bare and let it run: report, then every remaining task, one commit each,
+stopping only at a decision or an irreversible step.
+
+**Next:** `dw-check` for a look at what got built, or `dw-land` once the boxes are all ticked.

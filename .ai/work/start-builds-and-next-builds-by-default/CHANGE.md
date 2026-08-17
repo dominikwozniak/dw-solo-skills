@@ -25,7 +25,7 @@ tasks; `status` is the cheap resume; `go` builds one.
 ## Tasks
 
 - [x] 1. `skills/dw-next/SKILL.md`: modes — bare = report, then build all remaining tasks; `status` = report and stop; `go` = one task; new argument-hint; unchanged: one commit per task, stop at a decision or an irreversible step.
-- [ ] 2. `skills/dw-start/SKILL.md`: after claim+install, enter the worktree and invoke dw-next; cut the taken-check prose to the cases the script can't refuse; print the `claude -w <slug>` recipe only when other unclaimed changes remain.
+- [x] 2. `skills/dw-start/SKILL.md`: after claim+install, enter the worktree and invoke dw-next; cut the taken-check prose to the cases the script can't refuse; print the `claude -w <slug>` recipe only when other unclaimed changes remain.
 - [ ] 3. `scripts/runtime/worktree.sh` create: also refuse when `git ls-remote --heads origin <slug>` finds the branch on origin (best-effort when origin is unreachable); closes the absorbed backlog entry.
 - [ ] 4. `evals/cases/dw-next.json`: "what's next / where were we" prompts still route — the description keeps the resume story via `status`; corpus baseline only on net growth (aim for a shrink); bump `plugins/dw-solo` + `marketplace.json`.
 

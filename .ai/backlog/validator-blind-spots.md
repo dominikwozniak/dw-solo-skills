@@ -12,7 +12,10 @@ rather than in the validator. Write the fixture alongside it — `717f1e5` is pr
 silently while broken. Detail: `.ai/archive/skill-routing-evals`.
 
 Hit again by `the-doc-layer-says-one-thing-once`, which edited `templates/` in two rounds and bumped
-`dw-solo-setup` by hand both times — twice relying on the reader the check cannot be.
+`dw-solo-setup` by hand both times — twice relying on the reader the check cannot be. And again by
+`start-builds-and-next-builds-by-default`: `scripts/runtime/worktree.sh` and three skill bodies moved,
+`dw-solo` and `dw-solo-extras` were both bumped by hand, and the check would have stayed green had
+either been forgotten.
 
 This entry was three bullets. `de-ratchet-the-solo-lane` closed the other two: the hardcoded
 `awk -F'|' '{print $4}'` Arguments-cell index went with the column, and the decision-record contract no

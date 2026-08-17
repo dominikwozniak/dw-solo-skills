@@ -2,7 +2,9 @@
 change: land-opens-the-pr-and-ship-only-merges
 branch: land-opens-the-pr-and-ship-only-merges
 created: 2026-08-17
-status: building # shaping | building | landed | rejected
+status: landed # shaping | building | landed | rejected
+landed: 2026-08-17
+pr: "#34"
 ---
 
 # Change — dw-land ends with an open PR; dw-ship only merges, cleans and syncs

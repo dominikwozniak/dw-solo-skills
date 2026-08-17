@@ -84,6 +84,15 @@ declaration either, and each script names the tokens it rejects.
   as the thing that would have caught something, check whether it gates: `severity` sets a reporting
   floor, and `[[overrides]]` can only _disable_ a rule for a glob, never turn its threshold down. That
   is why the corpus ratchet is its own checker rather than a tuned `AS-012`.
+  - **The consequence: one real error hides in the wall of warnings, and markdown you read as code can
+    be the source of it.** The unclosed-XML-tag rule counts backticks **per line**, so an
+    angle-bracketed placeholder is exempt only while its code span opens and closes on the same line.
+    Hand-wrap an _earlier_ span across the newline and the following line is left with odd parity — the
+    placeholder on it is then read as bare prose and errors. It cost a diagnosis here: a placeholder
+    inside what looked like a code span in a `CHANGE.md` note, found only by capturing the raw output
+    and grepping it, because the summary line above it counts warnings you have already learned to
+    skip. Verified both ways against fixtures. Read the **exit code**, never the tally, and keep such a
+    span short enough that it never needs wrapping.
 - **A new check needs a new `paths:` entry, or it never runs on the commit shape it exists to
   catch.** Every workflow here is path-filtered, so a check added to an existing script inherits that
   script's triggers — the paths the _old_ checks cared about. It has bitten repeatedly, and both

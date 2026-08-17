@@ -2,7 +2,8 @@
 change: check-delegates-to-codex-by-default
 branch: check-delegates-to-codex-by-default
 created: 2026-08-17
-status: building # shaping | building | landed | rejected
+landed: 2026-08-17
+status: landed # shaping | building | landed | rejected
 ---
 
 # Change — bare dw-check delegates to codex, with a triviality floor

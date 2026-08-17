@@ -34,6 +34,10 @@ in [`AGENTS.md`](AGENTS.md) and the procedures in the skills themselves.
   Never `origin/` by reflex: whichever of the two contains the other wins, and local is the default,
   because a local branch that is _ahead_ (an unpushed `chore: shape …` commit) makes `origin/` pull
   commits the branch didn't write into the diff. Resolved once, in `dw-git`.
+- **Triviality floor** — the diff size below which `dw-check` self-reviews instead of handing the diff
+  to an outside reviewer. The `codex` argument overrides it, and overrides nothing else; a missing
+  reviewer is not something it can override. The numbers live in the skill, not here. Set by
+  [`0012`](docs/decisions/0012-bare-dw-check-delegates-by-default.md).
 - **Absorption bar** — the second test a backlog entry must clear: if doing it costs less than
   describing it, it belongs to the change that found it. Joins the month bar (_will you ever?_),
   which tests only whether the idea is worth queueing at all.

@@ -23,6 +23,18 @@ that change's doing. `"what is still unticked on the change I am in the middle o
 because no description carries "unticked"; the description it lost to previously said **"unchecked"**
 and still lost, which is precisely a `DERIVATIONAL` question rather than a vocabulary one.
 `"where did we leave off on this"` finds no discriminating term at all. Adding either word verbatim
-would lift rank-1 to 22/30 while gaming the eval — `evals/cases/dw-next.json` keeps its positives as
+would lift rank-1 to 23/31 while gaming the eval — `evals/cases/dw-next.json` keeps its positives as
 paraphrases on purpose — so the fix has to come from the stem table or not at all. Findings:
 `.ai/archive/start-builds-and-next-builds-by-default`.
+
+`check-delegates-to-codex-by-default` adds two more cases and, more usefully, a **contrast that splits
+the two failure classes this audit is trying to tell apart.** `dw-check`'s two failing positives are
+the stemming kind: `"give what I have written so far a once-over before I carry on"` loses to
+`dw-grill` and `"anything wrong with the code I just wrote? point me at the lines"` loses to `dw-next`,
+both identically before and after that change's description rewrite — verified the same way, against a
+`git archive` of `main`. But a candidate positive probed and rejected there is the **vocabulary** kind:
+`"have a second model go over this diff before I move on"` lands rank 3 because no description carries
+"second model" at all, while `"move on"` hands the prompt to `dw-next`. No stem table reaches that one.
+Run `--explain` on all three together — if the two that look like stemming failures also turn out to
+depend on nothing in `DERIVATIONAL`, the table is unimplicated by every case on file and the strip is
+safe. Findings: `.ai/archive/check-delegates-to-codex-by-default`.

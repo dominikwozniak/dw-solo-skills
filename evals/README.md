@@ -155,24 +155,24 @@ or at a diff. Distant pairs pass without telling anyone anything.
 **Rank-1 is computed only among skills the model can actually be offered.** An explicit-invoke skill
 scoring higher is reported on its own `shadowed` column as overlap, not counted as a failure —
 failing a prompt over a loss that cannot happen would make the number meaningless. `dw-git` alone is
-shadowed on three of five prompts by `dw-ship` and `dw-start`, which own "PR" and "branch".
+shadowed on two of five prompts by `dw-ship` and `dw-start`, which own "PR" and "branch".
 
-## Measured baseline — 2026-08-02
+## Measured baseline — 2026-08-17
 
-Corpus of 11 skills, 4 of them explicit-invoke. **rank-1 20/30 = 67%**, yields 21/21, 9 shadowed.
+Corpus of 11 skills, 4 of them explicit-invoke. **rank-1 20/30 = 67%**, yields 21/21, 7 shadowed.
 
 | skill       | rank-1 | yields | shadowed |
 | ----------- | ------ | ------ | -------- |
 | `dw-grill`  | 4/4    | 3/3    | 0        |
-| `dw-land`   | 4/4    | 3/3    | 1        |
+| `dw-land`   | 4/4    | 3/3    | 0        |
 | `dw-doctor` | 3/4    | 3/3    | 1        |
 | `dw-shape`  | 3/5    | 3/3    | 2        |
 | `dw-check`  | 2/4    | 3/3    | 1        |
-| `dw-git`    | 2/5    | 3/3    | 3        |
+| `dw-git`    | 2/5    | 3/3    | 2        |
 | `dw-next`   | 2/4    | 3/3    | 1        |
 
-Closest description pairs, of 55 scanned: `dw-ship ↔ dw-start` 0.206, `dw-land ↔ dw-ship` 0.199,
-`dw-handoff ↔ dw-next` 0.166. Nothing is near the thresholds, so treat the collision check as a
+Closest description pairs, of 55 scanned: `dw-land ↔ dw-ship` 0.224, `dw-ship ↔ dw-start` 0.143,
+`dw-next ↔ dw-start` 0.137. Nothing is near the thresholds, so treat the collision check as a
 tripwire and watch the top number creep rather than waiting for it to fire.
 
 67% is not a target, it is where the descriptions are today. The two standing weaknesses behind it:

@@ -26,7 +26,7 @@ inside dw-ship, no ship→land→ship round trip.
 - [x] 1. `skills/dw-land/SKILL.md`: after the close commit, same go: `git push -u` + `gh pr create` via dw-git, report ends with the PR link; default-branch path closes artifacts only and points Next at ship/push; rewrite the "shipping … belongs to dw-ship" disclaimer (merge still does).
 - [x] 2. `skills/dw-ship/SKILL.md`: strip push/PR/HARD STOP; new flow — refuse while a `CHANGE.md` matches this branch ("run /dw-land first", stop, no come-back promise) → `gh pr checks` → `gh pr merge --squash --title "<PR title>"` → ExitWorktree → `worktree.sh remove` → `git pull` on default → sweep a resurrected `.ai/work/<slug>/` → report; default-branch fast path = `git push`. Fix the frontmatter drift and the argument-hint.
 - [x] 3. Docs in the same breath: `AGENTS.md` loop paragraph (closing = `dw-land → dw-ship`, one decision each; drop "runs the closing pass itself"), `docs/agents/change-artifacts.md`, `CONTEXT.md` (Completion gate/Archive: PR opens at land, checks settle at ship; rejected ≡ cancelled), `.ai/archive/README.md` status note.
-- [ ] 4. `evals/cases/dw-land.json` reviewed against the new description; `pnpm eval:routing` ≥ 67; corpus baseline updated only on net growth; bump `plugins/dw-solo` + `marketplace.json`.
+- [x] 4. `evals/cases/dw-land.json` reviewed against the new description; `pnpm eval:routing` ≥ 67; corpus baseline updated only on net growth; bump `plugins/dw-solo` + `marketplace.json`.
 
 ## Anchors
 
@@ -70,6 +70,22 @@ one-command promise), and `dw-doctor`'s three codex/`gh` strings — those now n
 where the `/codex:review` offer moved, so dw-land gained the clause that makes them true. The `rejected
 ≡ cancelled` decision also needed a home in a **skill**, not only in the two READMEs: `dw-land
 reject`'s first line now says both cases.
+
+**Task 4.** The eval broke on a prompt belonging to **neither** edited skill, and the mechanism is
+worth keeping: `dw-shape` stole `dw-git`'s "stage what I have and open a pull request against main"
+because putting **open** in dw-land's description raised that term's document frequency, and `open`
+was the only vocabulary word dw-git's description shared with the prompt at all — it said "open PR",
+never "pull request", so `pull` and `request` were scoring for `dw-shape` and `dw-grill`. Editing one
+skill's description reweights every other skill's, which no case file can localise. Fixed at the
+cause: dw-git's description now names "open a pull request" and "stage", which also cut its shadowed
+count 3 → 2. Rank-1 and negatives are back at base parity (20/30, 21/21) — verified by running the
+eval against a `git archive` of `08f5b69` in a scratch dir, since ROOT is fixed to the script's own
+tree.
+
+Corpus baseline re-recorded at 13857 (was 13458): net growth, per the task. `dw-solo-setup` is bumped
+alongside `dw-solo` — the shaped list named only the latter, but `dw-doctor` and `templates/` belong to
+setup, and `validate-manifests.sh` checks only that the two copies of a version are equal, never that
+either moved. The backlog now sits at 8/8, at the cap.
 
 `AGENTS.md` hit 120/120 lines on the first draft. What came back out was the sentence naming the
 land→ship window as where CI and review happen — a fact `dw-land` and `dw-ship` already state, so

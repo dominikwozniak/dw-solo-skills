@@ -2,7 +2,7 @@
 change: land-opens-the-pr-and-ship-only-merges
 branch: land-opens-the-pr-and-ship-only-merges
 created: 2026-08-17
-status: shaping # shaping | building | landed | rejected
+status: building # shaping | building | landed | rejected
 ---
 
 # Change — dw-land ends with an open PR; dw-ship only merges, cleans and syncs
@@ -23,7 +23,7 @@ inside dw-ship, no ship→land→ship round trip.
 
 ## Tasks
 
-- [ ] 1. `skills/dw-land/SKILL.md`: after the close commit, same go: `git push -u` + `gh pr create` via dw-git, report ends with the PR link; default-branch path closes artifacts only and points Next at ship/push; rewrite the "shipping … belongs to dw-ship" disclaimer (merge still does).
+- [x] 1. `skills/dw-land/SKILL.md`: after the close commit, same go: `git push -u` + `gh pr create` via dw-git, report ends with the PR link; default-branch path closes artifacts only and points Next at ship/push; rewrite the "shipping … belongs to dw-ship" disclaimer (merge still does).
 - [ ] 2. `skills/dw-ship/SKILL.md`: strip push/PR/HARD STOP; new flow — refuse while a `CHANGE.md` matches this branch ("run /dw-land first", stop, no come-back promise) → `gh pr checks` → `gh pr merge --squash --title "<PR title>"` → ExitWorktree → `worktree.sh remove` → `git pull` on default → sweep a resurrected `.ai/work/<slug>/` → report; default-branch fast path = `git push`. Fix the frontmatter drift and the argument-hint.
 - [ ] 3. Docs in the same breath: `AGENTS.md` loop paragraph (closing = `dw-land → dw-ship`, one decision each; drop "runs the closing pass itself"), `docs/agents/change-artifacts.md`, `CONTEXT.md` (Completion gate/Archive: PR opens at land, checks settle at ship; rejected ≡ cancelled), `.ai/archive/README.md` status note.
 - [ ] 4. `evals/cases/dw-land.json` reviewed against the new description; `pnpm eval:routing` ≥ 67; corpus baseline updated only on net growth; bump `plugins/dw-solo` + `marketplace.json`.
@@ -40,3 +40,14 @@ inside dw-ship, no ship→land→ship round trip.
 
 Land after or before the wave-1 siblings, rebasing over `marketplace.json` and the corpus baseline —
 those two files conflict across all three.
+
+**Task 1.** `pr:` cannot be written by the close commit any more — the PR doesn't exist until after
+it. Step 4 backfills it in a second one-line commit that the squash folds away, rather than pushing
+before the promotion commit to learn the number early; two pushes and a PR opened over an
+unpromoted diff cost more than one throwaway commit. Task 1 leaves the corpus +287 words over the
+baseline on its own; task 2's strip is what pays it back, so the ratchet is only green again for the
+final tree (`pnpm validate:artifacts` fails mid-change by design — pre-commit doesn't run it).
+
+Found while building: `pnpm lint <path>` misroutes to `eslint` in both trees, so `lint-on-edit` has
+been passing silently. Parked in `.ai/backlog/`, since which of the three layers to fix is a
+decision.

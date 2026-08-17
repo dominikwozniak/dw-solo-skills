@@ -8,6 +8,10 @@ date, the closed-unmerged `pr:` if there was one, and a `## Why rejected` sectio
 part of such a doc worth keeping. An idea rejected before it was ever shaped is written straight
 here, having never passed through `.ai/work/`.
 
+**`rejected` covers cancelled**, and there is deliberately no third status: work abandoned half-built
+archives the same way an idea turned down does. What killed it differs, which is what
+`## Why rejected` is for; nothing reads the frontmatter to tell the two apart.
+
 **History, not guidance** — nothing browses this folder for advice; the durable layer lives in
 `docs/decisions/`, `CONTEXT.md` and wherever the repo keeps its `## Gotchas`. It is reached by **exact slug**,
 never read in general: `dw-shape` treats a slug already here as taken, and when that doc is

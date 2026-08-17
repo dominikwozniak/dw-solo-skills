@@ -25,8 +25,9 @@ in [`AGENTS.md`](AGENTS.md) and the procedures in the skills themselves.
   makes a change **not ready**, never _ready with follow-ups_. Ticked boxes don't satisfy it; only
   the diff does, or a `## Goal` the user amends. One carve-out: a result that is **pending on the
   push** — unobservable at land time rather than undelivered, "CI is green" being the only real case —
-  closes **ready to merge** with that line attached, and `dw-ship` settles it where the checks are
-  readable. The bar is that the evidence cannot exist yet, never that gathering it is inconvenient.
+  closes **ready to merge** with that line attached. `dw-land`'s own push is what starts that run and
+  `dw-ship` reads it before merging. The bar is that the evidence cannot exist yet, never that
+  gathering it is inconvenient.
 - **Base ref** — which ref of the default branch a review diff is taken against, local or `origin/`.
   Never `origin/` by reflex: whichever of the two contains the other wins, and local is the default,
   because a local branch that is _ahead_ (an unpushed `chore: shape …` commit) makes `origin/` pull
@@ -35,7 +36,10 @@ in [`AGENTS.md`](AGENTS.md) and the procedures in the skills themselves.
   describing it, it belongs to the change that found it. Joins the month bar (_will you ever?_),
   which tests only whether the idea is worth queueing at all.
 - **Archive** — `.ai/archive/<slug>/`: landed change docs kept as history, not guidance. Nothing
-  reads them to decide anything; backlog entries may point at one for its findings.
+  reads them to decide anything; backlog entries may point at one for its findings. Two statuses end
+  up here and there is no third: `landed`, and **`rejected` ≡ cancelled** — one status for an idea
+  turned down and for work abandoned mid-build, since both leave the same thing behind (a
+  `## Why rejected`) and nothing downstream tells them apart.
 - **Task** — one ticked box in a `CHANGE.md`: a thin vertical slice, independently committable, leaving
   the project green. Not a layer ("add all the migrations" is not a task).
 - **Anchor** — a `path/to/file.rb:42` reference in a `CHANGE.md`. Orientation for a fresh session, never

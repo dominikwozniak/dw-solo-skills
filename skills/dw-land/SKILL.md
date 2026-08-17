@@ -158,7 +158,8 @@ what makes the build fail.
 
 The go that closed the change opens its PR: nothing here is irreversible — a pushed branch is
 deletable, an open PR closeable, the squash `dw-ship`'s — and CI and a second pair of eyes have
-nothing to look at until the PR exists.
+nothing to look at until the PR exists. Where the change skipped `dw-check`, the link is the moment to
+say so and offer `/codex:review --wait`; the window before the merge is what it is for.
 
 - **On the default branch there is no PR**, so closing the artifacts was the whole step. Point at
   `dw-ship`, whose fast path is the plain `git push` — irreversible, which is why it stays a separate
@@ -188,7 +189,8 @@ is the default.
   line and close — PR and all — without waiting for a go. One exception: a verdict that comes out **not ready**
   stops here too — report it and wait; closing over it takes an explicit word from a user who has
   seen it. Never close blind.
-- **`reject`** — the idea was turned down. Skip the verdict; there is no diff worth judging. Promote as
+- **`reject`** — the idea was turned down, or the work was abandoned half-built; one status covers
+  both. Skip the verdict; there is no diff worth judging. Promote as
   usual (a rejection still leaves follow-ups worth keeping), then archive with `status: rejected`,
   `rejected: YYYY-MM-DD` and `pr:` naming the **closed, unmerged** PR. The doc must carry a
   `## Why rejected` — what was tried, what killed it, what would justify revisiting — and **writing it

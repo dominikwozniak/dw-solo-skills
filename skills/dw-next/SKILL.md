@@ -126,4 +126,4 @@ was the checkpoint, so the default finishes it rather than waiting for a second 
 - **`status`** — report only, write nothing. The resume path, deliberately cheap.
 - **`go`** — report, then build exactly one task.
 
-**Next:** `dw-next` again for the following task, `dw-check` for a fast look mid-way, or `dw-land` once the boxes are all ticked.
+**Next:** `dw-next` again to resume after a stop — or for the next task in `go`, `dw-check` for a fast look mid-way, or `dw-land` once the boxes are all ticked.

@@ -159,7 +159,7 @@ shadowed on two of five prompts by `dw-ship` and `dw-start`, which own "PR" and 
 
 ## Measured baseline — 2026-08-17
 
-Corpus of 11 skills, 4 of them explicit-invoke. **rank-1 20/30 = 67%**, yields 21/21, 7 shadowed.
+Corpus of 11 skills, 4 of them explicit-invoke. **rank-1 21/31 = 68%**, yields 21/21, 7 shadowed.
 
 | skill       | rank-1 | yields | shadowed |
 | ----------- | ------ | ------ | -------- |
@@ -167,15 +167,15 @@ Corpus of 11 skills, 4 of them explicit-invoke. **rank-1 20/30 = 67%**, yields 2
 | `dw-land`   | 4/4    | 3/3    | 0        |
 | `dw-doctor` | 3/4    | 3/3    | 1        |
 | `dw-shape`  | 3/5    | 3/3    | 2        |
-| `dw-check`  | 2/4    | 3/3    | 1        |
+| `dw-check`  | 3/5    | 3/3    | 1        |
 | `dw-git`    | 2/5    | 3/3    | 2        |
 | `dw-next`   | 2/4    | 3/3    | 1        |
 
-Closest description pairs, of 55 scanned: `dw-land ↔ dw-ship` 0.224, `dw-ship ↔ dw-start` 0.143,
-`dw-next ↔ dw-start` 0.137. Nothing is near the thresholds, so treat the collision check as a
+Closest description pairs, of 55 scanned: `dw-land ↔ dw-ship` 0.227, `dw-ship ↔ dw-start` 0.145,
+`dw-next ↔ dw-start` 0.138. Nothing is near the thresholds, so treat the collision check as a
 tripwire and watch the top number creep rather than waiting for it to fire.
 
-67% is not a target, it is where the descriptions are today. The two standing weaknesses behind it:
+68% is not a target, it is where the descriptions are today. The two standing weaknesses behind it:
 
 - **`dw-git` has no synonyms.** "save what I have with a sensible message" and "park these edits
   somewhere" score _exactly zero_ against a description that lists the operations by their git names

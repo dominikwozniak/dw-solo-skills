@@ -1,6 +1,6 @@
 {
   "skill": "dw-check",
-  "note": "dw-check and dw-land both render a verdict over a diff. The whole distinction is timing — mid-build and repeatable versus once at the end, promoting residue — so the negatives put that boundary under load rather than picking distant skills.",
+  "note": "dw-check and dw-land both render a verdict over a diff. The whole distinction is timing — mid-build and repeatable versus once at the end, promoting residue — so the negatives put that boundary under load rather than picking distant skills. The outside-reviewer positive is here because delegation is now what bare does, so asking for one is a first-class way in and not a synonym for typing /codex:review.",
   "positives": [
     {
       "prompt": "give what I have written so far a once-over before I carry on"
@@ -13,6 +13,9 @@
     },
     {
       "prompt": "sanity-check the work in progress, I am halfway through and want a second opinion"
+    },
+    {
+      "prompt": "get an outside reviewer onto the change I am building"
     }
   ],
   "negatives": [

@@ -24,7 +24,7 @@ report stays.
 ## Tasks
 
 - [x] 1. `skills/dw-check/SKILL.md`: rewrite step 2 ("Delegate only when asked for it" → codex by default, floor, fallback); keep `codex` as the force argument; update argument-hint and description.
-- [ ] 2. `evals/cases/dw-check.json` reviewed; `pnpm eval:routing` ≥ 67; corpus baseline only on net growth; bump `plugins/dw-solo` + `marketplace.json`.
+- [x] 2. `evals/cases/dw-check.json` reviewed; `pnpm eval:routing` ≥ 67; corpus baseline only on net growth; bump `plugins/dw-solo` + `marketplace.json`.
 
 ## Anchors
 
@@ -47,3 +47,22 @@ report stays.
 - Trimmed the `/codex:review --wait` bullet mid-task: the first draft restated _dw-land's_ condition for
   offering it (a change that skipped `dw-check`), which is the second copy `skills-and-plugins.md`
   warns drifts. dw-check now states only its own moment — an open PR.
+- **The description rewrite is routing-neutral, measured rather than assumed.** Ran the eval against a
+  `git archive main` snapshot in a scratch tree (the technique
+  `.ai/archive/start-builds-and-next-builds-by-default/CHANGE.md` records): every per-skill number is
+  identical on both sides — dw-check 2/4, TOTAL 20/30 — and the two dw-check positives that fail
+  (`"give what I have written so far a once-over…"` loses to `dw-grill`; `"anything wrong with the code
+I just wrote?…"` loses to `dw-next`) fail identically on `main`. Pre-existing corpus weakness, not
+  this change's to fix. The new positive then took the suite to 21/31 = **68%**, a point above `main`.
+- **One candidate positive was probed and left out, deliberately.** `"have a second model go over this
+diff before I move on"` lands rank 3 at 0.049 — `"move on"` pulls `dw-next` to 0.230, and `"second
+model"` appears in no description. Adding it would put the suite at 21/32 = 66%, under the floor, for
+  that same pre-existing weakness. Named here rather than dropped silently. Not filed to the backlog:
+  the sibling change already declined the same entry pending a reason to raise the floor, and the list
+  sits at 7/8 — `dw-land` gets the call at promotion time, now with a second data point.
+- **`pnpm lint` lies in this environment.** Under the rtk command-rewriting hook it reports
+  `Command "eslint" not found` / `ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL`, which is nothing to do with this
+  repo — there is no `eslint` here and no `packages:` key in `pnpm-workspace.yaml`. `rtk proxy pnpm
+lint`, or `bash scripts/lint.sh <paths>`, runs the real agnix pass: 0 errors, 59 warnings, 14 info.
+  Worth knowing before debugging a lint failure that isn't one; candidate `## Gotchas` line for
+  `docs/agents/tooling.md`.

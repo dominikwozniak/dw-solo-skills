@@ -3,6 +3,7 @@ change: check-delegates-to-codex-by-default
 branch: check-delegates-to-codex-by-default
 created: 2026-08-17
 landed: 2026-08-17
+pr: "#36"
 status: landed # shaping | building | landed | rejected
 ---
 

@@ -1,6 +1,6 @@
 ---
 change: check-delegates-to-codex-by-default
-branch: unclaimed
+branch: check-delegates-to-codex-by-default
 created: 2026-08-17
 status: shaping # shaping | building | landed | rejected
 ---

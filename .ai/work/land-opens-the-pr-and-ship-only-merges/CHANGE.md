@@ -24,7 +24,7 @@ inside dw-ship, no ship→land→ship round trip.
 ## Tasks
 
 - [x] 1. `skills/dw-land/SKILL.md`: after the close commit, same go: `git push -u` + `gh pr create` via dw-git, report ends with the PR link; default-branch path closes artifacts only and points Next at ship/push; rewrite the "shipping … belongs to dw-ship" disclaimer (merge still does).
-- [ ] 2. `skills/dw-ship/SKILL.md`: strip push/PR/HARD STOP; new flow — refuse while a `CHANGE.md` matches this branch ("run /dw-land first", stop, no come-back promise) → `gh pr checks` → `gh pr merge --squash --title "<PR title>"` → ExitWorktree → `worktree.sh remove` → `git pull` on default → sweep a resurrected `.ai/work/<slug>/` → report; default-branch fast path = `git push`. Fix the frontmatter drift and the argument-hint.
+- [x] 2. `skills/dw-ship/SKILL.md`: strip push/PR/HARD STOP; new flow — refuse while a `CHANGE.md` matches this branch ("run /dw-land first", stop, no come-back promise) → `gh pr checks` → `gh pr merge --squash --title "<PR title>"` → ExitWorktree → `worktree.sh remove` → `git pull` on default → sweep a resurrected `.ai/work/<slug>/` → report; default-branch fast path = `git push`. Fix the frontmatter drift and the argument-hint.
 - [ ] 3. Docs in the same breath: `AGENTS.md` loop paragraph (closing = `dw-land → dw-ship`, one decision each; drop "runs the closing pass itself"), `docs/agents/change-artifacts.md`, `CONTEXT.md` (Completion gate/Archive: PR opens at land, checks settle at ship; rejected ≡ cancelled), `.ai/archive/README.md` status note.
 - [ ] 4. `evals/cases/dw-land.json` reviewed against the new description; `pnpm eval:routing` ≥ 67; corpus baseline updated only on net growth; bump `plugins/dw-solo` + `marketplace.json`.
 
@@ -51,3 +51,15 @@ final tree (`pnpm validate:artifacts` fails mid-change by design — pre-commit 
 Found while building: `pnpm lint <path>` misroutes to `eslint` in both trees, so `lint-on-edit` has
 been passing silently. Parked in `.ai/backlog/`, since which of the three layers to fix is a
 decision.
+
+**Task 2.** `argument-hint` is **deleted**, not rewritten: with `pr` gone the skill takes no
+arguments, and agnix warns on a hint whose body never reads `$ARGUMENTS`. The sweep's mechanism is
+narrower than "squash-merge resurrects work docs" — `73e003a`/`9eef63d` say it exactly: a shaping
+commit still **local-only** when its PR squashes gets replayed on top of the squash by
+`git pull --rebase`. So the sweep matches on the `.ai/archive/<slug>/` twin, not on the shipped
+slug — one shaping commit can carry several changes (this repo's `08f5b69` carries three) and the
+siblings' docs are live work. The strip did not shrink dw-ship: −HARD STOP/−PR path is roughly
++sweep, ending +70 words.
+
+Also stale now, for task 3: `dw-doctor`'s two codex lines (`SKILL.md:61`, `scripts/doctor.sh:74,91`)
+credit `dw-ship` with a review/rescue route the strip removed.

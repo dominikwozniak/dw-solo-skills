@@ -42,9 +42,10 @@ committed state only — if `dw-shape`'s commit step was skipped, do it now, the
 bash "${CLAUDE_PLUGIN_ROOT}/scripts/worktree.sh" create <slug>
 ```
 
-Run it from the main tree while it sits on the default branch. The script refuses everything
-already started — a branch named `<slug>` locally **or on origin**, a worktree already at
-`.claude/worktrees/<slug>` — so a refusal means report and stop, never retry. On stdout it prints
+Run it from the main tree while it sits on the default branch. The script refuses every start it can
+see — a branch named `<slug>` or `worktree-<slug>`, locally **or on origin**, and a worktree already
+at `.claude/worktrees/<slug>` — so a refusal means report and stop, never retry. A claimed
+`branch:` field is the one start it cannot see, which is why step 1 checks it. On stdout it prints
 the worktree's absolute path and nothing else; **everything it says on stderr is for you to act
 on**: which `.worktreeinclude` files it copied in, and what the worktree still needs. Enter the
 worktree (the EnterWorktree tool where the session offers it, else `cd` to the printed path).

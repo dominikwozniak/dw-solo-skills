@@ -50,9 +50,14 @@ unpromoted diff cost more than one throwaway commit. Task 1 leaves the corpus +2
 baseline on its own; task 2's strip is what pays it back, so the ratchet is only green again for the
 final tree (`pnpm validate:artifacts` fails mid-change by design — pre-commit doesn't run it).
 
-Found while building: `pnpm lint <path>` misroutes to `eslint` in both trees, so `lint-on-edit` has
-been passing silently. Parked in `.ai/backlog/`, since which of the three layers to fix is a
-decision.
+Found while building, and **wrong** — recorded because the way it was wrong is the useful part. Every
+`pnpm lint` invocation in the session shell died on `Command "eslint" not found`, which read as a
+broken **Lint command** bullet and a `lint-on-edit` hook that had been passing silently; it went to
+`.ai/backlog/` and into the `dw-check` report as a finding. It was the session's own `rtk` command
+rewriting, outside the repo entirely: `rtk proxy pnpm run lint` runs agnix exactly as declared. The
+entry was deleted at ship time, which is also what cleared the CI error it had introduced. **A tool
+failure in the agent's shell is not a finding about the repo** — the check that settles it is one
+invocation through a different path, before anything is queued.
 
 **Task 2.** `argument-hint` is **deleted**, not rewritten: with `pr` gone the skill takes no
 arguments, and agnix warns on a hint whose body never reads `$ARGUMENTS`. The sweep's mechanism is
@@ -87,7 +92,7 @@ tree.
 Corpus baseline re-recorded at 13857 (was 13458): net growth, per the task. `dw-solo-setup` is bumped
 alongside `dw-solo` — the shaped list named only the latter, but `dw-doctor` and `templates/` belong to
 setup, and `validate-manifests.sh` checks only that the two copies of a version are equal, never that
-either moved. The backlog now sits at 8/8, at the cap.
+either moved. The backlog went to 8/8 and back to 7/8 when the false entry above was deleted.
 
 `AGENTS.md` hit 120/120 lines on the first draft. What came back out was the sentence naming the
 land→ship window as where CI and review happen — a fact `dw-land` and `dw-ship` already state, so

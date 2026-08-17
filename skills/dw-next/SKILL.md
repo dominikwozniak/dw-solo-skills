@@ -2,11 +2,11 @@
 name: dw-next
 description: >-
   The solo lane's build step and its resume point in one skill. Bare, it reports where the active
-  `.ai/work/<slug>/CHANGE.md` stands and what the next unchecked task is — read from disk, so it
-  survives a `/clear`. With `go` it builds that task and commits. Use when picking work back up or
-  moving it forward, or when someone says "what's next", "where were we", "build the next task",
-  "keep going". Prefer this over re-deriving state from scrollback.
-argument-hint: "bare to report status · go to build the next task · all to keep going"
+  `.ai/work/<slug>/CHANGE.md` stands — read from disk, so it survives a `/clear` — then builds every
+  remaining task, one commit each. `status` reports and stops; `go` builds one task. Use when picking
+  work back up or moving it forward, or when someone says "what's next", "where were we", "keep
+  going", "build the next task". Prefer this over re-deriving state from scrollback.
+argument-hint: "bare builds every remaining task · status reports and stops · go builds one"
 ---
 
 # dw-next — where we are, and the next slice
@@ -58,7 +58,7 @@ When a `HANDOFF.md` sits beside it, read that one **first** and lead the report 
 session stopped in the middle of a task, and the approaches it ruled out are exactly the work you
 would otherwise repeat. Having no such file is the ordinary case and needs no comment.
 
-If called bare, stop here. That is the whole resume path, and it is deliberately cheap.
+If called with `status`, stop here. That is the whole resume path, and it is deliberately cheap.
 
 ### 2. Confirm the task is still the right one
 
@@ -71,7 +71,7 @@ your control, take the later one and say why.
 
 ### 3. Build one task — thin, end to end
 
-One task per invocation unless the mode says otherwise.
+One task at a time, however many the mode allows.
 
 - **Narrow and complete.** A vertical slice through whatever layers it needs, not a whole layer.
   Resist widening scope mid-task; a second task is free, a sprawling commit is not. An idea that
@@ -108,21 +108,22 @@ One task per invocation unless the mode says otherwise.
   Stage by name, never `git add -A`. One task, one commit; a `.ai/backlog/` file added while
   building ships in that same commit.
 
-### 5. Report and stop
+### 5. Report — then the next task, or stop
 
-Say what shipped, what's left, and the next task. Then **stop** — a human deciding whether to
-continue is a feature at this cadence, not friction.
+Say what shipped, what's left, and the next task. In `go`, **stop** there — one slice was the ask.
+Bare keeps going: next task, next commit, until the list is done or something needs a human
+decision.
 
 ## Modes
 
-The mode is read from `$ARGUMENTS`. Empty means bare — reporting is always safe, so that is the
-default.
+The mode is read from `$ARGUMENTS`. Empty means bare — and **bare builds**: the shaped `CHANGE.md`
+was the checkpoint, so the default finishes it rather than waiting for a second command.
 
-- **bare** — report only. The resume path. Writes nothing.
+- **bare** — report, then build every remaining task, one commit each, until the list is done or
+  something needs a decision. Still **stop** before anything irreversible: a migration, a
+  destructive data change, a force-push, a deploy, a published release, a deletion you can't undo
+  from git. Ask first, every time. `all` still means the same thing.
+- **`status`** — report only, write nothing. The resume path, deliberately cheap.
 - **`go`** — report, then build exactly one task.
-- **`all`** — keep going task by task until the list is done or something needs a decision. Still
-  one commit per task, and still **stop** before anything irreversible: a migration, a destructive
-  data change, a force-push, a deploy, a published release, a deletion you can't undo from git.
-  Ask first, every time, even here.
 
-**Next:** `dw-next` again for the following task, `dw-check` for a fast look mid-way, or `dw-land` once the boxes are all ticked.
+**Next:** `dw-next` again to resume after a stop — or for the next task in `go`, `dw-check` for a fast look mid-way, or `dw-land` once the boxes are all ticked.

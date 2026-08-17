@@ -1,17 +1,17 @@
 {
   "$comment": "The recorded size of skills/*/SKILL.md, used as a ratchet by scripts/check-skill-corpus.mjs (pass 3 of validate-artifacts.sh): the corpus may shrink freely and may only grow through a commit that re-records this file with `node scripts/check-skill-corpus.mjs --update-baseline`. No threshold is chosen here, so no threshold can be set too high — `words` is what the corpus was, not what it is allowed to be. Words rather than bytes or lines because prettier reflows Markdown at 100 columns, which moves both of those on a pure reformat and moves no words; the unit also continues the 11 116 that de-ratchet-the-solo-lane recorded. `words` is the sum of `perSkill`, and both count whitespace-separated runs over the whole file including frontmatter — reproduce it with `cat skills/*/SKILL.md | wc -w`. Why the ratchet exists at all: docs/decisions/0009.",
-  "words": 13956,
+  "words": 14065,
   "perSkill": {
     "dw-check": 771,
     "dw-doctor": 914,
     "dw-git": 1295,
     "dw-grill": 830,
-    "dw-handoff": 681,
+    "dw-handoff": 709,
     "dw-init": 2462,
     "dw-land": 2538,
-    "dw-next": 1308,
-    "dw-shape": 1739,
+    "dw-next": 1351,
+    "dw-shape": 1740,
     "dw-ship": 808,
-    "dw-start": 610
+    "dw-start": 647
   }
 }

@@ -241,13 +241,43 @@ case "$cmd" in
     fi
     root="$(git rev-parse --show-toplevel)"
     path="$root/.claude/worktrees/$slug"
-    if git show-ref --verify --quiet "refs/heads/$slug"; then
-      echo "worktree.sh: branch '$slug' already exists — this change looks already started" >&2
-      exit 1
-    fi
+    # Both spellings mean the same change is already started: `claude -w <slug>` names its branch
+    # worktree-<slug>, and its worktree can be torn down while that branch lives on — so checking
+    # the path alone would miss it and cut a second branch for one change.
+    for started in "$slug" "worktree-$slug"; do
+      if git show-ref --verify --quiet "refs/heads/$started"; then
+        echo "worktree.sh: branch '$started' already exists — this change looks already started" >&2
+        exit 1
+      fi
+    done
     if [ -e "$path" ]; then
       echo "worktree.sh: $path already exists — this change looks already started" >&2
       exit 1
+    fi
+    # A branch living only on origin is invisible to show-ref, so a fresh clone would happily
+    # re-create it and race the claim. Best-effort by design: no origin configured answers the
+    # question with "no remote to conflict with", and an unreachable one must not block offline
+    # work — it gets a warning, never a refusal.
+    #
+    # The env guards are what make that promise true rather than merely intended. Left to itself
+    # ssh waits on an unknown host key or a passphrase with no agent, and git waits on a credential
+    # helper — so an "unreachable" origin hangs the loop on a prompt nobody is watching instead of
+    # failing into the warning below. BatchMode turns both into an immediate non-zero exit.
+    if git config remote.origin.url >/dev/null 2>&1; then
+      if remote_heads="$(
+        GIT_TERMINAL_PROMPT=0 \
+          GIT_SSH_COMMAND="${GIT_SSH_COMMAND:-ssh} -oBatchMode=yes -oConnectTimeout=5" \
+          git ls-remote --heads origin "refs/heads/$slug" "refs/heads/worktree-$slug" 2>/dev/null
+      )"; then
+        if [ -n "$remote_heads" ]; then
+          # Name the spelling that actually matched — either one means this change is started.
+          found="$(printf '%s\n' "$remote_heads" | sed -n '1s|.*refs/heads/||p')"
+          echo "worktree.sh: branch '$found' exists on origin — fetch it or pick another slug" >&2
+          exit 1
+        fi
+      else
+        echo "worktree.sh: could not reach origin to check for branch '$slug' — continuing" >&2
+      fi
     fi
     # git's own chatter goes to stderr so stdout stays machine-usable: the path, nothing else.
     git worktree add -b "$slug" "$path" "$base" 1>&2

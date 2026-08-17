@@ -16,3 +16,13 @@ a recorded reason.
 
 Nothing is decided in advance: the table stays if the data says a mapping is load-bearing. The point
 is to decide it on `--explain` output rather than on taste.
+
+Two `dw-next` positives give the audit its first real cases, and they fail identically before and after
+`start-builds-and-next-builds-by-default` — verified against a `git archive` of `main`, so neither is
+that change's doing. `"what is still unticked on the change I am in the middle of"` lands at rank 4
+because no description carries "unticked"; the description it lost to previously said **"unchecked"**
+and still lost, which is precisely a `DERIVATIONAL` question rather than a vocabulary one.
+`"where did we leave off on this"` finds no discriminating term at all. Adding either word verbatim
+would lift rank-1 to 22/30 while gaming the eval — `evals/cases/dw-next.json` keeps its positives as
+paraphrases on purpose — so the fix has to come from the stem table or not at all. Findings:
+`.ai/archive/start-builds-and-next-builds-by-default`.

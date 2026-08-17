@@ -73,6 +73,66 @@ else
   note_fail "create-custom-base" "want $BASE_SHA got $beta_sha"
 fi
 
+# `claude -w <slug>` spells the branch worktree-<slug> and its worktree can be removed while the
+# branch lives on, so the path check cannot stand in for this one.
+git -C "$REPO" branch worktree-claude-w-started >/dev/null 2>&1
+if "$WORKTREE" create claude-w-started >/dev/null 2>&1; then
+  note_fail "create-worktree-prefixed-branch-refused" "expected non-zero exit"
+else
+  note_pass "create-worktree-prefixed-branch-refused"
+fi
+git -C "$REPO" branch -D worktree-claude-w-started >/dev/null 2>&1
+
+echo "origin-branch refusal:"
+# A branch living only on origin is invisible to show-ref — without this check a fresh clone
+# re-creates it and races the claim. Every other group in this file runs with no origin configured,
+# which pins the no-remote no-op half of the contract for free.
+ORIGIN="$TMP/origin.git"
+git init -q --bare -b main "$ORIGIN"
+git -C "$REPO" remote add origin "$ORIGIN"
+git -C "$REPO" push -q origin main:remote-only 2>/dev/null
+if "$WORKTREE" create remote-only >/dev/null 2>&1; then
+  note_fail "create-origin-branch-refused" "expected non-zero exit"
+else
+  note_pass "create-origin-branch-refused"
+fi
+
+git -C "$REPO" push -q origin main:worktree-remote-alt 2>/dev/null
+if "$WORKTREE" create remote-alt >/dev/null 2>&1; then
+  note_fail "create-origin-worktree-prefixed-branch-refused" "expected non-zero exit"
+else
+  note_pass "create-origin-worktree-prefixed-branch-refused"
+fi
+
+# The guards cannot be provoked into a hang from here — a non-tty git never prompts anyway — so pin
+# them at the source. They are the whole reason the unreachable-origin case above stays a warning
+# rather than a wait, and dropping them would pass every behavioural case in this file.
+if grep -q "GIT_TERMINAL_PROMPT=0" "$WORKTREE" && grep -q "BatchMode=yes" "$WORKTREE"; then
+  note_pass "origin-probe-cannot-block-on-a-prompt"
+else
+  note_fail "origin-probe-cannot-block-on-a-prompt" "ls-remote needs GIT_TERMINAL_PROMPT=0 and ssh BatchMode=yes"
+fi
+
+out=$("$WORKTREE" create not-on-origin 2>/dev/null)
+if [ "$out" = "$REPO/.claude/worktrees/not-on-origin" ]; then
+  note_pass "create-ok-with-origin-configured"
+else
+  note_fail "create-ok-with-origin-configured" "out='$out'"
+fi
+"$WORKTREE" remove not-on-origin >/dev/null 2>&1
+
+# Unreachable origin -> warn on stderr and continue: offline work must not be blocked.
+git -C "$REPO" remote set-url origin "$TMP/nonexistent.git"
+OLOG="$TMP/offline.stderr"
+out=$("$WORKTREE" create offline-probe 2>"$OLOG")
+if [ "$out" = "$REPO/.claude/worktrees/offline-probe" ] && grep -q "could not reach origin" "$OLOG"; then
+  note_pass "create-origin-unreachable-warns-and-continues"
+else
+  note_fail "create-origin-unreachable-warns-and-continues" "out='$out' stderr: $(tr '\n' '|' <"$OLOG")"
+fi
+"$WORKTREE" remove offline-probe >/dev/null 2>&1
+git -C "$REPO" remote remove origin
+
 echo "remove:"
 if (cd "$REPO/.claude/worktrees/alpha" && "$WORKTREE" remove alpha >/dev/null 2>&1); then
   note_fail "remove-from-inside-refused" "expected non-zero exit"

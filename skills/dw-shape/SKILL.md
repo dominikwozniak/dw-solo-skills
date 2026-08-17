@@ -4,7 +4,7 @@ description: >-
   Turn a request or a finished `dw-grill` conversation into a durable `CHANGE.md` under `.ai/work/` —
   goal, decisions taken, a task checklist, anchors in real files; one per independently shippable
   scope. Depth scales with size: a small change gets two checkboxes, not a spec. Read back by
-  `dw-next` after a `/clear`.
+  `dw-next status` after a `/clear`.
   Use when starting work on a private project, or when someone says "shape this", "write this up",
   "let's plan this out". Prefer this over a multi-file spec-and-plan ceremony.
 argument-hint: "What change are we shaping?"

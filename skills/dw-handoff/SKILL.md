@@ -75,8 +75,9 @@ state only.
 
 ### 4. Hand over
 
-Say the file is written, then give the next session its one line: run `dw-next` bare — it reports the
-handoff before anything else.
+Say the file is written, then give the next session its one line: run `dw-next status` — it reports
+the handoff before anything else and stops there. Bare would report it too and then build the rest of
+the list, which is not what a session resuming mid-task wants to walk into.
 
 ## The `HANDOFF.md` shape
 
@@ -96,4 +97,4 @@ _Task in flight: <the task, verbatim from CHANGE.md>_
 ## Next move
 ```
 
-**Next:** `dw-next` bare in the next session — it reads this file first.
+**Next:** `dw-next status` in the next session — it reads this file first.

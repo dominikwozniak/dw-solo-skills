@@ -73,6 +73,40 @@ else
   note_fail "create-custom-base" "want $BASE_SHA got $beta_sha"
 fi
 
+echo "origin-branch refusal:"
+# A branch living only on origin is invisible to show-ref — without this check a fresh clone
+# re-creates it and races the claim. Every other group in this file runs with no origin configured,
+# which pins the no-remote no-op half of the contract for free.
+ORIGIN="$TMP/origin.git"
+git init -q --bare -b main "$ORIGIN"
+git -C "$REPO" remote add origin "$ORIGIN"
+git -C "$REPO" push -q origin main:remote-only 2>/dev/null
+if "$WORKTREE" create remote-only >/dev/null 2>&1; then
+  note_fail "create-origin-branch-refused" "expected non-zero exit"
+else
+  note_pass "create-origin-branch-refused"
+fi
+
+out=$("$WORKTREE" create not-on-origin 2>/dev/null)
+if [ "$out" = "$REPO/.claude/worktrees/not-on-origin" ]; then
+  note_pass "create-ok-with-origin-configured"
+else
+  note_fail "create-ok-with-origin-configured" "out='$out'"
+fi
+"$WORKTREE" remove not-on-origin >/dev/null 2>&1
+
+# Unreachable origin -> warn on stderr and continue: offline work must not be blocked.
+git -C "$REPO" remote set-url origin "$TMP/nonexistent.git"
+OLOG="$TMP/offline.stderr"
+out=$("$WORKTREE" create offline-probe 2>"$OLOG")
+if [ "$out" = "$REPO/.claude/worktrees/offline-probe" ] && grep -q "could not reach origin" "$OLOG"; then
+  note_pass "create-origin-unreachable-warns-and-continues"
+else
+  note_fail "create-origin-unreachable-warns-and-continues" "out='$out' stderr: $(tr '\n' '|' <"$OLOG")"
+fi
+"$WORKTREE" remove offline-probe >/dev/null 2>&1
+git -C "$REPO" remote remove origin
+
 echo "remove:"
 if (cd "$REPO/.claude/worktrees/alpha" && "$WORKTREE" remove alpha >/dev/null 2>&1); then
   note_fail "remove-from-inside-refused" "expected non-zero exit"

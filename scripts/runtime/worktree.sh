@@ -249,6 +249,20 @@ case "$cmd" in
       echo "worktree.sh: $path already exists — this change looks already started" >&2
       exit 1
     fi
+    # A branch living only on origin is invisible to show-ref, so a fresh clone would happily
+    # re-create it and race the claim. Best-effort by design: no origin configured answers the
+    # question with "no remote to conflict with", and an unreachable one must not block offline
+    # work — it gets a warning, never a refusal.
+    if git config remote.origin.url >/dev/null 2>&1; then
+      if remote_heads="$(git ls-remote --heads origin "refs/heads/$slug" 2>/dev/null)"; then
+        if [ -n "$remote_heads" ]; then
+          echo "worktree.sh: branch '$slug' exists on origin — fetch it or pick another slug" >&2
+          exit 1
+        fi
+      else
+        echo "worktree.sh: could not reach origin to check for branch '$slug' — continuing" >&2
+      fi
+    fi
     # git's own chatter goes to stderr so stdout stays machine-usable: the path, nothing else.
     git worktree add -b "$slug" "$path" "$base" 1>&2
     # Everything below is best-effort and reports on stderr: the worktree already exists, and the

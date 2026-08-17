@@ -1,6 +1,6 @@
 ---
 change: land-opens-the-pr-and-ship-only-merges
-branch: unclaimed
+branch: land-opens-the-pr-and-ship-only-merges
 created: 2026-08-17
 status: shaping # shaping | building | landed | rejected
 ---

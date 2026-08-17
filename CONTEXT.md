@@ -25,9 +25,11 @@ in [`AGENTS.md`](AGENTS.md) and the procedures in the skills themselves.
   makes a change **not ready**, never _ready with follow-ups_. Ticked boxes don't satisfy it; only
   the diff does, or a `## Goal` the user amends. One carve-out: a result that is **pending on the
   push** — unobservable at land time rather than undelivered, "CI is green" being the only real case —
-  closes **ready to merge** with that line attached. `dw-land`'s own push is what starts that run and
-  `dw-ship` reads it before merging. The bar is that the evidence cannot exist yet, never that
-  gathering it is inconvenient.
+  closes **ready to merge** with that line attached. The name is loose about the trigger: on a feature
+  branch it is `dw-land` **opening the PR** that starts the run, not the push before it, and only on
+  the default branch does the push itself trigger anything. Either way `dw-ship` reads the result
+  before merging. The bar is that the evidence cannot exist yet, never that gathering it is
+  inconvenient.
 - **Base ref** — which ref of the default branch a review diff is taken against, local or `origin/`.
   Never `origin/` by reflex: whichever of the two contains the other wins, and local is the default,
   because a local branch that is _ahead_ (an unpushed `chore: shape …` commit) makes `origin/` pull

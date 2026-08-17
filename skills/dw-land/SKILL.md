@@ -68,13 +68,12 @@ verdict against what the change now claims.
 **One carve-out, and it is not an escape hatch.** A result the working tree cannot show — "CI is
 green", where the project's workflows only run on a pull request or a push to the default branch — is
 not _undelivered_ at land time; it is _unobservable_ at land time, and the closing order (this skill
-before `dw-ship`) is what makes it so. Record it in the verdict as **pending on the push** — step 4's
-push, this change's first CI — name the task that carries it, and hand it to `dw-ship`, which reads
-the checks on the PR this skill opens. Such a
+before `dw-ship`) is what makes it so. Record it in the verdict as **pending on the push**, name the
+task that carries it, and hand it to `dw-ship`, which reads the checks on the PR step 4 opens. Such a
 change closes **ready to merge** with that line attached — nothing is undelivered — and never _ready
-with follow-ups_, which would park the very thing the push is about to settle. Anything you could have
-run yourself gets no such pass — the bar is that the evidence does not exist yet, never that gathering
-it is inconvenient.
+with follow-ups_, which would park the very thing step 4 is about to set running. Anything you could
+have run yourself gets no such pass — the bar is that the evidence does not exist yet, never that
+gathering it is inconvenient.
 
 Then **stop.** You've graded the work; the user decides what happens next.
 
@@ -143,13 +142,13 @@ what makes the build fail.
   left. A queue holding finished work reads as a backlog you have stopped believing.
 - **Archive the scaffolding.** `git rm` a leftover `HANDOFF.md` first — it described the middle of a
   task, and post-merge it is noise — then `git mv .ai/work/<slug>/ .ai/archive/<slug>/` and, in the
-  moved `CHANGE.md`, flip `status:` to `landed` with `landed: YYYY-MM-DD` plus `pr: "#<n>"` when the
-  number is already known — otherwise step 4 fills it once the PR exists. `.ai/archive/README.md` states the convention; create it from that one line if the repo
-  predates the scaffold. If `.ai/archive/<slug>/` already exists, stop and pick a suffixed destination
-  (`<slug>-2`): `git mv` into an existing directory silently nests the folder inside it. If something
-  in the doc
-  still feels too valuable to bury, that is the signal it belonged in a record, a gotcha or the
-  backlog — promote it first, then archive.
+  moved `CHANGE.md`, flip `status:` to `landed` with `landed: YYYY-MM-DD` plus `pr: "#<n>"` where the
+  branch already has one (`gh pr view --json number`) — otherwise step 4 fills it, since on the usual
+  path the PR does not exist yet. `.ai/archive/README.md` states the convention; create it from that
+  one line if the repo predates the scaffold. If `.ai/archive/<slug>/` already exists, stop and pick a
+  suffixed destination (`<slug>-2`): `git mv` into an existing directory silently nests the folder
+  inside it. If something in the doc still feels too valuable to bury, that is the signal it belonged
+  in a record, a gotcha or the backlog — promote it first, then archive.
 - **Commit** the promotion and the archive move together, the way `dw-git` does — **on the branch you
   are on.** In a worktree that means the feature branch: the promotion rides the PR, the squash-merge
   carries it to the default branch, and post-merge `main` is already clean.
@@ -163,13 +162,16 @@ say so and offer `/codex:review --wait`; the window before the merge is what it 
 
 - **On the default branch there is no PR**, so closing the artifacts was the whole step. Point at
   `dw-ship`, whose fast path is the plain `git push` — irreversible, which is why it stays a separate
-  command.
+  command, and the run it starts is the change's first CI.
+- **No `origin` at all** → say so and stop at the close commit. Never pretend to have pushed, and don't
+  reach for a remote that isn't there: `dw-ship` still owns the local ending (switch, merge, delete).
 - Otherwise, both the way `dw-git` does them: `git push -u origin <branch>`, then `gh pr create`.
-- **Then record the number** that didn't exist at step 3: fill `pr:` in the archived doc and push that
-  one-line commit on top, which the squash folds back into the close commit. Where the branch already
-  has a PR (`gh pr view --json number`), take the number at step 3 instead.
-- **Don't wait on CI.** This push is the change's first run and `dw-ship` reads the checks; a result
-  the verdict left **pending on the push** is named in the report, not watched here.
+- **Then record the number**, which step 3 could not know: fill `pr:` in the archived doc and push that
+  one-line commit on top, which the squash folds back into the close commit.
+- **Don't wait on CI.** **Opening the PR** is what starts the run — the workflows of a repo like this
+  one trigger on `pull_request` and on a push to the default branch, so pushing the branch alone
+  triggers nothing. `dw-ship` reads the checks; a result the verdict left **pending on the push** is
+  named in the report, not watched here.
 
 ### 5. Report
 
@@ -186,12 +188,12 @@ is the default.
   it", "go" — runs steps 3 to 5 in this same invocation, PR included; never send the user back for a
   second slash command. A hedged reply is not a go.
 - **`close`** — the trust shortcut: the user already trusts the diff, so state the verdict in one
-  line and close — PR and all — without waiting for a go. One exception: a verdict that comes out **not ready**
-  stops here too — report it and wait; closing over it takes an explicit word from a user who has
-  seen it. Never close blind.
+  line and close — PR and all — without waiting for a go. One exception: a verdict that comes out
+  **not ready** stops here too — report it and wait; closing over it takes an explicit word from a
+  user who has seen it. Never close blind.
 - **`reject`** — the idea was turned down, or the work was abandoned half-built; one status covers
-  both. Skip the verdict; there is no diff worth judging. Promote as
-  usual (a rejection still leaves follow-ups worth keeping), then archive with `status: rejected`,
+  both. Skip the verdict; there is no diff worth judging. Promote as usual (a rejection still leaves
+  follow-ups worth keeping), then archive with `status: rejected`,
   `rejected: YYYY-MM-DD` and `pr:` naming the **closed, unmerged** PR. The doc must carry a
   `## Why rejected` — what was tried, what killed it, what would justify revisiting — and **writing it
   without a reason is refused**: an empty one costs a folder and teaches nothing, which is the whole

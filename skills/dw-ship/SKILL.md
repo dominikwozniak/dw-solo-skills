@@ -35,21 +35,23 @@ its output is a merged PR, a removed worktree, and a `.ai/work/` folder that sta
 
 - Already **on the default branch** (resolved the way `dw-git` does) and it isn't protected → **fast
   path**: plain `git push` is the whole ship — no PR, no worktree. It is **irreversible**, with
-  nothing between it and the default branch, and it is this change's **first CI**: where `dw-land` left
-  a result pending on the push, watch that run rather than calling the ship done at the push. If the
-  change skipped `dw-check`, offer it first — a nudge, not a gate.
+  nothing between it and the default branch, and here the push really is this change's **first CI**,
+  because a push to the default branch is a trigger where a push to a feature branch is not: where
+  `dw-land` left a result pending on the push, watch that run rather than calling the ship done at the
+  push. If the change skipped `dw-check`, offer it first — a nudge, not a gate.
 - On any other branch → the **merge** below.
 - **No `origin` at all** → say so and offer the local ending instead: switch to the default branch,
   merge, delete the branch. Never pretend to have pushed.
 
 ### 3. Merge the PR
 
-1. **Read the checks first**: `gh pr checks`. The push at `dw-land` was this change's first CI, so
-   this is where a result the verdict recorded as **pending on the push** gets settled. A pending or
-   failing check is a reason to wait and say so, not a footnote under the go.
-2. `gh pr merge --squash --title "<the PR title>"`. Pin the title: the squash subject is what lands
-   on the default branch forever, and left to itself it comes out as whichever commit subject
-   GitHub picks rather than the conventional-commits subject `dw-git` composed.
+1. **Read the checks first**: `gh pr checks`. Opening the PR at `dw-land` is what started this
+   change's first CI, so this is where a result the verdict recorded as **pending on the push** gets
+   settled. A pending or failing check is a reason to wait and say so, not a footnote under the go.
+2. `gh pr merge --squash --subject "<the PR title>"` — **`--subject`, not `--title`**, which
+   `gh pr merge` does not have and dies on. Pin it either way: the squash subject is what lands on the
+   default branch forever, and left to itself it comes out as whichever commit subject GitHub picks
+   rather than the conventional-commits subject `dw-git` composed.
 3. No PR on the branch → `dw-land` never ran or its PR was closed. Stop and say which, rather than
    opening one here.
 

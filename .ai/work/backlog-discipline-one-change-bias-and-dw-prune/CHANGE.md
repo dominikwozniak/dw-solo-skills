@@ -21,8 +21,8 @@ now` — and `dw-shape`'s "into this change" is the default of its three-way cho
 3. `/dw-prune` exists, is `disable-model-invocation: true`, is shipped by `dw-solo-extras`, and
    `pnpm validate:docs` passes with it wired into `README.md`, `AGENTS.md` and
    `docs/agents/skills-and-plugins.md`.
-4. `dw-ship` merges with `--delete-branch`, and `git branch -r` shows **10 fewer** branches than it
-   does today.
+4. `dw-ship` **deletes the merged branch from the remote**, by a route that works on the loop's own
+   worktree path, and `git branch -r` shows **10 fewer** branches than it does today.
 
 Plus: three plugin versions bumped, the corpus baseline re-recorded, the whole gate green.
 
@@ -48,6 +48,15 @@ Plus: three plugin versions bumped, the corpus baseline re-recorded, the whole g
 - **`dw-prune` is explicit-invoke because only the reader can see its moment.** Same reason as
   `dw-handoff`, not the acts-outward reason. The cost is real and accepted: no skill can delegate to
   it, so `dw-land` can only _name_ it.
+- **`dw-ship` does not use `--delete-branch`, and the Goal was amended to say so.** `gh` deletes the
+  local branch before the remote one and `return err`s on failure, so on the loop's default path — the
+  branch checked out in a worktree — the local half fails, the remote deletion never runs, and the
+  branch survives the very command meant to remove it. Verified in `pkg/cmd/pr/merge/merge.go`
+  (`deleteLocalBranch` → `CheckoutBranch` → `return err`, ahead of `deleteRemoteBranch`); the flag is
+  also refused outright under a merge queue. So step 4 deletes the ref explicitly once nothing holds
+  it, the same `gh api --method DELETE` call this change used on the ten old branches — one path, any
+  tree, no merge-queue caveat. Found by the `dw-check` delegated pass **after** the closing verdict had
+  already graded the diff _ready to merge_; the verdict missed it.
 - **The origin prune goes through `gh api`, after the list.** `.claude/hooks/block-dangerous-commands.sh:58`
   refuses `git push --delete` on purpose; showing the 10 branches and waiting for a go is the
   deliberation that guardrail exists to force, and the API call is the confirmed path, not a way round it.
@@ -72,11 +81,12 @@ that same commit — `node scripts/check-skill-corpus.mjs --update-baseline` —
       (the canonical statement), `.ai/backlog/README.md:16-19`, `templates/backlog-README.md:16-19`.
       Add the blocking test and the imperative. `diff` the two READMEs afterwards: the only difference
       is the cap paragraph the template omits.
-- [x] 3. **`dw-ship` deletes the branch it merged** — `skills/dw-ship/SKILL.md:51-54` gains
-      `--delete-branch`. Pin its interaction with step 4 or the next run reads a warning as a failure:
-      the flag deletes **local and remote**, git refuses a branch checked out in a worktree, so on the
-      worktree path gh drops the remote branch, warns about the local one, and `worktree.sh remove`
-      (`:64`) still owns the local side. The fast path has no branch to delete.
+- [x] 3. **`dw-ship` deletes the branch it merged** — step 3 keeps the plain squash and says in one
+      paragraph why `--delete-branch` is deliberately absent; step 4 deletes the remote ref with
+      `gh api --method DELETE repos/{owner}/{repo}/git/refs/heads/<branch>` once the worktree and local
+      branch are gone, noting that a 404 is success and that `git push origin --delete` is the same
+      thing where no guardrail refuses it. **Built with the flag first, then corrected** — see the
+      Decision above; the flag cannot work from a worktree, which is the loop's default.
 - [x] 4. **`dw-prune` joins `dw-solo-extras`** — new `skills/dw-prune/SKILL.md`, ~350 words,
       `disable-model-invocation: true`, **no eval case**. One pass over `.ai/backlog/*.md` (README
       excluded), four spoken outcomes per entry: stale or already done → `git rm` with the reason in

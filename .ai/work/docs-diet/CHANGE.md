@@ -2,7 +2,7 @@
 change: docs-diet
 branch: docs-diet
 created: 2026-08-17
-status: shaping # shaping | building | landed
+status: building # shaping | building | landed
 ---
 
 # Change — the doc layer and the skill descriptions say the same things in fewer words
@@ -25,7 +25,7 @@ Known worked when the corpus baseline has **fallen** below 15 200 and the full g
 
 ## Tasks
 
-- [ ] 1. Rewrite `docs/agents/tooling.md` to essence — the three passes and their exit-2 rules, the
+- [x] 1. Rewrite `docs/agents/tooling.md` to essence — the three passes and their exit-2 rules, the
       hook table, the `jq` no-op, the four grep-read bullets and the `none` sentinel, and every
       gotcha at 1–3 sentences + pointer.
 - [ ] 2. Rewrite `docs/agents/skills-and-plugins.md` — indirection rationale, the explicit-only rule
@@ -62,3 +62,9 @@ Known worked when the corpus baseline has **fallen** below 15 200 and the full g
   from the project walk; judge with the bare `pnpm lint`.
 - `proseWrap: "preserve"` means the format gate never checks prose width; rewrap whole paragraphs and
   check with `grep -nE '^.{108,}'`.
+- The 8-gram window is too noisy on a rewrite this heavy (98 runs, nearly all reworded prose). A
+  **fact-token diff** — every backticked span, path, flag, number and error string in the old file absent
+  from the new — is the instrument that works; both scripts sit in the scratchpad.
+- tooling.md: 3 103 → 2 692 words, one fact dropped on purpose (`check-decisions.test.sh`, the name of a
+  script already deleted, which the old entry itself said the shape outlives). A rule-dense file diets
+  about 13%; a bigger number here would mean rules went with the words.

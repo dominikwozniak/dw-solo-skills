@@ -49,7 +49,8 @@ no upstream at all. `scripts/tests/hooks-in-sync.test.sh` pins the templates to 
 A skill copied from `dw-skills` is a **fork**, simplified for one reader — expected to diverge, never
 re-synced. Current forks: `dw-grill`, `dw-shape`, `dw-next`, `dw-land`, `dw-git`, `dw-doctor` and
 `dw-init` (which also absorbed the team lane's standalone pre-commit skill). `dw-start`, `dw-check`,
-`dw-ship`, `dw-handoff` and `scripts/runtime/worktree.sh` are this lane's own — they have no upstream.
+`dw-ship`, `dw-handoff`, `dw-prune` and `scripts/runtime/worktree.sh` are this lane's own — they have
+no upstream.
 `dw-handoff` is the one to watch: it shares a name with a team-lane skill and nothing else, having
 been written here after the team lane dropped handoffs on purpose, and it writes one overwritten
 `HANDOFF.md` inside the change folder rather than a dated record under `.ai/handoffs/`.
@@ -102,6 +103,15 @@ checklist by hand.
 
 ## Gotchas
 
+- **The idf risk is a reason to run the eval, never a reason to leave a `description` wrong.** Editing
+  one shifts every term's idf and can knock an unrelated skill off rank-1 (step 8 above). That risk got
+  a known-false sentence **deliberately left in place** once: `dw-shape` kept "one per independently
+  shippable scope" in its `description` after its body had stopped meaning it, and the same change's
+  notes then recorded that the fear was testable in about ten seconds. It survived there until the body
+  was rewritten a second time and the two openly contradicted each other — in the one field the model
+  actually routes on. Measured since, across two `description` edits and a whole new skill: rank-1 went
+  67% → 68% and never fell. So run `pnpm eval:routing` and read the number. A wrong `description` is a
+  real defect, and this is the cheapest check in the repo.
 - **A skill body is read in two repos, and only one of them has this repo's tooling.** The canon is
   authored here, where `validate-artifacts.sh` caps `.ai/backlog/` and a full gate runs in CI — none of
   which ships; `templates/backlog-README.md` even omits the cap paragraph on purpose, so a consumer sets

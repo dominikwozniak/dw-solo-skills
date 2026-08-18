@@ -52,6 +52,16 @@ its output is a merged PR, a removed worktree, and a `.ai/work/` folder that sta
    `gh pr merge` does not have and dies on. Pin it either way: the squash subject is what lands on the
    default branch forever, and left to itself it comes out as whichever commit subject GitHub picks
    rather than the conventional-commits subject `dw-git` composed.
+
+   **Not `--delete-branch`, and leaving it off is the decision** — step 4 deletes the remote branch
+   instead. `gh` deletes the **local** branch first and returns on failure, so a local half that cannot
+   succeed means the remote deletion never runs at all. On this loop's default path it cannot succeed:
+   the branch is checked out in a worktree, so from inside that worktree gh tries to check out the base
+   branch and git refuses, and from the main tree `git branch -D` refuses for the same reason. The
+   squash still lands, the command exits non-zero, and the branch stays on the remote — precisely the
+   outcome the flag was meant to prevent. It is also rejected outright where the base branch requires a
+   merge queue. Anyone re-adding it should read step 4 first.
+
 3. No PR on the branch → `dw-land` never ran or its PR was closed. Stop and say which, rather than
    opening one here.
 
@@ -67,6 +77,19 @@ bash "${CLAUDE_PLUGIN_ROOT}/scripts/worktree.sh" remove <slug>
 removes the worktree, deletes its branch — whatever the spelling, `<slug>` or `worktree-<slug>` —
 and prunes. For a plain feature branch with no worktree: `git switch <default-branch>`,
 `git branch -D <branch>`.
+
+**Then the remote branch, now that nothing holds it locally.** This is the step that keeps the remote
+from filling up with merged branches, and nothing else in the loop does it:
+
+```bash
+gh api --method DELETE "repos/{owner}/{repo}/git/refs/heads/<branch>"
+```
+
+Here rather than as a flag on the merge because it works from any tree, needs no branch checked out,
+and is unaffected by a merge queue. `git push origin --delete <branch>` does the same thing, where the
+repo has no guardrail refusing that spelling — the `block-dangerous-commands` hook this lane ships
+refuses it, so the API call is the spelling that always works. A **404 is success**: the branch is
+already gone, which is what a repo with automatic head-branch deletion looks like.
 
 ### 5. Sync, then sweep what the squash brought back
 

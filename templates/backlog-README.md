@@ -14,6 +14,8 @@ they ship together — same version bump, same gate run, one PR. Say in the lead
 them one change, and keep each bullet to what a session needs to find the code.
 
 Two bars, and an entry clears both. **Will you ever?** — if you would not pick it up within a month,
-don't write it. **Should it have been done now?** — if doing it costs less than describing it, do it
-now: a fix that fits in a file the change already touched, or that is smaller than the entry
-describing it, is a commit in that change, not a file here.
+don't write it. **Should it have been done now?** — **nothing blocks it and doing it costs less than
+describing it → the current change, now**, not a file here. That is the default, not a judgement to
+weigh: a fix that fits in a file the change already touched, or that is smaller than the entry
+describing it, is a commit in that change. Only genuinely blocked work — waiting on a decision, a
+dependency, or a change not yet made — earns an entry.

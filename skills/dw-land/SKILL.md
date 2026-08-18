@@ -134,12 +134,16 @@ what makes the build fail.
   specific description — **never overwrite it silently**; the existing entry is queued work.
   Create the dir with its `README.md` if the repo predates the scaffold. Two bars, and an entry
   clears both. **Will you ever?** — if you would not pick it up within a month, don't write it.
-  **Should it have been done now?** — if doing it costs less than describing it, do it now: a fix
-  that fits in a file the change already touched, or that is smaller than the entry describing it,
-  is a commit in that change, not a file here. Zero is a normal answer. **Then clear what this change
-  closed**: an entry whose work the diff just did, or which the change made moot, is `git rm`'d in
-  this same commit — and one that survives with fewer bullets than it had gets rewritten to what is
-  left. A queue holding finished work reads as a backlog you have stopped believing.
+  **Should it have been done now?** — **nothing blocks it and doing it costs less than describing it
+  → the current change, now**, not a file here. That is the default, not a judgement to weigh: a fix
+  that fits in a file the change already touched, or that is smaller than the entry describing it, is
+  a commit in that change. Only genuinely blocked work — waiting on a decision, a dependency, or a
+  change not yet made — earns an entry. Zero is a normal answer, and a folder already too long is what
+  `dw-prune` is for — say its name rather than triaging the whole queue from here.
+  **Then clear what this change closed**: an entry whose work the diff just did, or which the change
+  made moot, is `git rm`'d in this same commit — and one that survives with fewer bullets than it had
+  gets rewritten to what is left. A queue holding finished work reads as a backlog you have stopped
+  believing.
 - **Archive the scaffolding.** `git rm` a leftover `HANDOFF.md` first — it described the middle of a
   task, and post-merge it is noise — then `git mv .ai/work/<slug>/ .ai/archive/<slug>/` and, in the
   moved `CHANGE.md`, flip `status:` to `landed` with `landed: YYYY-MM-DD` plus `pr: "#<n>"` where the

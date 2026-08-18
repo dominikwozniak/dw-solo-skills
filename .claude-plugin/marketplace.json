@@ -10,7 +10,7 @@
   "plugins": [
     {
       "name": "dw-solo",
-      "version": "0.4.22",
+      "version": "0.4.23",
       "source": "./plugins/dw-solo",
       "keywords": ["solo", "personal", "lightweight", "workflow"],
       "category": "workflow",
@@ -18,7 +18,7 @@
     },
     {
       "name": "dw-solo-setup",
-      "version": "0.1.23",
+      "version": "0.1.24",
       "source": "./plugins/dw-solo-setup",
       "keywords": ["solo", "setup", "scaffold", "hooks"],
       "category": "utilities",
@@ -26,11 +26,11 @@
     },
     {
       "name": "dw-solo-extras",
-      "version": "0.1.4",
+      "version": "0.1.5",
       "source": "./plugins/dw-solo-extras",
-      "keywords": ["solo", "handoff", "context", "session"],
+      "keywords": ["solo", "handoff", "session", "backlog", "prune"],
       "category": "workflow",
-      "tags": ["solo", "handoff", "context"]
+      "tags": ["solo", "handoff", "backlog"]
     }
   ]
 }

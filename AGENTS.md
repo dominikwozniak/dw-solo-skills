@@ -16,7 +16,7 @@ change needing a second reader's trust belongs in the team-weight lane,
 skills/<name>/SKILL.md           the canon for every skill. EDIT HERE.
 plugins/dw-solo/                 the loop plugin — plugin.json + symlinks (mode 120000) → the canon
 plugins/dw-solo-setup/           the setup plugin — dw-init, dw-doctor, the templates symlink
-plugins/dw-solo-extras/          the off-loop plugin — dw-handoff
+plugins/dw-solo-extras/          the off-loop plugin — dw-handoff, dw-prune
 scripts/runtime/<script>.sh      shipped scripts — symlinked into the owning plugin
 scripts/<script>.{sh,mjs}        repo CI tooling, never shipped (validate-*.sh, check-skill-corpus.mjs)
 scripts/tests/<script>.test.sh   bash self-tests

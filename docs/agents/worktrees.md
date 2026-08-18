@@ -6,6 +6,16 @@ is why `dw-next` strips that prefix before matching a change doc.
 
 ## Gotchas
 
+- **The session can leave the worktree between one skill invocation and the next, and say nothing.**
+  A `/dw-…` command arrived with the shell back in the **main tree on the default branch** — `pwd` and
+  `git rev-parse --abbrev-ref HEAD` both confirmed it — after several invocations had run inside the
+  worktree. No message marked the move. The failure mode is worse than an error, because everything
+  still succeeds: `git diff <base>...HEAD` came back **empty** and `git log <base>..HEAD` listed
+  nothing, so a closing verdict was one step from grading the change as "no diff", and its promotion
+  commit would have landed on the default branch instead of the feature branch. **Re-assert the
+  worktree at the top of any skill that reads a diff or commits** — `pwd` plus the branch, then
+  re-enter with the worktree path if it drifted. Nothing is lost when it happens: the worktree and
+  every commit in it are untouched, only the session's working directory moved.
 - **A `dw-start` worktree is not the main tree, and every way it differs reads as something else.**
   Six traps, one root cause: the worktree gets tracked files and a branch, and nothing else.
   - **A legacy `CLAUDE.local.md` is simply absent from one.** It is gitignored, so no checkout

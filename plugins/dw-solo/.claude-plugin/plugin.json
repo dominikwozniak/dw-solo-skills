@@ -1,6 +1,6 @@
 {
   "name": "dw-solo",
-  "version": "0.4.23",
+  "version": "0.4.24",
   "description": "The solo loop for repos only you read: interrogate a fuzzy idea into decisions, shape one CHANGE.md per change, build it task by task — in a worktree when changes run in parallel — check it fast, land the durable knowledge, ship the branch. One artifact per change, one thin quality pass. Pairs with dw-solo-setup, which scaffolds what this loop assumes a repo has.",
   "author": {
     "name": "Dominik Wozniak"

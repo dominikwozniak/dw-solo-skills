@@ -68,7 +68,7 @@ that same commit — `node scripts/check-skill-corpus.mjs --update-baseline` —
       doesn't read as a revert. Then step 5's **"into this change"** bullet (`:124`) becomes the
       default: nothing blocking it and cheaper to do than to describe means it is a task in the
       checklist just read back, now.
-- [ ] 2. **The absorption bar gets teeth, in all three copies** — `skills/dw-land/SKILL.md:136-138`
+- [x] 2. **The absorption bar gets teeth, in all three copies** — `skills/dw-land/SKILL.md:136-138`
       (the canonical statement), `.ai/backlog/README.md:16-19`, `templates/backlog-README.md:16-19`.
       Add the blocking test and the imperative. `diff` the two READMEs afterwards: the only difference
       is the cap paragraph the template omits.

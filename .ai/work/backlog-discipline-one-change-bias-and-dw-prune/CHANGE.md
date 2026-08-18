@@ -90,7 +90,7 @@ that same commit — `node scripts/check-skill-corpus.mjs --update-baseline` —
       headroom, keep it on one line); `docs/agents/skills-and-plugins.md:51-52` own-skill list;
       `plugins/dw-solo-extras/.claude-plugin/plugin.json` description (it says "Today that is one");
       and one clause in `dw-land`'s follow-ups bullet naming `dw-prune` for a full folder.
-- [ ] 5. **Three bumps, then the whole gate** — `dw-solo` 0.4.22 → 0.4.23, `dw-solo-extras`
+- [x] 5. **Three bumps, then the whole gate** — `dw-solo` 0.4.22 → 0.4.23, `dw-solo-extras`
       0.1.4 → 0.1.5, `dw-solo-setup` 0.1.23 → 0.1.24, each in `.claude-plugin/marketplace.json`
       **and** its `plugin.json`. Last on purpose: `validate-manifests.sh` only checks the pair is
       _equal_. Then every script in the `scripts` block — `eval:routing` included, because a new
@@ -148,3 +148,10 @@ that same commit — `node scripts/check-skill-corpus.mjs --update-baseline` —
 - **`eval:routing` went to 68% rank-1, up from 67%** — 21/31, 21/21 negatives, no description pair
   above 0.239. So `dw-prune`'s description cost no existing skill its rank-1, which was the idf risk
   the add-a-skill checklist warns about.
+- **`pnpm lint` does not reach `scripts/lint.sh` in this environment, and the failure looks like a
+  repo bug.** The global `rtk` hook rewrites it to `rtk lint`, which is "ESLint with grouped rule
+  violations" (`rtk 0.43.0`) — so it dies with `Command "eslint" not found` on a repo whose linter is
+  `agnix`. `pnpm format`, `pnpm validate:*` and `pnpm eval:routing` are untouched, so only this one
+  bullet of the gate is shadowed. Run `bash scripts/lint.sh` instead: 0 errors, 61 warnings, exit 0,
+  which is the documented standing exception. Candidate `## Gotchas` entry for
+  `docs/agents/tooling.md`, which is where the gate and the warning count already live.

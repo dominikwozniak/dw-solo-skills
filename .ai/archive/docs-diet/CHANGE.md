@@ -2,7 +2,9 @@
 change: docs-diet
 branch: docs-diet
 created: 2026-08-17
-status: building # shaping | building | landed
+status: landed
+landed: 2026-08-18
+pr: "#TBD"
 ---
 
 # Change — the doc layer and the skill descriptions say the same things in fewer words
@@ -71,3 +73,11 @@ Known worked when the corpus baseline has **fallen** below 15 200 and the full g
 - `proseWrap: "preserve"` hides prose width from the gate — check with `grep -nE '^.{108,}'`.
 - A script that splits this file at its first `## Notes` truncates it, because a task can quote that
   heading inline — it ate task 6 and the anchors here. Split on the heading at line start, or don't.
+- Closed at 68% rank-1, not 71%: a Codex pass found the shortened `dw-check` description had dropped its
+  no-reviewer-installed path and the new `dw-next` Notes rule named only two of `dw-land`'s four
+  promotion targets. Both fixes cost words and one rank-1 point, which is the right way round.
+- The same pass found four claims that were false before this change and faithfully re-stated by it -
+  the path-filter count, "steps 2-7 are CI-enforced", three hook matchers, and pass 3's node SKIP. A
+  fact-token diff cannot catch those; only reading the prose against the scripts can.
+- The goal's "1-3 sentences" phrasing did not survive contact: several `tooling.md` gotchas stayed
+  longer because compressing further would have deleted rules. Read as a means, not a result.

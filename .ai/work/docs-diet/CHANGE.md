@@ -28,7 +28,7 @@ Known worked when the corpus baseline has **fallen** below 15 200 and the full g
 - [x] 1. Rewrite `docs/agents/tooling.md` to essence — the three passes and their exit-2 rules, the
       hook table, the `jq` no-op, the four grep-read bullets and the `none` sentinel, and every
       gotcha at 1–3 sentences + pointer.
-- [ ] 2. Rewrite `docs/agents/skills-and-plugins.md` — indirection rationale, the explicit-only rule
+- [x] 2. Rewrite `docs/agents/skills-and-plugins.md` — indirection rationale, the explicit-only rule
       and its delegation cost, the vendored/fork enumerations, both numbered checklists intact in
       substance (CI enforces them), six gotchas compressed.
 - [ ] 3. Rewrite `docs/agents/README.md` — the three-tier table, what-goes-where, the budget's
@@ -68,3 +68,5 @@ Known worked when the corpus baseline has **fallen** below 15 200 and the full g
 - tooling.md: 3 103 → 2 692 words, one fact dropped on purpose (`check-decisions.test.sh`, the name of a
   script already deleted, which the old entry itself said the shape outlives). A rule-dense file diets
   about 13%; a bigger number here would mean rules went with the words.
+- skills-and-plugins.md dieted only 7% (1 777 -> 1 657 words) with **zero** fact tokens dropped; it was
+  already close to essence, and the two numbered checklists are pure rule.

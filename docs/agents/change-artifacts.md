@@ -25,3 +25,12 @@ Artifacts are real work documents, committed with the code — not scratch.
   halves of the pair then exist, and the `work/` one is the stale half — the check is whether
   `.ai/archive/<slug>/` is already there, never the date or the `status:`. `dw-ship` sweeps it as its
   last step; the procedure is there.
+
+## Gotchas
+
+- **A script that splits a `CHANGE.md` at its first `## Notes` truncates the file**, because a task can
+  quote that heading inline while describing where a finding goes. It ate a task and the whole
+  `## Anchors` section here, and two commits shipped short before anyone noticed — the file still
+  parsed, still rendered, and the missing task was one the change had already done. Anchor such a split
+  to the heading at line start (`^## Notes`), or rewrite the section in place instead of rebuilding the
+  file around it.

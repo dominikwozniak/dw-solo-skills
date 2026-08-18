@@ -1,9 +1,9 @@
 ---
 name: dw-git
 description: >-
-  One skill for every git operation in this project — commit, stage, push, open a pull request, sync
-  (rebase), branch, stash — applying the repo's own `## Git conventions` from `AGENTS.md` instead of
-  generic defaults. Use for any git intent, however it's phrased.
+  One skill for every git operation in this project — commit and save what you have, stage, push,
+  open a pull request, sync with main, rebase, branch, park edits in a stash — applying the repo's
+  own `## Git conventions` from `AGENTS.md` instead of generic defaults.
 argument-hint: "Which git op? e.g. commit, push, open PR, sync, branch, stash"
 ---
 

@@ -1,10 +1,9 @@
 ---
 name: dw-handoff
 description: >-
-  Compact the live session into `.ai/work/<slug>/HANDOFF.md`: how far into the current task you are,
-  what is applied but uncommitted, and which dead ends are already ruled out — so the next context
-  window resumes mid-task instead of re-deriving it. Explicit-invoke only — you are the one who can
-  see the session is about to end.
+  Compact the live session into `.ai/work/<slug>/HANDOFF.md` — how far into the current task you
+  are, what is applied but uncommitted, and which dead ends are already ruled out, so the next
+  context window resumes mid-task. Explicit-invoke only.
 argument-hint: "bare saves where you are · or name what the next session should focus on"
 disable-model-invocation: true
 ---

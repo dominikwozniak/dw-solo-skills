@@ -17,6 +17,9 @@ Hit again by `the-doc-layer-says-one-thing-once`, which edited `templates/` in t
 `dw-solo` and `dw-solo-extras` were both bumped by hand, and the check would have stayed green had
 either been forgotten.
 
+And again by `docs-diet`: all three plugins bumped by hand for twelve changed skill descriptions,
+and the check would have stayed green had any of the three been missed.
+
 This entry was three bullets. `de-ratchet-the-solo-lane` closed the other two: the hardcoded
 `awk -F'|' '{print $4}'` Arguments-cell index went with the column, and the decision-record contract no
 longer states itself in three files.

@@ -1,11 +1,9 @@
 ---
 name: dw-next
 description: >-
-  The solo lane's build step and its resume point in one skill. Bare, it reports where the active
-  `.ai/work/<slug>/CHANGE.md` stands — read from disk, so it survives a `/clear` — then builds every
-  remaining task, one commit each. `status` reports and stops; `go` builds one task. Use when picking
-  work back up or moving it forward, or when someone says "what's next", "where were we", "keep
-  going", "build the next task". Prefer this over re-deriving state from scrollback.
+  The solo lane's build step and its resume point in one skill: report where the active
+  `.ai/work/<slug>/CHANGE.md` stands — read from disk, so it survives a `/clear` — then build
+  every remaining unticked task, one commit each.
 argument-hint: "bare builds every remaining task · status reports and stops · go builds one"
 ---
 
@@ -101,6 +99,10 @@ One task at a time, however many the mode allows.
   still `shaping`.
 - Append to Notes only what a future session would actually need: a surprise, a dead end, a decision
   taken while building, a term this task had to coin. Not a narration of what the diff already shows.
+  **One finding, one line.** You read this file on every invocation, so a note that runs to a paragraph
+  is a tax on every resume — and the details are already in the diff and the commit message. If a
+  finding genuinely needs more, it has outgrown Notes and belongs where `dw-land` promotes it — a
+  decision record, a `CONTEXT.md` term, a gotcha in its topic file — or it is a task here.
 - **Clear a `HANDOFF.md` you consumed** — `git rm` it in this same commit. It described the middle of
   the task you just finished, so leaving it behind strands the next session on a state that is gone.
   Anything in it worth keeping goes to Notes first.

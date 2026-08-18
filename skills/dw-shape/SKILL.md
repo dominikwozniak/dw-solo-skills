@@ -1,12 +1,9 @@
 ---
 name: dw-shape
 description: >-
-  Turn a request or a finished `dw-grill` conversation into a durable `CHANGE.md` under `.ai/work/` —
-  goal, decisions taken, a task checklist, anchors in real files; one per goal, never per shippable
-  piece. Depth scales with size: a small change gets two checkboxes, not a spec. Read back by
-  `dw-next status` after a `/clear`.
-  Use when starting work on a private project, or when someone says "shape this", "write this up",
-  "let's plan this out". Prefer this over a multi-file spec-and-plan ceremony.
+  Turn a request or a finished `dw-grill` conversation into a durable `CHANGE.md` under
+  `.ai/work/` — goal, decisions taken, a task checklist, anchors in real files; one per goal,
+  never per shippable piece, and depth scales with size.
 argument-hint: "What change are we shaping?"
 ---
 
@@ -74,6 +71,12 @@ Judge the change honestly, then write accordingly — this is the step that keep
   offer to cut it down to the first genuinely shippable piece. If the size comes from _more than one
   scope_ rather than one deep one, that's the split test below, not a sizing call. A change you can't
   finish is worse than a smaller one you can.
+
+**Every size writes short.** Depth chooses which sections exist, never how much prose they get: a
+`## Goal` is **~5 lines at most**, a decision is **one line — the call, then why**, a task is one line,
+an anchor one line. This file is read on every `dw-next` invocation, so a paragraph where a line would
+do is a cost paid on every resume. Detail that argues for the shape belongs in the commit message; the
+diff holds what changed.
 
 **Then count the scopes** — and the answer is **one** unless something forces it higher. Sizing is
 depth; this is count, and one change is the default.

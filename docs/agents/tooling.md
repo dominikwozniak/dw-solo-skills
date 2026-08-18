@@ -1,235 +1,222 @@
 # Tooling — pnpm, Node, lint, format, self-tests and the guardrail hooks
 
-The commands themselves are in the root's `## Commands`; the gate is the `scripts` block of
-`package.json`. This file is how that tooling misbehaves, and what the misbehaviour looks like when
-it is not what it appears to be.
+The commands live in the root's `## Commands`; the gate is the `scripts` block of `package.json`. This
+file is how that tooling misbehaves.
 
 ## `pnpm validate:artifacts` — three passes
 
-`scripts/validate-artifacts.sh` runs every self-test under `scripts/tests/` (pass 1), then two
-governors over the durable layer: the cap on `.ai/backlog/` (pass 2) and the ratchet over
-`skills/*/SKILL.md` (pass 3, `scripts/check-skill-corpus.mjs` against
-`scripts/skill-corpus.baseline.json`).
+`scripts/validate-artifacts.sh` runs every self-test under `scripts/tests/` (pass 1 — it globs
+`scripts/tests/*.test.sh`, so a new test needs no wiring), then the cap on `.ai/backlog/` (pass 2) and
+the ratchet over `skills/*/SKILL.md` (pass 3, `scripts/check-skill-corpus.mjs` against
+`scripts/skill-corpus.baseline.json`). **Pass 3 is conditional**: with no `node` on `PATH` it prints
+`SKIP` and the command still exits 0, so a green run is not by itself proof the corpus was measured.
 
 Pass 3 sets **no threshold**: the baseline records what the corpus is and the check fails only on an
-increase, so growth stays legal and costs one `node scripts/check-skill-corpus.mjs --update-baseline`
-in the same commit. Adding a skill therefore always touches two files. The unit is words; why words
-rather than lines or bytes, and why a ratchet rather than a number, are in
+increase, so growth costs one `node scripts/check-skill-corpus.mjs --update-baseline` in the same
+commit, and adding a skill always touches two files. The unit is words; why words rather than lines or
+bytes, and why a ratchet rather than a number, are in
 [`0009`](../decisions/0009-skill-corpus-ratchet.md).
 
 A baseline it cannot trust exits **2**, never a silent pass: missing, unparseable, wrong-shaped, or
-internally inconsistent (`words` disagreeing with the sum of `perSkill`). The one exception is being
-asked to create one — `--update-baseline` on a missing file bootstraps it. Bad flag spellings exit 2
-too, because the two that matter both look like success: `--update-baselines` would run a plain check
-and write nothing, and `--root ""` resolves relative to the cwd, so from the repo root it measures the
-live tree the fixture was meant to stand in for.
-
-A new self-test needs no wiring: pass 1 globs `scripts/tests/*.test.sh`.
+`words` disagreeing with the sum of `perSkill`. The one exception is `--update-baseline` on a missing
+file, which bootstraps it. Bad flag spellings exit 2 too, because the two that matter both look like
+success: `--update-baselines` runs a plain check and writes nothing, and `--root ""` resolves against
+the cwd — from the repo root it measures the live tree the fixture stood in for.
 
 ## The hooks
 
-Wired in tracked `.claude/settings.json`, with the scripts in `.claude/hooks/` — so a fresh clone and
-a `git worktree` checkout get the same guardrails. Each is a byte-identical copy of its template under
-`templates/hooks/`, the canon this repo ships; `scripts/tests/hooks-in-sync.test.sh` pins the two
-together.
+Wired in tracked `.claude/settings.json` with the scripts in `.claude/hooks/`, so a fresh clone and a
+`git worktree` checkout get the same guardrails. Each is a byte-identical copy of its template under
+`templates/hooks/`, pinned by `scripts/tests/hooks-in-sync.test.sh` — the hooks you run are the hooks
+you ship.
 
-| hook                          | fires on                                                           |
-| ----------------------------- | ------------------------------------------------------------------ |
-| `block-dangerous-commands.sh` | PreToolUse(Bash) — destructive shell                               |
-| `block-non-pnpm.sh`           | PreToolUse(Bash) — npm/yarn/bun invocations                        |
-| `enforce-commit-hygiene.sh`   | PreToolUse(Bash) — commit subject, trailer, backtick, `git add -A` |
-| `credential-leak-guard.sh`    | PreToolUse(Bash) — credential stores, env hunting, exfil           |
-| `block-env-access.sh`         | PreToolUse(Read/Edit/Write/Grep/Bash) — `.env`                     |
-| `guard-plugin-canon.sh`       | PreToolUse(Edit/Write) — an edit aimed through a plugin symlink    |
-| `lint-on-edit.sh`             | PostToolUse(Write/Edit) — the root's Lint command                  |
-| `large-file-guard.sh`         | PostToolUse(Write) — an oversized write, after the fact            |
+| hook                          | fires on                                                                               |
+| ----------------------------- | -------------------------------------------------------------------------------------- |
+| `block-dangerous-commands.sh` | PreToolUse(Bash) — destructive shell                                                   |
+| `block-non-pnpm.sh`           | PreToolUse(Bash) — npm/yarn/bun invocations                                            |
+| `enforce-commit-hygiene.sh`   | PreToolUse(Bash) — commit subject, trailer, backtick, `git add -A`                     |
+| `credential-leak-guard.sh`    | PreToolUse(Bash) — credential stores, env hunting, exfil                               |
+| `block-env-access.sh`         | PreToolUse(Read/Edit/Write/MultiEdit/NotebookEdit/Grep/Bash) — `.env`                  |
+| `guard-plugin-canon.sh`       | PreToolUse(Edit/Write/MultiEdit/NotebookEdit) — an edit aimed through a plugin symlink |
+| `lint-on-edit.sh`             | PostToolUse(Write/Edit/MultiEdit) — the root's Lint command                            |
+| `large-file-guard.sh`         | PostToolUse(Write) — an oversized write, after the fact                                |
 
-Every one opens with `command -v jq >/dev/null || exit 0` — **without `jq` on `PATH` they all
-silently no-op**, and nothing says so. `/dw-doctor` is the check. `templates/hooks/` ships a ninth,
-`typecheck-on-stop.sh`, deliberately not wired here — this repo has no typecheck.
+Every one opens with `command -v jq >/dev/null || exit 0` — **without `jq` on `PATH` they all silently
+no-op**, and nothing says so. `/dw-doctor` is the check. `templates/hooks/` ships a ninth,
+`typecheck-on-stop.sh`, deliberately unwired here because this repo has no typecheck.
 
-`lint-on-edit.sh` is no longer inert: `evals/*.ts` matches its `.ts/.tsx/.js/.jsx/.mjs/.cjs` filter,
-so every edit there runs the lint command over that one file — `scripts/lint.sh` forwards the path it
-is appended, and only walks the tree when handed nothing. `.husky/pre-commit` is still the real gate.
+`lint-on-edit.sh` is live on `evals/*.ts`, which matches its `.ts/.tsx/.js/.jsx/.mjs/.cjs` filter:
+`scripts/lint.sh` lints the one path it is appended and only walks the tree when handed nothing.
+`.husky/pre-commit` is still the real gate.
 
 ## The four declared bullets
 
-Four values under the root's `## Solo lane` are **grep-read** rather than inferred, which is why they
-live there and nowhere else: `- **Lint command**:`, `- **Typecheck command**:`, `- **Commit
-pattern**:` and `- **Commit trailer**:`. Every one resolves the same way, in four separate scripts
-that deliberately share the extraction shape — one bug fixed once:
+`- **Lint command**:`, `- **Typecheck command**:`, `- **Commit pattern**:` and
+`- **Commit trailer**:` under the root's `## Solo lane` are **grep-read** rather than inferred, which
+is why they live there and nowhere else. Four separate scripts share one extraction shape, so a bug
+there is fixed once. The chain:
 
 1. `AGENTS.md`, the tracked file the scaffold writes.
 2. `CLAUDE.local.md`, legacy only — a repo scaffolded before decision 0007 still keeps its own there.
-   `CLAUDE.md` is absent from the chain on purpose: it is a symlink to `AGENTS.md`, so reading it is
-   reading step 1 twice.
-3. The script's own default. For lint and typecheck that is a probe (eslint / `tsc`); for the commit
-   pattern it is Conventional Commits, and for the trailer it is `none` — a requirement nobody
-   declared must not start failing commits in a repo that never asked for one.
+   `CLAUDE.md` is absent on purpose: it is a symlink to `AGENTS.md`, so reading it is reading step 1
+   twice.
+3. The script's own default — a probe (eslint / `tsc`) for lint and typecheck, Conventional Commits
+   for the pattern, and `none` for the trailer, because a requirement nobody declared must not start
+   failing commits.
 
 The value is **the first backticked span** on the line, and a standalone `none` **disables the check
-and stops the chain**. `none` is tested on the raw remainder _before_ any backtick extraction, because
-it has to win over explanatory prose: `none — see `scripts/lint.sh`` must skip, and the version that
-picked the backticks first ran that script on every edit. An unrendered `{{…}}` placeholder is not a
-declaration either, and each script names the tokens it rejects.
+and stops the chain**. `none` is tested on the raw remainder _before_ any backtick extraction so it
+wins over explanatory prose: `none — see `scripts/lint.sh`` must skip, and the version that picked the
+backticks first ran that script on every edit. An unrendered `{{…}}` placeholder is not a declaration
+either, and each script names the tokens it rejects.
 
 ## Gotchas
 
-- **agnix warnings do not fail the build, and one of them is true right now.** `scripts/lint.sh`
-  exits **0** with dozens of warnings; only `Found N errors` gates. So a rule firing is not a rule
-  enforced — agnix's `File exceeds recommended token limit` has been firing on `CLAUDE.md` and being
-  ignored the whole time `pnpm validate:docs` has been calling that same file green. Two checkers, two
-  units, one of them advisory, and the advisory one looks identical to the binding one in the output.
-  Run either to see where the file stands; no copy of those figures is kept here. Before citing agnix
-  as the thing that would have caught something, check whether it gates: `severity` sets a reporting
-  floor, and `[[overrides]]` can only _disable_ a rule for a glob, never turn its threshold down. That
-  is why the corpus ratchet is its own checker rather than a tuned `AS-012`.
-  - **The consequence: one real error hides in the wall of warnings, and markdown you read as code can
-    be the source of it.** The unclosed-XML-tag rule counts backticks **per line**, so an
-    angle-bracketed placeholder is exempt only while its code span opens and closes on the same line.
-    Hand-wrap an _earlier_ span across the newline and the following line is left with odd parity — the
-    placeholder on it is then read as bare prose and errors. It cost a diagnosis here: a placeholder
-    inside what looked like a code span in a `CHANGE.md` note, found only by capturing the raw output
-    and grepping it, because the summary line above it counts warnings you have already learned to
-    skip. Verified both ways against fixtures. Read the **exit code**, never the tally, and keep such a
-    span short enough that it never needs wrapping.
-- **A new check needs a new `paths:` entry, or it never runs on the commit shape it exists to
-  catch.** Every workflow here is path-filtered, so a check added to an existing script inherits that
-  script's triggers — the paths the _old_ checks cared about. It has bitten repeatedly, and both
-  workflows now carry the reasoning inline beside the entries that were missing. When you add a check,
-  add every path it _reads_ to both the `pull_request` and `push` lists, not just the script you
-  edited. What makes it hide: some _other_ workflow's filter usually does match, so the commit still
-  shows a green tick — from a run that never performs the check in question. A green tick on a skill
-  edit does not mean the corpus was measured; only the _Validate artifacts_ run does.
-- **pnpm here is three traps deep, and every one of them looks like a broken repo.**
-  - **The lint script can be hijacked before it reaches `scripts/lint.sh`.** With the `rtk` proxy
-    hook active it is rewritten to `rtk lint` — an _ESLint_ wrapper — and dies with
-    `Command "eslint" not found` while the repo is perfectly green. The format script is unaffected
-    (rtk has no `format` command), which makes it look like a real lint failure. Verify with
-    `bash scripts/lint.sh` or `node_modules/.bin/agnix .`. CI has no rtk.
-  - **It also OOMs locally.** `agnix` over the whole tree can die with "terminated abnormally" under
-    memory pressure; `scripts/lint.sh` turns that into a hard error rather than a silent pass.
-    Re-run it, or scope it — `pnpm lint <path>...` checks only those paths. CI has the headroom.
-    **But a scoped run is not a subset of the full one**, and this is the surprise: `.agnix.toml`'s
-    `exclude` list governs the project walk only, so a path named explicitly is linted even when the
-    walk skips it. `pnpm lint docs/agents/tooling.md` reports an error the bare run never sees
-    (`Agent file must have YAML frontmatter` — that directory is excluded for exactly that reason).
-    Scope to debug an OOM, not to decide whether a file is clean. Nothing automated hits this —
-    `lint-on-edit` filters to `.ts/.js` and `.husky/pre-commit` filters `templates/` itself.
-  - **Both versions this repo pins live in one field, and three things have to line up for it to
-    hold.** `devEngines.packageManager` states pnpm `11.18.0` and `devEngines.runtime` Node
-    `24.16.0`; there is no `packageManager` field and no `.nvmrc` any more. (1) The **bootstrap on
-    `PATH` must be pnpm 11** — v10 cannot read `devEngines` at all and would run this repo with v11
-    settings half-applied, so `engines.pnpm` is the floor that turns that into a loud
-    `ERR_PNPM_UNSUPPORTED_ENGINE` instead. (2) **`onFail` governs every command now**, not just
-    installs: `"error"` refuses unless your pnpm matches the pin _exactly_ (which no `brew upgrade`
-    survives), `"download"` fetches the pinned version and runs it — the behaviour the deleted
-    `packageManager` field used to provide. (3) **CI reads both fields through one inputless
-    `pnpm/setup@v2` step**, which installs pnpm, installs Node, and runs the install — so a workflow
-    needs no `with:` block. **Don't add `cache: true` without re-measuring** — it was measured on #28
-    and reverted, because a cache hit came out slower than no cache at all: the action installs the
-    runtime _before_ it restores, so most of the entry is a Node tarball uploaded and restored on every
-    hit and then never used. If CI time is the real complaint, `agnix`'s postinstall fetching its
-    prebuilt binary is what dominates these jobs, and no store cache touches it. The Node half carries
-    a tail:
-    `devEngines.runtime` makes Node a **locked dependency** (a `node@runtime:…` entry with a hash per
-    platform), so bumping it is the field **plus** a regenerated `pnpm-lock.yaml` — edit the version
-    alone and CI's frozen install refuses it. Locally the pin reaches scripts run through pnpm only:
-    `pnpm exec node --version` is the pinned Node, and a bare `node --version` is whatever your shell
-    has — **unless that `node` is a version-proxy shim, and then a version probe is not a read.**
-    A `vp`-style shim (and pnpm's own) resolves the declaration of whatever repo it is run _in_,
-    downloads a runtime to satisfy it, and answers as that version; `pnpm -v` likewise fetches the
-    pinned pnpm and rewrites `pnpm-lock.yaml` — `packageManagerDependencies`, `packages:`,
-    `snapshots:`, some 200 lines. Two consequences for any script probing versions: the answer is the
-    repo's own declaration compared against itself, and an unsatisfiable one makes the probe exit 1
-    with no version at all. Probe from `/` (`(cd / && pnpm -v)`), where no manifest applies —
-    `dw-doctor` does, and `scripts/tests/doctor.test.sh` fails if a probe moves back inside.
+- **agnix warnings do not gate, and one of them is true right now.** `scripts/lint.sh` exits **0**
+  with dozens of warnings; only `Found N errors` gates, so a rule firing is not a rule enforced —
+  agnix's `File exceeds recommended token limit` has been firing on `CLAUDE.md` the whole time
+  `pnpm validate:docs` has called that same file green. Two checkers, two units, and the advisory one's
+  output looks identical to the binding one's; run either for the current figures, no copy of which is
+  kept here. Before citing agnix as the thing that would have caught
+  something, check that it gates: `severity` only sets a reporting floor, and `[[overrides]]` can only
+  _disable_ a rule for a glob, never lower its threshold — which is why the corpus ratchet is its own
+  checker rather than a tuned `AS-012`.
+  - **Read the exit code, never the tally**, because one real error hides in the wall of warnings and
+    markdown you read as code can be its source. The unclosed-XML-tag rule counts backticks **per
+    line**, so an angle-bracketed placeholder is exempt only while its code span opens and closes on
+    the same line; hand-wrap an _earlier_ span across the newline and the next line is left with odd
+    parity, its placeholder read as bare prose and erroring. Keep such a span short enough that it
+    never needs wrapping.
+- **A new check needs its `paths:` entry in both the `pull_request` and `push` lists**, or it never
+  runs on the commit shape it exists to catch. Only the three `validate-*` workflows are
+  path-filtered — `agnix-lint`, `evals-routing`, `format-check` and `secrets-scan` run on everything —
+  so a check added to one of those three scripts inherits that script's old triggers. Add every path the
+  check _reads_, not just the script you edited; those workflows carry the reasoning inline beside the
+  entries that were missing. It hides because an unfiltered workflow matches anyway, so the commit still
+  shows a green tick from a run that never performed the check: a green tick on a skill edit does not
+  mean the corpus was measured — only the _Validate artifacts_ run does.
+- **pnpm here is three traps deep, and every one looks like a broken repo.**
+  - **The lint script can be hijacked before it reaches `scripts/lint.sh`.** With the `rtk` proxy hook
+    active it is rewritten to `rtk lint`, an _ESLint_ wrapper, and dies with
+    `Command "eslint" not found` while the repo is green; the format script is unaffected (rtk has no
+    `format` command), which makes it read as a real lint failure. Verify with `bash scripts/lint.sh`
+    or `node_modules/.bin/agnix .`. CI has no rtk.
+  - **`agnix` also OOMs locally** — "terminated abnormally" under memory pressure, which
+    `scripts/lint.sh` turns into a hard error rather than a silent pass. Re-run it, or scope it
+    (`pnpm lint <path>...`); CI has the headroom. **But a scoped run is not a subset of the full
+    one**: `.agnix.toml`'s `exclude` list governs the project walk only, so a path named explicitly is
+    linted even when the walk skips it — `pnpm lint docs/agents/tooling.md` reports an
+    `Agent file must have YAML frontmatter` error the bare run never sees, that directory being
+    excluded for exactly that reason. Scope to debug an OOM, never to decide whether a file is clean.
+    Nothing automated hits this: `lint-on-edit` filters to `.ts/.js` and `.husky/pre-commit` filters
+    `templates/`.
+  - **Both pinned versions live in one field, and three things must line up.**
+    `devEngines.packageManager` states pnpm `11.18.0` and `devEngines.runtime` Node `24.16.0`; there
+    is no `packageManager` field and no `.nvmrc`. (1) The **bootstrap on `PATH` must be pnpm 11** — v10
+    cannot read `devEngines` at all and would half-apply v11 settings, so `engines.pnpm` is the floor
+    that turns that into a loud `ERR_PNPM_UNSUPPORTED_ENGINE`. (2) **`onFail` governs every command**,
+    not just installs: `"error"` refuses unless your pnpm matches the pin _exactly_ (which no
+    `brew upgrade` survives), `"download"` fetches the pinned version and runs it, the behaviour the
+    deleted `packageManager` field used to provide. (3) **CI reads both fields through one inputless
+    `pnpm/setup@v2` step** — it installs pnpm, installs Node and runs the install, so no `with:` block
+    is needed.
+    - **Don't add `cache: true` without re-measuring.** It was measured on #28 and reverted: the
+      action installs the runtime _before_ it restores, so most of the entry is a Node tarball
+      uploaded and restored on every hit and then never used, making a cache hit slower than no cache.
+      What actually dominates these jobs is `agnix`'s postinstall fetching its prebuilt binary, which
+      no store cache touches.
+    - **Bumping Node is the field _plus_ a regenerated `pnpm-lock.yaml`.** `devEngines.runtime` makes
+      Node a locked dependency (a `node@runtime:…` entry with a per-platform hash), so editing the
+      version alone makes CI's frozen install refuse it.
+    - **A version probe is not a read when `node` is a version-proxy shim.** Locally the pin reaches
+      only what runs through pnpm (`pnpm exec node --version` is pinned; a bare `node --version` is
+      your shell's), and a `vp`-style shim — pnpm's own included — resolves the declaration of
+      whatever repo it runs _in_, downloads a runtime to satisfy it and answers as that version.
+      `pnpm -v` likewise fetches the pinned pnpm and rewrites `pnpm-lock.yaml`
+      (`packageManagerDependencies`, `packages:`, `snapshots:`, some 200 lines). So the answer is the
+      repo's own declaration compared against itself, and an unsatisfiable one exits 1 with no version
+      at all: probe from `/` (`(cd / && pnpm -v)`), as `dw-doctor` does and
+      `scripts/tests/doctor.test.sh` enforces.
 - **The lint hooks disagree with the gate, in more than one direction.**
   - **`.lintstagedrc.json`'s glob and `prettier --check .` disagree by construction.** Prettier checks
-    every file it understands; lint-staged only formats the extensions listed, so a new file type is
-    unformatted at commit and rejected at push — which reads as a lint failure in a green repo.
-    Adding `evals/*.ts` needed `ts` in that glob. Add the extension with the first file of a kind.
+    every file it understands while lint-staged only formats the listed extensions, so a new file type
+    is unformatted at commit and rejected at push — a lint failure in a green repo. Add the extension
+    with the first file of a kind; `evals/*.ts` needed `ts` there.
   - **Prettier is not idempotent on a paragraph nested inside a task-list item**, so `--write` and
-    `--check` can loop forever disagreeing — which the format check fails and `.husky/pre-commit` does
-    not, because lint-staged writes and re-stages, committing the very content the push gate then
-    refuses. It bites in `.ai/work/<slug>/CHANGE.md`, where writing findings under a `- [x] N.` box is
-    the natural thing to do. Keep task bodies to one paragraph; findings belong in `## Notes`.
+    `--check` disagree forever: the format check fails while `.husky/pre-commit` does not, because
+    lint-staged writes and re-stages the very content the push gate then refuses. It bites in
+    `.ai/work/<slug>/CHANGE.md`, where writing findings under a `- [x] N.` box is the natural thing to
+    do. Keep task bodies to one paragraph; findings belong in `## Notes`.
   - **`prettier --check` never looks at prose width**, because `.prettierrc.json` sets
-    `proseWrap: "preserve"` — `printWidth: 100` governs code and reflowed tables, and Markdown
-    paragraphs are left exactly as authored. So the format gate passes a 128-column line in a file
-    hand-wrapped to 100, and an edit that rewraps only the line it touches pushes the overflow onto the
-    next one. Rewrap the whole paragraph, and check with `grep -nE '^.{108,}'` rather than the gate.
+    `proseWrap: "preserve"` and `printWidth: 100` governs only code and reflowed tables. So the gate
+    passes a 128-column line in a file hand-wrapped to 100, and an edit that rewraps just the line it
+    touches pushes the overflow onto the next. Rewrap the whole paragraph and check with
+    `grep -nE '^.{108,}'`.
   - **`evals/*.ts` must never get the executable bit.** `lint-on-edit.sh` `eval`s its resolved lint
-    command against the file path; the pre-fix version resolved to a bare space and executed the
-    target. Fixed and pinned by `scripts/tests/lint-on-edit.test.sh`.
-- **`block-env-access.sh` inspects the whole Bash command, and now stops reading at a `<<`.** Commit
-  messages are fine either way — quoted prose passes, and heredoc bodies are dropped before
-  tokenizing, so `git commit -F - <<'MSG'` no longer blocks. But that drop is unconditional: a
-  literal `<<` anywhere in a command starts body mode and **nothing below it is scanned**. The other
-  half is that a bare `.env` token still blocks anywhere, so a probe of the hook cannot be typed
-  literally — build the string (`D=$(printf ".%s" env)`) or your own test call never runs. **The same
-  blindness sits in `block-non-pnpm.sh`**, which cannot tell a mention from an invocation either —
-  though only when the quoted text carries a command separator, since the patterns anchor after `;`,
-  `&` and `|`. `git grep "npm install"` is fine; `git grep "; npm install"` and
-  `grep -rn "npm install\|yarn add" .` are both refused for containing the string they search _for_,
-  and so is `git commit -m "ci: replace | yarn with pnpm"`. Grep the shorter token, or build it. (This
-  entry named the harmless spelling as the trap for a while — the example was never reproducible, and
-  the fix was to probe both hooks rather than re-read the sentence.) **`block-dangerous-commands.sh` is the third**, and the worst
-  to probe by hand: its patterns anchor after `;`, `&` and `|`, so a one-liner looping over test cases
-  contains `; git restore .` by construction and blocks itself. Put the cases in a file under the
-  scratchpad and run that — which is what `scripts/tests/` already does, and the reason to reach for it
-  first.
-- **When you change one of these patterns, diff the old hook against the new one instead of reading
-  the regex.** `git show origin/main:templates/hooks/<hook>.sh > /tmp/old.sh`, run the same probe
-  through both, and compare exit codes: the answer you need is _which commands changed verdict_, and
-  nothing else. Anchoring the bare `.` was meant to be a one-row delta and was — but the same
-  comparison is what exposed the two holes that had been there all along (a quoted `"."`, and
-  `git -C <path>`), because those rows were identically wrong on both sides. A loosened guardrail is
-  invisible to a self-test that never had the case.
+    command against the file path, and the pre-fix version resolved to a bare space and executed the
+    target. Pinned by `scripts/tests/lint-on-edit.test.sh`.
+- **Three hooks cannot tell a mention of a command from an invocation of it, so a probe cannot be
+  typed literally.**
+  - **`block-env-access.sh` stops reading at a `<<`.** Heredoc bodies are dropped before tokenizing,
+    which is why `git commit -F - <<'MSG'` no longer blocks — but the drop is unconditional, so a
+    literal `<<` anywhere starts body mode and **nothing below it is scanned**. A bare `.env` token
+    still blocks anywhere, so build the string (`D=$(printf ".%s" env)`) or your own test call never
+    runs.
+  - **`block-non-pnpm.sh` has the same blindness**, but only when the quoted text carries a command
+    separator, since the patterns anchor after `;`, `&` and `|`. `git grep "npm install"` is fine;
+    `git grep "; npm install"`, `grep -rn "npm install\|yarn add" .` and
+    `git commit -m "ci: replace | yarn with pnpm"` are all refused for containing the string they name.
+    Grep the shorter token, or build it.
+  - **`block-dangerous-commands.sh` is the worst to probe by hand**: its patterns anchor after the same
+    separators, so a one-liner looping over test cases contains `; git restore .` by construction and
+    blocks itself. Put the cases in a file under the scratchpad and run that — which is what
+    `scripts/tests/` already does, and the reason to reach for it first.
+- **When you change one of these patterns, diff the old hook against the new one instead of reading the
+  regex.** `git show origin/main:templates/hooks/<hook>.sh > /tmp/old.sh`, run the same probe through
+  both and compare exit codes: the answer you need is _which commands changed verdict_. That comparison
+  is what exposed two holes that had been there all along (a quoted `"."`, and `git -C <path>`) — rows
+  identically wrong on both sides, and a loosened guardrail is invisible to a self-test that never had
+  the case.
 - **Only exit 2 blocks, so a hook that fails any other way is a hook that is silently off.** Every one
-  of these runs `set -uo pipefail`, and each of the three ways below aborts it at exit 1 — which the
-  harness reads as "not a block" and never mentions. The lesson is not the individual traps; it is that
-  a guardrail's failure mode is indistinguishable from its happy path, so every hook needs a case
-  proving it still refuses something.
-  - **`local a="$1" n=${#a}` does not work.** Every word of a `local` is expanded _before_ the builtin
+  runs `set -uo pipefail`, and each trap below aborts it at exit 1 — which the harness reads as "not a
+  block" and never mentions. The lesson is not the individual traps but that a guardrail's failure mode
+  is indistinguishable from its happy path, so every hook needs a case proving it still refuses
+  something.
+  - **`local a="$1" n=${#a}` does not work** — every word of a `local` is expanded before the builtin
     runs, so `${#a}` reads an `a` that is not set yet. Two statements, always.
-  - **bash 3.2 errors on `"${arr[@]}"` for an EMPTY array under `set -u`.** Which is why
+  - **bash 3.2 errors on `"${arr[@]}"` for an EMPTY array under `set -u`**, which is why
     `enforce-commit-hygiene.sh` carries its per-commit message group as scalars rather than an array.
-  - **A `while read` loop's exit status is its last test**, false for the ordinary case, which sinks
-    the enclosing pipeline under `pipefail`. `strip_heredocs` ends in a bare `return 0` for exactly
-    this reason, in two hooks now.
+  - **A `while read` loop's exit status is its last test**, false for the ordinary case, which sinks the
+    enclosing pipeline under `pipefail`. `strip_heredocs` ends in a bare `return 0` for exactly this
+    reason, in two hooks now.
   - **A hook that exits before consuming stdin kills its caller with SIGPIPE.** `large-file-guard.sh`
     resolved its threshold above `input=$(cat)`, so the disable path returned without draining the
-    payload and the writer took the signal — `zero-disables` exiting 141. It surfaced **once**, under
-    the full suite's load, and would not reproduce in 20 standalone runs: the payload fits the pipe
-    buffer, so the writer normally finishes before the hook can exit and the race only opens when the
-    hook wins. Read stdin first, then decide. The other hooks are safe only because they happen to
-    read immediately — treat that as the rule, not the accident.
-- **`${path#"$repo_root"/}` is not "make this path repo-relative".** It is a string-prefix test, and
-  the two strings routinely name the same directory in different spellings: git reports the physical
-  path while the tool hands over one that still contains a symlinked ancestor — `/private/var/…`
-  against `/var/…` on macOS is the everyday case, and a repo under a symlinked home dir is another.
-  The strip then silently does nothing, the path reads as "outside the repo", and the hook exits 0
-  without guarding. Compare directories with `-ef`, which is device-and-inode and answers the question
-  actually being asked; keep the walk itself textual (`dirname`) so it cannot resolve the very symlink
+    payload and the writer took the signal (`zero-disables` exiting 141). It surfaced **once**, under
+    the full suite's load, and would not reproduce in 20 standalone runs — the payload fits the pipe
+    buffer, so the race only opens when the hook wins. Read stdin first, then decide; the other hooks
+    are safe only because they happen to read immediately.
+- **`${path#"$repo_root"/}` is not "make this path repo-relative"** — it is a string-prefix test, and
+  the two strings routinely name the same directory in different spellings (git reports the physical
+  path while the tool hands over one containing a symlinked ancestor: `/private/var/…` against `/var/…`
+  on macOS, or a repo under a symlinked home). The strip then silently does nothing, the path reads as
+  outside the repo, and the hook exits 0 without guarding. Compare directories with `-ef`, which is
+  device-and-inode, and keep the walk itself textual (`dirname`) so it cannot resolve the very symlink
   it is looking for. `guard-plugin-canon.sh` is the worked example.
-- **Reaching for `xargs -n1` to re-tokenize a shell command does not survive a newline.** BSD xargs
-  (macOS) aborts with "unterminated quote" the moment a quoted argument contains one — and a
-  multi-line `-m` commit body is this repo's normal shape, so tokenization stopped at the flag and
-  every commit read as having no message. `enforce-commit-hygiene.sh` carries a ~40-line quote-tracking
-  lexer instead; copy that rather than re-deriving this. It also earns its keep twice, because
-  distinguishing an inert single-quoted backtick from a live double-quoted one needs the quote state
-  that no token list retains.
-- **A self-test can be green for a reason that has nothing to do with the contract.** Two shapes, one
+- **`xargs -n1` does not survive a newline**, so it cannot re-tokenize a shell command here: BSD xargs
+  (macOS) aborts with "unterminated quote" the moment a quoted argument contains one, and a multi-line
+  `-m` commit body is this repo's normal shape — tokenization stopped at the flag and every commit read
+  as having no message. `enforce-commit-hygiene.sh` carries a ~40-line quote-tracking lexer instead;
+  copy that rather than re-deriving it. It earns its keep twice, because distinguishing an inert
+  single-quoted backtick from a live double-quoted one needs quote state that no token list retains.
+- **A self-test can be green for a reason that has nothing to do with the contract** — two shapes, one
   root cause: the assertion never reaches the code it names.
-  - **A fixture that is the live repo is a content gate under a unit test's name.** The case that
-    taught this is gone with its script (`check-decisions.test.sh`), and the shape outlives it: a
-    `no-arg` case ran the script against this repo and demanded silence — gating `docs/decisions/`
-    from under the heading `arguments:`, and stricter than the contract it was testing. Use a
-    synthetic fixture; live-content checks belong in `validate-artifacts.sh`.
+  - **A fixture that is the live repo is a content gate under a unit test's name.** A `no-arg` case ran
+    its script against this repo and demanded silence, gating `docs/decisions/` from under the heading
+    `arguments:` and stricter than the contract it tested. Use a synthetic fixture; live-content checks
+    belong in `validate-artifacts.sh`.
   - **A case placed outside the region the code scans, or asserting the bug as the contract.** Both
     shipped here and an outside reviewer found them, not the suite: a router row appended after
-    `## Solo lane` passed only because the check grepped the whole file, and a `value-matches-hook`
-    case asserted that explanatory backticks beat the `none` sentinel — pinning the defect as
-    intended behaviour. When a test passes first try, prove it can fail: break the code, or move the
-    fixture line, and watch it go red.
+    `## Solo lane` passed only because the check grepped the whole file, and a `value-matches-hook` case
+    asserted that explanatory backticks beat the `none` sentinel, pinning the defect as intended
+    behaviour. When a test passes first try, prove it can fail — break the code, or move the fixture
+    line, and watch it go red.

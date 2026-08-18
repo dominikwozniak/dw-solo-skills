@@ -1,6 +1,6 @@
 {
   "name": "dw-solo-extras",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "Off-loop skills for the solo lane — reached for beside the loop, not on the way from shape to ship. Two today: compact the live session into a handoff the next context window resumes from, mid-task, and walk the backlog entry by entry, dropping what is stale and doing what is cheap. Install alongside dw-solo, whose .ai/ folder these read and write.",
   "author": {
     "name": "Dominik Wozniak"

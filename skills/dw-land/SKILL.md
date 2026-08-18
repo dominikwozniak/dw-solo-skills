@@ -1,11 +1,9 @@
 ---
 name: dw-land
 description: >-
-  Close out a change: one thin verdict over the diff — correct, fits the repo, blast radius, ticked
-  boxes actually proven — then, on approval, promote the durable residue to `docs/decisions/`,
-  `CONTEXT.md`, `## Gotchas` and the backlog, archive the change doc, and push the branch and open
-  its PR. Use when a change is finished, or when someone says "land this", "wrap this up", "is this
-  ready to merge", "close this out". Prefer this over merging and letting the change doc rot.
+  Close out a finished change and decide whether it is ready to merge: one thin verdict over the
+  diff, then on your go promote the durable residue to `docs/decisions/`, `CONTEXT.md`, `##
+  Gotchas` and the backlog, archive the change doc, and push the branch and open its PR.
 argument-hint: "bare for the verdict — your go closes it and opens the PR · close to trust the diff and close at once · reject to archive a turned-down idea with its reason"
 ---
 

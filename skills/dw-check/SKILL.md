@@ -1,12 +1,10 @@
 ---
 name: dw-check
 description: >-
-  A fast, optional quality gate over the change in progress: the diff goes to an outside reviewer
-  by default, or to a quick two-axis self-review — correct? fits this repo? — when it is trivial or
-  none is installed. Findings at real file:line, verified, then fixed in-session after approval.
-  Repeatable mid-build; writes no artifact. Use when the work so far deserves a look, or when
-  someone says "review this", "check this", "quick QA". Prefer this over a multi-auditor review
-  pipeline.
+  A fast, optional quality gate over the change in progress: the diff goes to an outside reviewer,
+  or to a quick two-axis self-review — correct? fits this repo? — when the diff is trivial or no
+  reviewer is installed, with findings at real file:line, verified, then fixed in-session after
+  approval.
 argument-hint: "bare delegates the pass · codex forces it on a trivial diff · a path or topic narrows the focus"
 ---
 

@@ -1,9 +1,8 @@
 ---
 name: dw-prune
 description: >-
-  Walk `.ai/backlog/` and decide every entry out loud: drop what is stale or already done, do what is
-  cheap and unblocked, bundle what ships with a cousin, leave the rest. One pass, no shaping.
-  Explicit-invoke only — you are the one who can see the queue has stopped being one.
+  Walk `.ai/backlog/` and decide every entry out loud: drop what is stale or already done, do what
+  is cheap and unblocked, bundle what ships with a cousin, leave the rest. Explicit-invoke only.
 disable-model-invocation: true
 ---
 

@@ -105,3 +105,6 @@ in [`AGENTS.md`](AGENTS.md) and the procedures in the skills themselves.
   test. Reported as overlap, never counted as a routing failure: the model is never offered it.
 - **HARD STOP** — a point in a skill where it must stop and wait for a human answer rather than
   proceed on an assumption.
+- **Fact-token diff** — the check that a doc rewrite kept its content: every backticked span, path,
+  flag, number and error string in the old text, checked for presence in the new. Reads a rewrite too
+  heavy for the word-stream window `docs/agents/README.md` prescribes beside it.

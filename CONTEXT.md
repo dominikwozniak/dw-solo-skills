@@ -38,9 +38,11 @@ in [`AGENTS.md`](AGENTS.md) and the procedures in the skills themselves.
   to an outside reviewer. The `codex` argument overrides it, and overrides nothing else; a missing
   reviewer is not something it can override. The numbers live in the skill, not here. Set by
   [`0012`](docs/decisions/0012-bare-dw-check-delegates-by-default.md).
-- **Absorption bar** — the second test a backlog entry must clear: if doing it costs less than
-  describing it, it belongs to the change that found it. Joins the month bar (_will you ever?_),
-  which tests only whether the idea is worth queueing at all.
+- **Absorption bar** — the second test a backlog entry must clear, and a **default rather than a
+  judgement**: nothing blocks it and doing it costs less than describing it → the change that found
+  it, now. Only genuinely blocked work — waiting on a decision, a dependency, a change not yet made —
+  earns an entry. Joins the month bar (_will you ever?_), which tests only whether the idea is worth
+  queueing at all. `dw-prune` applies it late, to a queue that grew anyway.
 - **Archive** — `.ai/archive/<slug>/`: landed change docs kept as history, not guidance. Nothing
   reads them to decide anything; backlog entries may point at one for its findings. Two statuses end
   up here and there is no third: `landed`, and **`rejected` ≡ cancelled** — one status for an idea

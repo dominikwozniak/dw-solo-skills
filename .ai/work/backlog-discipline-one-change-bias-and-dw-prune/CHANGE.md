@@ -72,7 +72,7 @@ that same commit — `node scripts/check-skill-corpus.mjs --update-baseline` —
       (the canonical statement), `.ai/backlog/README.md:16-19`, `templates/backlog-README.md:16-19`.
       Add the blocking test and the imperative. `diff` the two READMEs afterwards: the only difference
       is the cap paragraph the template omits.
-- [ ] 3. **`dw-ship` deletes the branch it merged** — `skills/dw-ship/SKILL.md:51-54` gains
+- [x] 3. **`dw-ship` deletes the branch it merged** — `skills/dw-ship/SKILL.md:51-54` gains
       `--delete-branch`. Pin its interaction with step 4 or the next run reads a warning as a failure:
       the flag deletes **local and remote**, git refuses a branch checked out in a worktree, so on the
       worktree path gh drops the remote branch, warns about the local one, and `worktree.sh remove`

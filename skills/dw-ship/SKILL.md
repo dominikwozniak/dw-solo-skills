@@ -48,10 +48,19 @@ its output is a merged PR, a removed worktree, and a `.ai/work/` folder that sta
 1. **Read the checks first**: `gh pr checks`. Opening the PR at `dw-land` is what started this
    change's first CI, so this is where a result the verdict recorded as **pending on the push** gets
    settled. A pending or failing check is a reason to wait and say so, not a footnote under the go.
-2. `gh pr merge --squash --subject "<the PR title>"` — **`--subject`, not `--title`**, which
-   `gh pr merge` does not have and dies on. Pin it either way: the squash subject is what lands on the
-   default branch forever, and left to itself it comes out as whichever commit subject GitHub picks
-   rather than the conventional-commits subject `dw-git` composed.
+2. `gh pr merge --squash --delete-branch --subject "<the PR title>"` — **`--subject`, not `--title`**,
+   which `gh pr merge` does not have and dies on. Pin it either way: the squash subject is what lands
+   on the default branch forever, and left to itself it comes out as whichever commit subject GitHub
+   picks rather than the conventional-commits subject `dw-git` composed.
+
+   **`--delete-branch` is what stops the remote filling up with merged branches.** Nothing else in
+   this loop ever deletes one there, and after a squash-merge the branch has served its whole purpose,
+   so leaving it is pure accumulation. The flag deletes **local and remote**, which is one flag doing
+   two jobs with different failure modes: git refuses to delete a branch that is checked out in a
+   worktree, so on the worktree path expect gh to drop the remote branch and **warn** about the local
+   one. That warning is the expected outcome, not a failed merge — step 4 owns the local side and
+   removes both together. Read it and carry on.
+
 3. No PR on the branch → `dw-land` never ran or its PR was closed. Stop and say which, rather than
    opening one here.
 
@@ -66,7 +75,8 @@ bash "${CLAUDE_PLUGIN_ROOT}/scripts/worktree.sh" remove <slug>
 
 removes the worktree, deletes its branch — whatever the spelling, `<slug>` or `worktree-<slug>` —
 and prunes. For a plain feature branch with no worktree: `git switch <default-branch>`,
-`git branch -D <branch>`.
+`git branch -D <branch>` — though with no worktree holding it, step 3's `--delete-branch` has usually
+taken that one already, so "branch not found" here is the flag having worked, not an error.
 
 ### 5. Sync, then sweep what the squash brought back
 

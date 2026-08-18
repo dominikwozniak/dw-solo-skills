@@ -12,8 +12,9 @@ status: building # shaping | building | landed
 Four leaks in one lane, one goal: **nothing here accumulates unattended.** Observable when all four
 read true.
 
-1. `dw-shape` splits only on **different goals**. The independent-shippability test and "The answer is
-   N, not two" are gone from `skills/dw-shape/SKILL.md`.
+1. `dw-shape` splits only on **different goals**, and says so consistently — the `description`, the
+   split test and step 5's three-way choice all agree. "The answer is N, not two" is gone from
+   `skills/dw-shape/SKILL.md`; independent shippability survives only as the bullet that rejects it.
 2. The absorption bar reads as a **default with a blocking test**, identically in the three places it
    is stated — `nothing blocks it and doing it costs less than describing it → the current change,
 now` — and `dw-shape`'s "into this change" is the default of its three-way choice rather than one

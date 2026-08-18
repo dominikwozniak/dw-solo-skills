@@ -2,8 +2,8 @@
 name: dw-shape
 description: >-
   Turn a request or a finished `dw-grill` conversation into a durable `CHANGE.md` under `.ai/work/` —
-  goal, decisions taken, a task checklist, anchors in real files; one per independently shippable
-  scope. Depth scales with size: a small change gets two checkboxes, not a spec. Read back by
+  goal, decisions taken, a task checklist, anchors in real files; one per goal, never per shippable
+  piece. Depth scales with size: a small change gets two checkboxes, not a spec. Read back by
   `dw-next status` after a `/clear`.
   Use when starting work on a private project, or when someone says "shape this", "write this up",
   "let's plan this out". Prefer this over a multi-file spec-and-plan ceremony.
@@ -79,7 +79,8 @@ Judge the change honestly, then write accordingly — this is the step that keep
 depth; this is count, and one change is the default.
 
 - **The test is different goals** — do the pieces answer to separate goals, or is this one goal with
-  several parts? Only genuinely unrelated ideas that arrived in the same sentence split.
+  several parts? Only genuinely unrelated ideas split, and **how the request arrived decides nothing**:
+  one sentence, five sentences or a bulleted list, the question is the same.
 - **Not independent shippability.** That is a good _task_'s property, and it is the wrong test one
   level up: nearly every pair of edits passes it, so it splits work that shares one goal, one version
   bump and one gate run. **Not "do they touch different files"** either — nearly every change touches

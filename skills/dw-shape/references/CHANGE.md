@@ -9,13 +9,13 @@ status: shaping # shaping | building | landed
 
 ## Goal
 
-One short paragraph: what changes, and how you'd know it worked. Observable, not aspirational —
-"the settings screen persists the toggle across a restart", not "improve settings".
+~5 lines at most: what changes, and how you'd know it worked. Observable, not aspirational — "the
+settings screen persists the toggle across a restart", not "improve settings".
 
 ## Decisions
 
-Only decisions actually taken, with the one-line reason. Delete the section if none were needed —
-an empty heading is noise.
+Only decisions actually taken, one line each — the call, then why. Delete the section if none were
+needed; an empty heading is noise.
 
 - [decision] — [why]
 
@@ -36,5 +36,6 @@ change.
 
 ## Notes
 
-Appended while building — surprises, dead ends, things the next session needs. `dw-land` reads this
-when deciding what is durable enough to promote to `docs/decisions/`, `CONTEXT.md`, or `## Gotchas`.
+Appended while building — surprises, dead ends, things the next session needs, **one line each**; the
+diff holds the detail. `dw-land` reads this when deciding what is durable enough to promote to
+`docs/decisions/`, `CONTEXT.md`, or `## Gotchas`.

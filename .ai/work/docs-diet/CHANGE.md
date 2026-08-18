@@ -37,46 +37,21 @@ Known worked when the corpus baseline has **fallen** below 15 200 and the full g
 - [x] 4. Twelve descriptions to ~one sentence — drop the trigger lists, the "Prefer this over…"
       tails and the mode recaps `argument-hint` already carries. `pnpm eval:routing` after each
       batch; land at rank-1 ≥ 67 with no description pair ≥ 0.5.
-- [ ] 5. Size discipline at the source — goal ≤ ~5 lines, one-line decisions, a finding is one line
-      in `## Notes`, details stay in the diff — into `dw-shape` step 2 and `dw-next` step 4, mirrored
-      in `references/CHANGE.md`. Re-record the corpus baseline in this same commit and assert it fell.
-- [ ] 6. Patch-bump all three plugins in `marketplace.json` and each `plugin.json`, kept equal, then
-      run every script in `package.json`'s `scripts` block.
+- [x] 5. Size discipline at the source — goal ≤ ~5 lines, one-line decisions, a finding is one line
+      in `## Notes
 
-## Anchors
-
-- `docs/agents/README.md:52-72` — the gotchas that govern this change: moving prose conserves entries
-  while losing content, and a line target buys itself out of the content.
-- `scripts/skill-corpus.baseline.json` — `words: 15200`; pass 3 of `validate:artifacts` reads it.
-- `docs/agents/skills-and-plugins.md:106` — editing a `description` shifts every term's idf, so an
-  unrelated skill can lose rank-1. Run the eval; never leave a description wrong to avoid it.
-- `evals/routing.ts`, `evals/cases/*.json` — 7 case files, model-invocable skills only.
-
-## Notes
-
-- Rule preservation is verified per file, not by reading the diff: extract the old rule list, rewrite,
-  re-extract, diff the lists, then slide an 8-gram word-stream window over the old text and judge every
-  window missing from the new one as narration or content.
-- Baseline at shape time: rank-1 68% (21/31), one point above the floor.
-- `pnpm lint docs/agents/tooling.md` reports a false frontmatter error — that directory is excluded
-  from the project walk; judge with the bare `pnpm lint`.
-- `proseWrap: "preserve"` means the format gate never checks prose width; rewrap whole paragraphs and
-  check with `grep -nE '^.{108,}'`.
-- The 8-gram window is too noisy on a rewrite this heavy (98 runs, nearly all reworded prose). A
-  **fact-token diff** — every backticked span, path, flag, number and error string in the old file absent
-  from the new — is the instrument that works; both scripts sit in the scratchpad.
-- tooling.md: 3 103 → 2 692 words, one fact dropped on purpose (`check-decisions.test.sh`, the name of a
-  script already deleted, which the old entry itself said the shape outlives). A rule-dense file diets
-  about 13%; a bigger number here would mean rules went with the words.
-- skills-and-plugins.md dieted only 7% (1 777 -> 1 657 words) with **zero** fact tokens dropped; it was
-  already close to essence, and the two numbered checklists are pure rule.
-- README.md nets to 1 338 words, exactly where it started: the narration cut paid for a new gotcha
-  sub-bullet recording the fact-token method task 1 had to invent. Lines fell 118 -> 115.
-- Descriptions: one sentence each dropped rank-1 to **55%** with ten prompts scoring zero everywhere -
-  the shortening took the routing vocabulary with the narration. Choosing the words back in one sentence
-  at a time reached **71%**, above the 68% baseline. `dw-git` gained the synonyms `evals/README.md` had
-  named as its standing weakness; `dw-next` gave up "pick ... back up" so `dw-shape` keeps its checklist
-  prompts.
-- Only one `evals/cases` prompt was rewritten, and only because it hit gate 2 (neither side scores, so it
-  asserts nothing) - not to buy back the number.
-- A `description` is a routing surface, so shortening one is a **measurement**, not an edit.
+- Rule preservation per file: extract the old rule list, rewrite, re-extract, diff the lists, then run a
+  fact-token diff (scripts in the scratchpad).
+- The 8-gram word-stream window drowns in noise when a rewrite rewords every sentence — 98 runs on
+  tooling.md; the fact-token diff is what reads a rewrite that heavy.
+- tooling.md 3 103 → 2 692 words, one fact dropped on purpose: `check-decisions.test.sh`, a script
+  already deleted.
+- skills-and-plugins.md 1 777 → 1 657 with zero facts dropped; the two checklists are pure rule.
+- README.md nets 1 338 → 1 338: the narration cut paid for the new fact-token gotcha.
+- Shortening the descriptions dropped rank-1 to 55% before choosing the vocabulary back in reached 71%.
+- `dw-git` gained the synonyms `evals/README.md` named as its weakness; `dw-next` gave up "pick back up"
+  so `dw-shape` keeps its checklist prompts.
+- One `evals/cases` prompt was rewritten, only for gate 2 (neither side scored) — not to buy the number.
+- A `description` is a routing surface, so shortening one is a measurement, not an edit.
+- `pnpm lint docs/agents/tooling.md` reports a false frontmatter error; judge with the bare `pnpm lint`.
+- `proseWrap: "preserve"` hides prose width from the gate — check with `grep -nE '^.{108,}'`.

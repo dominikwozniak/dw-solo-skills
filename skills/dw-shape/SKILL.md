@@ -72,6 +72,12 @@ Judge the change honestly, then write accordingly — this is the step that keep
   scope_ rather than one deep one, that's the split test below, not a sizing call. A change you can't
   finish is worse than a smaller one you can.
 
+**Every size writes short.** Depth chooses which sections exist, never how much prose they get: a
+`## Goal` is **~5 lines at most**, a decision is **one line — the call, then why**, a task is one line,
+an anchor one line. This file is read on every `dw-next` invocation, so a paragraph where a line would
+do is a cost paid on every resume. Detail that argues for the shape belongs in the commit message; the
+diff holds what changed.
+
 **Then count the scopes** — and the answer is **one** unless something forces it higher. Sizing is
 depth; this is count, and one change is the default.
 

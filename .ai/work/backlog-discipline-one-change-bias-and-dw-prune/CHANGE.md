@@ -2,7 +2,7 @@
 change: backlog-discipline-one-change-bias-and-dw-prune
 branch: backlog-discipline-one-change-bias-and-dw-prune
 created: 2026-08-18
-status: shaping # shaping | building | landed
+status: building # shaping | building | landed
 ---
 
 # Change — one change by default, an absorption bar with teeth, dw-prune, and no branch left on origin
@@ -58,7 +58,7 @@ Plus: three plugin versions bumped, the corpus baseline re-recorded, the whole g
 that same commit — `node scripts/check-skill-corpus.mjs --update-baseline` — or pass 3 of
 `validate:artifacts` fails on unrecorded growth. Order is a hint; task 6 depends on nothing.
 
-- [ ] 1. **`dw-shape` biases to one change** — rewrite the "Then count the scopes" block
+- [x] 1. **`dw-shape` biases to one change** — rewrite the "Then count the scopes" block
       (`skills/dw-shape/SKILL.md:78-95`): drop the shippability test and "The answer is N, not two";
       the test becomes _different goals_ — separate ideas that arrived in one sentence — with the
       reason shippability fails one level up (it is a good _task_'s property; nearly every pair of

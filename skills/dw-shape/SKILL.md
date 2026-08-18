@@ -75,13 +75,18 @@ Judge the change honestly, then write accordingly — this is the step that keep
   scope_ rather than one deep one, that's the split test below, not a sizing call. A change you can't
   finish is worse than a smaller one you can.
 
-**Then count the scopes.** Sizing is depth; this is count, and a request that arrives as one sentence
-is often two pieces of work.
+**Then count the scopes** — and the answer is **one** unless something forces it higher. Sizing is
+depth; this is count, and one change is the default.
 
-- **The test is independent shippability** — could each piece land on its own and leave the repo
-  green? Same test as a task, one level up. **Not "do they touch different files"**: nearly every
-  change touches the README and the manifest, so file overlap is an ordering fact, never a merging
-  one. The answer is N, not two.
+- **The test is different goals** — do the pieces answer to separate goals, or is this one goal with
+  several parts? Only genuinely unrelated ideas that arrived in the same sentence split.
+- **Not independent shippability.** That is a good _task_'s property, and it is the wrong test one
+  level up: nearly every pair of edits passes it, so it splits work that shares one goal, one version
+  bump and one gate run. **Not "do they touch different files"** either — nearly every change touches
+  the README and the manifest, so file overlap is an ordering fact, never a merging one.
+- **Both failures are real, and the goal is the only line between them.** One doc carrying two
+  unrelated goals is why splitting is a rule at all; one goal cut across two docs is the failure that
+  rule causes when it fires too easily. Counting files, tasks or shippable pieces catches neither.
 - **At N ≥ 2, name the slugs and the one scope each owns, then ask. HARD STOP** — splitting is the
   user's call, made here and asked once; step 4's read-back confirms the result, not the decision.
 - **On yes, write N × `CHANGE.md`**, each **sized on its own terms** — run the ladder above once per
@@ -121,7 +126,8 @@ reading all N back in one pass where there are several.
 Everything the shaping deliberately left out — a `dw-grill` playback's closing list, the scopes a split
 declined, anything you narrowed away in step 2 — gets an explicit **three-way choice, forced per item**:
 
-- **into this change** — a task in the checklist you just read back,
+- **into this change — the default.** Nothing blocking it and cheaper to do than to describe means it
+  is a task in the checklist you just read back, now,
 - **into `.ai/backlog/`** — parked as a file, if it clears both bars in that folder's README: **will you
   ever?** and **should it have been done now?** Read them there; they are not restated here,
 - **dropped** — said out loud and gone, which is a real answer and often the right one.

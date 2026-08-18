@@ -31,7 +31,7 @@ Known worked when the corpus baseline has **fallen** below 15 200 and the full g
 - [x] 2. Rewrite `docs/agents/skills-and-plugins.md` — indirection rationale, the explicit-only rule
       and its delegation cost, the vendored/fork enumerations, both numbered checklists intact in
       substance (CI enforces them), six gotchas compressed.
-- [ ] 3. Rewrite `docs/agents/README.md` — the three-tier table, what-goes-where, the budget's
+- [x] 3. Rewrite `docs/agents/README.md` — the three-tier table, what-goes-where, the budget's
       "editorial, not a harness ceiling" point, gotchas-live-here, the router rules, the same-commit
       triggers, what `validate:docs` enforces, the deliberately-not-used list.
 - [ ] 4. Twelve descriptions to ~one sentence — drop the trigger lists, the "Prefer this over…"
@@ -70,3 +70,5 @@ Known worked when the corpus baseline has **fallen** below 15 200 and the full g
   about 13%; a bigger number here would mean rules went with the words.
 - skills-and-plugins.md dieted only 7% (1 777 -> 1 657 words) with **zero** fact tokens dropped; it was
   already close to essence, and the two numbered checklists are pure rule.
+- README.md nets to 1 338 words, exactly where it started: the narration cut paid for a new gotcha
+  sub-bullet recording the fact-token method task 1 had to invent. Lines fell 118 -> 115.

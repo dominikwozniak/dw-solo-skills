@@ -4,7 +4,7 @@ branch: docs-diet
 created: 2026-08-17
 status: landed
 landed: 2026-08-18
-pr: "#TBD"
+pr: "#38"
 ---
 
 # Change — the doc layer and the skill descriptions say the same things in fewer words

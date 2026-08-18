@@ -1,10 +1,9 @@
 ---
 name: dw-doctor
 description: >-
-  Read-only environment diagnostic for a solo-lane repo: check whether the tools the hooks and
-  skills assume are installed and whether the repo's guardrails will actually fire, then report
-  each gap with a copy-paste fix. Mutates nothing. Use when setting up or inheriting a repo, or
-  when someone asks "check my setup", "why aren't my hooks running", "diagnose the repo".
+  Read-only environment diagnostic for a solo-lane repo: whether the tools the hooks and skills
+  assume are installed and whether the repo's guardrails will really fire, each gap reported with
+  a copy-paste fix.
 ---
 
 # dw-doctor — read-only environment diagnostic

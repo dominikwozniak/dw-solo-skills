@@ -1,12 +1,9 @@
 ---
 name: dw-shape
 description: >-
-  Turn a request or a finished `dw-grill` conversation into a durable `CHANGE.md` under `.ai/work/` —
-  goal, decisions taken, a task checklist, anchors in real files; one per goal, never per shippable
-  piece. Depth scales with size: a small change gets two checkboxes, not a spec. Read back by
-  `dw-next status` after a `/clear`.
-  Use when starting work on a private project, or when someone says "shape this", "write this up",
-  "let's plan this out". Prefer this over a multi-file spec-and-plan ceremony.
+  Turn a request or a finished `dw-grill` conversation into a durable `CHANGE.md` under
+  `.ai/work/` — goal, decisions taken, a task checklist, anchors in real files; one per goal,
+  never per shippable piece, and depth scales with size.
 argument-hint: "What change are we shaping?"
 ---
 

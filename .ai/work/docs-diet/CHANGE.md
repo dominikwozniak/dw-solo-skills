@@ -34,7 +34,7 @@ Known worked when the corpus baseline has **fallen** below 15 200 and the full g
 - [x] 3. Rewrite `docs/agents/README.md` — the three-tier table, what-goes-where, the budget's
       "editorial, not a harness ceiling" point, gotchas-live-here, the router rules, the same-commit
       triggers, what `validate:docs` enforces, the deliberately-not-used list.
-- [ ] 4. Twelve descriptions to ~one sentence — drop the trigger lists, the "Prefer this over…"
+- [x] 4. Twelve descriptions to ~one sentence — drop the trigger lists, the "Prefer this over…"
       tails and the mode recaps `argument-hint` already carries. `pnpm eval:routing` after each
       batch; land at rank-1 ≥ 67 with no description pair ≥ 0.5.
 - [ ] 5. Size discipline at the source — goal ≤ ~5 lines, one-line decisions, a finding is one line
@@ -72,3 +72,11 @@ Known worked when the corpus baseline has **fallen** below 15 200 and the full g
   already close to essence, and the two numbered checklists are pure rule.
 - README.md nets to 1 338 words, exactly where it started: the narration cut paid for a new gotcha
   sub-bullet recording the fact-token method task 1 had to invent. Lines fell 118 -> 115.
+- Descriptions: one sentence each dropped rank-1 to **55%** with ten prompts scoring zero everywhere -
+  the shortening took the routing vocabulary with the narration. Choosing the words back in one sentence
+  at a time reached **71%**, above the 68% baseline. `dw-git` gained the synonyms `evals/README.md` had
+  named as its standing weakness; `dw-next` gave up "pick ... back up" so `dw-shape` keeps its checklist
+  prompts.
+- Only one `evals/cases` prompt was rewritten, and only because it hit gate 2 (neither side scores, so it
+  asserts nothing) - not to buy back the number.
+- A `description` is a routing surface, so shortening one is a **measurement**, not an edit.

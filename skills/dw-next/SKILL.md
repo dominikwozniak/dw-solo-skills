@@ -1,11 +1,9 @@
 ---
 name: dw-next
 description: >-
-  The solo lane's build step and its resume point in one skill. Bare, it reports where the active
-  `.ai/work/<slug>/CHANGE.md` stands — read from disk, so it survives a `/clear` — then builds every
-  remaining task, one commit each. `status` reports and stops; `go` builds one task. Use when picking
-  work back up or moving it forward, or when someone says "what's next", "where were we", "keep
-  going", "build the next task". Prefer this over re-deriving state from scrollback.
+  The solo lane's build step and its resume point in one skill: report where the active
+  `.ai/work/<slug>/CHANGE.md` stands — read from disk, so it survives a `/clear` — then build
+  every remaining unticked task, one commit each.
 argument-hint: "bare builds every remaining task · status reports and stops · go builds one"
 ---
 

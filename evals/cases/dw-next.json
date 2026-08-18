@@ -26,8 +26,9 @@
       "owner": "dw-land"
     },
     {
-      "prompt": "look over what I have built so far for mistakes",
-      "owner": "dw-check"
+      "prompt": "give the work in progress a review before I carry on building",
+      "owner": "dw-check",
+      "note": "Replaced \"look over what I have built so far for mistakes\", which scored zero on both sides once the descriptions shortened — it asserted nothing. This one is the real near miss: dw-check owns \"review\" and \"progress\", dw-next owns \"build\" and \"work\"."
     }
   ]
 }

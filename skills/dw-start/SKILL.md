@@ -1,10 +1,8 @@
 ---
 name: dw-start
 description: >-
-  Open a shaped change and build it: create its worktree and branch, claim the change by writing the
-  branch into its `CHANGE.md`, install, then hand straight to `dw-next`, which builds every task.
-  Bare lists what's unclaimed. Explicit-invoke only — creating branch topology is your call, never
-  the model's.
+  Open a shaped change and build it: create its worktree and branch, claim the change by writing
+  the branch into its `CHANGE.md`, install, then hand straight to `dw-next`. Explicit-invoke only.
 argument-hint: "bare lists the unclaimed changes · <slug> opens and builds that one · a description shapes it first"
 disable-model-invocation: true
 ---

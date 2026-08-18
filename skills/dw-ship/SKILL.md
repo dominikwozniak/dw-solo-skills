@@ -3,8 +3,7 @@ name: dw-ship
 description: >-
   Merge the landed change and leave nothing behind: settle the PR's checks, squash-merge it, tear
   down the worktree and branch, pull the default branch, and sweep the work doc a squash-merge
-  resurrects. Refuses a change `dw-land` hasn't closed. Explicit-invoke only — merging is your call,
-  never the model's.
+  resurrects. Explicit-invoke only.
 disable-model-invocation: true
 ---
 

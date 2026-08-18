@@ -3,8 +3,8 @@ name: dw-init
 description: >-
   Scaffold a private/solo repo for the solo loop — `.ai/` (work / backlog / archive),
   `docs/decisions/`, `CONTEXT.md`, a tracked `AGENTS.md` with a Task Router and a size budget, the
-  guardrail hooks, settings with a derived allow-list, and an optional pre-commit. For a repo where
-  you are the only reader. Explicit-invoke only — scaffolding a repo is your call, never the model's.
+  guardrail hooks, settings with a derived allow-list, and an optional pre-commit. Explicit-invoke
+  only.
 argument-hint: "bare detects the stack from disk · any project context to seed"
 disable-model-invocation: true
 ---

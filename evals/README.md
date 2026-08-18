@@ -175,19 +175,35 @@ Closest description pairs, of 55 scanned: `dw-land ↔ dw-ship` 0.227, `dw-ship 
 `dw-next ↔ dw-start` 0.138. Nothing is near the thresholds, so treat the collision check as a
 tripwire and watch the top number creep rather than waiting for it to fire.
 
-68% is not a target, it is where the descriptions are today. The two standing weaknesses behind it:
+68% was not a target, just where the descriptions were.
 
-- **`dw-git` has no synonyms.** "save what I have with a sensible message" and "park these edits
-  somewhere" score _exactly zero_ against a description that lists the operations by their git names
-  and never names how anyone asks for them. Restoring the sentence that
-  `44c06c7` removed recovers a different prompt outright — "bring my branch up to date with main"
-  goes from rank 3 to rank 1, because that sentence contained the phrase "sync with main".
-- **`dw-shape`'s vocabulary is contested three ways** — by `dw-start` ("Open a **shaped** change"
-  stems to the same term), by `dw-next` (which owns "disk" and "task") and by `dw-land` (which owns
-  "decisions").
+### Re-measured 2026-08-18, after the descriptions went to one sentence each
 
-Both are description decisions, deliberately left alone: the eval's job is to show them, not to
-quietly rewrite the skills it measures.
+Corpus of 12 skills, 5 explicit-invoke. **rank-1 22/31 = 71%**, yields 21/21, 4 shadowed. Closest
+pairs of 66: `dw-land ↔ dw-ship` 0.157, `dw-doctor ↔ dw-next` 0.140, `dw-handoff ↔ dw-next` 0.119.
+
+| skill       | rank-1 | yields | shadowed |
+| ----------- | ------ | ------ | -------- |
+| `dw-git`    | 4/5    | 3/3    | 1        |
+| `dw-shape`  | 4/5    | 3/3    | 2        |
+| `dw-check`  | 3/5    | 3/3    | 0        |
+| `dw-doctor` | 3/4    | 3/3    | 1        |
+| `dw-grill`  | 3/4    | 3/3    | 0        |
+| `dw-land`   | 3/4    | 3/3    | 0        |
+| `dw-next`   | 2/4    | 3/3    | 0        |
+
+Cutting each description to one sentence dropped the number to **55%** first, with ten prompts scoring
+zero everywhere — the shortening had taken the vocabulary with the narration. Choosing the words back
+in, one sentence at a time, recovered it and then some. What that cost is visible in the table:
+`dw-git` gained the synonyms it never had (`4/5`, from `2/5`) because the sentence now says "save what
+you have", "sync with main" and "park edits in a stash" rather than only the git verb; `dw-next` paid
+for it, losing "pick … back up" to keep `dw-shape` off `dw-next`'s checklist prompts. The remaining
+weakness is unchanged in kind: **`dw-shape`'s vocabulary is contested three ways** — by `dw-start`
+("Open a **shaped** change" stems to the same term), by `dw-next` ("disk", "task") and by `dw-land`
+("decisions").
+
+The lesson the drop taught: a description is a routing surface, not prose, so **shortening one is a
+measurement, not an edit**. Run the eval after every batch.
 
 ### The threshold worth knowing about
 

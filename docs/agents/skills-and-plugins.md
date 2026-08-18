@@ -49,7 +49,8 @@ no upstream at all. `scripts/tests/hooks-in-sync.test.sh` pins the templates to 
 A skill copied from `dw-skills` is a **fork**, simplified for one reader — expected to diverge, never
 re-synced. Current forks: `dw-grill`, `dw-shape`, `dw-next`, `dw-land`, `dw-git`, `dw-doctor` and
 `dw-init` (which also absorbed the team lane's standalone pre-commit skill). `dw-start`, `dw-check`,
-`dw-ship`, `dw-handoff` and `scripts/runtime/worktree.sh` are this lane's own — they have no upstream.
+`dw-ship`, `dw-handoff`, `dw-prune` and `scripts/runtime/worktree.sh` are this lane's own — they have
+no upstream.
 `dw-handoff` is the one to watch: it shares a name with a team-lane skill and nothing else, having
 been written here after the team lane dropped handoffs on purpose, and it writes one overwritten
 `HANDOFF.md` inside the change folder rather than a dated record under `.ai/handoffs/`.

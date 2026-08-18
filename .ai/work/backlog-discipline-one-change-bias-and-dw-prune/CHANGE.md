@@ -77,7 +77,7 @@ that same commit — `node scripts/check-skill-corpus.mjs --update-baseline` —
       the flag deletes **local and remote**, git refuses a branch checked out in a worktree, so on the
       worktree path gh drops the remote branch, warns about the local one, and `worktree.sh remove`
       (`:64`) still owns the local side. The fast path has no branch to delete.
-- [ ] 4. **`dw-prune` joins `dw-solo-extras`** — new `skills/dw-prune/SKILL.md`, ~350 words,
+- [x] 4. **`dw-prune` joins `dw-solo-extras`** — new `skills/dw-prune/SKILL.md`, ~350 words,
       `disable-model-invocation: true`, **no eval case**. One pass over `.ai/backlog/*.md` (README
       excluded), four spoken outcomes per entry: stale or already done → `git rm` with the reason in
       the commit message; cheap and unblocked → do it now, here or in the open change; has a cousin
@@ -139,3 +139,12 @@ that same commit — `node scripts/check-skill-corpus.mjs --update-baseline` —
 - **Two candidate glossary terms for `dw-land`** if the wording settles: nothing new is coined here,
   but **absorption bar** is used across the archive and is still absent from `CONTEXT.md`.
 - `.gitignore` is modified in the working tree by another session's work. Stage by name, always.
+- **`AGENTS.md` is at 119/120 lines** after the layout line took `dw-prune`. One line of headroom left
+  for the whole repo, so the next rule that wants to live in the root has to displace one — which is
+  what wave 3's docs diet is for. Nothing here to fix; worth knowing before the next root edit.
+- **`dw-prune` came out at 443 words**, not the ~350 the shaping estimated. Every sentence carries a
+  rule, so nothing was cut to hit the number; it is still the smallest skill in the corpus by ~200
+  words (`dw-start` is next at 647).
+- **`eval:routing` went to 68% rank-1, up from 67%** — 21/31, 21/21 negatives, no description pair
+  above 0.239. So `dw-prune`'s description cost no existing skill its rank-1, which was the idf risk
+  the add-a-skill checklist warns about.

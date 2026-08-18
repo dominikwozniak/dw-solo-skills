@@ -38,7 +38,21 @@ Known worked when the corpus baseline has **fallen** below 15 200 and the full g
       tails and the mode recaps `argument-hint` already carries. `pnpm eval:routing` after each
       batch; land at rank-1 ≥ 67 with no description pair ≥ 0.5.
 - [x] 5. Size discipline at the source — goal ≤ ~5 lines, one-line decisions, a finding is one line
-      in `## Notes
+      in the notes section, details stay in the diff — into `dw-shape` step 2 and `dw-next` step 4,
+      mirrored in `references/CHANGE.md`. Re-record the corpus baseline in this same commit.
+- [x] 6. Patch-bump all three plugins in `marketplace.json` and each `plugin.json`, kept equal, then run
+      every script in `package.json`'s `scripts` block.
+
+## Anchors
+
+- `docs/agents/README.md` gotchas — moving prose conserves entries while losing content, and a line
+  target buys itself out of the content.
+- `scripts/skill-corpus.baseline.json` — was `words: 15200`; pass 3 of `validate:artifacts` reads it.
+- `docs/agents/skills-and-plugins.md` — editing a `description` shifts every term's idf, so an unrelated
+  skill can lose rank-1. Run the eval; never leave a description wrong to avoid it.
+- `evals/routing.ts`, `evals/cases/*.json` — 7 case files, model-invocable skills only.
+
+## Notes
 
 - Rule preservation per file: extract the old rule list, rewrite, re-extract, diff the lists, then run a
   fact-token diff (scripts in the scratchpad).
@@ -55,3 +69,5 @@ Known worked when the corpus baseline has **fallen** below 15 200 and the full g
 - A `description` is a routing surface, so shortening one is a measurement, not an edit.
 - `pnpm lint docs/agents/tooling.md` reports a false frontmatter error; judge with the bare `pnpm lint`.
 - `proseWrap: "preserve"` hides prose width from the gate — check with `grep -nE '^.{108,}'`.
+- A script that splits this file at its first `## Notes` truncates it, because a task can quote that
+  heading inline — it ate task 6 and the anchors here. Split on the heading at line start, or don't.

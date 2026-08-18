@@ -86,9 +86,10 @@ change folder rather than a dated record under `.ai/handoffs/`.
    shifts every term's idf, so adding a skill can knock an _existing_ one off rank-1 and fail CI's floor
    without your own case file scoring badly at all.
 
-Steps 2–7 are CI-enforced, bar the loop diagram, and CI checks the versions are _equal_, not that they
-changed. The validators name the exact missing entry — run them rather than re-deriving this checklist
-by hand.
+Steps 2–5 and 7 are CI-enforced, bar the loop diagram; **step 6 is not** — `evals/routing.ts` skips a
+case file that is absent and demands one positive and no negatives at all, so its counts are yours to
+hold. CI also checks the versions are _equal_, not that they changed. The validators name the exact
+missing entry — run them rather than re-deriving this checklist by hand.
 
 ## Adding a shipped (plugin-level) script
 

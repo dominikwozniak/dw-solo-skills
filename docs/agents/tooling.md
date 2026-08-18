@@ -7,9 +7,9 @@ file is how that tooling misbehaves.
 
 `scripts/validate-artifacts.sh` runs every self-test under `scripts/tests/` (pass 1 — it globs
 `scripts/tests/*.test.sh`, so a new test needs no wiring), then the cap on `.ai/backlog/` (pass 2) and
-the ratchet over
-`skills/*/SKILL.md` (pass 3, `scripts/check-skill-corpus.mjs` against
-`scripts/skill-corpus.baseline.json`).
+the ratchet over `skills/*/SKILL.md` (pass 3, `scripts/check-skill-corpus.mjs` against
+`scripts/skill-corpus.baseline.json`). **Pass 3 is conditional**: with no `node` on `PATH` it prints
+`SKIP` and the command still exits 0, so a green run is not by itself proof the corpus was measured.
 
 Pass 3 sets **no threshold**: the baseline records what the corpus is and the check fails only on an
 increase, so growth costs one `node scripts/check-skill-corpus.mjs --update-baseline` in the same
@@ -30,16 +30,16 @@ Wired in tracked `.claude/settings.json` with the scripts in `.claude/hooks/`, s
 `templates/hooks/`, pinned by `scripts/tests/hooks-in-sync.test.sh` — the hooks you run are the hooks
 you ship.
 
-| hook                          | fires on                                                           |
-| ----------------------------- | ------------------------------------------------------------------ |
-| `block-dangerous-commands.sh` | PreToolUse(Bash) — destructive shell                               |
-| `block-non-pnpm.sh`           | PreToolUse(Bash) — npm/yarn/bun invocations                        |
-| `enforce-commit-hygiene.sh`   | PreToolUse(Bash) — commit subject, trailer, backtick, `git add -A` |
-| `credential-leak-guard.sh`    | PreToolUse(Bash) — credential stores, env hunting, exfil           |
-| `block-env-access.sh`         | PreToolUse(Read/Edit/Write/Grep/Bash) — `.env`                     |
-| `guard-plugin-canon.sh`       | PreToolUse(Edit/Write) — an edit aimed through a plugin symlink    |
-| `lint-on-edit.sh`             | PostToolUse(Write/Edit) — the root's Lint command                  |
-| `large-file-guard.sh`         | PostToolUse(Write) — an oversized write, after the fact            |
+| hook                          | fires on                                                                               |
+| ----------------------------- | -------------------------------------------------------------------------------------- |
+| `block-dangerous-commands.sh` | PreToolUse(Bash) — destructive shell                                                   |
+| `block-non-pnpm.sh`           | PreToolUse(Bash) — npm/yarn/bun invocations                                            |
+| `enforce-commit-hygiene.sh`   | PreToolUse(Bash) — commit subject, trailer, backtick, `git add -A`                     |
+| `credential-leak-guard.sh`    | PreToolUse(Bash) — credential stores, env hunting, exfil                               |
+| `block-env-access.sh`         | PreToolUse(Read/Edit/Write/MultiEdit/NotebookEdit/Grep/Bash) — `.env`                  |
+| `guard-plugin-canon.sh`       | PreToolUse(Edit/Write/MultiEdit/NotebookEdit) — an edit aimed through a plugin symlink |
+| `lint-on-edit.sh`             | PostToolUse(Write/Edit/MultiEdit) — the root's Lint command                            |
+| `large-file-guard.sh`         | PostToolUse(Write) — an oversized write, after the fact                                |
 
 Every one opens with `command -v jq >/dev/null || exit 0` — **without `jq` on `PATH` they all silently
 no-op**, and nothing says so. `/dw-doctor` is the check. `templates/hooks/` ships a ninth,
@@ -88,12 +88,13 @@ either, and each script names the tokens it rejects.
     parity, its placeholder read as bare prose and erroring. Keep such a span short enough that it
     never needs wrapping.
 - **A new check needs its `paths:` entry in both the `pull_request` and `push` lists**, or it never
-  runs on the commit shape it exists to catch: every workflow here is path-filtered, so a check added
-  to an existing script inherits that script's old triggers. Add every path the check _reads_, not
-  just the script you edited; both workflows carry the reasoning inline beside the entries that were
-  missing. It hides because some _other_ workflow's filter usually matches, so the commit still shows a
-  green tick from a run that never performed the check: a green tick on a skill edit does not mean the
-  corpus was measured — only the _Validate artifacts_ run does.
+  runs on the commit shape it exists to catch. Only the three `validate-*` workflows are
+  path-filtered — `agnix-lint`, `evals-routing`, `format-check` and `secrets-scan` run on everything —
+  so a check added to one of those three scripts inherits that script's old triggers. Add every path the
+  check _reads_, not just the script you edited; those workflows carry the reasoning inline beside the
+  entries that were missing. It hides because an unfiltered workflow matches anyway, so the commit still
+  shows a green tick from a run that never performed the check: a green tick on a skill edit does not
+  mean the corpus was measured — only the _Validate artifacts_ run does.
 - **pnpm here is three traps deep, and every one looks like a broken repo.**
   - **The lint script can be hijacked before it reaches `scripts/lint.sh`.** With the `rtk` proxy hook
     active it is rewritten to `rtk lint`, an _ESLint_ wrapper, and dies with

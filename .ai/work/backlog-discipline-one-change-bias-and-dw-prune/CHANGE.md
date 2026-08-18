@@ -1,6 +1,6 @@
 ---
 change: backlog-discipline-one-change-bias-and-dw-prune
-branch: unclaimed
+branch: backlog-discipline-one-change-bias-and-dw-prune
 created: 2026-08-18
 status: shaping # shaping | building | landed
 ---

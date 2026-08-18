@@ -2,8 +2,9 @@
 name: dw-check
 description: >-
   A fast, optional quality gate over the change in progress: the diff goes to an outside reviewer,
-  or to a quick two-axis self-review — correct? fits this repo? — when it is trivial, with
-  findings at real file:line, verified, then fixed in-session after approval.
+  or to a quick two-axis self-review — correct? fits this repo? — when the diff is trivial or no
+  reviewer is installed, with findings at real file:line, verified, then fixed in-session after
+  approval.
 argument-hint: "bare delegates the pass · codex forces it on a trivial diff · a path or topic narrows the focus"
 ---
 

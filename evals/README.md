@@ -113,7 +113,7 @@ Banner comments split the file, top to bottom. Each section depends only on the 
 
 ## Case files
 
-One `evals/cases/<skill>.json` per **model-invocable** skill. The four with
+One `evals/cases/<skill>.json` per **model-invocable** skill. The five with
 `disable-model-invocation: true` get none: routing is never the model's decision there. Their
 descriptions stay in the corpus regardless, because they still compete for the same words.
 
@@ -179,8 +179,8 @@ tripwire and watch the top number creep rather than waiting for it to fire.
 
 ### Re-measured 2026-08-18, after the descriptions went to one sentence each
 
-Corpus of 12 skills, 5 explicit-invoke. **rank-1 22/31 = 71%**, yields 21/21, 4 shadowed. Closest
-pairs of 66: `dw-land ↔ dw-ship` 0.157, `dw-doctor ↔ dw-next` 0.140, `dw-handoff ↔ dw-next` 0.119.
+Corpus of 12 skills, 5 explicit-invoke. **rank-1 21/31 = 68%**, yields 21/21, 4 shadowed. Closest
+pairs of 66: `dw-land ↔ dw-ship` 0.157, `dw-doctor ↔ dw-next` 0.141, `dw-handoff ↔ dw-next` 0.119.
 
 | skill       | rank-1 | yields | shadowed |
 | ----------- | ------ | ------ | -------- |
@@ -189,12 +189,15 @@ pairs of 66: `dw-land ↔ dw-ship` 0.157, `dw-doctor ↔ dw-next` 0.140, `dw-han
 | `dw-check`  | 3/5    | 3/3    | 0        |
 | `dw-doctor` | 3/4    | 3/3    | 1        |
 | `dw-grill`  | 3/4    | 3/3    | 0        |
-| `dw-land`   | 3/4    | 3/3    | 0        |
+| `dw-land`   | 2/4    | 3/3    | 0        |
 | `dw-next`   | 2/4    | 3/3    | 0        |
 
 Cutting each description to one sentence dropped the number to **55%** first, with ten prompts scoring
 zero everywhere — the shortening had taken the vocabulary with the narration. Choosing the words back
-in, one sentence at a time, recovered it and then some. What that cost is visible in the table:
+in, one sentence at a time, recovered it to 71%, and then a review pass spent one point back buying
+`dw-check`'s missing "or no reviewer is installed" clause and a wider `dw-next` Notes rule — which is
+the trade this file exists to make legible, and the right way round: **a correct description outranks a
+high number.** What the recovery cost is visible in the table:
 `dw-git` gained the synonyms it never had (`4/5`, from `2/5`) because the sentence now says "save what
 you have", "sync with main" and "park edits in a stash" rather than only the git verb; `dw-next` paid
 for it, losing "pick … back up" to keep `dw-shape` off `dw-next`'s checklist prompts. The remaining

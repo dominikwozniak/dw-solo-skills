@@ -101,8 +101,8 @@ One task at a time, however many the mode allows.
   taken while building, a term this task had to coin. Not a narration of what the diff already shows.
   **One finding, one line.** You read this file on every invocation, so a note that runs to a paragraph
   is a tax on every resume — and the details are already in the diff and the commit message. If a
-  finding genuinely needs more, it has outgrown Notes: it is a `docs/decisions/` record `dw-land`
-  promotes, or a task.
+  finding genuinely needs more, it has outgrown Notes and belongs where `dw-land` promotes it — a
+  decision record, a `CONTEXT.md` term, a gotcha in its topic file — or it is a task here.
 - **Clear a `HANDOFF.md` you consumed** — `git rm` it in this same commit. It described the middle of
   the task you just finished, so leaving it behind strands the next session on a state that is gone.
   Anything in it worth keeping goes to Notes first.

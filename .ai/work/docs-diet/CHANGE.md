@@ -1,6 +1,6 @@
 ---
 change: docs-diet
-branch: unclaimed
+branch: docs-diet
 created: 2026-08-17
 status: shaping # shaping | building | landed
 ---

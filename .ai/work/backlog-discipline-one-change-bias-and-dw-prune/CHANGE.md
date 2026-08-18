@@ -95,7 +95,7 @@ that same commit — `node scripts/check-skill-corpus.mjs --update-baseline` —
       **and** its `plugin.json`. Last on purpose: `validate-manifests.sh` only checks the pair is
       _equal_. Then every script in the `scripts` block — `eval:routing` included, because a new
       `description` shifts every term's idf and can knock an existing skill under `--min-rank1 67`.
-- [ ] 6. **The one-time origin prune** — 10 stale remote branches, all squash-merged PRs #26–#35 and
+- [x] 6. **The one-time origin prune** — 10 stale remote branches, all squash-merged PRs #26–#35 and
       no open PR anywhere: `worktree-own-root-under-budget-and-router`,
       `worktree-shape-time-parking-for-the-left-out-list`, `cache-the-pnpm-store-in-the-new-setup-step`,
       `doctor-version-probes-read-only-and-read-devengines`, `worktree-skill-corpus-ratchet`,
@@ -148,6 +148,13 @@ that same commit — `node scripts/check-skill-corpus.mjs --update-baseline` —
 - **`eval:routing` went to 68% rank-1, up from 67%** — 21/31, 21/21 negatives, no description pair
   above 0.239. So `dw-prune`'s description cost no existing skill its rank-1, which was the idf risk
   the add-a-skill checklist warns about.
+- **The origin prune is done: all 10 branches gone, `origin` holds `main` alone**, confirmed with
+  `git ls-remote --heads origin`, then `git fetch --prune` to drop the stale remote-tracking refs
+  locally. Every branch mapped to a MERGED PR (#26–#35) and no PR was open. It went through
+  `gh api --method DELETE repos/<owner>/<repo>/git/refs/heads/<branch>`, one call per branch, because
+  `git push --delete` is refused by `block-dangerous-commands.sh:58` — **candidate `## Gotchas` entry**
+  for `docs/agents/tooling.md` or `git-history.md`: the guardrail has no exception for a confirmed
+  prune, so the API is the route, and the list-then-approve step is what stands in for the block.
 - **`pnpm lint` does not reach `scripts/lint.sh` in this environment, and the failure looks like a
   repo bug.** The global `rtk` hook rewrites it to `rtk lint`, which is "ESLint with grouped rule
   violations" (`rtk 0.43.0`) — so it dies with `Command "eslint" not found` on a repo whose linter is

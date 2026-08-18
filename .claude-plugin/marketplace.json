@@ -28,9 +28,9 @@
       "name": "dw-solo-extras",
       "version": "0.1.5",
       "source": "./plugins/dw-solo-extras",
-      "keywords": ["solo", "handoff", "context", "session"],
+      "keywords": ["solo", "handoff", "session", "backlog", "prune"],
       "category": "workflow",
-      "tags": ["solo", "handoff", "context"]
+      "tags": ["solo", "handoff", "backlog"]
     }
   ]
 }

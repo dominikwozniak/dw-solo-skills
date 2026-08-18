@@ -4,7 +4,7 @@ branch: backlog-discipline-one-change-bias-and-dw-prune
 created: 2026-08-18
 status: landed # shaping | building | landed
 landed: 2026-08-18
-pr: "TBD"
+pr: "#37"
 ---
 
 # Change — one change by default, an absorption bar with teeth, dw-prune, and no branch left on origin

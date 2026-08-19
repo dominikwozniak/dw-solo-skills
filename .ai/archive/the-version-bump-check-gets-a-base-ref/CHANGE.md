@@ -4,6 +4,7 @@ branch: the-version-bump-check-gets-a-base-ref
 created: 2026-08-19
 status: landed # shaping | building | landed
 landed: 2026-08-19
+pr: "#39"
 ---
 
 # Change — the version-bump check gets a base ref, so a bump that didn't happen fails CI

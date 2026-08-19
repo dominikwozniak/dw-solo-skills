@@ -1,6 +1,6 @@
 ---
 change: the-version-bump-check-gets-a-base-ref
-branch: unclaimed
+branch: the-version-bump-check-gets-a-base-ref
 created: 2026-08-19
 status: shaping # shaping | building | landed
 ---

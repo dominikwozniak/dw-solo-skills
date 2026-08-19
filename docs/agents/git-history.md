@@ -23,9 +23,15 @@ The conventions themselves (commit format, trailer, branch naming) are in the ro
     surfaces at land time, as a diff you cannot honestly grade. Either way, diff `main..HEAD` and drop
     what you didn't write: `git rebase --onto main <stowaway-sha> <branch>`, where the stowaway is your
     own old base. Check the version bumps in the same pass — the other change may have taken the number
-    yours targets.
+    yours targets, which is exactly what `pnpm validate:versions` measures against `origin/main`'s tip;
+    `git fetch` first, or it grades you against a stale base.
   - **Every way to rewind a branch is blocked by `block-dangerous-commands.sh`.** Not just
     `git reset --hard` — `git branch -f`, `git branch -D`, `git checkout .` and `git restore .` are
     all in `DANGEROUS_PATTERNS`, so an agent cannot move a branch backwards at all and must hand the
     command to you. `git rebase` is not blocked, so prefer `rebase --onto` where it reaches;
     otherwise expect to run the rewind yourself.
+    - **One rewind does get through, and it is the one to use for a throwaway commit.** The patterns
+      match `--hard` and the bare-dot forms, not a **mixed** `git reset HEAD~<n>` followed by
+      `git restore <paths named individually>` — so dropping a probe commit you just made is an
+      agent-runnable two-step, and only the blunt forms need you. It leaves untracked files alone,
+      which is what you want when the probe added one.

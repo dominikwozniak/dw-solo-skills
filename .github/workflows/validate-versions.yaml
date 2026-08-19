@@ -1,0 +1,54 @@
+name: Validate version bumps
+
+# Deliberately NO `paths:` filter, unlike every other validate-* workflow here. This check's whole
+# subject is which paths changed, so filtering it by path is the same blind spot one level up: the
+# commit shape it exists to catch is a payload edit with no manifest touched, which is precisely what
+# a `**/plugin.json` filter skips. It is bash, git and jq over a shallow-ish clone — cheap enough that
+# running it on every PR costs less than reasoning about which filter would be complete.
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Validate version bumps
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      # fetch-depth: 0 — every other validate-* job uses 1 because it reads only the checked-out
+      # tree. This one needs the base branch's tip AND a merge base with it, neither of which exists
+      # in a depth-1 clone.
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+
+      # No pnpm/setup step, matching validate-artifacts.yaml and validate-docs.yaml: the checker is
+      # bash over git and jq, both present on the runner, and it has no dev-tree dependency.
+      #
+      # THE TWO EVENTS NEED DIFFERENT BASES, and the push one is not ceremony — it is the only place
+      # the parallel-bump failure is reliably caught. On a PR the base is the target branch's tip,
+      # which is right but not sufficient: two PRs that fork at 1.0.0 and both bump to 1.0.1 both pass
+      # against 1.0.0, and GitHub re-runs the second only under strict branch protection or a merge
+      # queue. Neither is assumed here. So on push the base is HEAD~1 — this repo squash-merges, so
+      # that is the previous state of main — and the second merge lands red instead of shipping a
+      # number already taken. A first commit with no HEAD~1 resolves to nothing and the checker SKIPs.
+      - name: Resolve the base ref
+        id: base
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            git fetch --no-tags origin "${{ github.base_ref }}"
+            echo "ref=origin/${{ github.base_ref }}" >>"$GITHUB_OUTPUT"
+          else
+            echo "ref=HEAD~1" >>"$GITHUB_OUTPUT"
+          fi
+
+      - name: Validate version bumps
+        shell: bash
+        run: ./scripts/validate-versions.sh --base "${{ steps.base.outputs.ref }}"

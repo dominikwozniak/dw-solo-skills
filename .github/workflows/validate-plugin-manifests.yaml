@@ -5,6 +5,16 @@ on:
     paths:
       - "**/marketplace.json"
       - "**/plugin.json"
+      # The validator's real subject is the SYMLINK LAYOUT, not the JSON — it asserts that every
+      # plugins/<p>/skills/<name> is a link resolving to skills/<name>/, that every canon skill has
+      # exactly one owner, and that the scripts and templates links point into their canon. None of
+      # that is a manifest edit: replacing a symlink with a real directory, adding skills/<new>/ with
+      # no owner, or deleting templates/hooks/ all matched no path here, so the job never ran on the
+      # one commit shape it exists to catch.
+      - plugins/**
+      - skills/**
+      - scripts/runtime/**
+      - templates/**
       - scripts/validate-manifests.sh
       - .github/workflows/validate-plugin-manifests.yaml
   push:
@@ -12,6 +22,10 @@ on:
     paths:
       - "**/marketplace.json"
       - "**/plugin.json"
+      - plugins/**
+      - skills/**
+      - scripts/runtime/**
+      - templates/**
       - scripts/validate-manifests.sh
       - .github/workflows/validate-plugin-manifests.yaml
 

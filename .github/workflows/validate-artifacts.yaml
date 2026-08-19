@@ -22,6 +22,9 @@ on:
       - skills/**
       - scripts/check-skill-corpus.mjs
       - scripts/skill-corpus.baseline.json
+      # pass 2 caps this folder, and a commit that only appends an entry is the exact shape the cap
+      # exists to catch — without it here, that commit matched no filter and the cap never ran.
+      - .ai/backlog/**
       - scripts/validate-artifacts.sh
       - .github/workflows/validate-artifacts.yaml
   push:
@@ -35,6 +38,7 @@ on:
       - skills/**
       - scripts/check-skill-corpus.mjs
       - scripts/skill-corpus.baseline.json
+      - .ai/backlog/**
       - scripts/validate-artifacts.sh
       - .github/workflows/validate-artifacts.yaml
 

@@ -49,7 +49,7 @@ already holds fails too.
       subject is which paths changed, so a filter would be the same blind spot one level up.
 - [x] 4. Docs: rewrite the now-false gotcha at `docs/agents/skills-and-plugins.md:139-143` and the clause
       at line 91, and point `docs/agents/git-history.md:25` at the check. `AGENTS.md` needs no edit.
-- [ ] 5. The two filters that never fire: `validate-plugin-manifests.yaml` gains the symlink-layout paths
+- [x] 5. The two filters that never fire: `validate-plugin-manifests.yaml` gains the symlink-layout paths
       its validator actually reads, `validate-artifacts.yaml` gains `.ai/backlog/**` for pass 2's cap.
 
 ## Anchors
@@ -80,3 +80,5 @@ branch probe are what prove it works.
   alpha, so exit status cannot tell the two plugins apart.
 - `AGENTS.md` is at **119/120 lines**, 7336/10240 B — one line of headroom, so task 4's prose has to
   stay in `docs/agents/`.
+- The repo's workflow idiom comments the `pull_request` `paths:` block only and repeats the push list
+  bare; task 5's first draft duplicated the comment into both.

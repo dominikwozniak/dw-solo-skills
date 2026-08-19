@@ -32,7 +32,13 @@ BASE="origin/main"
 while [ $# -gt 0 ]; do
   case "$1" in
     --base)
-      BASE="${2:-}"
+      # Not `${2:-}` + `shift 2`: with no argument left, shift fails, and without `set -e` the loop
+      # spins on the same $1 forever. A hang in CI is worse than an error.
+      if [ $# -lt 2 ]; then
+        echo "::error::--base requires a ref"
+        exit 1
+      fi
+      BASE="$2"
       shift 2
       ;;
     --base=*)
@@ -121,15 +127,24 @@ for p in $PLUGIN_DIRS; do
   [ -L "$p/templates" ] && SURFACE="$SURFACE templates/"
 
   # First changed path under the surface, kept as the evidence line an error prints.
+  #
+  # A surface entry ending in `/` is a directory and matches by prefix; anything else is a single
+  # file and must match EXACTLY. Prefix-matching a file entry was wrong in a way that only ever
+  # over-fires: `scripts/runtime/worktree.sh` would also swallow `scripts/runtime/worktree.sh.bak`
+  # and demand a bump for a file no plugin ships. Directories are safe either way, since the
+  # trailing slash already stops `skills/one/` from matching `skills/one-more/`.
   hit=""
   for path in $CHANGED; do
     for pre in $SURFACE; do
-      case "$path" in
-        "$pre"*)
-          hit="$path"
-          break
+      case "$pre" in
+        */)
+          case "$path" in "$pre"*) hit="$path" ;; esac
+          ;;
+        *)
+          [ "$path" = "$pre" ] && hit="$path"
           ;;
       esac
+      [ -n "$hit" ] && break
     done
     [ -n "$hit" ] && break
   done

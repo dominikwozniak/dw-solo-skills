@@ -82,3 +82,6 @@ branch probe are what prove it works.
   stay in `docs/agents/`.
 - The repo's workflow idiom comments the `pull_request` `paths:` block only and repeats the push list
   bare; task 5's first draft duplicated the comment into both.
+- **Known and deliberately unfixed:** `git diff --name-only` C-quotes a path containing a newline, so
+  the token starts with `"`, matches no surface, and that payload edit passes unbumped. No shipped
+  filename has whitespace; the fix is `-z` plus a null-delimited read. Reviewed, declined, not lost.

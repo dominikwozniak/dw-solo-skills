@@ -76,7 +76,7 @@ ln -s ../../../scripts/runtime/tool.sh plugins/alpha/scripts/tool.sh
 ln -s ../../../skills/two plugins/beta/skills/two
 ln -s ../../templates plugins/beta/templates
 
-git add -A
+git add .claude-plugin plugins skills scripts templates docs
 git commit -qm "fixture"
 BASE_MAIN="$(git rev-parse HEAD)"
 
@@ -90,8 +90,7 @@ bump() {
 
 # on <branch> — fresh branch off the fixture's main, so cases never contaminate each other.
 on() {
-  git checkout -q main 2>/dev/null || git checkout -q "$BASE_MAIN"
-  git checkout -q -B "$1" "$BASE_MAIN"
+  git switch -q -C "$1" "$BASE_MAIN"
 }
 
 # expect <name> <pass|fail> <base-ref> [grep-for] — run the checker, assert the exit code, and
@@ -136,15 +135,15 @@ echo "edited" >>skills/one/SKILL.md
 bump alpha 1.0.1
 git commit -qam "edit and bump to 1.0.1"
 BRANCH_REF="$(git rev-parse --abbrev-ref HEAD)"
-git checkout -q main
+git switch -q main
 bump alpha 1.0.1
 git commit -qam "main takes 1.0.1 first"
-git checkout -q "$BRANCH_REF"
+git switch -q "$BRANCH_REF"
 expect "number-already-taken-on-main-fails" fail main "needs > 1.0.1"
 # Same tree, judged against the fork point instead — proves the failure comes from the base TIP and
 # not from anything else about the diff.
 expect "same-tree-passes-against-the-fork-point" pass "$BASE_MAIN"
-git checkout -q main
+git switch -q main
 git reset -q --keep "$BASE_MAIN"
 
 echo "the passes that must not become false alarms:"
@@ -175,6 +174,14 @@ echo "more" >>docs/notes.md
 git commit -qam "edit docs"
 expect "non-payload-change-passes" pass main
 
+# A file surface must match EXACTLY, not by prefix. scripts/runtime/tool.sh is shipped;
+# scripts/runtime/tool.sh.bak is not, and prefix matching demanded a bump for it.
+on runtime-neighbour
+echo "not shipped" >scripts/runtime/tool.sh.bak
+git add scripts/runtime/tool.sh.bak
+git commit -qm "add a file next to the shipped script"
+expect "file-surface-matches-exactly-not-by-prefix" pass main
+
 # Ownership: alpha's skill must not implicate beta. Asserted on the OK line, since the run fails
 # overall for alpha and a bare exit code would not distinguish the two.
 on alpha-only
@@ -196,7 +203,7 @@ ln -s ../../../skills/three plugins/gamma/skills/three
 echo '{ "name": "gamma", "version": "0.1.0" }' >plugins/gamma/.claude-plugin/plugin.json
 jq '.plugins += [{ "name": "gamma", "version": "0.1.0", "source": "./plugins/gamma" }]' \
   .claude-plugin/marketplace.json >tmp.json && mv tmp.json .claude-plugin/marketplace.json
-git add -A
+git add plugins/gamma skills/three .claude-plugin/marketplace.json
 git commit -qm "add gamma"
 expect "new-plugin-needs-no-growth" pass main "new plugin"
 
@@ -205,6 +212,30 @@ echo "the skips:"
 on skip-cases
 expect "unresolvable-base-skips" pass "no/such/ref" "SKIP"
 expect "nothing-changed-passes" pass main "nothing changed"
+
+echo "argument handling:"
+
+# `--base` with nothing after it used to spin forever: shift 2 fails with one argument left, and
+# without set -e the loop re-reads the same $1. The watchdog is the assertion — a regression hangs
+# the process rather than returning a wrong answer, so a bare exit-code check would hang the suite.
+"$CHECKER" --base >/dev/null 2>&1 &
+probe=$!
+(
+  sleep 5
+  kill -9 "$probe" 2>/dev/null
+) &
+watchdog=$!
+wait "$probe"
+rc=$?
+kill -9 "$watchdog" 2>/dev/null
+wait "$watchdog" 2>/dev/null
+if [ "$rc" -eq 1 ]; then
+  note_pass "base-without-argument-errors"
+elif [ "$rc" -ge 128 ]; then
+  note_fail "base-without-argument-errors" "hung — killed by the watchdog (rc=$rc)"
+else
+  note_fail "base-without-argument-errors" "expected exit 1, got $rc"
+fi
 
 echo
 echo "validate-versions self-test: $PASS passed, $FAIL failed"

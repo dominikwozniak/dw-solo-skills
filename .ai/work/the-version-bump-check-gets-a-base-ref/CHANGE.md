@@ -41,7 +41,7 @@ already holds fails too.
       `templates/` where the link exists — never `.claude-plugin/marketplace.json`, which is where the bump
       lands); `version_gt` as a pure-bash `IFS=.` compare, not `sort -V`; `::error::` naming the plugin,
       both versions and one changed path.
-- [ ] 2. `scripts/tests/validate-versions.test.sh` (755) — a fixture marketplace in a throwaway repo:
+- [x] 2. `scripts/tests/validate-versions.test.sh` (755) — a fixture marketplace in a throwaway repo:
       bumped → pass, unbumped → fail, number already taken on `main` → fail, non-payload change → pass,
       plugin A's skill leaves B unflagged, no base ref → SKIP.
 - [ ] 3. Wiring: `validate:versions` in `package.json`, and `.github/workflows/validate-versions.yaml`
@@ -74,3 +74,7 @@ branch probe are what prove it works.
   the number, which is fixture work — task 2 owns it, not a second real-repo probe.
 - `block-dangerous-commands` refuses `git reset --hard`, so undoing a probe commit is mixed reset plus
   `git restore` by name.
+- 13 cases, and the suite was mutation-checked: swapping the version lookup to `$MERGE_BASE` breaks
+  exactly `number-already-taken-on-main-fails` and nothing else, so that one case carries the asymmetry.
+- The fixture asserts ownership on the `OK  beta …` line, not the exit code — the run fails overall for
+  alpha, so exit status cannot tell the two plugins apart.

@@ -44,7 +44,7 @@ already holds fails too.
 - [x] 2. `scripts/tests/validate-versions.test.sh` (755) — a fixture marketplace in a throwaway repo:
       bumped → pass, unbumped → fail, number already taken on `main` → fail, non-payload change → pass,
       plugin A's skill leaves B unflagged, no base ref → SKIP.
-- [ ] 3. Wiring: `validate:versions` in `package.json`, and `.github/workflows/validate-versions.yaml`
+- [x] 3. Wiring: `validate:versions` in `package.json`, and `.github/workflows/validate-versions.yaml`
       with `fetch-depth: 0`, an explicit `git fetch origin`, and **no `paths:` filter** — the check's
       subject is which paths changed, so a filter would be the same blind spot one level up.
 - [ ] 4. Docs: rewrite the now-false gotcha at `docs/agents/skills-and-plugins.md:139-143` and the clause
@@ -78,3 +78,5 @@ branch probe are what prove it works.
   exactly `number-already-taken-on-main-fails` and nothing else, so that one case carries the asymmetry.
 - The fixture asserts ownership on the `OK  beta …` line, not the exit code — the run fails overall for
   alpha, so exit status cannot tell the two plugins apart.
+- `AGENTS.md` is at **119/120 lines**, 7336/10240 B — one line of headroom, so task 4's prose has to
+  stay in `docs/agents/`.

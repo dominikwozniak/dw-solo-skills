@@ -23,7 +23,8 @@ The conventions themselves (commit format, trailer, branch naming) are in the ro
     surfaces at land time, as a diff you cannot honestly grade. Either way, diff `main..HEAD` and drop
     what you didn't write: `git rebase --onto main <stowaway-sha> <branch>`, where the stowaway is your
     own old base. Check the version bumps in the same pass — the other change may have taken the number
-    yours targets.
+    yours targets, which is exactly what `pnpm validate:versions` measures against `origin/main`'s tip;
+    `git fetch` first, or it grades you against a stale base.
   - **Every way to rewind a branch is blocked by `block-dangerous-commands.sh`.** Not just
     `git reset --hard` — `git branch -f`, `git branch -D`, `git checkout .` and `git restore .` are
     all in `DANGEROUS_PATTERNS`, so an agent cannot move a branch backwards at all and must hand the

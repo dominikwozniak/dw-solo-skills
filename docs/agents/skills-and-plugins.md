@@ -88,8 +88,9 @@ change folder rather than a dated record under `.ai/handoffs/`.
 
 Steps 2–5 and 7 are CI-enforced, bar the loop diagram; **step 6 is not** — `evals/routing.ts` skips a
 case file that is absent and demands one positive and no negatives at all, so its counts are yours to
-hold. CI also checks the versions are _equal_, not that they changed. The validators name the exact
-missing entry — run them rather than re-deriving this checklist by hand.
+hold. `validate-manifests.sh` checks the two versions are _equal_ and `validate-versions.sh` checks the
+number _grew_ — step 3 needs both to pass. The validators name the exact missing entry — run them rather
+than re-deriving this checklist by hand.
 
 ## Adding a shipped (plugin-level) script
 
@@ -136,11 +137,23 @@ missing entry — run them rather than re-deriving this checklist by hand.
   bundled script needing a sibling shipped script must resolve from its own `$0` and cover three layouts,
   because `skills/<name>/` and `plugins/<p>/skills/<name>/` sit at different depths from
   `scripts/runtime/`.
-- **`validate-manifests.sh` checks the two versions are _equal_, not that either moved.** Change a shipped
-  file — anything under `templates/` or `scripts/runtime/` — and CI stays green with no bump while every
-  installed consumer keeps the old copy. Nothing else catches it: the add-a-skill checklist only fires when
-  a skill is added, and `dw-ship` never mentions versions. Bump the owning plugin by hand, in
-  `marketplace.json` and its `plugin.json` together, whenever the diff touches the payload.
+- **The two version checks answer different questions, and only one of them can see history.**
+  `validate-manifests.sh` compares `marketplace.json` against the owning `plugin.json` inside one tree, so
+  it catches a mismatch and nothing else; it cannot tell a bump from a number that never moved.
+  `validate-versions.sh` (`pnpm validate:versions`) supplies the missing half against a base ref: it
+  derives each plugin's shipped surface from the symlink graph and fails when a path under it changed
+  without a **strictly higher** version. Bump the owning plugin in both manifests whenever the diff touches
+  the payload; the failure names the plugin, both numbers and one changed path.
+  - **It reads two refs for two jobs, and swapping them silently disables half of it.** Changed paths come
+    from the merge base — what this branch did. The version comparison is against the base **tip**, because
+    a branch that went 0.4.5 → 0.4.6 really did grow relative to where it forked, so a merge-base
+    comparison passes the parallel-bump case every time. That is the failure that hit twice on 2026-08-02;
+    `scripts/tests/validate-versions.test.sh` pins it as `number-already-taken-on-main-fails`, and it is
+    the one case a merge-base mutation breaks.
+  - **A base ref it cannot resolve is a SKIP, exit 0.** The validator never fetches, so a local
+    `pnpm validate:versions` is only as current as your last `git fetch` — CI is the authoritative run.
+    Its workflow is the one validate-* job with **no `paths:` filter**, deliberately: the check's subject
+    is which paths changed, so filtering it by path would skip exactly the commit shape it exists to catch.
 - **A constraint written as an intro sentence does not act like a constraint.** Review delegation belongs
   to `dw-check`, and both it and `dw-land` say so in their opening prose — which did not stop the closing
   verdict from getting its own reviewer built three lines below one of those sentences, then reverted. If a

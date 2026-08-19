@@ -47,7 +47,7 @@ already holds fails too.
 - [x] 3. Wiring: `validate:versions` in `package.json`, and `.github/workflows/validate-versions.yaml`
       with `fetch-depth: 0`, an explicit `git fetch origin`, and **no `paths:` filter** — the check's
       subject is which paths changed, so a filter would be the same blind spot one level up.
-- [ ] 4. Docs: rewrite the now-false gotcha at `docs/agents/skills-and-plugins.md:139-143` and the clause
+- [x] 4. Docs: rewrite the now-false gotcha at `docs/agents/skills-and-plugins.md:139-143` and the clause
       at line 91, and point `docs/agents/git-history.md:25` at the check. `AGENTS.md` needs no edit.
 - [ ] 5. The two filters that never fire: `validate-plugin-manifests.yaml` gains the symlink-layout paths
       its validator actually reads, `validate-artifacts.yaml` gains `.ai/backlog/**` for pass 2's cap.

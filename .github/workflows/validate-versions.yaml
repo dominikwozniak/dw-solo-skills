@@ -31,13 +31,24 @@ jobs:
       # No pnpm/setup step, matching validate-artifacts.yaml and validate-docs.yaml: the checker is
       # bash over git and jq, both present on the runner, and it has no dev-tree dependency.
       #
-      # On a push to main the base resolves to origin/main, which IS the checked-out commit — the
-      # merge base is HEAD, the diff is empty, and the job exits 0 having asserted nothing. That is
-      # intended: the check only ever has an opinion about a branch that is ahead of its base.
-      - name: Fetch the base branch
+      # THE TWO EVENTS NEED DIFFERENT BASES, and the push one is not ceremony — it is the only place
+      # the parallel-bump failure is reliably caught. On a PR the base is the target branch's tip,
+      # which is right but not sufficient: two PRs that fork at 1.0.0 and both bump to 1.0.1 both pass
+      # against 1.0.0, and GitHub re-runs the second only under strict branch protection or a merge
+      # queue. Neither is assumed here. So on push the base is HEAD~1 — this repo squash-merges, so
+      # that is the previous state of main — and the second merge lands red instead of shipping a
+      # number already taken. A first commit with no HEAD~1 resolves to nothing and the checker SKIPs.
+      - name: Resolve the base ref
+        id: base
         shell: bash
-        run: git fetch --no-tags origin "${{ github.base_ref || github.event.repository.default_branch }}"
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            git fetch --no-tags origin "${{ github.base_ref }}"
+            echo "ref=origin/${{ github.base_ref }}" >>"$GITHUB_OUTPUT"
+          else
+            echo "ref=HEAD~1" >>"$GITHUB_OUTPUT"
+          fi
 
       - name: Validate version bumps
         shell: bash
-        run: ./scripts/validate-versions.sh --base "origin/${{ github.base_ref || github.event.repository.default_branch }}"
+        run: ./scripts/validate-versions.sh --base "${{ steps.base.outputs.ref }}"

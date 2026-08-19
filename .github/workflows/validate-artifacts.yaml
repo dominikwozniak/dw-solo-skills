@@ -25,6 +25,9 @@ on:
       # pass 2 caps this folder, and a commit that only appends an entry is the exact shape the cap
       # exists to catch — without it here, that commit matched no filter and the cap never ran.
       - .ai/backlog/**
+      # pass 1 runs scripts/tests/validate-versions.test.sh, which executes this script — without it
+      # here a checker-only regression skips its own suite, the same gap the two filters above closed.
+      - scripts/validate-versions.sh
       - scripts/validate-artifacts.sh
       - .github/workflows/validate-artifacts.yaml
   push:
@@ -39,6 +42,7 @@ on:
       - scripts/check-skill-corpus.mjs
       - scripts/skill-corpus.baseline.json
       - .ai/backlog/**
+      - scripts/validate-versions.sh
       - scripts/validate-artifacts.sh
       - .github/workflows/validate-artifacts.yaml
 

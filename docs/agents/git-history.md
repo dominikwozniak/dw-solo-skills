@@ -30,3 +30,8 @@ The conventions themselves (commit format, trailer, branch naming) are in the ro
     all in `DANGEROUS_PATTERNS`, so an agent cannot move a branch backwards at all and must hand the
     command to you. `git rebase` is not blocked, so prefer `rebase --onto` where it reaches;
     otherwise expect to run the rewind yourself.
+    - **One rewind does get through, and it is the one to use for a throwaway commit.** The patterns
+      match `--hard` and the bare-dot forms, not a **mixed** `git reset HEAD~<n>` followed by
+      `git restore <paths named individually>` — so dropping a probe commit you just made is an
+      agent-runnable two-step, and only the blunt forms need you. It leaves untracked files alone,
+      which is what you want when the probe added one.

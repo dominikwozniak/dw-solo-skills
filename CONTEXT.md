@@ -30,10 +30,12 @@ in [`AGENTS.md`](AGENTS.md) and the procedures in the skills themselves.
   the default branch does the push itself trigger anything. Either way `dw-ship` reads the result
   before merging. The bar is that the evidence cannot exist yet, never that gathering it is
   inconvenient.
-- **Base ref** — which ref of the default branch a review diff is taken against, local or `origin/`.
-  Never `origin/` by reflex: whichever of the two contains the other wins, and local is the default,
-  because a local branch that is _ahead_ (an unpushed `chore: shape …` commit) makes `origin/` pull
-  commits the branch didn't write into the diff. Resolved once, in `dw-git`.
+- **Base ref** — which ref of the default branch a diff is taken against, local or `origin/`. Never
+  `origin/` by reflex: whichever of the two contains the other wins, and local is the default, because
+  a local branch that is _ahead_ (an unpushed `chore: shape …` commit) makes `origin/` pull commits the
+  branch didn't write into the diff. Resolved once, in `dw-git`, for the review diffs `dw-check` and
+  `dw-land` take. `validate-versions.sh` is the other consumer and resolves its own: it needs **two**
+  refs, the merge base for which paths changed and the base _tip_ for whether the version grew.
 - **Triviality floor** — the diff size below which `dw-check` self-reviews instead of handing the diff
   to an outside reviewer. The `codex` argument overrides it, and overrides nothing else; a missing
   reviewer is not something it can override. The numbers live in the skill, not here. Set by
@@ -54,6 +56,11 @@ in [`AGENTS.md`](AGENTS.md) and the procedures in the skills themselves.
   an edit script; re-verified when the work resumes.
 - **Payload** — `templates/`: files `dw-init` copies **verbatim into a target project**, never read
   from the plugin at runtime. Not canon; a payload file may have a hand-written twin here.
+- **Shipped surface** — every path one plugin's install would carry: `plugins/<p>/**` plus the canon
+  behind each of its symlinks — the skills, the runtime scripts, and `templates/` where it links one.
+  Wider than payload, and never `.claude-plugin/marketplace.json`, which is where half a bump lands.
+  A change touching a plugin's surface must bump that plugin; `validate-versions.sh` derives the map
+  from the symlink graph rather than a list.
 - **Vendored** — a copy of a file whose canon is shared with `dw-skills`. A fix must be applied in
   both repos, because nothing across the boundary can detect drift. Which files:
   [`skills-and-plugins.md`](docs/agents/skills-and-plugins.md).

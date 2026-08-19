@@ -2,7 +2,7 @@
 change: the-version-bump-check-gets-a-base-ref
 branch: the-version-bump-check-gets-a-base-ref
 created: 2026-08-19
-status: shaping # shaping | building | landed
+status: building # shaping | building | landed
 ---
 
 # Change — the version-bump check gets a base ref, so a bump that didn't happen fails CI
@@ -35,7 +35,7 @@ already holds fails too.
 
 ## Tasks
 
-- [ ] 1. `scripts/validate-versions.sh` (755): `--base <ref>` defaulting to `origin/main`, unresolvable →
+- [x] 1. `scripts/validate-versions.sh` (755): `--base <ref>` defaulting to `origin/main`, unresolvable →
       SKIP exit 0; `PLUGIN_DIRS` from `marketplace.json`; per-plugin shipped surface read off the symlink
       graph (`plugins/<p>/**`, each linked `skills/<name>/`, each linked `scripts/runtime/<s>.sh`,
       `templates/` where the link exists — never `.claude-plugin/marketplace.json`, which is where the bump
@@ -68,3 +68,9 @@ already holds fails too.
 No plugin version bump: this change touches only repo CI tooling, nothing under `templates/`,
 `scripts/runtime/` or `skills/`. So the new check no-ops on its own PR — task 2's fixture and the scratch-
 branch probe are what prove it works.
+
+- The scratch-branch probe on the real repo confirmed failure 2 both directions (unbumped `dw-solo` →
+  error naming `skills/dw-shape/SKILL.md`; bumped → OK). Failure 1 needs a base tip that already holds
+  the number, which is fixture work — task 2 owns it, not a second real-repo probe.
+- `block-dangerous-commands` refuses `git reset --hard`, so undoing a probe commit is mixed reset plus
+  `git restore` by name.

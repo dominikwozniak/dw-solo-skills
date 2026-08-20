@@ -1,6 +1,6 @@
 ---
 change: the-hot-loop-skills-stop-loading-what-they-never-use
-branch: unclaimed
+branch: main
 created: 2026-08-20
 status: shaping # shaping | building | landed
 ---

@@ -37,7 +37,7 @@ findable after the move, proven per block rather than assumed.
 - [x] 1. `dw-land` `### 3. Close` → `skills/dw-land/references/promote.md`; body keeps the gate, the
       target order and the pointer. Delete the `:141-148` restatement, fact-token-checked against
       `templates/backlog-README.md` first.
-- [ ] 2. `dw-next` claim ladder → `skills/dw-next/references/claiming.md`, plus the new
+- [x] 2. `dw-next` claim ladder → `skills/dw-next/references/claiming.md`, plus the new
       `## References` section it has never had.
 - [ ] 3. `dw-shape` split execution → `skills/dw-shape/references/splitting.md`; the split test and
       the `HARD STOP` stay in the body.

@@ -45,7 +45,7 @@ tracked `VERIFY.md` whose router row `agents:check` accepts.
       "Explicit-only skills" paragraph, and the badge `skills-12` → `skills-13`.
 - [x] 3. `dw-next` §4 — the `**skip:**` marker plus its fence against goal-shrinking, and the marker
       documented in `skills/dw-shape/references/CHANGE.md`.
-- [ ] 4. `dw-land` phase 3 — the encode-in-structure filter as a third item before a gotcha is written.
+- [x] 4. `dw-land` phase 3 — the encode-in-structure filter as a third item before a gotcha is written.
 - [ ] 5. `dw-land` step 2 — five rungs on **Is "done" proven?** and **Blast radius?**, with `VERIFY.md`
       named as a condition.
 - [ ] 6. `dw-init` — the `VERIFY.md` row in `## What it writes`, the create-if-absent step with its
@@ -98,3 +98,7 @@ tracked `VERIFY.md` whose router row `agents:check` accepts.
 - `dw-unslop` keeps the upstream rule numbers so a citation is portable both ways; new rules start at 32.
 - A new skill declaring `argument-hint` must reference `$ARGUMENTS` in its body, or agnix's pre-commit
   autofix appends a bare `$ARGUMENTS` line after `**Next:**`. Name it where the target is resolved.
+- A shipped skill must not cite this repo's decision numbers: `0010` in a target project is that
+  project's tenth decision. Task 4 drafted one, caught it, and put the reasoning in the body instead.
+  No skill body cited a decision before, so nothing enforces it — a `docs/decisions/` grep over
+  `skills/*/SKILL.md` would, which is the phase-3 filter's own verdict on this note.

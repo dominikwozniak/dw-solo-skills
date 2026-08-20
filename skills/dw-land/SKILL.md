@@ -113,8 +113,13 @@ what makes the build fail.
 
   Never the root file by default. It is loaded in full every session under a declared budget, so a
   growing list of traps there is the one thing guaranteed to push a real rule out; a routed file is
-  read when its subject comes up, which is exactly when a trap about it matters. Two things before you
-  write:
+  read when its subject comes up, which is exactly when a trap about it matters. Three things before
+  you write:
+  - **Ask first whether a mechanism would catch it.** A trap a hook, a validator, a self-test or a lint
+    rule could refuse outright does not belong in prose — prose is for what no mechanism can enforce,
+    and a rule enforced on trust is one a tired session skips. Where a mechanism would work the
+    promotion is one `.ai/backlog/<slug>.md` naming it and **no `## Gotchas` entry**; a trap written up
+    as prose is a trap you have decided to keep hitting. Where none fits, write the entry.
   - **Delete what this trap replaces.** A gotcha the change made untrue — the tool is gone, the hook
     is fixed, the flag now defaults the other way — comes out in this edit. Leaving it beside its
     replacement is how the list stops being trustworthy: the reader can no longer tell which half is

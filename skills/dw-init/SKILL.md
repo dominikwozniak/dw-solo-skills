@@ -112,15 +112,17 @@ light.
   per-file entries, never clobber or silently keep it.
 - `CONTEXT.md` — if absent, create it with a one-line purpose statement (this project's glossary;
   terms only, no implementation detail) and nothing else. If it exists, leave it alone.
-- `VERIFY.md` — if absent, create it the same way, with three headings and nothing under them. It
-  holds what a green suite does not: **Launch** (the command that starts this project, on what port,
-  with what disposable state), **Doctor** (one read-only check answering "is this instance worth
-  driving?"), **Drive** (the commands, each paired with the observable result it should produce). Two
-  invariants belong in it from the start — cleanup removes instances and scratch state but **never the
-  evidence**, and **kill what you started** rather than killing by process name. **A project with
-  nothing to launch leaves the headings empty and says so in the file**: a library, a docs repo or a
-  skills catalog has no instance to drive, and an honest empty section beats an invented command every
-  session pays for. If it exists, leave it alone.
+- `VERIFY.md` — if absent, create it the same way, and write exactly this much: a one-line purpose
+  statement, the two invariants below, then the three headings with **one line under each naming what
+  belongs there**. It holds what a green suite does not — **Launch** (the command that starts this
+  project, on what port, with what disposable state), **Doctor** (one read-only check answering "is
+  this instance worth driving?"), **Drive** (the commands, each paired with the observable result it
+  should produce). The invariants go in before any of that is filled, both learned the hard way:
+  cleanup removes instances and scratch state but **never the evidence**, and **kill what you started**
+  rather than killing by process name. **Filling the three sections is not this skill's job**, and a
+  project with nothing to launch leaves those lines as written — that is a finished `VERIFY.md`, not a
+  stub owed to anyone. A library, a docs repo or a skills catalog has no instance to drive, and an
+  honest empty section beats an invented command every session pays for. If it exists, leave it alone.
 - `${CLAUDE_PLUGIN_ROOT}/templates/settings.json` → `.claude/settings.json`; **prune** the hook
   entries not selected, add the `permissions.allow` list (below), then confirm the file still parses
   as valid JSON.

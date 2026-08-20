@@ -4,7 +4,7 @@ branch: drop-the-dead-dw-skills-sync-obligation
 created: 2026-08-20
 status: landed # shaping | building | landed
 landed: 2026-08-20
-pr: ""
+pr: "#41"
 ---
 
 # Change — remove every live reference to dw-skills

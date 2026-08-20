@@ -4,6 +4,7 @@ branch: harvest-pstack-into-the-solo-lane
 created: 2026-08-20
 status: landed
 landed: 2026-08-20
+pr: "#42"
 ---
 
 # Change — a prose pass for outbound text, rigour the loop states as rules, and a scaffolded `VERIFY.md`

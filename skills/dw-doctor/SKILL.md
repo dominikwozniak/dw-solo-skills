@@ -36,7 +36,9 @@ assumed:
 - `tsconfig.json`, `.nvmrc` — presence informs the `tsc` check and whether the node fix hint names
   `.nvmrc` at all; a repo pinning through `devEngines.runtime` has no such file.
 - `.claude/settings.json` — parsed for every wired hook command; each referenced `*.sh` is checked
-  for existence + the executable bit.
+  for existence, the executable bit, and **drift** against this plugin's `templates/hooks/`, since a
+  stale vendored copy passes the first two while missing what the template learned since. `WARN`,
+  never `FAIL` — a patched hook is a legitimate choice; a hook with no template is the repo's own.
 - `.ai/work/` — the scaffold this lane runs on; its absence points at `dw-init`, and a `.ai/runs/`
   directory is flagged as the other lane's repo rather than half-checked.
 - `docs/decisions/` and `CONTEXT.md` — the promotion targets `dw-land` writes into. Presence only:

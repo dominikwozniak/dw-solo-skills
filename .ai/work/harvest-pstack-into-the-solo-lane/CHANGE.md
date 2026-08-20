@@ -50,7 +50,7 @@ tracked `VERIFY.md` whose router row `agents:check` accepts.
       named as a condition.
 - [x] 6. `dw-init` — the `VERIFY.md` row in `## What it writes`, the create-if-absent step with its
       Launch / Doctor / Drive stub, and the `templates/AGENTS.md` router row.
-- [ ] 7. `dw-check` step 3 — the lead-judgment filter: all-nits means the diff is probably fine and
+- [x] 7. `dw-check` step 3 — the lead-judgment filter: all-nits means the diff is probably fine and
       say so, "I would have done it differently" is the commonest false positive, and more than five
       act-on items means the filter is too loose.
 - [ ] 8. Three version bumps, identical in both manifests each — `dw-solo-extras` `0.1.6` → `0.1.7`,

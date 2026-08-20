@@ -107,3 +107,10 @@ tracked `VERIFY.md` whose router row `agents:check` accepts.
   fixture seeded with exactly what `dw-init` writes and runs the shipped checker over it. Task 8 caught
   the row and added `VERIFY.md` to that seed list. Grepping for the absence of a check is not the same
   as looking for one.
+- `dw-check` found six real defects the whole green gate could not see, four of them the portability
+  class this doc had already written down. **A Note is not a fix**: the note landed at task 4, the
+  offending file was written at task 1, and nothing re-read it. When a trap is found mid-build, sweep
+  the files already written before moving on.
+- `codex:codex-rescue` may only forward once — it is barred from `status`/`result`. Past the Bash
+  tool's 120s its Codex job goes background and the subagent returns empty; recovering the findings is
+  the parent's job, via `codex-companion.mjs result <codex job id>`. The id Bash reports is not that id.

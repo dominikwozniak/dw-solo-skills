@@ -41,7 +41,7 @@ findable after the move, proven per block rather than assumed.
       `## References` section it has never had.
 - [x] 3. `dw-shape` split execution → `skills/dw-shape/references/splitting.md`; the split test and
       the `HARD STOP` stay in the body.
-- [ ] 4. `validate-docs.sh` check 5 — every `references/<file>` a `SKILL.md` cites resolves on disk,
+- [x] 4. `validate-docs.sh` check 5 — every `references/<file>` a `SKILL.md` cites resolves on disk,
       in the shape of check 1. No self-test: `0013` exempts a disk validator.
 - [ ] 5. `dw-solo` `0.4.25` → `0.4.26` in both manifests, then
       `node scripts/check-skill-corpus.mjs --update-baseline`, then the full gate.
@@ -72,3 +72,5 @@ findable after the move, proven per block rather than assumed.
   token check caught `source: <this change's slug>` dropped from the follow-ups bullet.
 - A relative cross-reference is what a block move breaks silently: `dw-shape`'s "run the ladder
   above" pointed at a sizing ladder that stayed in the body, so it now names step 2 instead.
+- It is check **6**, not 5: the agent-docs contract already holds that number, and the file's header
+  said "Four" while listing five. Both corrected in task 4.

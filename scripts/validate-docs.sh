@@ -2,7 +2,7 @@
 # validate-docs.sh — guard the docs ↔ skills contract that AGENTS.md's add-a-skill checklist
 # otherwise keeps by hand. CI already validates manifests but never the prose, so a skill added /
 # renamed / removed — or an explicit-invoke flag flipped — can ship with the docs silently out of
-# sync. Four mechanical, no-judgement checks:
+# sync. Six mechanical, no-judgement checks:
 #   1. no dead skill links   — every skills/<x>/SKILL.md linked in README exists on disk
 #   2. no undocumented skill — every skills/<x>/ on disk is linked in the README task-router
 #   3. explicit-invoke sync  — a skill's `disable-model-invocation: true` <=> it is marked `⭑` in
@@ -11,6 +11,7 @@
 #   5. the agent-docs contract — AGENTS.md within the budget it declares, every docs/agents/ topic
 #      file routed to, every routed path real, every documented `pnpm <script>` a real script, and
 #      CLAUDE.md still a symlink
+#   6. no dangling references/ pointer — every `references/<file>.md` a SKILL.md cites is on disk
 #
 # Check 5 is not implemented here. It runs `templates/check-agents-docs.mjs` — the very checker this
 # repo SHIPS into repos that dw-init scaffolds — against this repo's own root. Reimplementing two of
@@ -172,6 +173,25 @@ if ! node "$ROOT/templates/check-agents-docs.mjs" 2>"$agents_err"; then
   FAILED=1
 fi
 rm -f "$agents_err"
+
+# --- check 6: no dangling references/ pointer --------------------------------
+echo
+echo "Checking every references/ file a SKILL.md cites exists on disk..."
+# A skill body that outgrew one read moves a block to skills/<x>/references/<file>.md and keeps a
+# pointer to it. The pointer is prose, so a rename, or a move that was only half made, sends the
+# model at a file that isn't there — the one failure the split introduces, and the body it was cut
+# from no longer says what the missing file said.
+for d in skills/*/; do
+  [ -f "$d/SKILL.md" ] || continue
+  for ref in $(grep -oE 'references/[A-Za-z0-9._-]+\.md' "$d/SKILL.md" | sort -u); do
+    if [ -f "$d$ref" ]; then
+      echo "OK  $(basename "$d") -> $ref"
+    else
+      echo "::error::${d}SKILL.md cites $ref, which does not exist on disk"
+      FAILED=1
+    fi
+  done
+done
 
 echo
 if [ "$FAILED" -eq 0 ]; then

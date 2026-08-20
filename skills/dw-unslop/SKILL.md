@@ -25,9 +25,10 @@ file only after you have seen the diff — and **no `.ai/` artifact of its own**
 
 **It refuses, by name:** any `SKILL.md`, `AGENTS.md` / `CLAUDE.md`, `docs/agents/*`,
 `docs/decisions/*`, `CONTEXT.md`, `CHANGE.md`, `HANDOFF.md`, `.ai/backlog/*`, and any `## Gotchas`
-block. Agents read those on every invocation, so a sentence trimmed out of one is an instruction some
-later session no longer gets. Name the file, give the reason in one line, stop — never counter-offer a
-lighter touch on the same file.
+block. Every one of those is written for an agent rather than a person — some loaded every session,
+some only when a router points at them — so a sentence trimmed out of one is an instruction a later
+session no longer gets, and nothing is watching to notice. Name the file, give the reason in one line,
+stop — never counter-offer a lighter touch on the same file.
 
 ## Workflow
 
@@ -55,9 +56,10 @@ Cutting patterns is half the job. Sterile is its own tell, so the pass has to pu
   that has four things in it is rule 10 firing.
 
 **This step is what stops the skill becoming a length optimiser.** An agent told to tighten prose
-optimises for length, because length is the property it can see. `docs/agents/README.md` records where
-that ends up: a line target dropped `git fetch origin &&` from a rebase command, teaching a rebase onto
-a stale ref, and no check could see the bill. Shorter is not the goal. Less slop is.
+optimises for length, because length is the one property it can measure — and it pays for the shorter
+file out of whatever it could not: a flag dropped from a command that still reads like a command, the
+"why" cut from under a rule that kept its "what". No format check sees that bill. Shorter is not the
+goal. Less slop is.
 
 ### 4. Report what fired
 

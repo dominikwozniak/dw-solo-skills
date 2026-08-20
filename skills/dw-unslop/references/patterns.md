@@ -42,10 +42,10 @@ line, because a softened rule you cannot see the reasoning for gets re-tightened
 ## Style
 
 13. **Em dashes standing in for a period.** _Softened._ Upstream bans the em dash outright. Here the
-    tell is an em dash doing a full stop's job — two independent clauses stapled together — and the fix
-    is the full stop. An em dash carrying a genuine aside is not a tell, and this repo's prose uses it
-    that way throughout; a rule that fires on the house voice gets ignored wholesale, which costs the
-    other thirty.
+    tell is narrower: an em dash doing a full stop's job — two independent clauses stapled together —
+    and the fix is the full stop. An em dash carrying a genuine aside is not a tell. The reason for
+    softening is mechanical rather than aesthetic: a rule that fires on every paragraph of a project's
+    existing prose gets ignored wholesale, and takes the other thirty rules with it.
 14. **Colons as mid-sentence connectors.** Fine before a list or an example. Not as a hinge between two
     clauses that would read better as one sentence or two.
 15. **Boldface overuse.** Bolding every proper noun, path or acronym. Bold the thing a skimmer needs to
@@ -53,10 +53,10 @@ line, because a softened rule you cannot see the reasoning for gets re-tightened
 16. **Inline-header lists.** The tell is a bold label plus colon that restates the line:
     `**Performance:** Performance improved…`. Convert those to prose. A bold lead-in that ends in a
     **period**, names the item, and is followed by genuinely new detail is the opposite — it is the form
-    most of this corpus is written in, and the form every rule on this page uses. Do not "fix" it.
+    every rule on this page uses. Do not "fix" it.
 17. **Title case headings.** Sentence case.
-18. **Decorative emojis.** Out of headings and bullets. A status glyph carrying meaning (`⭑` in the
-    README's task router) is not decoration.
+18. **Decorative emojis.** Out of headings and bullets. A glyph that carries meaning — a status marker
+    in a table something actually reads — is not decoration, and removing it deletes data.
 19. **Curly quotes and typographic apostrophes.** Straight ones.
 
 ## Communication artifacts
@@ -77,14 +77,15 @@ line, because a softened rule you cannot see the reasoning for gets re-tightened
 
 ## Jargon
 
-26. **Abstract metaphor nouns.** _Softened._ Upstream bans a list that includes `ratchet`, `surface`,
-    `scaffolding`, `harness` and `primitive` — the exact vocabulary this repo is built on, defined in
-    `CONTEXT.md` and load-bearing in `docs/decisions/0009-skill-corpus-ratchet.md`. Adopting it whole
-    would declare war on the house voice, and banning a defined term is the drift the glossary exists
-    to stop. So: a metaphor noun is a tell only when a shorter concrete word exists **and** the repo
-    has not already defined the metaphor as a term. Undefined and replaceable, it goes — "substrate" →
-    "base", "wedge in" → "add", "vector" → "way", "gold-plating" → "more than the job needs", "north
-    star" → the actual goal. Defined here, it stays, and using it is the correct call.
+26. **Abstract metaphor nouns.** _Softened._ Upstream bans a whole list outright: substrate, wedge,
+    vector, locus, vantage, nexus, primitive, harness, surface (as in "API surface"), bedrock,
+    scaffolding, modality, paradigm, gold-plating, ratchet, endgame, north star, flywheel. Taken whole
+    that ban fires on any project whose glossary has adopted some of them as terms of its own, and
+    **banning a defined term is the drift a glossary exists to stop**. So: a metaphor noun is a tell
+    only when a shorter concrete word exists **and** the project has not defined the metaphor as a
+    term. Undefined and replaceable, it goes — "substrate" → "base", "wedge in" → "add", "vector" →
+    "way", "gold-plating" → "more than the job needs", "north star" → the actual goal. Defined in the
+    project's own glossary, it stays, and reaching for it is the correct call.
 
 ## Plain speech
 

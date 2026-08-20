@@ -53,7 +53,7 @@ tracked `VERIFY.md` whose router row `agents:check` accepts.
 - [x] 7. `dw-check` step 3 — the lead-judgment filter: all-nits means the diff is probably fine and
       say so, "I would have done it differently" is the commonest false positive, and more than five
       act-on items means the filter is too loose.
-- [ ] 8. Three version bumps, identical in both manifests each — `dw-solo-extras` `0.1.6` → `0.1.7`,
+- [x] 8. Three version bumps, identical in both manifests each — `dw-solo-extras` `0.1.6` → `0.1.7`,
       `dw-solo` `0.4.24` → `0.4.25`, `dw-solo-setup` `0.1.27` → `0.1.28` — then
       `node scripts/check-skill-corpus.mjs --update-baseline`, then the full gate.
 

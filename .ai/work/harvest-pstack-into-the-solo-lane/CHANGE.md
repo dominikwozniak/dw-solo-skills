@@ -41,7 +41,7 @@ tracked `VERIFY.md` whose router row `agents:check` accepts.
 
 - [x] 1. `skills/dw-unslop/SKILL.md` (70–90 lines: refusal list, four-step workflow, the two delete
       tests) plus `skills/dw-unslop/references/patterns.md` (the numbered catalog).
-- [ ] 2. The `dw-solo-extras` symlink, the README task-router row with `⭑`, the name in the
+- [x] 2. The `dw-solo-extras` symlink, the README task-router row with `⭑`, the name in the
       "Explicit-only skills" paragraph, and the badge `skills-12` → `skills-13`.
 - [ ] 3. `dw-next` §4 — the `**skip:**` marker plus its fence against goal-shrinking, and the marker
       documented in `skills/dw-shape/references/CHANGE.md`.

@@ -89,8 +89,9 @@ doc, the decisions already taken, what was tried and rejected. An outside review
 a self-review has stopped weighing them by the second pass. This is judgement over the list, not a
 second review of the diff:
 
-- **All nits means the diff is probably fine — report that, not the list.** Anything asked for findings
-  tends to fill the space, so a report made entirely of style preferences is evidence about the code.
+- **All nits means the diff is probably fine — lead with that.** Anything asked for findings tends to
+  fill the space, so a report made entirely of style preferences is evidence about the code. The
+  conclusion goes first and the nits follow it as dismissals, never the other way round.
 - **"I would have done it differently" is the commonest false positive.** A preferred approach is not a
   finding until it names a concrete problem with this one. Same for an abstraction proposed for code
   that has to change in exactly one way, and for a pattern called odd that the neighbouring files use.

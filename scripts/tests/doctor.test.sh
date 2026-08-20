@@ -71,8 +71,7 @@ run() {
 
 # with_hooks <repo> <hook-name>… — wire the named shipped hooks into <repo> the way dw-init does:
 # a minimal .claude/settings.json referencing each under PreToolUse/Bash, plus a byte copy of the
-# template. Callers then mutate a copy to fake drift. Needed because scaffold() writes no .claude/
-# at all — the hook-wiring block of doctor.sh had no coverage before these cases.
+# template. Callers then mutate a copy to fake drift. scaffold() writes no .claude/ at all.
 with_hooks() {
   local repo="$1" name cmds=""
   shift
@@ -418,13 +417,9 @@ else
   note_pass "v11-lockfile-is-silent"
 fi
 
-# The markers this check looks for exist ONLY in a repo that self-manages pnpm: `devEngines`
-# with `onFail: download` makes pnpm 11 write `packageManagerDependencies` (and the
-# `configDependencies: {}` beside it) into the importer, and the leading `---` with it. A repo
-# pinning through a plain `"packageManager": "pnpm@x.y.z"` string has nothing to self-manage, so
-# pnpm 11 writes a lockfile with none of them — identical in shape to `lock_pre_v11()`. Warning
-# there reported "your lock is pre-v11" at every healthy repo on the planet, which is how a
-# diagnostic teaches people to stop reading it.
+# A plain `"packageManager": "pnpm@x.y.z"` pin has nothing to self-manage, so pnpm 11 writes a
+# lockfile without the markers — identical in shape to lock_pre_v11(), and correct. The check must
+# stay silent here; it used to warn, which is every healthy repo on the planet.
 repo="$(scaffold '120 lines / 10 KB')"
 printf '{ "packageManager": "pnpm@11.21.0" }\n' >"$repo/package.json"
 lock_pre_v11 "$repo"
@@ -510,11 +505,7 @@ run "$repo" >/dev/null
 says "unscaffolded-warns" warn ".ai/work/" "not scaffolded"
 
 # --- hook drift ---------------------------------------------------------------
-# The gap these close: doctor.sh checked a hook existed and was executable, and nothing else. A
-# hook that is present, executable and STALE reported OK — which is exactly how a vendored
-# block-non-pnpm that let `rtk npm install` through, and a lint-on-edit that ran command
-# substitution from a filename, sat in a consumer repo unnoticed. hooks-in-sync.test.sh pins the
-# same invariant, but only inside this repo; across the repo boundary this is the only check.
+# Before these, a hook that was present, executable and STALE reported OK. See docs/agents/tooling.md.
 echo "hook drift against the shipped templates:"
 
 repo="$(scaffold '120 lines / 10 KB')"
@@ -532,8 +523,7 @@ printf '# a local edit\n' >>"$repo/.claude/hooks/block-non-pnpm.sh"
 run "$repo" >/dev/null
 says "drifted-hook-warns" warn "block-non-pnpm.sh" "differs from the shipped template"
 
-# A hook this marketplace never shipped is the repo's own. Comparing it against a template that
-# does not exist would be inventing a finding, so it must pass in silence.
+# A hook this marketplace never shipped is the repo's own — nothing to compare, so it stays silent.
 repo="$(scaffold '120 lines / 10 KB')"
 mkdir -p "$repo/.claude/hooks"
 printf '#!/usr/bin/env bash\nexit 0\n' >"$repo/.claude/hooks/repo-own-guard.sh"

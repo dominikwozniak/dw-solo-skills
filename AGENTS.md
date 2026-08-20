@@ -14,7 +14,7 @@ A skills catalog, not a code project. Keep it thin: every skill here assumes **o
 skills/<name>/SKILL.md           the canon for every skill. EDIT HERE.
 plugins/dw-solo/                 the loop plugin — plugin.json + symlinks (mode 120000) → the canon
 plugins/dw-solo-setup/           the setup plugin — dw-init, dw-doctor, the templates symlink
-plugins/dw-solo-extras/          the off-loop plugin — dw-handoff, dw-prune
+plugins/dw-solo-extras/          the off-loop plugin — dw-handoff, dw-prune, dw-unslop
 scripts/runtime/<script>.sh      shipped scripts — symlinked into the owning plugin
 scripts/<script>.{sh,mjs}        repo CI tooling, never shipped (validate-*.sh, check-skill-corpus.mjs)
 scripts/tests/<script>.test.sh   bash self-tests
@@ -71,7 +71,7 @@ rows — read all of them. Explore on your own only what no row covers.
 | adding/renaming a skill, the symlink canon, plugin versions, evals cases | `docs/agents/skills-and-plugins.md` |
 | a `dw-start` worktree behaving unlike the main tree                      | `docs/agents/worktrees.md`          |
 | a rebase, a stray commit, rewinding a branch, a squash-merged base       | `docs/agents/git-history.md`        |
-| lint/format failures, the hooks, self-tests, the pnpm/Node pins, CI      | `docs/agents/tooling.md`            |
+| lint/format, the hooks, self-tests, the pnpm/Node pins, CI, the reviewer | `docs/agents/tooling.md`            |
 | the loop, `.ai/work/`, what a `CHANGE.md` is and when it leaves          | `docs/agents/change-artifacts.md`   |
 | editing this file or `docs/agents/*` — what belongs where                | `docs/agents/README.md`             |
 | why the code is shaped this way; reopening a settled choice              | `docs/decisions/README.md`          |

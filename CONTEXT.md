@@ -111,3 +111,12 @@ in [`AGENTS.md`](AGENTS.md) and the procedures in the skills themselves.
 - **Fact-token diff** — the check that a doc rewrite kept its content: every backticked span, path,
   flag, number and error string in the old text, checked for presence in the new. Reads a rewrite too
   heavy for the word-stream window `docs/agents/README.md` prescribes beside it.
+- **Rung** — one of five levels a safety claim in a closing verdict can reach, weakest first: you said
+  so · you pointed at the line · you showed the bad case cannot happen · you ran it · you reproduced it
+  in the artifact a user gets rather than the tree you edited. `dw-land` names the one each claim
+  stopped at; the bottom rung here means a **post-reinstall** run, so it is out of reach until merge.
+- **`VERIFY.md`** — the tracked file recording how to drive a project by hand: **Launch**, **Doctor**
+  (one read-only check that an instance is worth driving) and **Drive** (commands paired with the
+  result each should produce). Scaffolded by `dw-init`, never per-change — that is the `.ai/verify/`
+  the lane deliberately has no use for. A project with nothing to launch keeps the headings as written,
+  and that is a finished file rather than a stub; this repo is one, so it has none.

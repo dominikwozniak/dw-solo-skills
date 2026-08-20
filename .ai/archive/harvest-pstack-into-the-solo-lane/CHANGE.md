@@ -2,7 +2,8 @@
 change: harvest-pstack-into-the-solo-lane
 branch: harvest-pstack-into-the-solo-lane
 created: 2026-08-20
-status: building # shaping | building | landed
+status: landed
+landed: 2026-08-20
 ---
 
 # Change — a prose pass for outbound text, rigour the loop states as rules, and a scaffolded `VERIFY.md`

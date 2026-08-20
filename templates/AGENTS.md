@@ -42,6 +42,7 @@ Match a task against this table **before** researching or coding, and read every
 | the loop, `.ai/work/`, what a `CHANGE.md` is and when it leaves    | `.ai/README.md`            |
 | why the code is shaped this way; reopening a settled choice        | `docs/decisions/README.md` |
 | what something is called here — any domain term                    | `CONTEXT.md`               |
+| starting this project and driving a feature by hand to see it work | `VERIFY.md`                |
 | a follow-up worth keeping but not worth doing now                  | `.ai/backlog/README.md`    |
 | a landed change's reasoning, after the fact                        | `.ai/archive/README.md`    |
 | a blocked command, a hook that fired, a guardrail that looks wrong | `.claude/hooks/`           |

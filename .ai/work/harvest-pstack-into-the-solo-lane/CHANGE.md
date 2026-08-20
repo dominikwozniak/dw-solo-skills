@@ -48,7 +48,7 @@ tracked `VERIFY.md` whose router row `agents:check` accepts.
 - [x] 4. `dw-land` phase 3 — the encode-in-structure filter as a third item before a gotcha is written.
 - [x] 5. `dw-land` step 2 — five rungs on **Is "done" proven?** and **Blast radius?**, with `VERIFY.md`
       named as a condition.
-- [ ] 6. `dw-init` — the `VERIFY.md` row in `## What it writes`, the create-if-absent step with its
+- [x] 6. `dw-init` — the `VERIFY.md` row in `## What it writes`, the create-if-absent step with its
       Launch / Doctor / Drive stub, and the `templates/AGENTS.md` router row.
 - [ ] 7. `dw-check` step 3 — the lead-judgment filter: all-nits means the diff is probably fine and
       say so, "I would have done it differently" is the commonest false positive, and more than five
@@ -102,3 +102,6 @@ tracked `VERIFY.md` whose router row `agents:check` accepts.
   project's tenth decision. Task 4 drafted one, caught it, and put the reasoning in the body instead.
   No skill body cited a decision before, so nothing enforces it — a `docs/decisions/` grep over
   `skills/*/SKILL.md` would, which is the phase-3 filter's own verdict on this note.
+- Nothing checks that every path `templates/AGENTS.md` routes to is one `dw-init` actually creates;
+  `check-agents-docs.mjs` only ever runs in the scaffolded repo. `CONTEXT.md`'s row stands on the same
+  footing, so this is not new — but it is a validator waiting to be written.

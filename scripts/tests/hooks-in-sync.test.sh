@@ -6,10 +6,6 @@
 # must also be executable (install does `chmod +x`, but a template committed
 # without the executable bit would ship broken via `git archive`/checkout).
 #
-# NOTE: templates/hooks/ here is a vendored copy of the same canon in the
-# `dw-skills` repo (team lane). They are byte-identical today and a fix to one
-# must be applied to both — nothing across the repo boundary can detect drift.
-#
 # Run standalone (`bash scripts/tests/hooks-in-sync.test.sh`) or via
 # scripts/validate-artifacts.sh. Exit 0 iff every check passes. bash 3.2 safe.
 set -uo pipefail

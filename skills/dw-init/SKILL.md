@@ -46,9 +46,8 @@ Also absent: an empty `docs/agents/`. The Task Router ships with rows for what t
 creates, and the topic layer grows only when `dw-land` promotes into it — a new topic file and its
 router row in the same commit.
 
-Templates come from `${CLAUDE_PLUGIN_ROOT}/templates/` — this lane's own payload; the guardrail
-hooks in it are vendored copies of the team repo's canon. (`${CLAUDE_PLUGIN_ROOT}` is the env var
-Claude Code substitutes to this plugin's install dir.)
+Templates come from `${CLAUDE_PLUGIN_ROOT}/templates/` — this lane's own payload.
+(`${CLAUDE_PLUGIN_ROOT}` is the env var Claude Code substitutes to this plugin's install dir.)
 
 ## Workflow
 

@@ -1,7 +1,7 @@
 # `docs/decisions/` — why this repo is shaped this way
 
 One record per decision, `<NNNN>-<kebab-slug>.md`, append-only. `dw-land` writes them at close,
-`dw-shape` reads them before the next change. **[`0001`](0001-separate-repo-from-dw-skills.md) is the
+`dw-shape` reads them before the next change. **[`0011`](0011-bare-dw-next-builds-rather-than-reports.md) is the
 worked example — copy its shape.**
 
 No index here on purpose: `ls` sorts them and every slug states its decision.

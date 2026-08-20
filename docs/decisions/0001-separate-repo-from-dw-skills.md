@@ -1,7 +1,8 @@
 ---
 decision: 0001
-status: active
+status: superseded
 date: 2026-07-30
+superseded-by: 0014
 ---
 
 # 0001 — The thin lane lives in its own repo, with vendored hooks

@@ -6,9 +6,7 @@
 > way is appended to that topic file's `## Gotchas`, never to this one. See
 > [`docs/agents/README.md`](docs/agents/README.md).
 
-A skills catalog, not a code project. Keep it thin: every skill here assumes **one reader**, and a
-change needing a second reader's trust belongs in the team-weight lane,
-[`dw-skills`](https://github.com/dominikwozniak/dw-skills).
+A skills catalog, not a code project. Keep it thin: every skill here assumes **one reader**.
 
 ## Layout — and the one rule
 

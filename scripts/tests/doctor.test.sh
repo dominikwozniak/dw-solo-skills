@@ -69,6 +69,23 @@ run() {
   printf '%s\n' "$?"
 }
 
+# with_hooks <repo> <hook-name>… — wire the named shipped hooks into <repo> the way dw-init does:
+# a minimal .claude/settings.json referencing each under PreToolUse/Bash, plus a byte copy of the
+# template. Callers then mutate a copy to fake drift. scaffold() writes no .claude/ at all.
+with_hooks() {
+  local repo="$1" name cmds=""
+  shift
+  mkdir -p "$repo/.claude/hooks"
+  for name in "$@"; do
+    cp "$ROOT/templates/hooks/$name.sh" "$repo/.claude/hooks/$name.sh"
+    chmod +x "$repo/.claude/hooks/$name.sh"
+    [ -n "$cmds" ] && cmds="$cmds,"
+    cmds="$cmds{\"type\":\"command\",\"command\":\"bash \\\"\${CLAUDE_PROJECT_DIR}/.claude/hooks/$name.sh\\\"\"}"
+  done
+  printf '{ "hooks": { "PreToolUse": [ { "matcher": "Bash", "hooks": [ %s ] } ] } }\n' "$cmds" \
+    >"$repo/.claude/settings.json"
+}
+
 # says <name> <level> <label-substring> [value-substring] — assert one report line at a given level.
 says() {
   local want_level="$2" label="$3" value="${4:-}"
@@ -388,16 +405,29 @@ repo="$(scaffold '120 lines / 10 KB')"
 pin_v11 "$repo"
 lock_pre_v11 "$repo"
 run "$repo" >/dev/null
-says "pre-v11-lockfile-warns" warn "pnpm-lock.yaml" "written before pnpm 11"
+says "pre-v11-lockfile-warns" warn "pnpm-lock.yaml" "predates that declaration"
 
 repo="$(scaffold '120 lines / 10 KB')"
 pin_v11 "$repo"
 printf -- "---\nlockfileVersion: '9.0'\n\nimporters:\n  .:\n    packageManagerDependencies: {}\n" >"$repo/pnpm-lock.yaml"
 run "$repo" >/dev/null
-if grep -qF "written before pnpm 11" "$OUT"; then
-  note_fail "v11-lockfile-is-silent" "$(grep -F 'written before pnpm 11' "$OUT" | head -n1)"
+if grep -qF "predates that declaration" "$OUT"; then
+  note_fail "v11-lockfile-is-silent" "$(grep -F 'predates that declaration' "$OUT" | head -n1)"
 else
   note_pass "v11-lockfile-is-silent"
+fi
+
+# A plain `"packageManager": "pnpm@x.y.z"` pin has nothing to self-manage, so pnpm 11 writes a
+# lockfile without the markers — identical in shape to lock_pre_v11(), and correct. The check must
+# stay silent here; it used to warn, which is every healthy repo on the planet.
+repo="$(scaffold '120 lines / 10 KB')"
+printf '{ "packageManager": "pnpm@11.21.0" }\n' >"$repo/package.json"
+lock_pre_v11 "$repo"
+run "$repo" >/dev/null
+if grep -qF "predates that declaration" "$OUT"; then
+  note_fail "plain-packagemanager-lockfile-is-silent" "$(grep -F 'predates that declaration' "$OUT" | head -n1)"
+else
+  note_pass "plain-packagemanager-lockfile-is-silent"
 fi
 
 repo="$(scaffold '120 lines / 10 KB')"
@@ -473,6 +503,38 @@ repo="$(scaffold '120 lines / 10 KB')"
 rm -rf "$repo/.ai"
 run "$repo" >/dev/null
 says "unscaffolded-warns" warn ".ai/work/" "not scaffolded"
+
+# --- hook drift ---------------------------------------------------------------
+# Before these, a hook that was present, executable and STALE reported OK. See docs/agents/tooling.md.
+echo "hook drift against the shipped templates:"
+
+repo="$(scaffold '120 lines / 10 KB')"
+with_hooks "$repo" block-non-pnpm lint-on-edit
+run "$repo" >/dev/null
+if grep -qF "differs from the shipped template" "$OUT"; then
+  note_fail "in-sync-hooks-are-silent" "$(grep -F 'differs from the shipped template' "$OUT" | head -n1)"
+else
+  note_pass "in-sync-hooks-are-silent"
+fi
+
+repo="$(scaffold '120 lines / 10 KB')"
+with_hooks "$repo" block-non-pnpm
+printf '# a local edit\n' >>"$repo/.claude/hooks/block-non-pnpm.sh"
+run "$repo" >/dev/null
+says "drifted-hook-warns" warn "block-non-pnpm.sh" "differs from the shipped template"
+
+# A hook this marketplace never shipped is the repo's own — nothing to compare, so it stays silent.
+repo="$(scaffold '120 lines / 10 KB')"
+mkdir -p "$repo/.claude/hooks"
+printf '#!/usr/bin/env bash\nexit 0\n' >"$repo/.claude/hooks/repo-own-guard.sh"
+chmod +x "$repo/.claude/hooks/repo-own-guard.sh"
+printf '{ "hooks": { "PreToolUse": [ { "matcher": "Bash", "hooks": [ {"type":"command","command":"bash \\"${CLAUDE_PROJECT_DIR}/.claude/hooks/repo-own-guard.sh\\""} ] } ] } }\n' >"$repo/.claude/settings.json"
+run "$repo" >/dev/null
+if grep -qF "differs from the shipped template" "$OUT"; then
+  note_fail "unshipped-hook-is-silent" "$(grep -F 'differs from the shipped template' "$OUT" | head -n1)"
+else
+  note_pass "unshipped-hook-is-silent"
+fi
 
 echo
 echo "doctor self-test: $PASS passed, $FAIL failed"

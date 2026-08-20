@@ -45,6 +45,14 @@ Every one opens with `command -v jq >/dev/null || exit 0` — **without `jq` on 
 no-op**, and nothing says so. `/dw-doctor` is the check. `templates/hooks/` ships a ninth,
 `typecheck-on-stop.sh`, deliberately unwired here because this repo has no typecheck.
 
+`hooks-in-sync.test.sh` pins the templates ≡ installed copies invariant **inside this repo only**;
+`dw-doctor` is the only thing that sees it in a consumer, comparing every wired `.claude/hooks/*.sh`
+against the `templates/hooks/` of the installed plugin version. `WARN`, never `FAIL` — a patched or
+deliberately older hook is a legitimate choice, and a hook with no template is that repo's own. What
+it buys is concrete: a vendored `block-non-pnpm` that stripped only one leading `sudo `, and so let
+`rtk npm install` straight through, sat in a consumer repo reporting `OK` on existence and the
+executable bit.
+
 `lint-on-edit.sh` is live on `evals/*.ts`, which matches its `.ts/.tsx/.js/.jsx/.mjs/.cjs` filter:
 `scripts/lint.sh` lints the one path it is appended and only walks the tree when handed nothing.
 `.husky/pre-commit` is still the real gate.

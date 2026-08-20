@@ -47,6 +47,16 @@ ver_ge() { [ "$(printf '%s\n%s\n' "$1" "$2" | sort -V | head -n1)" = "$1" ]; }
 # --- locate the target repo ---------------------------------------------------
 ROOT="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
 
+# --- locate OUR OWN shipped hook templates ------------------------------------
+# `../../../templates/hooks` is the one relative path that resolves in both places this script
+# lives — the source repo and an installed plugin — since `cd -P` collapses the symlink either way.
+# Empty when not found, and every use is guarded: a diagnostic must not depend on its packaging.
+TEMPLATE_HOOKS=""
+_self_dir="$(cd -P "$(dirname "${BASH_SOURCE[0]}")" 2>/dev/null && pwd)" || _self_dir=""
+if [ -n "$_self_dir" ] && [ -d "$_self_dir/../../../templates/hooks" ]; then
+  TEMPLATE_HOOKS="$(cd -P "$_self_dir/../../../templates/hooks" && pwd)"
+fi
+
 printf '%sdw-doctor%s — read-only environment diagnostic\n' "$C_DIM" "$C_RST"
 printf '%srepo: %s%s\n' "$C_DIM" "$ROOT" "$C_RST"
 
@@ -208,13 +218,19 @@ else
       if have jq && jq -e 'has("pnpm")' "$pkg" >/dev/null 2>&1; then
         report warn "pnpm settings" "package.json#pnpm is present but pnpm 11 reads none of it, and names only the keys it recognises — move them to pnpm-workspace.yaml"
       fi
-      # `lockfileVersion` is NOT the tell: v11 still writes '9.0'. Its own marks are the leading
-      # document separator and the two per-importer keys it added.
+      # `lockfileVersion` is NOT the tell: v11 still writes '9.0'. Its marks are the leading `---`
+      # and the two per-importer keys — but v11 writes them only where `devEngines.packageManager`
+      # makes it self-manage its own binary. A repo pinning through a plain `"packageManager":
+      # "pnpm@x.y.z"` string has nothing to self-manage, so its v11 lockfile carries none of them
+      # and is indistinguishable from a pre-v11 one. Their absence answers the question only where
+      # they were owed, so gate on the declaration rather than warn on the undecidable half.
       lock="$ROOT/pnpm-lock.yaml"
-      if [ -f "$lock" ] &&
+      selfmanaged=0
+      if have jq && jq -e '.devEngines.packageManager' "$pkg" >/dev/null 2>&1; then selfmanaged=1; fi
+      if [ "$selfmanaged" -eq 1 ] && [ -f "$lock" ] &&
         ! head -n1 "$lock" | grep -q '^---[[:space:]]*$' &&
         ! grep -q '^[[:space:]]*\(configDependencies\|packageManagerDependencies\):' "$lock"; then
-        report warn "pnpm-lock.yaml" "written before pnpm 11 (lockfileVersion still reads '9.0', so it is not the tell) — run: pnpm install"
+        report warn "pnpm-lock.yaml" "this repo self-manages pnpm via devEngines, but the lockfile records none of it (no packageManagerDependencies) — it predates that declaration; run: pnpm install"
       fi
     fi
   fi
@@ -274,7 +290,17 @@ if [ -f "$settings" ]; then
         elif [ ! -x "$script_path" ]; then
           report fail "hook script" "not executable: $rel — fix: chmod +x"
         else
-          report ok "hook script" "$rel"
+          # Present and executable is not the same as CURRENT: a vendored copy that fell behind
+          # its template passes both while missing whatever the template learned since. WARN,
+          # never FAIL — a deliberately patched or older hook is a legitimate choice this cannot
+          # tell from neglect, and a hook with no template is the repo's own, so it is left alone.
+          tmpl=""
+          [ -n "$TEMPLATE_HOOKS" ] && tmpl="$TEMPLATE_HOOKS/$(basename "$script_path")"
+          if [ -n "$tmpl" ] && [ -f "$tmpl" ] && ! cmp -s "$tmpl" "$script_path"; then
+            report warn "hook script" "$rel differs from the shipped template — it may be missing fixes this version carries; diff it against $tmpl, or re-run dw-init to refresh"
+          else
+            report ok "hook script" "$rel"
+          fi
         fi
       done < <(jq -r '.hooks // {} | to_entries[] | .value[]? | .hooks[]? | .command // empty' "$settings" 2>/dev/null)
       [ "$found_hook" -eq 0 ] && report info "hooks" "none wired in settings.json"

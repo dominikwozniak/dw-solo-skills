@@ -99,9 +99,10 @@ One task at a time, however many the mode allows.
   still `shaping`.
 - **A task you decided not to build keeps its box and gains a reason.** Leave the `- [ ]` and append a
   bolded `**skip:** <reason>` clause to its line; from then on every invocation reads that task as not
-  remaining. This is the on-disk form of step 2's amendment, and dropping the task silently is what it
-  replaces — the archive cannot otherwise tell a task considered and refused from one no session
-  reached.
+  remaining — and where this lane says a change is ready "once the boxes are all ticked", a skipped box
+  counts as not remaining, so one marker never strands a finished change. This is the on-disk form of
+  step 2's amendment, and dropping the task silently is what it replaces — the archive cannot otherwise
+  tell a task considered and refused from one no session reached.
 - **The marker is for a task that stopped being necessary, never for one that is merely hard.**
   Redundant, already done, or overtaken by an earlier task: those skip. A task standing between the diff
   and this change's `## Goal` does not — step 3 already refuses to park a gap there, and `dw-land`'s

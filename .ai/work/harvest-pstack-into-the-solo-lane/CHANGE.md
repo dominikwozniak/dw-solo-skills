@@ -1,6 +1,6 @@
 ---
 change: harvest-pstack-into-the-solo-lane
-branch: unclaimed
+branch: harvest-pstack-into-the-solo-lane
 created: 2026-08-20
 status: shaping # shaping | building | landed
 ---

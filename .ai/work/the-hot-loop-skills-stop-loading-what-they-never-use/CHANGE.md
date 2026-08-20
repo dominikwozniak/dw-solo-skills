@@ -43,7 +43,7 @@ findable after the move, proven per block rather than assumed.
       the `HARD STOP` stay in the body.
 - [x] 4. `validate-docs.sh` check 5 — every `references/<file>` a `SKILL.md` cites resolves on disk,
       in the shape of check 1. No self-test: `0013` exempts a disk validator.
-- [ ] 5. `dw-solo` `0.4.25` → `0.4.26` in both manifests, then
+- [x] 5. `dw-solo` `0.4.25` → `0.4.26` in both manifests, then
       `node scripts/check-skill-corpus.mjs --update-baseline`, then the full gate.
 
 ## Anchors
@@ -74,3 +74,5 @@ findable after the move, proven per block rather than assumed.
   above" pointed at a sizing ladder that stayed in the body, so it now names step 2 instead.
 - It is check **6**, not 5: the agent-docs contract already holds that number, and the file's header
   said "Four" while listing five. Both corrected in task 4.
+- Every word target came in ~4% over (dw-land 1731 vs ~1650, dw-next 1478 vs ~1400, dw-shape 1822 vs
+  ~1760, corpus 15553 vs ~15330): the shaped numbers priced the moved blocks, not the pointers.

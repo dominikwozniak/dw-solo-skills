@@ -61,8 +61,7 @@ block() {
 # to block-env-access.sh's, and a fix to one belongs in both. There is no shared
 # library to put them in on purpose — each hook is installed and pruned on its
 # own, so a `source` would make every hook depend on a file dw-init may not have
-# copied. Nothing detects the drift, which is the same standing hazard
-# hooks-in-sync.test.sh's header records about the dw-skills vendored copies.
+# copied. Nothing detects the drift.
 HEREDOC_OPEN='(^|[^<])<<-?[[:space:]]*["'"'"'\]?([A-Za-z_][A-Za-z0-9_]*)'
 strip_heredocs() {
   local line delim="" body=0

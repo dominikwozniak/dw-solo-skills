@@ -29,31 +29,6 @@ legal, and several shipped pointers do it: a `**Next:**` line is a suggestion th
 typing the name, which is the one route into an invisible skill. Which skills these are is the `⭑` list
 in `README.md`, kept in sync by `validate-docs.sh`.
 
-## Vendored from `dw-skills` — fix in both
-
-This is the enumeration; `CONTEXT.md` defines the two terms. These are **copies**, not references, and
-nothing can detect drift across the repo boundary — **a fix here does not reach that repo, so apply it
-twice**:
-
-- The hooks this lane forked with: `block-dangerous-commands.sh`, `block-env-access.sh`,
-  `block-non-pnpm.sh`, `lint-on-edit.sh`, `typecheck-on-stop.sh`. Several have been fixed here since, so
-  assume diverged. The team repo also ships a Ruby lint hook this Node-only lane deliberately drops;
-  don't "re-sync" it back.
-- `scripts/runtime/slugify.sh`.
-
-Everything else under `templates/hooks/` — `credential-leak-guard.sh`, `enforce-commit-hygiene.sh`,
-`guard-plugin-canon.sh`, `large-file-guard.sh` — was written here in the guardrail hook wave and has no
-upstream at all; `scripts/tests/hooks-in-sync.test.sh` pins the templates to _this_ repo's
-`.claude/hooks/` and to nothing in `dw-skills`.
-
-A skill copied from `dw-skills` is a **fork**, simplified for one reader — expected to diverge, never
-re-synced. Current forks: `dw-grill`, `dw-shape`, `dw-next`, `dw-land`, `dw-git`, `dw-doctor` and
-`dw-init` (which also absorbed the team lane's standalone pre-commit skill). `dw-start`, `dw-check`,
-`dw-ship`, `dw-handoff`, `dw-prune` and `scripts/runtime/worktree.sh` are this lane's own. `dw-handoff`
-is the one to watch: it shares a name with a team-lane skill and nothing else, having been written here
-after the team lane dropped handoffs on purpose, and it writes one overwritten `HANDOFF.md` inside the
-change folder rather than a dated record under `.ai/handoffs/`.
-
 ## Adding a skill
 
 1. `skills/<name>/SKILL.md` — kebab-case `name` matching the directory (the validators' regex is

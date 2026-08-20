@@ -11,10 +11,8 @@
   <img alt="Claude Code plugin" src="https://img.shields.io/badge/Claude_Code-plugin-111111?style=flat-square">
 </p>
 
-This is the **thin lane**. If several people read your specs and reviews, you want the fuller
-workflow instead: [**dw-skills**](https://github.com/dominikwozniak/dw-skills) — `dw-spec → dw-plan →
-dw-build` with five auditors, a validated status table, and slice graphs. Same conventions, more
-ceremony. Pick one per repo; see [Why two repos](#-why-two-repos) below.
+This is the **thin lane**: every skill here assumes one reader, and the loop carries only the
+ceremony a solo change actually pays for.
 
 ## ◆ What this lane is for
 
@@ -123,24 +121,6 @@ ship.
   zero-dependency checker holds the budget and the router honest.
 - **Technology-agnostic.** Test/lint/run commands are read from your project (`AGENTS.md` →
   manifests → the code), never hardcoded.
-
-## ◈ Why two repos
-
-This lane started inside [`dw-skills`](https://github.com/dominikwozniak/dw-skills) alongside the
-team lane. It moved out because the shared `templates/` payload was shaped for the team scaffolder —
-the memory template shipped the team loop, the `.ai/` README documented directories this lane doesn't
-have — and every scaffolding run patched those files after copying. Here the templates are this lane's
-own, copied as-is.
-
-The cost, stated plainly: some of `templates/hooks/`, and `scripts/runtime/slugify.sh`, are **vendored
-copies** of the same files in `dw-skills`. A fix must be applied in both — nothing across the repo
-boundary can detect drift. Which files those are is in
-[`docs/agents/skills-and-plugins.md`](docs/agents/skills-and-plugins.md).
-
-**Install one lane per repo, not both.** `dw-git`, `dw-doctor` and `dw-init` exist in both lanes as
-deliberately diverging forks, so two lanes in one project means two skills competing for the same
-task. Claude Code scopes plugins per project, which is where the choice is made once: in a solo repo
-enable this lane's two plugins and disable the team lane's.
 
 ## ▤ Project structure
 

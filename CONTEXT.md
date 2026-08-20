@@ -3,8 +3,8 @@
 Terms this repo uses in a specific way. Definitions only, no implementation detail — the rules live
 in [`AGENTS.md`](AGENTS.md) and the procedures in the skills themselves.
 
-- **Lane** — how much process a change gets. This repo is the **thin lane** (one reader). The
-  team-weight lane is [`dw-skills`](https://github.com/dominikwozniak/dw-skills). One lane per repo.
+- **Lane** — how much process a change gets. This repo is the **thin lane**: one reader, and only the
+  ceremony a solo change pays for.
 - **Canon** — the single real copy of a file. `skills/<name>/` and `scripts/runtime/<s>.sh` are canon;
   everything under `plugins/` is a git-tracked symlink back to it. Never edit through `plugins/…`.
 - **Change** — one unit of work, held in `.ai/work/<slug>/CHANGE.md`. Persistent (tracked, survives a
@@ -61,12 +61,8 @@ in [`AGENTS.md`](AGENTS.md) and the procedures in the skills themselves.
   Wider than payload, and never `.claude-plugin/marketplace.json`, which is where half a bump lands.
   A change touching a plugin's surface must bump that plugin; `validate-versions.sh` derives the map
   from the symlink graph rather than a list.
-- **Vendored** — a copy of a file whose canon is shared with `dw-skills`. A fix must be applied in
-  both repos, because nothing across the boundary can detect drift. Which files:
-  [`skills-and-plugins.md`](docs/agents/skills-and-plugins.md).
-- **Fork** — a skill copied from `dw-skills` and deliberately simplified for one reader. Expected to
-  diverge; not re-synced. Which skills:
-  [`skills-and-plugins.md`](docs/agents/skills-and-plugins.md).
+- **Vendored** — a consumer repo's copy of a shipped template, written there by `dw-init`. It can fall
+  behind what this repo ships; `dw-doctor` is what detects that.
 - **Claim** — flipping a change doc's `branch: unclaimed` sentinel to a real branch name, committed
   immediately. Done by `dw-start` (after creating the worktree) or offered by `dw-next` (when its
   branch-grep misses). A change shaped on the default branch is unclaimed until then.

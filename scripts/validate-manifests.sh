@@ -154,8 +154,7 @@ done
 # the repo root in templates/ and are exposed by a git-tracked symlink
 # plugins/dw-solo-setup/templates -> ../../templates, so ${CLAUDE_PLUGIN_ROOT}/templates/ resolves
 # after install dereferences it. Only the setup plugin consumes templates/ — the loop plugin ships
-# scripts, never payload. templates/hooks/ is a vendored copy of the same canon in the `dw-skills`
-# repo; a fix must be applied to both, since nothing across the repo boundary can detect drift.
+# scripts, never payload.
 echo
 echo "Checking plugin templates symlink resolves to the canon..."
 if [ ! -d templates/hooks ]; then

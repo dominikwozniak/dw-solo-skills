@@ -10,8 +10,8 @@ Three tiers, three owners:
 
 ## What goes where
 
-- **Root `AGENTS.md`**: only what applies to _every task regardless of what you touch_ — the boundary
-  this repo keeps against `dw-skills`, the layout rule, the loop, the Commands block, the Task Router,
+- **Root `AGENTS.md`**: only what applies to _every task regardless of what you touch_ — the layout
+  rule, the loop, the Commands block, the Task Router,
   and the two blocks the tooling reads directly: `## Solo lane` (whose `- **Lint command**:` line the
   `lint-on-edit` hook greps) and `## Git conventions` (which `dw-git` applies). A topic-scoped rule goes
   into a topic file and earns a router row instead. It declares its own hard budget in its header prose

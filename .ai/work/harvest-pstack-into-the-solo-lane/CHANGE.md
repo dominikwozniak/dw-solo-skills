@@ -46,7 +46,7 @@ tracked `VERIFY.md` whose router row `agents:check` accepts.
 - [x] 3. `dw-next` §4 — the `**skip:**` marker plus its fence against goal-shrinking, and the marker
       documented in `skills/dw-shape/references/CHANGE.md`.
 - [x] 4. `dw-land` phase 3 — the encode-in-structure filter as a third item before a gotcha is written.
-- [ ] 5. `dw-land` step 2 — five rungs on **Is "done" proven?** and **Blast radius?**, with `VERIFY.md`
+- [x] 5. `dw-land` step 2 — five rungs on **Is "done" proven?** and **Blast radius?**, with `VERIFY.md`
       named as a condition.
 - [ ] 6. `dw-init` — the `VERIFY.md` row in `## What it writes`, the create-if-absent step with its
       Launch / Doctor / Drive stub, and the `templates/AGENTS.md` router row.

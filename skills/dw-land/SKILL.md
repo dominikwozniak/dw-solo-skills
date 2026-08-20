@@ -53,6 +53,14 @@ straight to closing.
 - **Is "done" proven?** A box ticked because the code "looks right" is unproven — say so rather
   than ratifying it; where a cheap check settles it, run the project's own command.
 
+**Name the rung each proof reached** — for that question and for blast radius both. Five, weakest
+first: you said so · you pointed at the line · you showed the bad case cannot happen · **you ran it** ·
+you reproduced it in the artifact a user gets rather than the tree you edited. Push each safety claim
+as far down as is cheap, then **say where it stopped**: a claim short of "you ran it" is spoken aloud,
+never written up as settled. Where the repo records how to drive itself — a `VERIFY.md`, or whatever it
+keeps — the bottom two rungs cost a read instead of a re-derivation; where it records nothing, that
+ceiling is itself part of the answer.
+
 Close with one line — **ready to merge**, **ready with follow-ups** (name them; each becomes a
 backlog file in phase 3, and an unnamed follow-up vanishes into the archive unread), or **not
 ready** and why.

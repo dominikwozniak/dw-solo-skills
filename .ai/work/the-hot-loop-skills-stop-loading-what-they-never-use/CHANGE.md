@@ -2,7 +2,7 @@
 change: the-hot-loop-skills-stop-loading-what-they-never-use
 branch: main
 created: 2026-08-20
-status: shaping # shaping | building | landed
+status: building # shaping | building | landed
 ---
 
 # Change — the three skills that run on every change stop loading what they will not use
@@ -34,7 +34,7 @@ findable after the move, proven per block rather than assumed.
 
 ## Tasks
 
-- [ ] 1. `dw-land` `### 3. Close` → `skills/dw-land/references/promote.md`; body keeps the gate, the
+- [x] 1. `dw-land` `### 3. Close` → `skills/dw-land/references/promote.md`; body keeps the gate, the
       target order and the pointer. Delete the `:141-148` restatement, fact-token-checked against
       `templates/backlog-README.md` first.
 - [ ] 2. `dw-next` claim ladder → `skills/dw-next/references/claiming.md`, plus the new
@@ -68,3 +68,5 @@ findable after the move, proven per block rather than assumed.
   move left a dangling reference. Open them by hand before that, not instead of it.
 - `validate:versions` is red from task 1 until task 5 bumps, the same as the previous change; the
   corpus ratchet stays green throughout because it permits shrinking freely.
+- The fact-token diff earned its keep on task 1: the 8-gram read looked like a clean move, and the
+  token check caught `source: <this change's slug>` dropped from the follow-ups bullet.

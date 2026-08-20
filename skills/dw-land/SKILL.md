@@ -85,88 +85,15 @@ Then **stop.** You've graded the work; the user decides what happens next.
 
 ### 3. Close — only on explicit approval
 
-When the user approves — an unambiguous affirmative like "close" or "go", not a hedged "looks
-fine, I guess"; wait for a plain one — and only then:
+When the user approves — an unambiguous affirmative like "close" or "go", not a hedged "looks fine,
+I guess"; wait for a plain one — and only then promote, in this order: the **decisions** to
+`docs/decisions/`, the **vocabulary** to `CONTEXT.md`, the **gotchas** to wherever this repo keeps
+them, the **follow-ups** to `.ai/backlog/`, the **scaffolding** to `.ai/archive/<slug>/` — then one
+commit carrying all of it.
 
-**Promotion replaces; it does not append.** For each target below, read what is already there before
-writing, and delete what this change supersedes in the same edit. A durable layer that only ever grows
-stops being read, which costs you the promotion step entirely — and where a cap exists, appending is
-what makes the build fail.
-
-- **Promote the decisions.** Anything from Decisions or Notes that a future session would need and
-  couldn't re-derive from the code becomes `docs/decisions/<NNNN>-<slug>.md`, numbered next in
-  sequence, from the shape in `references/decision-record.md`. Be strict: a decision earns a record
-  only if it was **hard to reverse, surprising, and a real trade-off** — all three, not any one of
-  them. Most changes produce **zero** records, and that's the correct number. When a record here
-  replaces an older one, flip that one to `status: superseded` with `superseded-by:` in the same
-  pass — the reference says how, and nothing else in the loop does it. Take the next number from the
-  highest on disk and **never renumber an existing record**: its number is what every
-  `superseded-by:` pointer is made of. This is the one target where replacing is a link rather than a
-  deletion — a superseded record stays, because why a settled choice was reopened is the most useful
-  thing in the folder.
-- **Promote the vocabulary.** Any new domain term this change introduced or sharpened goes into
-  `CONTEXT.md` as a glossary line. Terms only — no implementation detail. Create the file if it
-  doesn't exist. **If the change sharpened a term already defined there, rewrite that line** — two
-  definitions of one word is worse than none, and a term the change retired comes out.
-- **Promote the gotchas.** A trap that cost real time, or repeated, becomes one entry — the local
-  trap, and what to do instead. Same bar as decision records: **not every surprise.** A gotchas list
-  that logs every small confusion teaches you to stop reading it.
-
-  **Where it goes, in this order.** An existing `## Gotchas` section — in `AGENTS.md` or `CLAUDE.md`,
-  wherever the repo already keeps one — stays the home; newest first. Otherwise the home is the
-  **routed topic file** whose subject covers the trap: find the `## Task Router` row that matches and
-  append there. **No matching row means creating both halves in the same commit** — the topic file
-  under `docs/agents/` and its router row — because a topic file nothing routes to is a file nothing
-  reads, and the shipped `agents:check` fails on one.
-
-  Never the root file by default. It is loaded in full every session under a declared budget, so a
-  growing list of traps there is the one thing guaranteed to push a real rule out; a routed file is
-  read when its subject comes up, which is exactly when a trap about it matters. Three things before
-  you write:
-  - **Ask first whether a mechanism would catch it.** A trap a hook, a validator, a self-test or a lint
-    rule could refuse outright does not belong in prose — prose is for what no mechanism can enforce,
-    and a rule enforced on trust is one a tired session skips. Where a mechanism would work the
-    promotion is one `.ai/backlog/<slug>.md` naming it and **no `## Gotchas` entry**; a trap written up
-    as prose is a trap you have decided to keep hitting. Where none fits, write the entry.
-  - **Delete what this trap replaces.** A gotcha the change made untrue — the tool is gone, the hook
-    is fixed, the flag now defaults the other way — comes out in this edit. Leaving it beside its
-    replacement is how the list stops being trustworthy: the reader can no longer tell which half is
-    current.
-  - **Look for the cousin.** If an existing entry has the same root cause, make this a sub-bullet of
-    it rather than another sibling. Where the repo caps the list, a merge is the only way to add to a
-    full one, and appending fails the build.
-
-- **Promote the follow-ups.** Every follow-up named in the verdict, plus anything deliberately left
-  out, becomes one file `.ai/backlog/<slug>.md` — slug from
-  `bash "${CLAUDE_PLUGIN_ROOT}/scripts/slugify.sh" slug "<the follow-up>"`, frontmatter
-  `created: YYYY-MM-DD` plus `source: <this change's slug>`, an H1 saying what-and-why in one
-  line, at most ~3 lines of context. Findings go by pointer to `.ai/archive/<slug>` — never
-  inlined. If `.ai/backlog/<slug>.md` already exists, merge into it or re-slug with a more
-  specific description — **never overwrite it silently**; the existing entry is queued work.
-  Create the dir with its `README.md` if the repo predates the scaffold. Two bars, and an entry
-  clears both. **Will you ever?** — if you would not pick it up within a month, don't write it.
-  **Should it have been done now?** — **nothing blocks it and doing it costs less than describing it
-  → the current change, now**, not a file here. That is the default, not a judgement to weigh: a fix
-  that fits in a file the change already touched, or that is smaller than the entry describing it, is
-  a commit in that change. Only genuinely blocked work — waiting on a decision, a dependency, or a
-  change not yet made — earns an entry. Zero is a normal answer, and a folder already too long is what
-  `dw-prune` is for — say its name rather than triaging the whole queue from here.
-  **Then clear what this change closed**: an entry whose work the diff just did, or which the change
-  made moot, is `git rm`'d in this same commit — and one that survives with fewer bullets than it had
-  gets rewritten to what is left. A queue holding finished work reads as a backlog you have stopped
-  believing.
-- **Archive the scaffolding.** `git rm` a leftover `HANDOFF.md` first — it described the middle of a
-  task, and post-merge it is noise — then `git mv .ai/work/<slug>/ .ai/archive/<slug>/` and, in the
-  moved `CHANGE.md`, flip `status:` to `landed` with `landed: YYYY-MM-DD` plus `pr: "#<n>"` where the
-  branch already has one (`gh pr view --json number`) — otherwise step 4 fills it, since on the usual
-  path the PR does not exist yet. `.ai/archive/README.md` states the convention; create it from that
-  one line if the repo predates the scaffold. If `.ai/archive/<slug>/` already exists, stop and pick a
-  suffixed destination (`<slug>-2`): `git mv` into an existing directory silently nests the folder
-  inside it. If something in the doc still feels too valuable to bury, that is the signal it belonged
-  in a record, a gotcha or the backlog — promote it first, then archive.
-- **Commit** the promotion and the archive move together, the way `dw-git` does — **on the branch you
-  are on.** In a worktree that means the feature branch: the promotion rides the PR, the squash-merge
-  carries it to the default branch, and post-merge `main` is already clean.
+`references/promote.md` is that procedure: the bar each target holds to, where a gotcha goes when the
+repo has no `## Gotchas` section, and what each target deletes rather than appends. Read it before
+writing any of them.
 
 ### 4. Open the PR — under the same go
 
@@ -220,6 +147,8 @@ is the default.
 
 ## References
 
+- `references/promote.md` — phase 3's procedure: the five targets in order, the bar each one holds
+  to, and what each deletes rather than appends. Read it when the go arrives.
 - `references/decision-record.md` — the shape for `docs/decisions/<NNNN>-<slug>.md`, the test for
   whether a decision deserves a record at all, and how a record is superseded rather than rewritten.
   Read it before promoting.

@@ -93,15 +93,8 @@ depth; this is count, and one change is the default.
   rule causes when it fires too easily. Counting files, tasks or shippable pieces catches neither.
 - **At N ≥ 2, name the slugs and the one scope each owns, then ask. HARD STOP** — splitting is the
   user's call, made here and asked once; step 4's read-back confirms the result, not the decision.
-- **On yes, write N × `CHANGE.md`**, each **sized on its own terms** — run the ladder above once per
-  scope, because splitting is not a licence to manufacture ceremony N times. **Never a stub pointing
-  at a sibling**: a change that can't be built without reading another one just failed the test.
-  Branch fields: all N `unclaimed` on the default branch; on a claimed branch ask which one is being
-  built here and give only that one the branch verbatim — **unless the branch already carries a
-  change**, when all N stay `unclaimed`.
-- **On no, it stays one change**, and the reason goes in `## Decisions` so the question isn't reopened.
-- **A shared anchor is an ordering sentence in the `## Notes`** of whichever lands second — never a
-  frontmatter field, which would be the status column this lane exists to avoid.
+- **Then `references/splitting.md`** — what writing N changes involves, what a "no" still owes
+  `## Decisions`, and where a shared anchor goes. Nothing in it runs at N = 1.
 
 ### 3. Cut the tasks as thin vertical slices
 
@@ -160,6 +153,8 @@ assumptions.
 
 ## References
 
+- `references/splitting.md` — what to write once the HARD STOP is answered, either way. Read it only
+  at N ≥ 2; the default count of one never reaches it.
 - `references/CHANGE.md` — the exact shape to copy: frontmatter (`change / branch / created / status`)
   plus Goal · Decisions · Tasks · Anchors · Notes. Keep it a note to your future self, not
   documentation; durable knowledge is what `dw-land` promotes to `docs/decisions/` and `CONTEXT.md`.

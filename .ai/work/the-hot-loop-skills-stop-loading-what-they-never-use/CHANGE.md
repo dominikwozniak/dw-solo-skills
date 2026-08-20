@@ -39,7 +39,7 @@ findable after the move, proven per block rather than assumed.
       `templates/backlog-README.md` first.
 - [x] 2. `dw-next` claim ladder → `skills/dw-next/references/claiming.md`, plus the new
       `## References` section it has never had.
-- [ ] 3. `dw-shape` split execution → `skills/dw-shape/references/splitting.md`; the split test and
+- [x] 3. `dw-shape` split execution → `skills/dw-shape/references/splitting.md`; the split test and
       the `HARD STOP` stay in the body.
 - [ ] 4. `validate-docs.sh` check 5 — every `references/<file>` a `SKILL.md` cites resolves on disk,
       in the shape of check 1. No self-test: `0013` exempts a disk validator.
@@ -70,3 +70,5 @@ findable after the move, proven per block rather than assumed.
   corpus ratchet stays green throughout because it permits shrinking freely.
 - The fact-token diff earned its keep on task 1: the 8-gram read looked like a clean move, and the
   token check caught `source: <this change's slug>` dropped from the follow-ups bullet.
+- A relative cross-reference is what a block move breaks silently: `dw-shape`'s "run the ladder
+  above" pointed at a sizing ladder that stayed in the body, so it now names step 2 instead.

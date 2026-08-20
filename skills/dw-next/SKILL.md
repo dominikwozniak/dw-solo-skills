@@ -97,6 +97,16 @@ One task at a time, however many the mode allows.
 
 - Flip the task's `- [ ]` to `- [x]` in `CHANGE.md`, and set frontmatter `status: building` if it's
   still `shaping`.
+- **A task you decided not to build keeps its box and gains a reason.** Leave the `- [ ]` and append a
+  bolded `**skip:** <reason>` clause to its line; from then on every invocation reads that task as not
+  remaining. This is the on-disk form of step 2's amendment, and dropping the task silently is what it
+  replaces — the archive cannot otherwise tell a task considered and refused from one no session
+  reached.
+- **The marker is for a task that stopped being necessary, never for one that is merely hard.**
+  Redundant, already done, or overtaken by an earlier task: those skip. A task standing between the diff
+  and this change's `## Goal` does not — step 3 already refuses to park a gap there, and `dw-land`'s
+  completion gate reads the **diff, not the checklist**, so a marker buys no close either way. That one
+  stays open, or the `## Goal` is something the user amends.
 - Append to Notes only what a future session would actually need: a surprise, a dead end, a decision
   taken while building, a term this task had to coin. Not a narration of what the diff already shows.
   **One finding, one line.** You read this file on every invocation, so a note that runs to a paragraph

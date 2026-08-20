@@ -43,7 +43,7 @@ tracked `VERIFY.md` whose router row `agents:check` accepts.
       tests) plus `skills/dw-unslop/references/patterns.md` (the numbered catalog).
 - [x] 2. The `dw-solo-extras` symlink, the README task-router row with `⭑`, the name in the
       "Explicit-only skills" paragraph, and the badge `skills-12` → `skills-13`.
-- [ ] 3. `dw-next` §4 — the `**skip:**` marker plus its fence against goal-shrinking, and the marker
+- [x] 3. `dw-next` §4 — the `**skip:**` marker plus its fence against goal-shrinking, and the marker
       documented in `skills/dw-shape/references/CHANGE.md`.
 - [ ] 4. `dw-land` phase 3 — the encode-in-structure filter as a third item before a gotcha is written.
 - [ ] 5. `dw-land` step 2 — five rungs on **Is "done" proven?** and **Blast radius?**, with `VERIFY.md`

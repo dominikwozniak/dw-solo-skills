@@ -292,7 +292,7 @@ repo="$WORK/rendered"
 mkdir -p "$repo/scripts" "$repo/.ai/backlog" "$repo/.ai/archive" "$repo/docs/decisions" "$repo/.claude/hooks"
 git -C "$repo" init --quiet
 cp "$CHECKER" "$repo/scripts/check-agents-docs.mjs"
-for seeded in .ai/README.md .ai/backlog/README.md .ai/archive/README.md docs/decisions/README.md CONTEXT.md; do
+for seeded in .ai/README.md .ai/backlog/README.md .ai/archive/README.md docs/decisions/README.md CONTEXT.md VERIFY.md; do
   printf 'seeded by dw-init\n' >"$repo/$seeded"
 done
 printf '{ "scripts": { "test": "vitest", "agents:check": "node scripts/check-agents-docs.mjs" } }\n' \

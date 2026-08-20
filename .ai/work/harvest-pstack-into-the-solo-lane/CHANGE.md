@@ -102,6 +102,8 @@ tracked `VERIFY.md` whose router row `agents:check` accepts.
   project's tenth decision. Task 4 drafted one, caught it, and put the reasoning in the body instead.
   No skill body cited a decision before, so nothing enforces it — a `docs/decisions/` grep over
   `skills/*/SKILL.md` would, which is the phase-3 filter's own verdict on this note.
-- Nothing checks that every path `templates/AGENTS.md` routes to is one `dw-init` actually creates;
-  `check-agents-docs.mjs` only ever runs in the scaffolded repo. `CONTEXT.md`'s row stands on the same
-  footing, so this is not new — but it is a validator waiting to be written.
+- A `templates/AGENTS.md` router row **is** mechanically checked, contrary to what task 6 first
+  recorded: `check-agents-docs.test.sh`'s `shipped-template-passes-exit-0` renders the template into a
+  fixture seeded with exactly what `dw-init` writes and runs the shipped checker over it. Task 8 caught
+  the row and added `VERIFY.md` to that seed list. Grepping for the absence of a check is not the same
+  as looking for one.

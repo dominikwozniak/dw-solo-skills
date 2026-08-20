@@ -84,6 +84,22 @@ into one score** — a fit problem must not hide behind "it's correct":
 Every finding points at a real `file:line` you opened — if you can't ground it, don't report it.
 "No findings on either axis" is a normal, useful answer; say it plainly and stop.
 
+**Then filter, and say what you dropped.** Findings arrive without the context you have — the change
+doc, the decisions already taken, what was tried and rejected. An outside reviewer never saw those, and
+a self-review has stopped weighing them by the second pass. This is judgement over the list, not a
+second review of the diff:
+
+- **All nits means the diff is probably fine — lead with that.** Anything asked for findings tends to
+  fill the space, so a report made entirely of style preferences is evidence about the code. The
+  conclusion goes first and the nits follow it as dismissals, never the other way round.
+- **"I would have done it differently" is the commonest false positive.** A preferred approach is not a
+  finding until it names a concrete problem with this one. Same for an abstraction proposed for code
+  that has to change in exactly one way, and for a pattern called odd that the neighbouring files use.
+- **More than five things to act on means the filter is too loose** — go back through them. Correctness
+  and security are the exception: those earn more scrutiny before dismissal, not less.
+- **Name what you dismissed, one line each.** That is what lets the user overrule you, and it costs
+  less than the finding did.
+
 ### 4. Present, wait, then fix
 
 List the findings with a severity-ordered recommendation and **stop — nothing is fixed without

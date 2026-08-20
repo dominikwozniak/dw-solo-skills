@@ -80,6 +80,18 @@ either, and each script names the tokens it rejects.
 
 ## Gotchas
 
+- **`dw-check`'s delegated pass returns empty once Codex runs past 120 s, and recovering it is the
+  parent's job.** `codex:codex-rescue` is allowed exactly one `task` forward — it is barred from
+  `status`, `result` and from reading the repo, and it will say so if asked again. So when the Bash
+  tool's 120 s limit moves the Codex run to the background, the subagent returns with no findings and
+  cannot fetch them. The parent thread collects them:
+  `node ~/.claude/plugins/cache/openai-codex/codex/<v>/scripts/codex-companion.mjs result <job>`.
+  - **The id Bash reports is not the Codex job id.** Bash hands back its own background id
+    (`bfhu1elhj`-shaped); the companion wants the `task-…` id, and asking it about the former answers
+    `No job found`. Bare `codex-companion.mjs status` lists the real one.
+  - A full review of a 17-file prose diff took **~7 minutes**, so this is the normal path rather than
+    an edge case. Wait on it with one backgrounded `until` loop over `status`, not a poll in the
+    conversation.
 - **agnix warnings do not gate, and one of them is true right now.** `scripts/lint.sh` exits **0**
   with dozens of warnings; only `Found N errors` gates, so a rule firing is not a rule enforced —
   agnix's `File exceeds recommended token limit` has been firing on `CLAUDE.md` the whole time

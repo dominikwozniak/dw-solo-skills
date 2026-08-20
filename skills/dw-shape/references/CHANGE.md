@@ -22,10 +22,13 @@ needed; an empty heading is noise.
 ## Tasks
 
 Thin vertical slices, each independently committable and leaving the project green. Order is a hint,
-not a gate. `dw-next` ticks these.
+not a gate. `dw-next` ticks these — and where it finds one that stopped being necessary it leaves the
+box unticked and appends a reason, which every later invocation reads as not remaining. That marker is
+never available to a task the `## Goal` needs; write nothing here at shape time.
 
 - [ ] 1. [slice]
 - [ ] 2. [slice]
+- [ ] 3. [slice] **skip:** [why this one turned out unnecessary — `dw-next` writes this, never you]
 
 ## Anchors
 

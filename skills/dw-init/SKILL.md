@@ -25,6 +25,7 @@ allow-list is **derived from the project rather than guessed**.
 | `.ai/archive/` + its `README.md`    | **tracked**       | landed change docs — history, not guidance               |
 | `docs/decisions/` + its `README.md` | **tracked**       | durable decision records (`dw-land` promotes here)       |
 | `CONTEXT.md`                        | **tracked**       | the project's glossary — terms only                      |
+| `VERIFY.md`                         | **tracked**       | how to start this project and drive a feature by hand    |
 | `AGENTS.md`                         | **tracked**       | the one always-loaded file: rules, commands, Task Router |
 | `CLAUDE.md`                         | **tracked**       | a symlink to `AGENTS.md` — never a second copy           |
 | `scripts/check-agents-docs.mjs`     | **tracked**       | the gate on that file's budget, router and commands      |
@@ -35,7 +36,9 @@ allow-list is **derived from the project rather than guessed**.
 | `.husky/` + `.lintstagedrc.json`    | tracked, optional | the pre-commit twin of the hooks — only when opted in    |
 
 Deliberately absent: `.ai/verify/` and `.ai/handoffs/` — the solo lane has one thin closing pass
-that writes no artifact, and no one to hand off to. Also absent: **`CLAUDE.local.md`**. Agent memory
+that writes no artifact, and no one to hand off to. The root `VERIFY.md` is **not** that folder: one
+file saying how to drive the project, written once and read by every change, never a per-change
+artifact. Also absent: **`CLAUDE.local.md`**. Agent memory
 is tracked `AGENTS.md`, because a gitignored file survives neither a fresh clone nor a
 `git worktree`, and a second always-loaded file forks the corpus in two — `docs/decisions/` in a
 scaffolded repo carries the record. Personal, cross-project notes belong in `~/.claude/CLAUDE.md`.
@@ -109,6 +112,17 @@ light.
   per-file entries, never clobber or silently keep it.
 - `CONTEXT.md` — if absent, create it with a one-line purpose statement (this project's glossary;
   terms only, no implementation detail) and nothing else. If it exists, leave it alone.
+- `VERIFY.md` — if absent, create it the same way, and write exactly this much: a one-line purpose
+  statement, the two invariants below, then the three headings with **one line under each naming what
+  belongs there**. It holds what a green suite does not — **Launch** (the command that starts this
+  project, on what port, with what disposable state), **Doctor** (one read-only check answering "is
+  this instance worth driving?"), **Drive** (the commands, each paired with the observable result it
+  should produce). The invariants go in before any of that is filled, both learned the hard way:
+  cleanup removes instances and scratch state but **never the evidence**, and **kill what you started**
+  rather than killing by process name. **Filling the three sections is not this skill's job**, and a
+  project with nothing to launch leaves those lines as written — that is a finished `VERIFY.md`, not a
+  stub owed to anyone. A library, a docs repo or a skills catalog has no instance to drive, and an
+  honest empty section beats an invented command every session pays for. If it exists, leave it alone.
 - `${CLAUDE_PLUGIN_ROOT}/templates/settings.json` → `.claude/settings.json`; **prune** the hook
   entries not selected, add the `permissions.allow` list (below), then confirm the file still parses
   as valid JSON.

@@ -53,6 +53,14 @@ straight to closing.
 - **Is "done" proven?** A box ticked because the code "looks right" is unproven — say so rather
   than ratifying it; where a cheap check settles it, run the project's own command.
 
+**Name the rung each proof reached** — for that question and for blast radius both. Five, weakest
+first: you said so · you pointed at the line · you showed the bad case cannot happen · **you ran it** ·
+you reproduced it in the artifact a user gets rather than the tree you edited. Push each safety claim
+as far down as is cheap, then **say where it stopped**: a claim short of "you ran it" is spoken aloud,
+never written up as settled. Where the repo records how to drive itself — a `VERIFY.md`, or whatever it
+keeps — the bottom two rungs cost a read instead of a re-derivation; where it records nothing, that
+ceiling is itself part of the answer.
+
 Close with one line — **ready to merge**, **ready with follow-ups** (name them; each becomes a
 backlog file in phase 3, and an unnamed follow-up vanishes into the archive unread), or **not
 ready** and why.
@@ -113,8 +121,13 @@ what makes the build fail.
 
   Never the root file by default. It is loaded in full every session under a declared budget, so a
   growing list of traps there is the one thing guaranteed to push a real rule out; a routed file is
-  read when its subject comes up, which is exactly when a trap about it matters. Two things before you
-  write:
+  read when its subject comes up, which is exactly when a trap about it matters. Three things before
+  you write:
+  - **Ask first whether a mechanism would catch it.** A trap a hook, a validator, a self-test or a lint
+    rule could refuse outright does not belong in prose — prose is for what no mechanism can enforce,
+    and a rule enforced on trust is one a tired session skips. Where a mechanism would work the
+    promotion is one `.ai/backlog/<slug>.md` naming it and **no `## Gotchas` entry**; a trap written up
+    as prose is a trap you have decided to keep hitting. Where none fits, write the entry.
   - **Delete what this trap replaces.** A gotcha the change made untrue — the tool is gone, the hook
     is fixed, the flag now defaults the other way — comes out in this edit. Leaving it beside its
     replacement is how the list stops being trustworthy: the reader can no longer tell which half is

@@ -2,7 +2,7 @@
 change: harvest-pstack-into-the-solo-lane
 branch: harvest-pstack-into-the-solo-lane
 created: 2026-08-20
-status: shaping # shaping | building | landed
+status: building # shaping | building | landed
 ---
 
 # Change — a prose pass for outbound text, rigour the loop states as rules, and a scaffolded `VERIFY.md`
@@ -39,7 +39,7 @@ tracked `VERIFY.md` whose router row `agents:check` accepts.
 
 ## Tasks
 
-- [ ] 1. `skills/dw-unslop/SKILL.md` (70–90 lines: refusal list, four-step workflow, the two delete
+- [x] 1. `skills/dw-unslop/SKILL.md` (70–90 lines: refusal list, four-step workflow, the two delete
       tests) plus `skills/dw-unslop/references/patterns.md` (the numbered catalog).
 - [ ] 2. The `dw-solo-extras` symlink, the README task-router row with `⭑`, the name in the
       "Explicit-only skills" paragraph, and the badge `skills-12` → `skills-13`.
@@ -92,4 +92,9 @@ tracked `VERIFY.md` whose router row `agents:check` accepts.
 ## Notes
 
 - `validate:artifacts` pass 3 fails from task 1 until task 8 re-records the baseline. That is the
-  ratchet working; re-recording per task is churn a reviewer has to read through.
+  ratchet working; re-recording per task is churn a reviewer has to read through. Task 1 measured +812.
+- A worktree-isolated session refuses a Bash heredoc-plus-redirect as too complex to prove it stays in
+  the worktree. Write files with the Write/Edit tools here; `sed -i ''` is accepted.
+- `dw-unslop` keeps the upstream rule numbers so a citation is portable both ways; new rules start at 32.
+- A new skill declaring `argument-hint` must reference `$ARGUMENTS` in its body, or agnix's pre-commit
+  autofix appends a bare `$ARGUMENTS` line after `**Next:**`. Name it where the target is resolved.

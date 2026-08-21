@@ -14,13 +14,26 @@ in [`AGENTS.md`](AGENTS.md) and the procedures in the skills themselves.
   follow-ups to `.ai/backlog/` (one file per idea). It **replaces rather than appends**: each target
   is read first, and what the change supersedes is deleted in the same edit. Decisions are the
   exception — there the replacement is a `superseded-by:` link and the old record stays.
-- **Cap** — the ceiling `validate-artifacts.sh` enforces on `.ai/backlog/`, the one durable list that
-  would otherwise only grow; that script holds the number. A count of entries, never of bytes, and a
-  forcing function rather than a quota — the way past a full list is to bundle an entry with a cousin
-  that ships alongside it, absorb one into the open change, or retire one that failed the month bar.
-  Set by [`0006`](docs/decisions/0006-delete-the-second-copy-and-cap-the-pile.md), which also capped
-  `## Gotchas` until [`0008`](docs/decisions/0008-root-budget-replaces-the-gotcha-cap.md) replaced
-  that half with the root's **Budget**.
+- **Cap** — the limit `validate-artifacts.sh` enforces on `.ai/backlog/`, the one durable list that
+  would otherwise only grow; that script holds the number. A count of **entries**, never of bytes or
+  lines, and a forcing function rather than a quota — the way past a full list is to bundle an entry
+  with a cousin that ships alongside it, absorb one into the open change, or retire one that failed
+  the month bar. Set by [`0006`](docs/decisions/0006-delete-the-second-copy-and-cap-the-pile.md),
+  which also capped `## Gotchas` until
+  [`0008`](docs/decisions/0008-root-budget-replaces-the-gotcha-cap.md) replaced that half with the
+  root's **Budget**. One of four limits the lane uses, and the four are not interchangeable: a **Cap**
+  counts entries, a **Budget** and a **Ceiling** are declared sizes, and a **Ratchet** declares no
+  size at all.
+- **Ceiling** — a declared per-file size over a durable folder, enforced by the shipped
+  `check-agents-docs.mjs` where that folder's README declares one, and **opt-in**: no declaration means
+  no check and no mention. It gates size and never shape, the distinction
+  [`0015`](docs/decisions/0015-the-shipped-checker-gates-size-never-shape.md) rests on. A **Budget** is
+  the same kind of number over a single always-loaded file; a Ceiling applies per file across a folder.
+- **Ratchet** — a limit that chooses no number: a tracked baseline records what a corpus **is**, the
+  corpus may shrink freely, and it grows only through a commit that re-records the baseline. Growth
+  stays legal and stops being silent. Used over `skills/*/SKILL.md` here by
+  [`0009`](docs/decisions/0009-skill-corpus-ratchet.md), and over a consumer repo's `docs/agents/` by
+  the shipped checker. The right tool where the form is open and any ceiling would be a guess.
 - **Completion gate** — the closing verdict's rule that a `## Goal` result the diff doesn't deliver
   makes a change **not ready**, never _ready with follow-ups_. Ticked boxes don't satisfy it; only
   the diff does, or a `## Goal` the user amends. One carve-out: a result that is **pending on the

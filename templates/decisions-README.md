@@ -6,6 +6,12 @@ shape.**
 
 No index here on purpose: `ls` sorts them and every slug states its decision.
 
+Ceiling: **40 lines** per record, enforced by the same checker as `AGENTS.md`'s budget. Size only —
+the bar and the shape stay editorial. Delete the line to switch it off; raise the number and you have
+chosen to, which is the point. Lines move under a formatter set to reflow prose, so where this project
+wraps Markdown (`proseWrap: "always"` and its equivalents) the number is only as stable as the wrap
+width — pick it with room, or keep the wrap off for this folder.
+
 The contract — the three-part bar a decision has to clear, the frontmatter and section shape, and how a
 record is superseded rather than rewritten — is **not restated here**. It lives once, in
 `references/decision-record.md` inside the installed plugin, because that is the file `dw-land` reads

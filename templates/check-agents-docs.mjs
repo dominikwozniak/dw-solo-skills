@@ -1,14 +1,16 @@
 #!/usr/bin/env node
 // Guards the agent-docs contract in a repo scaffolded by dw-init: AGENTS.md is the one always-loaded
-// file, it stays inside a budget it declares itself, and everything it routes to is real.
+// file, it stays inside a budget it declares itself, everything it routes to is real, and the layers
+// it routes to do not grow in silence.
 //
 // Zero dependencies, Node built-ins only — it ships into repos that may have no package.json at all.
 // Run it as `node scripts/check-agents-docs.mjs`, or via the `agents:check` script dw-init wires.
 //
-// Deliberately NOT here: any check over docs/decisions/. Those records are numbered, superseded and
-// retired by hand and by dw-land, and a validator over them turns an editorial layer into a build
-// gate — a commit blocked because a decision record is shaped wrong teaches you to stop writing them.
-// If you add one anyway, add it knowing that is the trade.
+// Over docs/decisions/ it checks ONE thing, size, and only where a ceiling is declared. A record's
+// bar, its sections, its numbering and its supersession stay editorial: a commit blocked because a
+// decision record is shaped wrong teaches you to stop writing them. Length is the one failure the
+// reader cannot repair by reading more carefully, and it is the same kind of number as the budget
+// above — which is why it is measured the same way and declared the same way.
 import {
   existsSync,
   lstatSync,
@@ -16,6 +18,7 @@ import {
   readdirSync,
   readlinkSync,
   realpathSync,
+  writeFileSync,
 } from "node:fs"
 import { dirname, join } from "node:path"
 import { fileURLToPath } from "node:url"
@@ -57,10 +60,33 @@ if (!existsSync(join(repoRoot, "AGENTS.md"))) {
   process.exit(1)
 }
 
+// One flag, and anything unrecognised is fatal rather than ignored: a typo'd `--update-baselines`
+// would otherwise run a plain check, write nothing, and look exactly like success.
+const args = process.argv.slice(2)
+const update = args.includes("--update-baseline")
+for (const arg of args)
+  if (arg !== "--update-baseline") {
+    console.error(
+      `agents:check — unexpected argument ${JSON.stringify(arg)}. Usage: [--update-baseline].`,
+    )
+    process.exit(2)
+  }
+
 const failures = []
 const fail = (message) => failures.push(message)
 const abs = (path) => join(repoRoot, path)
 const read = (path) => readFileSync(abs(path), "utf8")
+
+// Lines as a reader sees them: the final newline TERMINATES the last line rather than starting an
+// empty one. A plain `split("\n").length` counted that phantom, so a conventional 40-line file
+// measured 41 — a declared ceiling of 40 silently meant 39, and the message named a number no editor
+// agreed with.
+//
+// Deliberately not `wc -l`, which counts newline characters: the two agree on every newline-terminated
+// file, which is all of them here, and disagree on the pathological ones in the direction a reader
+// would call wrong — `wc -l` says 1 for "a\nb" and 0 for an empty file, where an editor shows 2 and
+// 0 and this says 2 and 1. Neither pathology can approach a ceiling, so the readable number wins.
+const lineCount = (text) => text.replace(/\n$/, "").split("\n").length
 
 const root = read("AGENTS.md")
 
@@ -97,7 +123,7 @@ const budgetReport = (() => {
   const num = (raw) => Number(raw.replaceAll("_", ""))
   const maxLines = num(parsed[1])
   const maxBytes = num(parsed[2]) * (parsed[3]?.toLowerCase() === "kb" ? 1024 : 1)
-  const lines = root.split("\n").length
+  const lines = lineCount(root)
   const bytes = Buffer.byteLength(root, "utf8")
   if (lines > maxLines || bytes > maxBytes)
     fail(
@@ -251,6 +277,156 @@ if (linkTarget === null) {
 }
 
 // ---------------------------------------------------------------------------
+// 6. The record ceiling — declared the way the budget is, and opt-in.
+// ---------------------------------------------------------------------------
+// `Ceiling: **40 lines** per record` on one line of docs/decisions/README.md. A repo that declares
+// nothing is not checked and not mentioned: records predate this pass in every repo it lands in, and a
+// gate that lights an existing folder red on install day is one you switch off rather than meet. Each
+// repo sets its own number for the same reason AGENTS.md does — it is editorial discipline, so it has
+// to be chosen.
+const ceilingReport = (() => {
+  const readme = "docs/decisions/README.md"
+  if (!existsSync(abs(readme))) return null
+  const line = read(readme)
+    .split("\n")
+    .find((l) => l.includes("Ceiling:"))
+  if (line === undefined) return null
+  const declared = line
+    .slice(line.indexOf("Ceiling:") + "Ceiling:".length)
+    .replaceAll("*", "")
+    .replaceAll("`", "")
+  const parsed = /^\s*(\d[\d_]*)\s*lines?\b/i.exec(declared)
+  if (parsed === null) {
+    fail(
+      `${readme}'s ceiling declaration is malformed: "${declared.trim()}". ` +
+        "It must read `Ceiling: <N> lines` — anything after that is prose.",
+    )
+    return null
+  }
+  const maxLines = Number(parsed[1].replaceAll("_", ""))
+  let records = 0
+  let longest = 0
+  // <NNNN>-<slug>.md only: README.md is the contract, not a record, and a stray note is not one either.
+  for (const name of readdirSync(abs("docs/decisions")).sort()) {
+    if (!/^\d{4}-.+\.md$/.test(name)) continue
+    records += 1
+    const lines = lineCount(read(`docs/decisions/${name}`))
+    if (lines > longest) longest = lines
+    if (lines > maxLines)
+      fail(
+        `docs/decisions/${name} is ${lines} lines — over the declared ${maxLines}-line ceiling. ` +
+          "Keep the decision, the trade-off and the revisit trigger; the story of how you got there " +
+          "belongs in the change's archive entry.",
+      )
+  }
+  return `${records} record(s), longest ${longest}/${maxLines} lines`
+})()
+
+// ---------------------------------------------------------------------------
+// 7. The topic-file ratchet — the corpus may shrink freely, and grows on purpose.
+// ---------------------------------------------------------------------------
+// docs/agents/ has no honest per-file ceiling: a topic is as long as its subject, so any number would
+// be a guess. The baseline records what the corpus IS instead, and the check refuses a silent
+// increase — growth stays legal and costs one visible `--update-baseline` in the diff. No threshold is
+// chosen, so no threshold can be set too high.
+//
+// Words, not lines or bytes: a formatter that reflows Markdown moves both of those on a pure reformat
+// and moves no words. README.md is excluded — it is the contract, shipped rather than written here, so
+// a payload refresh must not read as the corpus growing.
+//
+// Opt-in like the ceiling: no baseline file means no check and no mention. Seed one with
+// `--update-baseline`, which is also how a repo adopts this after the fact.
+const BASELINE = "docs/agents/corpus.baseline.json"
+const corpusReport = (() => {
+  const measured = topics.filter((entry) => entry !== "README.md")
+  const perFile = {}
+  let words = 0
+  for (const entry of measured) {
+    const count = read(`${topicDir}/${entry}`).split(/\s+/).filter(Boolean).length
+    perFile[entry] = count
+    words += count
+  }
+  if (update) {
+    // A re-record is not a green light. Passes 1 to 6 have already run, and exiting 0 here would let
+    // `--update-baseline` in a repo that is failing something else report success — the one thing this
+    // flag must never do, since it is reached for precisely when the build is red.
+    if (failures.length > 0) {
+      for (const failure of failures) console.error(`agents:check — ${failure}`)
+      console.error("agents:check — refusing to re-record the baseline while the above fails.")
+      process.exit(1)
+    }
+    // Without the directory, writeFileSync throws ENOENT with a stack trace and no advice.
+    if (!existsSync(abs(topicDir))) {
+      console.error(
+        `agents:check — no ${topicDir}/ to ratchet, so there is no baseline to seed. Create it, ` +
+          "give it a topic file and a Task Router row, then re-record.",
+      )
+      process.exit(1)
+    }
+    writeFileSync(
+      abs(BASELINE),
+      `${JSON.stringify(
+        {
+          $comment:
+            "The recorded size of docs/agents/*.md excluding README.md, used as a ratchet by " +
+            "check-agents-docs.mjs: the corpus may shrink freely and may only grow through a commit " +
+            "that re-records this file with `--update-baseline`. No threshold is chosen here, so no " +
+            "threshold can be set too high. Delete this file to switch the ratchet off.",
+          words,
+          perFile,
+        },
+        null,
+        2,
+      )}\n`,
+    )
+    console.log(
+      `agents:check — baseline re-recorded at ${words} words across ${measured.length} topic file(s).`,
+    )
+    process.exit(0)
+  }
+  if (!existsSync(abs(BASELINE))) return null
+  let baseline
+  try {
+    baseline = JSON.parse(read(BASELINE))
+  } catch {
+    fail(`${BASELINE} is not valid JSON. Re-record it with \`--update-baseline\`.`)
+    return null
+  }
+  // Validated the way the corpus ratchet this is styled on validates its own: `Array.isArray` is the
+  // check `typeof === "object"` misses, and the sum has to match, because a baseline whose `words` is
+  // larger than its parts disables the ratchet while reporting green — the one failure mode that looks
+  // exactly like success.
+  const malformed = (why) => {
+    fail(`${BASELINE} is malformed — ${why}. Re-record it with \`--update-baseline\`.`)
+    return null
+  }
+  if (baseline === null || typeof baseline !== "object" || Array.isArray(baseline))
+    return malformed("it must be a JSON object")
+  if (!Number.isInteger(baseline.words) || baseline.words < 0)
+    return malformed("`words` must be a non-negative integer")
+  if (
+    typeof baseline.perFile !== "object" ||
+    baseline.perFile === null ||
+    Array.isArray(baseline.perFile)
+  )
+    return malformed("`perFile` must be an object")
+  const recorded = Object.values(baseline.perFile).reduce((total, n) => total + n, 0)
+  if (recorded !== baseline.words)
+    return malformed(`\`words\` says ${baseline.words} and \`perFile\` sums to ${recorded}`)
+  if (words > baseline.words) {
+    const grown = measured
+      .filter((entry) => perFile[entry] > (baseline.perFile?.[entry] ?? 0))
+      .map((entry) => `${entry} ${baseline.perFile?.[entry] ?? 0}→${perFile[entry]}`)
+    fail(
+      `docs/agents/ is ${words} words, baseline ${baseline.words}, +${words - baseline.words}. ` +
+        `Grown: ${grown.join(", ") || "none named"}. Cut it back out, or record the growth on ` +
+        "purpose with `--update-baseline` in the same commit.",
+    )
+  }
+  return `${words}/${baseline.words} topic words`
+})()
+
+// ---------------------------------------------------------------------------
 
 if (failures.length > 0) {
   for (const failure of failures) console.error(`agents:check — ${failure}`)
@@ -259,5 +435,7 @@ if (failures.length > 0) {
 // The root is in the success line on purpose: it is the one input every check above depends on, and a
 // wrong one produces confident, wrong output. Naming it makes that visible instead of inferable.
 console.log(
-  `agents:check — ${repoRoot}: ${budgetReport}; ${topics.length} topic file(s), ${routedPaths.size} routed path(s).`,
+  `agents:check — ${repoRoot}: ${budgetReport}; ${topics.length} topic file(s), ${routedPaths.size} routed path(s)` +
+    `${corpusReport === null ? "" : `; ${corpusReport}`}` +
+    `${ceilingReport === null ? "" : `; ${ceilingReport}`}.`,
 )

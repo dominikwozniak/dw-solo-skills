@@ -5,20 +5,16 @@ order they appear, and the commit at the end carries all of them.
 
 **Promotion replaces; it does not append.** For each target below, read what is already there before
 writing, and delete what this change supersedes in the same edit. A durable layer that only ever grows
-stops being read, which costs you the promotion step entirely — and where a cap exists, appending is
-what makes the build fail.
+stops being read, which costs you the promotion step entirely — and where a cap, a ceiling or a
+baseline exists, appending is what makes the build fail.
 
 - **Promote the decisions.** Anything from Decisions or Notes that a future session would need and
-  couldn't re-derive from the code becomes `docs/decisions/<NNNN>-<slug>.md`, numbered next in
-  sequence, from the shape in the sibling `decision-record.md`. Be strict: a decision earns a record
-  only if it was **hard to reverse, surprising, and a real trade-off** — all three, not any one of
-  them. Most changes produce **zero** records, and that's the correct number. When a record here
-  replaces an older one, flip that one to `status: superseded` with `superseded-by:` in the same
-  pass — the reference says how, and nothing else in the loop does it. Take the next number from the
-  highest on disk and **never renumber an existing record**: its number is what every
-  `superseded-by:` pointer is made of. This is the one target where replacing is a link rather than a
-  deletion — a superseded record stays, because why a settled choice was reopened is the most useful
-  thing in the folder.
+  couldn't re-derive from the code becomes `docs/decisions/<NNNN>-<slug>.md`, numbered next from the
+  highest on disk. The sibling `decision-record.md` holds the bar, the shape, the ceiling and the
+  supersession protocol — **read it rather than writing from memory**, and name its three tests out
+  loud per candidate before any record exists. Most changes produce **zero** records, and that's the
+  correct number. When a record here replaces an older one, flip that one in the same pass; nothing
+  else in the loop does it. This is the one target where replacing is a link rather than a deletion.
 - **Promote the vocabulary.** Any new domain term this change introduced or sharpened goes into
   `CONTEXT.md` as a glossary line. Terms only — no implementation detail. Create the file if it
   doesn't exist. **If the change sharpened a term already defined there, rewrite that line** — two
@@ -34,10 +30,9 @@ what makes the build fail.
   under `docs/agents/` and its router row — because a topic file nothing routes to is a file nothing
   reads, and the shipped `agents:check` fails on one.
 
-  Never the root file by default. It is loaded in full every session under a declared budget, so a
-  growing list of traps there is the one thing guaranteed to push a real rule out; a routed file is
-  read when its subject comes up, which is exactly when a trap about it matters. Three things before
-  you write:
+  Never the root file by default: it is loaded in full every session, so traps accumulating there push
+  a real rule out. A routed file is read when its subject comes up — exactly when its traps matter.
+  Four things before you write:
   - **Ask first whether a mechanism would catch it.** A trap a hook, a validator, a self-test or a lint
     rule could refuse outright does not belong in prose — prose is for what no mechanism can enforce,
     and a rule enforced on trust is one a tired session skips. Where a mechanism would work the
@@ -50,18 +45,22 @@ what makes the build fail.
   - **Look for the cousin.** If an existing entry has the same root cause, make this a sub-bullet of
     it rather than another sibling. Where the repo caps the list, a merge is the only way to add to a
     full one, and appending fails the build.
+  - **Shrink before you add, where the corpus is ratcheted.** A baseline beside the topic files means
+    the layer may shrink freely and grows only through a commit that re-records it. So the entry is
+    paid for: cut what it made untrue, or re-record on purpose in this commit and let the number
+    move where you can see it. A silent increase is the one option that isn't there.
 
 - **Promote the follow-ups.** Every follow-up named in the verdict, plus anything deliberately left
   out, becomes one file `.ai/backlog/<slug>.md` — slug from
   `bash "${CLAUDE_PLUGIN_ROOT}/scripts/slugify.sh" slug "<the follow-up>"`, carrying
   `source: <this change's slug>`. `.ai/backlog/README.md` states the entry shape and both bars —
   **will you ever?** and **should it have been done now?** — so they are not restated here; judge
-  against those. Where the repo predates the scaffold and has no such README, create the dir and say
-  so: `dw-init` owns the payload it is copied from, and the bars are not reproducible from here. If
+  against those. Where the repo has no such README, create the dir and say so: `dw-init` owns the
+  payload it comes from, and the bars are not reproducible from here. If
   `.ai/backlog/<slug>.md` already exists, merge into it or re-slug with a more specific
   description — **never overwrite it silently**; the existing entry is queued work. Zero is a normal
-  answer, and a folder already too long is what `dw-prune` is for — say its name rather than
-  triaging the whole queue from here.
+  answer, and a folder already too long is what `dw-prune` is for — say its name rather than triaging
+  the queue from here.
   **Then clear what this change closed**: an entry whose work the diff just did, or which the change
   made moot, is `git rm`'d in this same commit — and one that survives with fewer bullets than it had
   gets rewritten to what is left. A queue holding finished work reads as a backlog you have stopped

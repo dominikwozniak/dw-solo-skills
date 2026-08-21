@@ -2,7 +2,9 @@
 change: the-shipped-docs-layer-gets-a-contract-and-a-ceiling
 branch: the-shipped-docs-layer-gets-a-contract-and-a-ceiling
 created: 2026-08-21
-status: building # shaping | building | landed
+status: landed # shaping | building | landed
+landed: 2026-08-21
+pr: "TBD"
 ---
 
 # Change — a scaffolded repo learns what belongs in `docs/agents/` and what stops it growing silently

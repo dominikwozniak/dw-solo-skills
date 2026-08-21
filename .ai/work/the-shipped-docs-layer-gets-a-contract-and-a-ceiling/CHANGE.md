@@ -57,7 +57,7 @@ candidate record passes before writing it.
       that the three tests are named aloud per candidate. By replacement.
 - [x] 5. `dw-land/references/promote.md` — the same two clauses on the promote side, and the ratchet's
       "shrink before you add" consequence. By replacement.
-- [ ] 6. Bump `dw-solo-setup` (templates, `dw-init`) and `dw-solo` (the two references), and
+- [x] 6. Bump `dw-solo-setup` (templates, `dw-init`) and `dw-solo` (the two references), and
       re-record the corpus baseline only if `SKILL.md` words actually moved.
 
 ## Anchors

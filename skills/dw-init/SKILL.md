@@ -158,10 +158,11 @@ light.
 - `scripts/check-agents-docs.mjs` — copy `${CLAUDE_PLUGIN_ROOT}/templates/check-agents-docs.mjs`
   verbatim. Zero dependencies, Node built-ins only, and it finds the repo root by walking up from its
   own location to the nearest `AGENTS.md` — so `scripts/` is the conventional home, not a required
-  one. It checks five things: the declared budget, that no `{{…}}` placeholder survived, Task Router
+  one. It checks six things: the declared budget, that no `{{…}}` placeholder survived, Task Router
   coverage and path sync, that every `pnpm <script>` named in `AGENTS.md` exists, and that `CLAUDE.md`
-  is a symlink. It checks **nothing** under `docs/decisions/` — those records are editorial, and a
-  validator over them turns a durable layer into a build gate.
+  is a symlink. Under `docs/decisions/` it checks **size only**, and only where the folder's README
+  declares a `Ceiling:` line — the bar, the shape and the numbering stay editorial, because a commit
+  blocked over a record's shape teaches you to stop writing them.
   - `{{AGENTS_CHECK_COMMAND}}` is how `AGENTS.md`'s own header names its enforcement. With a
     `package.json`, add `"agents:check": "node scripts/check-agents-docs.mjs"` to `scripts` and render
     `pnpm agents:check`; where the repo has an aggregate gate script (`check`, `verify`), add it to

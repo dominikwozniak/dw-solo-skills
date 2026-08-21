@@ -36,12 +36,18 @@ candidate record passes before writing it.
   number the local gate reads is editorial discipline, not the bar or the shape; those stay
   single-copy in `decision-record.md`.
 
+- **The checker measures a record size, never its shape** — `dw-init` said it checks nothing under
+  `docs/decisions/`; that rationale was written against a content validator. Size is the same kind of
+  number as the `AGENTS.md` budget the script already holds, so the sentence was amended, not ignored.
+- **The ceiling is opt-in** — no declaration means not checked and not mentioned, so it cannot light
+  an existing folder red on install day.
+
 ## Tasks
 
 - [x] 1. `templates/agents-docs-README.md` — the contract only: root vs topic file vs
       `docs/decisions/` vs `CONTEXT.md`, and the router-row-in-the-same-commit rule. Its router row
       in `templates/AGENTS.md`, and its copy line in `dw-init`'s scaffold list.
-- [ ] 2. A ceiling pass in `templates/check-agents-docs.mjs` over `docs/decisions/<NNNN>-*.md`, read
+- [x] 2. A ceiling pass in `templates/check-agents-docs.mjs` over `docs/decisions/<NNNN>-*.md`, read
       from a one-line declaration the template seeds into `docs/decisions/README.md`; cases in
       `scripts/tests/check-agents-docs.test.sh`.
 - [ ] 3. The `docs/agents/*.md` word ratchet in the same script: a tracked baseline, growth only via
@@ -69,6 +75,10 @@ candidate record passes before writing it.
 
 ## Notes
 
+- This repo declares `Ceiling: 80 lines` (longest record 73), so the pass has a real user here; the
+  payload seeds 40, where nothing has to be met first.
+- `dw-init` grew 50 words and the baseline was re-recorded in that commit. Deliberate, and the only
+  skill this change grows.
 - `dw-init` states the checker "checks nothing under `docs/decisions/`" because a validator there
   turns a durable layer into a build gate. Task 2 needs that sentence amended or dropped; raised
   before building it.

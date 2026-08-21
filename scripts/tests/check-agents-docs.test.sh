@@ -6,8 +6,9 @@
 #
 # What is pinned: the budget parser (the part with real logic — bare number = bytes, KB = ×1024,
 # malformed is REJECTED rather than guessed), placeholder detection, router coverage and path sync,
-# command sync, and the CLAUDE.md symlink. Plus one negative that matters as much as the positives:
-# docs/decisions/ is NOT validated, by decision.
+# command sync, the CLAUDE.md symlink, and the record ceiling's parser. Plus two negatives that matter
+# as much as the positives: a record's SHAPE is never validated, and where no ceiling is declared the
+# records are neither checked nor mentioned.
 #
 # Run standalone (`bash scripts/tests/check-agents-docs.test.sh`) or via scripts/validate-artifacts.sh.
 # Exit 0 iff every case matches. bash 3.2 safe.
@@ -85,6 +86,16 @@ expect_says() {
     note_pass "$1"
   else
     note_fail "$1" "output did not mention '$2': $(tr '\n' '|' <"$OUT")"
+  fi
+}
+
+# expect_silent_about <name> <substring> — the other half of an opt-in check: not failing is not
+# enough, it must also not be mentioned, or every repo that declined it still pays a line of report.
+expect_silent_about() {
+  if grep -qF -- "$2" "$OUT"; then
+    note_fail "$1" "output mentioned '$2' when it should not: $(tr '\n' '|' <"$OUT")"
+  else
+    note_pass "$1"
   fi
 }
 
@@ -274,7 +285,7 @@ rm "$repo/CLAUDE.md"
 ln -s "$repo/AGENTS.md" "$repo/CLAUDE.md"
 expect_rc "claude-md-absolute-target-accepted" 0 "$(check "$repo")"
 
-echo "docs/decisions/ is NOT validated — by decision, not by omission:"
+echo "a record's SHAPE is NOT validated — by decision, not by omission:"
 # A record breaking every rule the team-lane checker enforced: no frontmatter, a number out of
 # sequence, a name that is not <NNNN>-<slug>.md. The checker must not care.
 repo="$(scaffold '120 lines / 10 KB')"
@@ -282,6 +293,50 @@ mkdir -p "$repo/docs/decisions"
 printf 'no frontmatter, no number, no status\n' >"$repo/docs/decisions/whatever.md"
 printf -- '---\ndecision: 0099\n---\n\n# 0099 — out of sequence\n' >"$repo/docs/decisions/0099-orphan.md"
 expect_rc "decisions-unchecked-exit-0" 0 "$(check "$repo")"
+# And with no README declaring a ceiling, SIZE is not checked either — nor mentioned.
+expect_silent_about "no-ceiling-declared-says-nothing" "record(s)"
+
+echo "the record ceiling, where the folder's README declares one:"
+# long_record <path> <lines> — a record of exactly <lines> lines, named the way a real one is.
+long_record() {
+  : >"$1"
+  i=0
+  while [ "$i" -lt "$2" ]; do printf 'a line of a decision record\n' >>"$1"; i=$((i + 1)); done
+}
+# declare_ceiling <repo> <tail> — the one-line declaration, in the place the payload seeds it.
+declare_ceiling() {
+  mkdir -p "$1/docs/decisions"
+  printf '# decisions\n\nCeiling: **%s** per record.\n' "$2" >"$1/docs/decisions/README.md"
+}
+
+repo="$(scaffold '120 lines / 10 KB')"
+declare_ceiling "$repo" "40 lines"
+long_record "$repo/docs/decisions/0001-a-short-one.md" 20
+expect_rc "under-ceiling-exit-0" 0 "$(check "$repo")"
+expect_says "under-ceiling-reports-the-longest" "longest 21/40 lines"
+
+repo="$(scaffold '120 lines / 10 KB')"
+declare_ceiling "$repo" "40 lines"
+long_record "$repo/docs/decisions/0002-a-long-one.md" 41
+expect_rc "over-ceiling-exit-1" 1 "$(check "$repo")"
+expect_says "over-ceiling-names-the-record" "0002-a-long-one.md is 42 lines"
+expect_says "over-ceiling-names-the-number" "declared 40-line ceiling"
+
+# Only <NNNN>-<slug>.md is a record. The README states the contract and a stray note is not a record,
+# so neither is measured — otherwise declaring the ceiling in a long README would fail on itself.
+repo="$(scaffold '120 lines / 10 KB')"
+declare_ceiling "$repo" "40 lines"
+long_record "$repo/docs/decisions/notes.md" 400
+i=0
+while [ "$i" -lt 400 ]; do printf 'padding for the README\n' >>"$repo/docs/decisions/README.md"; i=$((i + 1)); done
+expect_rc "non-records-are-not-measured" 0 "$(check "$repo")"
+expect_says "non-records-leave-zero-records" "0 record(s)"
+
+# Malformed is REJECTED, never guessed at — the same bargain the budget parser makes.
+repo="$(scaffold '120 lines / 10 KB')"
+declare_ceiling "$repo" "as short as it needs to be"
+expect_rc "malformed-ceiling-exit-1" 1 "$(check "$repo")"
+expect_says "malformed-ceiling-called-malformed" "ceiling declaration is malformed"
 
 echo "the shipped AGENTS.md template, rendered the way dw-init renders it, passes the shipped checker:"
 # The one case that tests the two payload halves against each other rather than against a fixture.
@@ -292,9 +347,15 @@ repo="$WORK/rendered"
 mkdir -p "$repo/scripts" "$repo/.ai/backlog" "$repo/.ai/archive" "$repo/docs/decisions" "$repo/.claude/hooks"
 git -C "$repo" init --quiet
 cp "$CHECKER" "$repo/scripts/check-agents-docs.mjs"
-for seeded in .ai/README.md .ai/backlog/README.md .ai/archive/README.md docs/decisions/README.md CONTEXT.md VERIFY.md; do
+mkdir -p "$repo/docs/agents"
+for seeded in .ai/README.md .ai/backlog/README.md .ai/archive/README.md CONTEXT.md VERIFY.md; do
   printf 'seeded by dw-init\n' >"$repo/$seeded"
 done
+# These two are copied rather than stubbed, because they are payload too: the router row dw-init ships
+# points at the first, and the second carries the ceiling declaration this checker parses. Stubbing
+# them would leave both halves of that pair untested against each other.
+cp "$ROOT/templates/agents-docs-README.md" "$repo/docs/agents/README.md"
+cp "$ROOT/templates/decisions-README.md" "$repo/docs/decisions/README.md"
 printf '{ "scripts": { "test": "vitest", "agents:check": "node scripts/check-agents-docs.mjs" } }\n' \
   >"$repo/package.json"
 sed \

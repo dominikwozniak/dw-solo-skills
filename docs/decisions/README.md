@@ -6,6 +6,10 @@ worked example — copy its shape.**
 
 No index here on purpose: `ls` sorts them and every slug states its decision.
 
+Ceiling: **80 lines** per record, enforced by `pnpm validate:docs`. Eighty is what this folder already
+supports — the longest record is 72 — not a claim that eighty is the right number. The payload seeds a
+new repo with forty, where nothing has to be met first.
+
 The contract — the three-part bar a decision has to clear, the frontmatter and section shape, and how
 a record is superseded rather than rewritten — lives once, in
 [`skills/dw-land/references/decision-record.md`](../../skills/dw-land/references/decision-record.md).

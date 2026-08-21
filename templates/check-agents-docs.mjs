@@ -5,10 +5,11 @@
 // Zero dependencies, Node built-ins only — it ships into repos that may have no package.json at all.
 // Run it as `node scripts/check-agents-docs.mjs`, or via the `agents:check` script dw-init wires.
 //
-// Deliberately NOT here: any check over docs/decisions/. Those records are numbered, superseded and
-// retired by hand and by dw-land, and a validator over them turns an editorial layer into a build
-// gate — a commit blocked because a decision record is shaped wrong teaches you to stop writing them.
-// If you add one anyway, add it knowing that is the trade.
+// Over docs/decisions/ it checks ONE thing, size, and only where a ceiling is declared. A record's
+// bar, its sections, its numbering and its supersession stay editorial: a commit blocked because a
+// decision record is shaped wrong teaches you to stop writing them. Length is the one failure the
+// reader cannot repair by reading more carefully, and it is the same kind of number as the budget
+// above — which is why it is measured the same way and declared the same way.
 import {
   existsSync,
   lstatSync,
@@ -251,6 +252,52 @@ if (linkTarget === null) {
 }
 
 // ---------------------------------------------------------------------------
+// 6. The record ceiling — declared the way the budget is, and opt-in.
+// ---------------------------------------------------------------------------
+// `Ceiling: **40 lines** per record` on one line of docs/decisions/README.md. A repo that declares
+// nothing is not checked and not mentioned: records predate this pass in every repo it lands in, and a
+// gate that lights an existing folder red on install day is one you switch off rather than meet. Each
+// repo sets its own number for the same reason AGENTS.md does — it is editorial discipline, so it has
+// to be chosen.
+const ceilingReport = (() => {
+  const readme = "docs/decisions/README.md"
+  if (!existsSync(abs(readme))) return null
+  const line = read(readme)
+    .split("\n")
+    .find((l) => l.includes("Ceiling:"))
+  if (line === undefined) return null
+  const declared = line
+    .slice(line.indexOf("Ceiling:") + "Ceiling:".length)
+    .replaceAll("*", "")
+    .replaceAll("`", "")
+  const parsed = /^\s*(\d[\d_]*)\s*lines?\b/i.exec(declared)
+  if (parsed === null) {
+    fail(
+      `${readme}'s ceiling declaration is malformed: "${declared.trim()}". ` +
+        "It must read `Ceiling: <N> lines` — anything after that is prose.",
+    )
+    return null
+  }
+  const maxLines = Number(parsed[1].replaceAll("_", ""))
+  let records = 0
+  let longest = 0
+  // <NNNN>-<slug>.md only: README.md is the contract, not a record, and a stray note is not one either.
+  for (const name of readdirSync(abs("docs/decisions")).sort()) {
+    if (!/^\d{4}-.+\.md$/.test(name)) continue
+    records += 1
+    const lines = read(`docs/decisions/${name}`).split("\n").length
+    if (lines > longest) longest = lines
+    if (lines > maxLines)
+      fail(
+        `docs/decisions/${name} is ${lines} lines — over the declared ${maxLines}-line ceiling. ` +
+          "Keep the decision, the trade-off and the revisit trigger; the story of how you got there " +
+          "belongs in the change's archive entry.",
+      )
+  }
+  return `${records} record(s), longest ${longest}/${maxLines} lines`
+})()
+
+// ---------------------------------------------------------------------------
 
 if (failures.length > 0) {
   for (const failure of failures) console.error(`agents:check — ${failure}`)
@@ -259,5 +306,6 @@ if (failures.length > 0) {
 // The root is in the success line on purpose: it is the one input every check above depends on, and a
 // wrong one produces confident, wrong output. Naming it makes that visible instead of inferable.
 console.log(
-  `agents:check — ${repoRoot}: ${budgetReport}; ${topics.length} topic file(s), ${routedPaths.size} routed path(s).`,
+  `agents:check — ${repoRoot}: ${budgetReport}; ${topics.length} topic file(s), ${routedPaths.size} routed path(s)` +
+    `${ceilingReport === null ? "" : `; ${ceilingReport}`}.`,
 )

@@ -56,7 +56,8 @@ what makes the build fail.
   `bash "${CLAUDE_PLUGIN_ROOT}/scripts/slugify.sh" slug "<the follow-up>"`, carrying
   `source: <this change's slug>`. `.ai/backlog/README.md` states the entry shape and both bars —
   **will you ever?** and **should it have been done now?** — so they are not restated here; judge
-  against those, and create the dir with that `README.md` if the repo predates the scaffold. If
+  against those. Where the repo predates the scaffold and has no such README, create the dir and say
+  so: `dw-init` owns the payload it is copied from, and the bars are not reproducible from here. If
   `.ai/backlog/<slug>.md` already exists, merge into it or re-slug with a more specific
   description — **never overwrite it silently**; the existing entry is queued work. Zero is a normal
   answer, and a folder already too long is what `dw-prune` is for — say its name rather than

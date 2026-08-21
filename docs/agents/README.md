@@ -63,6 +63,13 @@ stale traps is not.
   - **A rewrite dense enough to reword every sentence drowns that window in noise**, so pair it with a
     **fact-token diff**: every backticked span, path, flag, number and error string in the old text,
     checked for presence in the new. It is the check that survives a rewrite the 8-gram window cannot read.
+  - **Both checks read words, so neither sees a relative cross-reference that lost its referent.**
+    `dw-shape`'s split execution said "run the ladder above once per scope"; the block moved to a
+    reference file while the ladder stayed in the body, so "above" pointed at nothing — word-perfect
+    move, fact-token clean, and wrong. No grep can judge it either: seventeen legitimate _above_ /
+    _below_ uses sit in the same corpus. Re-read the moved text **in its new home** and make every
+    _above_, _below_, _the section before_ and bare "this step" either resolve there or name what it
+    meant.
   - **A line target buys itself out of the content, and the format gate cannot see the bill.** Compressing
     `templates/AGENTS.md` toward a shaped line count dropped `git fetch origin &&` from a rebase command,
     teaching a rebase onto a stale ref — caught by a reviewer, by no check. Prose has no compiler, so

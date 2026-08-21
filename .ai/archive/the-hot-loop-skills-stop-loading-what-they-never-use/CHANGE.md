@@ -2,7 +2,8 @@
 change: the-hot-loop-skills-stop-loading-what-they-never-use
 branch: main
 created: 2026-08-20
-status: building # shaping | building | landed
+status: landed # shaping | building | landed
+landed: 2026-08-21
 ---
 
 # Change — the three skills that run on every change stop loading what they will not use

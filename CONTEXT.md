@@ -100,6 +100,10 @@ in [`AGENTS.md`](AGENTS.md) and the procedures in the skills themselves.
 - **Routed topic file** — `docs/agents/<topic>.md`: prose lifted out of the root file, reached only
   through its router row. Where a gotcha lands in a scaffolded repo, and created together with its row
   in one commit — a topic file nothing routes to is a file nothing reads.
+- **Reference file** — `skills/<name>/references/<file>.md`: a block lifted out of a `SKILL.md`
+  because it runs on only some invocations, reached by a pointer the body keeps. The skill-level twin
+  of a routed topic file, and what a hot skill sheds instead of being trimmed; `validate-docs.sh`
+  check 6 refuses a pointer with no file behind it.
 - **Explicit-invoke** — a skill with `disable-model-invocation: true`; it fires only when named.
 - **Case file** — `evals/cases/<skill>.json`: prompts that should route to a skill (**positives**) and
   near-miss prompts that should not (**negatives**, each naming the `owner` that should win instead).

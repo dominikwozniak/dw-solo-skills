@@ -390,12 +390,48 @@ i=0
 while [ "$i" -lt 500 ]; do printf 'contract prose\n' >>"$repo/docs/agents/README.md"; i=$((i + 1)); done
 expect_rc "readme-excluded-from-the-corpus" 0 "$(check "$repo")"
 
-# A baseline that cannot be read is a failure that names its own fix, never a silent skip.
+# A baseline that cannot be read is a failure that names its own fix, never a silent skip. Four shapes
+# parse as JSON and are still unusable — `null` and an array both satisfy `typeof === "object"`, and a
+# `words` larger than the parts is the one that looks like success while the ratchet does nothing.
 repo="$(topic_repo 10)"
 update "$repo" >/dev/null
 printf 'not json\n' >"$repo/docs/agents/corpus.baseline.json"
 expect_rc "corrupt-baseline-exit-1" 1 "$(check "$repo")"
 expect_says "corrupt-baseline-names-the-fix" "Re-record it with"
+
+printf 'null\n' >"$repo/docs/agents/corpus.baseline.json"
+expect_rc "null-baseline-exit-1" 1 "$(check "$repo")"
+expect_says "null-baseline-not-a-stack-trace" "must be a JSON object"
+
+printf '[]\n' >"$repo/docs/agents/corpus.baseline.json"
+expect_rc "array-baseline-exit-1" 1 "$(check "$repo")"
+expect_says "array-baseline-named" "must be a JSON object"
+
+printf '{ "words": -1, "perFile": {} }\n' >"$repo/docs/agents/corpus.baseline.json"
+expect_rc "negative-words-exit-1" 1 "$(check "$repo")"
+expect_says "negative-words-named" "non-negative integer"
+
+# The silent-green one: words inflated past the sum of its parts would let the corpus grow unnoticed.
+printf '{ "words": 1000, "perFile": { "topic.md": 10 } }\n' >"$repo/docs/agents/corpus.baseline.json"
+expect_rc "inconsistent-baseline-exit-1" 1 "$(check "$repo")"
+expect_says "inconsistent-baseline-names-both" "sums to 10"
+
+echo "--update-baseline is not a green light:"
+# Reached for precisely when the build is red, so it must never report success over another failure.
+repo="$(topic_repo 10)"
+rm "$repo/CLAUDE.md"
+expect_rc "update-with-failures-exit-1" 1 "$(update "$repo")"
+expect_says "update-with-failures-refuses" "refusing to re-record"
+if [ -f "$repo/docs/agents/corpus.baseline.json" ]; then
+  note_fail "update-with-failures-wrote-nothing" "it wrote a baseline anyway"
+else
+  note_pass "update-with-failures-wrote-nothing"
+fi
+
+# No docs/agents/ at all: an ENOENT stack trace is not an error message.
+repo="$(scaffold '120 lines / 10 KB')"
+expect_rc "update-without-the-dir-exit-1" 1 "$(update "$repo")"
+expect_says "update-without-the-dir-advises" "no docs/agents/ to ratchet"
 
 # A typo'd flag must not run a plain check and look like success.
 repo="$(topic_repo 10)"

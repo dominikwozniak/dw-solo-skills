@@ -336,6 +336,22 @@ const corpusReport = (() => {
     words += count
   }
   if (update) {
+    // A re-record is not a green light. Passes 1 to 6 have already run, and exiting 0 here would let
+    // `--update-baseline` in a repo that is failing something else report success — the one thing this
+    // flag must never do, since it is reached for precisely when the build is red.
+    if (failures.length > 0) {
+      for (const failure of failures) console.error(`agents:check — ${failure}`)
+      console.error("agents:check — refusing to re-record the baseline while the above fails.")
+      process.exit(1)
+    }
+    // Without the directory, writeFileSync throws ENOENT with a stack trace and no advice.
+    if (!existsSync(abs(topicDir))) {
+      console.error(
+        `agents:check — no ${topicDir}/ to ratchet, so there is no baseline to seed. Create it, ` +
+          "give it a topic file and a Task Router row, then re-record.",
+      )
+      process.exit(1)
+    }
     writeFileSync(
       abs(BASELINE),
       `${JSON.stringify(
@@ -365,10 +381,27 @@ const corpusReport = (() => {
     fail(`${BASELINE} is not valid JSON. Re-record it with \`--update-baseline\`.`)
     return null
   }
-  if (typeof baseline.words !== "number") {
-    fail(`${BASELINE} has no numeric \`words\`. Re-record it with \`--update-baseline\`.`)
+  // Validated the way the corpus ratchet this is styled on validates its own: `Array.isArray` is the
+  // check `typeof === "object"` misses, and the sum has to match, because a baseline whose `words` is
+  // larger than its parts disables the ratchet while reporting green — the one failure mode that looks
+  // exactly like success.
+  const malformed = (why) => {
+    fail(`${BASELINE} is malformed — ${why}. Re-record it with \`--update-baseline\`.`)
     return null
   }
+  if (baseline === null || typeof baseline !== "object" || Array.isArray(baseline))
+    return malformed("it must be a JSON object")
+  if (!Number.isInteger(baseline.words) || baseline.words < 0)
+    return malformed("`words` must be a non-negative integer")
+  if (
+    typeof baseline.perFile !== "object" ||
+    baseline.perFile === null ||
+    Array.isArray(baseline.perFile)
+  )
+    return malformed("`perFile` must be an object")
+  const recorded = Object.values(baseline.perFile).reduce((total, n) => total + n, 0)
+  if (recorded !== baseline.words)
+    return malformed(`\`words\` says ${baseline.words} and \`perFile\` sums to ${recorded}`)
   if (words > baseline.words) {
     const grown = measured
       .filter((entry) => perFile[entry] > (baseline.perFile?.[entry] ?? 0))
@@ -392,6 +425,6 @@ if (failures.length > 0) {
 // wrong one produces confident, wrong output. Naming it makes that visible instead of inferable.
 console.log(
   `agents:check — ${repoRoot}: ${budgetReport}; ${topics.length} topic file(s), ${routedPaths.size} routed path(s)` +
-    `${corpusReport === null ? "" : `, ${corpusReport}`}` +
+    `${corpusReport === null ? "" : `; ${corpusReport}`}` +
     `${ceilingReport === null ? "" : `; ${ceilingReport}`}.`,
 )

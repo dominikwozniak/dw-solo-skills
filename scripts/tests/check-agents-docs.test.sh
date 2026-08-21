@@ -338,6 +338,71 @@ declare_ceiling "$repo" "as short as it needs to be"
 expect_rc "malformed-ceiling-exit-1" 1 "$(check "$repo")"
 expect_says "malformed-ceiling-called-malformed" "ceiling declaration is malformed"
 
+echo "the topic-file ratchet:"
+# topic_repo <words-in-topic.md> — a scaffold with one routed topic file of the given word count.
+topic_repo() {
+  local dir
+  dir="$(scaffold '120 lines / 10 KB' '| a topic       | `docs/agents/topic.md` |')"
+  mkdir -p "$dir/docs/agents"
+  : >"$dir/docs/agents/topic.md"
+  local i=0
+  while [ "$i" -lt "$1" ]; do printf 'word\n' >>"$dir/docs/agents/topic.md"; i=$((i + 1)); done
+  printf '%s\n' "$dir"
+}
+# update <repo> — re-record the baseline; echoes the exit code, output in $OUT.
+update() {
+  (cd "$1" && node scripts/check-agents-docs.mjs --update-baseline) >"$OUT" 2>&1
+  printf '%s\n' "$?"
+}
+
+repo="$(topic_repo 10)"
+expect_rc "no-baseline-exit-0" 0 "$(check "$repo")"
+expect_silent_about "no-baseline-says-nothing" "topic words"
+
+expect_rc "update-baseline-exit-0" 0 "$(update "$repo")"
+expect_says "update-baseline-says-so" "baseline re-recorded at 10 words"
+expect_rc "seeded-baseline-exit-0" 0 "$(check "$repo")"
+expect_says "seeded-baseline-reported" "10/10 topic words"
+
+# Growth fails, and the message has to carry the total, the baseline, the delta and WHICH file grew —
+# a ratchet that only says "too big" leaves you diffing the corpus by hand.
+printf 'word\nword\n' >>"$repo/docs/agents/topic.md"
+expect_rc "growth-exit-1" 1 "$(check "$repo")"
+expect_says "growth-names-the-delta" "12 words, baseline 10, +2"
+expect_says "growth-names-the-file" "topic.md 10→12"
+
+# Shrinking is free and needs no ceremony: that is the whole bargain.
+repo="$(topic_repo 10)"
+update "$repo" >/dev/null
+: >"$repo/docs/agents/topic.md"
+printf 'word\n' >"$repo/docs/agents/topic.md"
+expect_rc "shrink-exit-0" 0 "$(check "$repo")"
+
+# README.md is the shipped contract, not this repo's prose. A payload refresh that lengthens it must
+# not read as the corpus growing.
+repo="$(topic_repo 10)"
+mkdir -p "$repo/docs/agents"
+printf 'the contract\n' >"$repo/docs/agents/README.md"
+sed -i.bak 's@| a domain term   | `CONTEXT.md`    |@| a domain term   | `CONTEXT.md`    |\n| what goes where | `docs/agents/README.md` |@' "$repo/AGENTS.md"
+rm -f "$repo/AGENTS.md.bak"
+update "$repo" >/dev/null
+i=0
+while [ "$i" -lt 500 ]; do printf 'contract prose\n' >>"$repo/docs/agents/README.md"; i=$((i + 1)); done
+expect_rc "readme-excluded-from-the-corpus" 0 "$(check "$repo")"
+
+# A baseline that cannot be read is a failure that names its own fix, never a silent skip.
+repo="$(topic_repo 10)"
+update "$repo" >/dev/null
+printf 'not json\n' >"$repo/docs/agents/corpus.baseline.json"
+expect_rc "corrupt-baseline-exit-1" 1 "$(check "$repo")"
+expect_says "corrupt-baseline-names-the-fix" "Re-record it with"
+
+# A typo'd flag must not run a plain check and look like success.
+repo="$(topic_repo 10)"
+(cd "$repo" && node scripts/check-agents-docs.mjs --update-baselines) >"$OUT" 2>&1
+expect_rc "unknown-flag-exit-2" 2 "$?"
+expect_says "unknown-flag-named" "unexpected argument"
+
 echo "the shipped AGENTS.md template, rendered the way dw-init renders it, passes the shipped checker:"
 # The one case that tests the two payload halves against each other rather than against a fixture.
 # Every case above builds its own minimal AGENTS.md, so none of them would notice the template

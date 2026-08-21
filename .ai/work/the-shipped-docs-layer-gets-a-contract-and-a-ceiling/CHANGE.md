@@ -50,7 +50,7 @@ candidate record passes before writing it.
 - [x] 2. A ceiling pass in `templates/check-agents-docs.mjs` over `docs/decisions/<NNNN>-*.md`, read
       from a one-line declaration the template seeds into `docs/decisions/README.md`; cases in
       `scripts/tests/check-agents-docs.test.sh`.
-- [ ] 3. The `docs/agents/*.md` word ratchet in the same script: a tracked baseline, growth only via
+- [x] 3. The `docs/agents/*.md` word ratchet in the same script: a tracked baseline, growth only via
       `--update-baseline`, styled on `check-skill-corpus.mjs`; `dw-init` seeds the baseline; cases in
       the same test file.
 - [ ] 4. `dw-land/references/decision-record.md` — the ceiling as part of the shape, and the rule
@@ -77,11 +77,10 @@ candidate record passes before writing it.
 
 - This repo declares `Ceiling: 80 lines` (longest record 73), so the pass has a real user here; the
   payload seeds 40, where nothing has to be met first.
-- `dw-init` grew 50 words and the baseline was re-recorded in that commit. Deliberate, and the only
-  skill this change grows.
-- `dw-init` states the checker "checks nothing under `docs/decisions/`" because a validator there
-  turns a durable layer into a build gate. Task 2 needs that sentence amended or dropped; raised
-  before building it.
+- `dw-init` is the only skill this change grows: +50 then +22 words, both re-recorded in their own
+  commit. The second was cut down from +50 first; further cutting is `dw-unslop` work, not this change.
+- The ratchet is not switched on in this repo, by the decision above, so it has no user here — unlike
+  the ceiling, which does. `dw-land` should see that asymmetry rather than infer it.
 - Tasks 4-5 write no citation of this repo's own decisions, history or `docs/agents/` files: a shipped
   reference installs where `0009` means something else. `.ai/backlog/nothing-refuses-a-shipped-skill-citing-this-repo-s-own-decisions.md` is the gate that would catch it, and stays parked.
 - Seeded from `.ai/backlog/templates-ship-the-docs-agents-contract.md`, whose own warning applies to

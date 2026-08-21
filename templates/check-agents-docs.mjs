@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 // Guards the agent-docs contract in a repo scaffolded by dw-init: AGENTS.md is the one always-loaded
-// file, it stays inside a budget it declares itself, and everything it routes to is real.
+// file, it stays inside a budget it declares itself, everything it routes to is real, and the layers
+// it routes to do not grow in silence.
 //
 // Zero dependencies, Node built-ins only — it ships into repos that may have no package.json at all.
 // Run it as `node scripts/check-agents-docs.mjs`, or via the `agents:check` script dw-init wires.
@@ -17,6 +18,7 @@ import {
   readdirSync,
   readlinkSync,
   realpathSync,
+  writeFileSync,
 } from "node:fs"
 import { dirname, join } from "node:path"
 import { fileURLToPath } from "node:url"
@@ -57,6 +59,18 @@ if (!existsSync(join(repoRoot, "AGENTS.md"))) {
   )
   process.exit(1)
 }
+
+// One flag, and anything unrecognised is fatal rather than ignored: a typo'd `--update-baselines`
+// would otherwise run a plain check, write nothing, and look exactly like success.
+const args = process.argv.slice(2)
+const update = args.includes("--update-baseline")
+for (const arg of args)
+  if (arg !== "--update-baseline") {
+    console.error(
+      `agents:check — unexpected argument ${JSON.stringify(arg)}. Usage: [--update-baseline].`,
+    )
+    process.exit(2)
+  }
 
 const failures = []
 const fail = (message) => failures.push(message)
@@ -298,6 +312,77 @@ const ceilingReport = (() => {
 })()
 
 // ---------------------------------------------------------------------------
+// 7. The topic-file ratchet — the corpus may shrink freely, and grows on purpose.
+// ---------------------------------------------------------------------------
+// docs/agents/ has no honest per-file ceiling: a topic is as long as its subject, so any number would
+// be a guess. The baseline records what the corpus IS instead, and the check refuses a silent
+// increase — growth stays legal and costs one visible `--update-baseline` in the diff. No threshold is
+// chosen, so no threshold can be set too high.
+//
+// Words, not lines or bytes: a formatter that reflows Markdown moves both of those on a pure reformat
+// and moves no words. README.md is excluded — it is the contract, shipped rather than written here, so
+// a payload refresh must not read as the corpus growing.
+//
+// Opt-in like the ceiling: no baseline file means no check and no mention. Seed one with
+// `--update-baseline`, which is also how a repo adopts this after the fact.
+const BASELINE = "docs/agents/corpus.baseline.json"
+const corpusReport = (() => {
+  const measured = topics.filter((entry) => entry !== "README.md")
+  const perFile = {}
+  let words = 0
+  for (const entry of measured) {
+    const count = read(`${topicDir}/${entry}`).split(/\s+/).filter(Boolean).length
+    perFile[entry] = count
+    words += count
+  }
+  if (update) {
+    writeFileSync(
+      abs(BASELINE),
+      `${JSON.stringify(
+        {
+          $comment:
+            "The recorded size of docs/agents/*.md excluding README.md, used as a ratchet by " +
+            "check-agents-docs.mjs: the corpus may shrink freely and may only grow through a commit " +
+            "that re-records this file with `--update-baseline`. No threshold is chosen here, so no " +
+            "threshold can be set too high. Delete this file to switch the ratchet off.",
+          words,
+          perFile,
+        },
+        null,
+        2,
+      )}\n`,
+    )
+    console.log(
+      `agents:check — baseline re-recorded at ${words} words across ${measured.length} topic file(s).`,
+    )
+    process.exit(0)
+  }
+  if (!existsSync(abs(BASELINE))) return null
+  let baseline
+  try {
+    baseline = JSON.parse(read(BASELINE))
+  } catch {
+    fail(`${BASELINE} is not valid JSON. Re-record it with \`--update-baseline\`.`)
+    return null
+  }
+  if (typeof baseline.words !== "number") {
+    fail(`${BASELINE} has no numeric \`words\`. Re-record it with \`--update-baseline\`.`)
+    return null
+  }
+  if (words > baseline.words) {
+    const grown = measured
+      .filter((entry) => perFile[entry] > (baseline.perFile?.[entry] ?? 0))
+      .map((entry) => `${entry} ${baseline.perFile?.[entry] ?? 0}→${perFile[entry]}`)
+    fail(
+      `docs/agents/ is ${words} words, baseline ${baseline.words}, +${words - baseline.words}. ` +
+        `Grown: ${grown.join(", ") || "none named"}. Cut it back out, or record the growth on ` +
+        "purpose with `--update-baseline` in the same commit.",
+    )
+  }
+  return `${words}/${baseline.words} topic words`
+})()
+
+// ---------------------------------------------------------------------------
 
 if (failures.length > 0) {
   for (const failure of failures) console.error(`agents:check — ${failure}`)
@@ -307,5 +392,6 @@ if (failures.length > 0) {
 // wrong one produces confident, wrong output. Naming it makes that visible instead of inferable.
 console.log(
   `agents:check — ${repoRoot}: ${budgetReport}; ${topics.length} topic file(s), ${routedPaths.size} routed path(s)` +
+    `${corpusReport === null ? "" : `, ${corpusReport}`}` +
     `${ceilingReport === null ? "" : `; ${ceilingReport}`}.`,
 )

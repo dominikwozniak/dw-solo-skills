@@ -106,9 +106,8 @@ light.
   `${CLAUDE_PLUGIN_ROOT}/templates/backlog-README.md`,
   `${CLAUDE_PLUGIN_ROOT}/templates/archive-README.md` and
   `${CLAUDE_PLUGIN_ROOT}/templates/decisions-README.md` verbatim.
-  `docs/agents/README.md` — copy `${CLAUDE_PLUGIN_ROOT}/templates/agents-docs-README.md` verbatim. It
-  is the contract the template's Task Router row points at, so the row and the file arrive together or
-  path sync fails on the first run.
+  `docs/agents/README.md` — copy `${CLAUDE_PLUGIN_ROOT}/templates/agents-docs-README.md` verbatim; the
+  template's router row points at it, so the two arrive together or path sync fails on the first run.
   **Existing entries in any of the three dirs are left alone** — they carry real content from
   earlier changes.
   A legacy single-file `.ai/BACKLOG.md`, if present, is named at the gate: offer to split it into
@@ -158,11 +157,13 @@ light.
 - `scripts/check-agents-docs.mjs` — copy `${CLAUDE_PLUGIN_ROOT}/templates/check-agents-docs.mjs`
   verbatim. Zero dependencies, Node built-ins only, and it finds the repo root by walking up from its
   own location to the nearest `AGENTS.md` — so `scripts/` is the conventional home, not a required
-  one. It checks six things: the declared budget, that no `{{…}}` placeholder survived, Task Router
-  coverage and path sync, that every `pnpm <script>` named in `AGENTS.md` exists, and that `CLAUDE.md`
-  is a symlink. Under `docs/decisions/` it checks **size only**, and only where the folder's README
-  declares a `Ceiling:` line — the bar, the shape and the numbering stay editorial, because a commit
-  blocked over a record's shape teaches you to stop writing them.
+  one. It checks seven things: the declared budget, that no `{{…}}` placeholder survived, Task Router
+  coverage and path sync, that every `pnpm <script>` named in `AGENTS.md` exists, that `CLAUDE.md` is a
+  symlink, and two size gates over the layers it routes to — a `Ceiling:` per decision record, and a
+  word ratchet over `docs/agents/`. Both are **size only and opt-in**: shape stays editorial, because a
+  commit blocked over a record's shape teaches you to stop writing them, and a missing declaration or
+  baseline is neither checked nor mentioned. **Run it once with `--update-baseline`** at the end of the
+  scaffold to seed `docs/agents/corpus.baseline.json`.
   - `{{AGENTS_CHECK_COMMAND}}` is how `AGENTS.md`'s own header names its enforcement. With a
     `package.json`, add `"agents:check": "node scripts/check-agents-docs.mjs"` to `scripts` and render
     `pnpm agents:check`; where the repo has an aggregate gate script (`check`, `verify`), add it to

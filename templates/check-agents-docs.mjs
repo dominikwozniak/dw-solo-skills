@@ -77,6 +77,12 @@ const fail = (message) => failures.push(message)
 const abs = (path) => join(repoRoot, path)
 const read = (path) => readFileSync(abs(path), "utf8")
 
+// Lines the way `wc -l` counts them, which is the number a reader can reproduce. A plain
+// `split("\n").length` counts the empty string after the final newline, so a conventional 40-line file
+// measured 41 — a declared ceiling of 40 silently meant 39, and the failure message named a number no
+// tool on the machine agreed with.
+const lineCount = (text) => text.replace(/\n$/, "").split("\n").length
+
 const root = read("AGENTS.md")
 
 // ---------------------------------------------------------------------------
@@ -112,7 +118,7 @@ const budgetReport = (() => {
   const num = (raw) => Number(raw.replaceAll("_", ""))
   const maxLines = num(parsed[1])
   const maxBytes = num(parsed[2]) * (parsed[3]?.toLowerCase() === "kb" ? 1024 : 1)
-  const lines = root.split("\n").length
+  const lines = lineCount(root)
   const bytes = Buffer.byteLength(root, "utf8")
   if (lines > maxLines || bytes > maxBytes)
     fail(
@@ -299,7 +305,7 @@ const ceilingReport = (() => {
   for (const name of readdirSync(abs("docs/decisions")).sort()) {
     if (!/^\d{4}-.+\.md$/.test(name)) continue
     records += 1
-    const lines = read(`docs/decisions/${name}`).split("\n").length
+    const lines = lineCount(read(`docs/decisions/${name}`))
     if (lines > longest) longest = lines
     if (lines > maxLines)
       fail(

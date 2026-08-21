@@ -313,13 +313,22 @@ repo="$(scaffold '120 lines / 10 KB')"
 declare_ceiling "$repo" "40 lines"
 long_record "$repo/docs/decisions/0001-a-short-one.md" 20
 expect_rc "under-ceiling-exit-0" 0 "$(check "$repo")"
-expect_says "under-ceiling-reports-the-longest" "longest 21/40 lines"
+expect_says "under-ceiling-reports-the-longest" "longest 20/40 lines"
+
+# Lines are counted the way `wc -l` counts them, so the boundary is exact: a record of exactly the
+# ceiling passes. Counting the empty string after the final newline made a 40-line file measure 41,
+# which turned a declared 40 into a silent 39.
+repo="$(scaffold '120 lines / 10 KB')"
+declare_ceiling "$repo" "40 lines"
+long_record "$repo/docs/decisions/0001-exactly-at-it.md" 40
+expect_rc "exactly-at-the-ceiling-exit-0" 0 "$(check "$repo")"
+expect_says "exactly-at-the-ceiling-counts-like-wc" "longest 40/40 lines"
 
 repo="$(scaffold '120 lines / 10 KB')"
 declare_ceiling "$repo" "40 lines"
 long_record "$repo/docs/decisions/0002-a-long-one.md" 41
 expect_rc "over-ceiling-exit-1" 1 "$(check "$repo")"
-expect_says "over-ceiling-names-the-record" "0002-a-long-one.md is 42 lines"
+expect_says "over-ceiling-names-the-record" "0002-a-long-one.md is 41 lines"
 expect_says "over-ceiling-names-the-number" "declared 40-line ceiling"
 
 # Only <NNNN>-<slug>.md is a record. The README states the contract and a stray note is not a record,

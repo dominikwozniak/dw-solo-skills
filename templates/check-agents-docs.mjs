@@ -77,10 +77,15 @@ const fail = (message) => failures.push(message)
 const abs = (path) => join(repoRoot, path)
 const read = (path) => readFileSync(abs(path), "utf8")
 
-// Lines the way `wc -l` counts them, which is the number a reader can reproduce. A plain
-// `split("\n").length` counts the empty string after the final newline, so a conventional 40-line file
-// measured 41 — a declared ceiling of 40 silently meant 39, and the failure message named a number no
-// tool on the machine agreed with.
+// Lines as a reader sees them: the final newline TERMINATES the last line rather than starting an
+// empty one. A plain `split("\n").length` counted that phantom, so a conventional 40-line file
+// measured 41 — a declared ceiling of 40 silently meant 39, and the message named a number no editor
+// agreed with.
+//
+// Deliberately not `wc -l`, which counts newline characters: the two agree on every newline-terminated
+// file, which is all of them here, and disagree on the pathological ones in the direction a reader
+// would call wrong — `wc -l` says 1 for "a\nb" and 0 for an empty file, where an editor shows 2 and
+// 0 and this says 2 and 1. Neither pathology can approach a ceiling, so the readable number wins.
 const lineCount = (text) => text.replace(/\n$/, "").split("\n").length
 
 const root = read("AGENTS.md")

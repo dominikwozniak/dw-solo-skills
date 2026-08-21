@@ -53,7 +53,7 @@ candidate record passes before writing it.
 - [x] 3. The `docs/agents/*.md` word ratchet in the same script: a tracked baseline, growth only via
       `--update-baseline`, styled on `check-skill-corpus.mjs`; `dw-init` seeds the baseline; cases in
       the same test file.
-- [ ] 4. `dw-land/references/decision-record.md` — the ceiling as part of the shape, and the rule
+- [x] 4. `dw-land/references/decision-record.md` — the ceiling as part of the shape, and the rule
       that the three tests are named aloud per candidate. By replacement.
 - [ ] 5. `dw-land/references/promote.md` — the same two clauses on the promote side, and the ratchet's
       "shrink before you add" consequence. By replacement.
@@ -75,6 +75,8 @@ candidate record passes before writing it.
 
 ## Notes
 
+- `decision-record.md`: 546 words in, 545 out, with both new clauses inside. Two passes — the first
+  landed at 620 and was cut, which is the discipline this change is about.
 - This repo declares `Ceiling: 80 lines` (longest record 73), so the pass has a real user here; the
   payload seeds 40, where nothing has to be met first.
 - `dw-init` is the only skill this change grows: +50 then +22 words, both re-recorded in their own

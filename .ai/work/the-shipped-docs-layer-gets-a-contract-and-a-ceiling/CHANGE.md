@@ -55,7 +55,7 @@ candidate record passes before writing it.
       the same test file.
 - [x] 4. `dw-land/references/decision-record.md` — the ceiling as part of the shape, and the rule
       that the three tests are named aloud per candidate. By replacement.
-- [ ] 5. `dw-land/references/promote.md` — the same two clauses on the promote side, and the ratchet's
+- [x] 5. `dw-land/references/promote.md` — the same two clauses on the promote side, and the ratchet's
       "shrink before you add" consequence. By replacement.
 - [ ] 6. Bump `dw-solo-setup` (templates, `dw-init`) and `dw-solo` (the two references), and
       re-record the corpus baseline only if `SKILL.md` words actually moved.
@@ -75,6 +75,8 @@ candidate record passes before writing it.
 
 ## Notes
 
+- `promote.md`: 1162 words in, 1162 out — its decisions bullet was restating the whole record
+  contract, so it became a pointer, and that paid for the ratchet clause.
 - `decision-record.md`: 546 words in, 545 out, with both new clauses inside. Two passes — the first
   landed at 620 and was cut, which is the discipline this change is about.
 - This repo declares `Ceiling: 80 lines` (longest record 73), so the pass has a real user here; the

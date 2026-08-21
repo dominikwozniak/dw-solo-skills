@@ -78,3 +78,8 @@ what makes the build fail.
 - **Commit** the promotion and the archive move together, the way `dw-git` does — **on the branch you
   are on.** In a worktree that means the feature branch: the promotion rides the PR, the squash-merge
   carries it to the default branch, and post-merge `main` is already clean.
+- **A fix absorbed into this commit can reach a versioned artifact, and the version is already
+  behind it.** The bump was an earlier commit, so where the project checks each commit against its
+  parent rather than against the branch point, that bump does not cover this one. Grow the version
+  again here, in this same commit. The local check can pass while CI fails, because the two compare
+  against different bases.

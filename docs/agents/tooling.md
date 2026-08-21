@@ -115,6 +115,16 @@ either, and each script names the tokens it rejects.
   entries that were missing. It hides because an unfiltered workflow matches anyway, so the commit still
   shows a green tick from a run that never performed the check: a green tick on a skill edit does not
   mean the corpus was measured — only the _Validate artifacts_ run does.
+- **`pnpm validate:versions` and CI's push job compare against different bases, so a green local run
+  proves nothing about a per-commit bump.** Local defaults to `origin/main` — the branch point, where
+  the whole range's bump counts. The push job passes `--base HEAD~1` on purpose (the workflow explains
+  why: it is the only place a parallel bump to a number already taken is caught). So the **last commit
+  that touches shipped surface must be the one carrying the bump**, and `dw-land`'s close commit breaks
+  that by construction: the bump is an earlier task, and the absorption bar then invites a small fix
+  into the close. That is exactly how `4e4edb3` landed `skills/dw-land/references/promote.md` at an
+  unchanged `0.4.26` — eight local checks green, _Validate version bumps_ red on push. Either keep the
+  close commit off the shipped surface, or bump again inside it. `plugins/<p>/` is a **prefix** of the
+  surface, so a manifest-only bump commit is itself a surface change that its own growth satisfies.
 - **pnpm here is three traps deep, and every one looks like a broken repo.**
   - **The lint script can be hijacked before it reaches `scripts/lint.sh`.** With the `rtk` proxy hook
     active it is rewritten to `rtk lint`, an _ESLint_ wrapper, and dies with

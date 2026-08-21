@@ -39,6 +39,7 @@ Match a task against this table **before** researching or coding, and read every
 
 | task                                                               | read                       |
 | ------------------------------------------------------------------ | -------------------------- |
+| editing this file or `docs/agents/*` — what belongs where          | `docs/agents/README.md`    |
 | the loop, `.ai/work/`, what a `CHANGE.md` is and when it leaves    | `.ai/README.md`            |
 | why the code is shaped this way; reopening a settled choice        | `docs/decisions/README.md` |
 | what something is called here — any domain term                    | `CONTEXT.md`               |

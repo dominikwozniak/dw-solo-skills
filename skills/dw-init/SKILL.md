@@ -96,8 +96,8 @@ light.
 
 ### 4. Write
 
-- `mkdir -p .ai/work .ai/backlog .ai/archive docs/decisions`; seed `.ai/work` with `.gitkeep` (the
-  other three get READMEs). **Remove a `.gitkeep` that a README now supersedes** — an earlier version
+- `mkdir -p .ai/work .ai/backlog .ai/archive docs/decisions docs/agents`; seed `.ai/work` with
+  `.gitkeep` (the other four get READMEs). **Remove a `.gitkeep` that a README now supersedes** — an earlier version
   seeded `docs/decisions/.gitkeep`, so a repo scaffolded then and re-run now keeps a redundant one
   beside the README, and the next reader cannot tell which is the convention.
 - `.ai/README.md` — copy `${CLAUDE_PLUGIN_ROOT}/templates/work-README.md` verbatim. It states the
@@ -106,6 +106,9 @@ light.
   `${CLAUDE_PLUGIN_ROOT}/templates/backlog-README.md`,
   `${CLAUDE_PLUGIN_ROOT}/templates/archive-README.md` and
   `${CLAUDE_PLUGIN_ROOT}/templates/decisions-README.md` verbatim.
+  `docs/agents/README.md` — copy `${CLAUDE_PLUGIN_ROOT}/templates/agents-docs-README.md` verbatim. It
+  is the contract the template's Task Router row points at, so the row and the file arrive together or
+  path sync fails on the first run.
   **Existing entries in any of the three dirs are left alone** — they carry real content from
   earlier changes.
   A legacy single-file `.ai/BACKLOG.md`, if present, is named at the gate: offer to split it into

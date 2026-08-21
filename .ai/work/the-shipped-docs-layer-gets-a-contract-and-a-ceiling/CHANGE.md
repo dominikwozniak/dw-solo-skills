@@ -2,7 +2,7 @@
 change: the-shipped-docs-layer-gets-a-contract-and-a-ceiling
 branch: the-shipped-docs-layer-gets-a-contract-and-a-ceiling
 created: 2026-08-21
-status: shaping # shaping | building | landed
+status: building # shaping | building | landed
 ---
 
 # Change — a scaffolded repo learns what belongs in `docs/agents/` and what stops it growing silently
@@ -38,7 +38,7 @@ candidate record passes before writing it.
 
 ## Tasks
 
-- [ ] 1. `templates/agents-docs-README.md` — the contract only: root vs topic file vs
+- [x] 1. `templates/agents-docs-README.md` — the contract only: root vs topic file vs
       `docs/decisions/` vs `CONTEXT.md`, and the router-row-in-the-same-commit rule. Its router row
       in `templates/AGENTS.md`, and its copy line in `dw-init`'s scaffold list.
 - [ ] 2. A ceiling pass in `templates/check-agents-docs.mjs` over `docs/decisions/<NNNN>-*.md`, read
@@ -69,6 +69,9 @@ candidate record passes before writing it.
 
 ## Notes
 
+- `dw-init` states the checker "checks nothing under `docs/decisions/`" because a validator there
+  turns a durable layer into a build gate. Task 2 needs that sentence amended or dropped; raised
+  before building it.
 - Tasks 4-5 write no citation of this repo's own decisions, history or `docs/agents/` files: a shipped
   reference installs where `0009` means something else. `.ai/backlog/nothing-refuses-a-shipped-skill-citing-this-repo-s-own-decisions.md` is the gate that would catch it, and stays parked.
 - Seeded from `.ai/backlog/templates-ship-the-docs-agents-contract.md`, whose own warning applies to

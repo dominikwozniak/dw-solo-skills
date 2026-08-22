@@ -2,7 +2,7 @@
 change: date-prefix-the-solo-lane-slugs
 branch: date-prefix-the-solo-lane-slugs
 created: 2026-08-22
-status: shaping # shaping | building | landed
+status: building # shaping | building | landed
 ---
 
 # Change — the three `.ai/` lanes carry their date in the directory name
@@ -32,7 +32,7 @@ resurrection sweep and `dw-shape`'s duplicate-work guard both keep working acros
 
 ## Tasks
 
-- [ ] 1. `slugify.sh` gains `dated` and `undate`, with pinned `SLUG_DATE` cases in its self-test.
+- [x] 1. `slugify.sh` gains `dated` and `undate`, with pinned `SLUG_DATE` cases in its self-test.
 - [ ] 2. `dw-shape` mints dated slugs for work and backlog, and runs its taken-slug guard on bare slugs.
 - [ ] 3. `dw-land` re-stamps the archive destination to `landed:`/`rejected:`; its backlog writes are dated.
 - [ ] 4. `dw-ship`'s resurrection sweep pairs work to archive on the bare slug — the destructive one.
@@ -56,3 +56,8 @@ resurrection sweep and `dw-shape`'s duplicate-work guard both keep working acros
 - `docs/agents/change-artifacts.md:25` — "never the date or the `status:`"; still true, now the bare slug.
 
 ## Notes
+
+- `undate` strips only the `%F` form — eating 8 leading digits could truncate a real slug,
+  and the `run-id` prefix belongs to a lane these three don't share.
+- `undate` must never re-slugify: its input is a name off disk, so a name that already broke the
+  rule has to come back unchanged instead of being silently rewritten.

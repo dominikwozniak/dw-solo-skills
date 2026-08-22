@@ -136,12 +136,13 @@ is the default.
 - **`reject`** — the idea was turned down, or the work was abandoned half-built; one status covers
   both. Skip the verdict; there is no diff worth judging. Promote as usual (a rejection still leaves
   follow-ups worth keeping), then archive with `status: rejected`,
-  `rejected: YYYY-MM-DD` and `pr:` naming the **closed, unmerged** PR. The doc must carry a
+  `rejected: YYYY-MM-DD` — also the archive folder's date prefix — and `pr:` naming the **closed,
+  unmerged** PR. The doc must carry a
   `## Why rejected` — what was tried, what killed it, what would justify revisiting — and **writing it
   without a reason is refused**: an empty one costs a folder and teaches nothing, which is the whole
   failure this mode exists to prevent. An idea turned down before it was ever shaped has nothing to
-  move: write `.ai/archive/<slug>/CHANGE.md` directly, slug derived the way `dw-shape` does so a
-  re-shape collides with it. **Commit somewhere that survives**: nothing will be merged here, so a
+  move: write `.ai/archive/<rejected date>-<slug>/CHANGE.md` directly, the slug derived the way
+  `dw-shape` does so a re-shape still finds it by bare slug. **Commit somewhere that survives**: nothing will be merged here, so a
   record on the rejected branch dies with it — use a short branch off the default one and open a PR
   for that.
 

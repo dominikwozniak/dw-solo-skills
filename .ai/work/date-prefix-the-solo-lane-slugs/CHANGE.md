@@ -34,7 +34,7 @@ resurrection sweep and `dw-shape`'s duplicate-work guard both keep working acros
 
 - [x] 1. `slugify.sh` gains `dated` and `undate`, with pinned `SLUG_DATE` cases in its self-test.
 - [x] 2. `dw-shape` mints dated slugs for work and backlog, and runs its taken-slug guard on bare slugs.
-- [ ] 3. `dw-land` re-stamps the archive destination to `landed:`/`rejected:`; its backlog writes are dated.
+- [x] 3. `dw-land` re-stamps the archive destination to `landed:`/`rejected:`; its backlog writes are dated.
 - [ ] 4. `dw-ship`'s resurrection sweep pairs work to archive on the bare slug — the destructive one.
 - [ ] 5. `dw-start` and `dw-prune` sort by name; prune's "age is the only signal" line stops being wrong.
 - [ ] 6. Templates and docs say "one slug, re-dated at each lane"; bump the plugins, refresh the ratchet.

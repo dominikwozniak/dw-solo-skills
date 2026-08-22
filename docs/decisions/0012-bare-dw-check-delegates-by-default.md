@@ -9,7 +9,7 @@ date: 2026-08-17
 ## Context
 
 Delegation was opt-in: you typed `codex` or you got the self-review. The reasoning, recorded in
-`.ai/archive/shape-splits-changes/`, was that the `argument-hint` advertises the option at the moment
+`.ai/archive/2026-08-05-shape-splits-changes/`, was that the `argument-hint` advertises the option at the moment
 of typing, so a bare run lobbying for a second opinion just taxes the cheap path.
 
 That is true about nagging and wrong about defaults. The cross-model pass is the only thing this gate

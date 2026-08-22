@@ -24,7 +24,7 @@ resurrection sweep and `dw-shape`'s duplicate-work guard both keep working acros
 - New `dated` uses `date +%F`; the callerless `run-id` keeps `%Y%m%d` — different lanes, not a fix.
 - No validator on the new format — `docs/decisions/0015` gates size never shape, and both
   `work-README` and `backlog-README` promise non-validation deliberately.
-- `.ai/archive/design-rationale.md` is dated too (`2026-08-11-`, the date its banner declares) and
+- `.ai/archive/2026-08-11-design-rationale.md` is dated too (`2026-08-11-`, the date its banner declares) and
   stays a loose file — fit to the flow, but it is not a change, so no directory and no frontmatter.
 - One change, not three — the retro-rename in both repos is the same goal as the mechanism, and the
   request said so ("ten sam work item").
@@ -38,7 +38,7 @@ resurrection sweep and `dw-shape`'s duplicate-work guard both keep working acros
 - [x] 4. `dw-ship`'s resurrection sweep pairs work to archive on the bare slug — the destructive one.
 - [x] 5. `dw-start` and `dw-prune` sort by name; prune's "age is the only signal" line stops being wrong.
 - [x] 6. Templates and docs say "one slug, re-dated at each lane"; bump the plugins, refresh the ratchet.
-- [ ] 7. Rename this repo's 43 archive dirs, the loose `design-rationale.md` and 7 backlog files; fix the
+- [x] 7. Rename this repo's 43 archive dirs, the loose `design-rationale.md` and 7 backlog files; fix the
       `AGENTS.md` archive pointer.
 - [ ] 8. Rename grateful-me-app-v2's 20 entries; fix its 3 code/doc pointers and its own lane prose.
 - [ ] 9. Park grateful-me-app-v2's five verbatim-template `status:` comments in its own `.ai/backlog/`.
@@ -56,6 +56,10 @@ resurrection sweep and `dw-shape`'s duplicate-work guard both keep working acros
 - `docs/agents/change-artifacts.md:25` — "never the date or the `status:`"; still true, now the bare slug.
 
 ## Notes
+
+- The 73 pointers between archived change docs keep their pre-rename names: the archive is history,
+  nothing browses it, and several already dangled at backlog files deleted long ago. Only the 10 live
+  pointers (root docs, two decision records, the backlog entries) were rewritten.
 
 - `docs/decisions/0004` states "one slug travels backlog → work → archive" and is now partly
   superseded — records are never rewritten, so this change owes a new one at land time.

@@ -9,4 +9,4 @@ source: the-doc-layer-says-one-thing-once
 byte-identical only for as long as somebody remembers. This pass edited both by hand and verified with
 `cmp` twice. Mirror the hooks test over the pairs that are meant to match — deliberately not the ones
 that aren't, which is most of them. Detail:
-`.ai/archive/the-doc-layer-says-one-thing-once`.
+`.ai/archive/2026-08-14-the-doc-layer-says-one-thing-once`.

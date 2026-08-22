@@ -14,7 +14,7 @@ throwaway fixture and reported which skill actually fired. It was deleted along 
 `scripts/validate-evals.sh` sibling: it spent subscription quota, never ran in CI (there is no login
 to inherit there), refused to do anything without `--go`, and answered a question no change had asked
 for months. What it measured once is recorded under [Asking the real router](#asking-the-real-router),
-and `.ai/archive/skill-routing-evals/` keeps the rest.
+and `.ai/archive/2026-08-02-skill-routing-evals/` keeps the rest.
 
 ## Running it
 

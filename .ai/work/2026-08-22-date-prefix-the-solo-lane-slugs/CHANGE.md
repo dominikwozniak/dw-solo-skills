@@ -40,8 +40,8 @@ resurrection sweep and `dw-shape`'s duplicate-work guard both keep working acros
 - [x] 6. Templates and docs say "one slug, re-dated at each lane"; bump the plugins, refresh the ratchet.
 - [x] 7. Rename this repo's 43 archive dirs, the loose `design-rationale.md` and 7 backlog files; fix the
       `AGENTS.md` archive pointer.
-- [ ] 8. Rename grateful-me-app-v2's 20 entries; fix its 3 code/doc pointers and its own lane prose.
-- [ ] 9. Park grateful-me-app-v2's five verbatim-template `status:` comments in its own `.ai/backlog/`.
+- [x] 8. Rename grateful-me-app-v2's 20 entries; fix its 3 code/doc pointers and its own lane prose.
+- [x] 9. Park grateful-me-app-v2's five verbatim-template `status:` comments in its own `.ai/backlog/`.
 
 ## Anchors
 
@@ -56,6 +56,9 @@ resurrection sweep and `dw-shape`'s duplicate-work guard both keep working acros
 - `docs/agents/change-artifacts.md:25` — "never the date or the `status:`"; still true, now the bare slug.
 
 ## Notes
+
+- grateful-me-app-v2's lanes are dated before it installs dw-solo 0.5.0, so a `dw-shape` run there
+  on the cached 0.4.x plugin still mints an undated folder until this merges and it updates.
 
 - The 73 pointers between archived change docs keep their pre-rename names: the archive is history,
   nothing browses it, and several already dangled at backlog files deleted long ago. Only the 10 live

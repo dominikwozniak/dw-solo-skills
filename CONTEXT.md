@@ -7,8 +7,12 @@ in [`AGENTS.md`](AGENTS.md) and the procedures in the skills themselves.
   ceremony a solo change pays for.
 - **Canon** — the single real copy of a file. `skills/<name>/` and `scripts/runtime/<s>.sh` are canon;
   everything under `plugins/` is a git-tracked symlink back to it. Never edit through `plugins/…`.
-- **Change** — one unit of work, held in `.ai/work/<slug>/CHANGE.md`. Persistent (tracked, survives a
-  `/clear`), archived at merge (`.ai/archive/<slug>/`, `status: landed`).
+- **Change** — one unit of work, held in `.ai/work/<date>-<slug>/CHANGE.md`. Persistent (tracked,
+  survives a `/clear`), archived at merge (`.ai/archive/<date>-<slug>/`, `status: landed`).
+- **Entry name** — `<YYYY-MM-DD>-<slug>`, from `slugify.sh dated`, for every entry in the three `.ai/`
+  lanes. Each lane stamps **its own** date (noted, shaped, landed), so only the **bare slug** is
+  comparable across them — `slugify.sh undate` strips a prefix, and `docs/decisions/` is exempt because
+  its `NNNN-` numbering already sorts.
 - **Promotion** — moving the durable residue out of a `CHANGE.md` before it is archived: decisions to
   `docs/decisions/`, terms here, traps to the `## Gotchas` of the routed topic file that covers them,
   follow-ups to `.ai/backlog/` (one file per idea). It **replaces rather than appends**: each target
@@ -58,7 +62,7 @@ in [`AGENTS.md`](AGENTS.md) and the procedures in the skills themselves.
   it, now. Only genuinely blocked work — waiting on a decision, a dependency, a change not yet made —
   earns an entry. Joins the month bar (_will you ever?_), which tests only whether the idea is worth
   queueing at all. `dw-prune` applies it late, to a queue that grew anyway.
-- **Archive** — `.ai/archive/<slug>/`: landed change docs kept as history, not guidance. Nothing
+- **Archive** — `.ai/archive/<date>-<slug>/`: landed change docs kept as history, not guidance. Nothing
   reads them to decide anything; backlog entries may point at one for its findings. Two statuses end
   up here and there is no third: `landed`, and **`rejected` ≡ cancelled** — one status for an idea
   turned down and for work abandoned mid-build, since both leave the same thing behind (a

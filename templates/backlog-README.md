@@ -2,11 +2,13 @@
 
 Ideas not being worked on now. `dw-land` and `dw-shape` both park them here — the first at land time,
 the second when shaping decides an item is out of the change. `dw-shape` also takes one as the seed of
-a new change (`git mv` → `.ai/work/<slug>/CHANGE.md`) — the slug travels backlog → work → archive.
+a new change (`git mv` → `.ai/work/<date>-<slug>/CHANGE.md`) — the **bare slug** travels backlog →
+work → archive, while each lane stamps its own date.
 
-Shape of an entry, `<slug>.md`: frontmatter `created: YYYY-MM-DD` (optional `source:` naming the
-change that parked it), an H1 saying what-and-why in one line, at most ~3 lines of context.
-Findings go by pointer to `.ai/archive/<slug>` — never inlined. No status, no priority, and
+Shape of an entry, `<date>-<slug>.md` from `slugify.sh dated`: frontmatter `created: YYYY-MM-DD`, the
+same date as the prefix (optional `source:` naming the change that parked it), an H1 saying
+what-and-why in one line, at most ~3 lines of context. Findings go by pointer to
+`.ai/archive/<date>-<slug>` — never inlined. No status, no priority, and
 nothing validates these files, deliberately.
 
 One exception to the three lines: an entry may **bundle** several small fixes as a bullet list when

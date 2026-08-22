@@ -58,7 +58,7 @@ each**, because the guardrail hooks grep for them under those exact names.
 ## Before you push
 
 Run every check in the `scripts` block of `package.json`. That block **is** the gate, deliberately
-not restated here — the prose copies drifted (`.ai/archive/contributing-pre-push-gate-list-is-stale/`).
+not restated here — the prose copies drifted (`.ai/archive/2026-08-10-contributing-pre-push-gate-list-is-stale/`).
 CI runs the same set plus a `trufflehog` secrets scan, on every PR and push to `main`.
 
 ## Task Router
@@ -81,7 +81,7 @@ rows — read all of them. Explore on your own only what no row covers.
 
 ## Solo lane
 
-`.ai/work/<slug>/CHANGE.md` is the state of the change in progress — tracked, so it survives a
+`.ai/work/<date>-<slug>/CHANGE.md` is the state of the change in progress — tracked, so it survives a
 `/clear`. Where each step promotes its durable output is the Task Router above.
 
 The four below are **grep-read by the hooks**, so they live here and nowhere else: `lint-on-edit`

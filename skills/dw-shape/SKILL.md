@@ -14,7 +14,7 @@ and come back — mixing the two produces a document arguing with itself.
 
 ## Output location
 
-Write to `.ai/work/<slug>/CHANGE.md` — tracked, so it survives a `/clear`, and **working scaffolding
+Write to `.ai/work/<YYYY-MM-DD>-<slug>/CHANGE.md` — tracked, so it survives a `/clear`, and **working scaffolding
 rather than a deliverable**: `dw-land` archives it at merge, after promoting anything durable out.
 
 1. **Resolve the branch first — it is the key every other solo skill uses.**
@@ -31,15 +31,17 @@ rather than a deliverable**: `dw-land` archives it at merge, after promoting any
    `grep -l "^branch: $(git rev-parse --abbrev-ref HEAD)\$" .ai/work/*/CHANGE.md 2>/dev/null`. If one
    turns up, **continue that file** — only open a new change for genuinely separate work. Several
    `unclaimed` changes side by side are normal: that's the queue, not a conflict. When unsure, ask.
-3. **Derive the slug, don't invent it:**
-   `bash "${CLAUDE_PLUGIN_ROOT}/scripts/slugify.sh" slug "<short description>"`, so casing never
-   drifts. A slug already in `.ai/work/` **or `.ai/archive/`** is taken — the land-time `git mv` would
-   nest into the existing archive folder — so sharpen the description and re-derive. **Unless the
-   archived doc reads `status: rejected`**: this idea was already tried and dropped, so **stop**,
-   report what its `## Why rejected` found and what would justify revisiting, and shape only if the
-   user says that has changed. Re-deriving a slug around a rejection is how the work gets done twice.
-   A split derives several slugs at once — check those against each other as well as against disk,
-   since a sibling isn't written yet to be found.
+3. **Derive the name, don't invent it:**
+   `bash "${CLAUDE_PLUGIN_ROOT}/scripts/slugify.sh" dated "<short description>"` — a
+   `<YYYY-MM-DD>-<slug>` folder name, so neither casing nor date drifts. Each lane stamps its own
+   date, so the **bare slug** is the identity: compare through `slugify.sh undate <entry>`, never a
+   raw folder name. A bare slug already in `.ai/work/` **or `.ai/archive/`** is taken — `dw-ship`
+   pairs work to archive by it, and a duplicate makes that ambiguous — so sharpen the description and
+   re-derive. **Unless the archived doc reads `status: rejected`**: this idea was already tried and
+   dropped, so **stop**, report what its `## Why rejected` found and what would justify revisiting,
+   and shape only if the user says that has changed. Re-deriving a slug around a rejection is how the
+   work gets done twice. A split derives several at once — check those against each other as well as
+   against disk, since a sibling isn't written yet to be found.
 
 ## Workflow
 
@@ -108,10 +110,10 @@ obviously doable before task 2, do it. Dependencies here are there to help you p
 ### 4. Write the file and check it back
 
 Write `CHANGE.md` from the shape in `references/CHANGE.md`. If this change takes an entry from
-`.ai/backlog/`, create the folder first (`mkdir -p .ai/work/<slug>` — `git mv` won't), then **`git mv`
-the file** there and expand it in place: the entry is the seed, and live work must not also sit in the
-backlog, or the next `dw-shape` offers you what you're already building. Keep its slug unless the
-change outgrew it. **A split still seeds one change from one entry**, not N — `git mv` it into
+`.ai/backlog/`, create the folder first (`mkdir -p .ai/work/<dated name>` — `git mv` won't), then
+**`git mv` the file** there and expand it in place: the entry is the seed, and live work must not also
+sit in the backlog, or the next `dw-shape` offers you what you're already building. Keep its bare slug
+unless the change outgrew it; the folder takes today's date, not the entry's. **A split still seeds one change from one entry**, not N — `git mv` it into
 whichever inherits its subject and write the siblings fresh.
 
 Then read the goal and the task list back in a few lines and ask whether the breakdown is right —
@@ -134,11 +136,12 @@ an automatic filer fills the folder with ideas that have survived exactly one co
 the repo caps it, spends the whole cap on them. Forcing the choice is the point: it is the same move
 the land-side gate makes.
 
-**Only the parked ones become files**, one per entry at `.ai/backlog/<slug>.md`, mirroring what `dw-land`
-writes rather than inventing a second shape: slug from
-`bash "${CLAUDE_PLUGIN_ROOT}/scripts/slugify.sh" slug "<short description>"`, frontmatter `created:`
+**Only the parked ones become files**, one per entry at `.ai/backlog/<YYYY-MM-DD>-<slug>.md`, mirroring
+what `dw-land` writes rather than inventing a second shape: name from
+`bash "${CLAUDE_PLUGIN_ROOT}/scripts/slugify.sh" dated "<short description>"`, frontmatter `created:`
 plus `source:` naming this change, an H1 saying what-and-why in one line, at most ~3 lines of context.
-A slug already in the folder means bundling into that entry, not a near-duplicate beside it.
+A bare slug already in the folder (`undate` each name) means bundling into that entry, not a
+near-duplicate beside it.
 
 ### 6. Commit
 

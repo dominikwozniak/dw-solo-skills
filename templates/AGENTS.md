@@ -50,7 +50,7 @@ Match a task against this table **before** researching or coding, and read every
 
 ## Solo lane
 
-`.ai/work/<slug>/CHANGE.md` is the state of the change in progress — tracked, so it survives a
+`.ai/work/<date>-<slug>/CHANGE.md` is the state of the change in progress — tracked, so it survives a
 `/clear`. Where each step promotes its durable output is the Task Router above. The loop, `?` opt-in:
 `/dw-grill? → /dw-shape → /dw-start? → /dw-next ↺ → /dw-check? → /dw-land → /dw-ship`. Closing takes
 the last two, one decision each: `/dw-land` ends with an open PR, `/dw-ship` merges it.

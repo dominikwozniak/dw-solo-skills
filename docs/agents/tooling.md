@@ -169,7 +169,7 @@ either, and each script names the tokens it rejects.
   - **Prettier is not idempotent on a paragraph nested inside a task-list item**, so `--write` and
     `--check` disagree forever: the format check fails while `.husky/pre-commit` does not, because
     lint-staged writes and re-stages the very content the push gate then refuses. It bites in
-    `.ai/work/<slug>/CHANGE.md`, where writing findings under a `- [x] N.` box is the natural thing to
+    `.ai/work/<date>-<slug>/CHANGE.md`, where writing findings under a `- [x] N.` box is the natural thing to
     do. Keep task bodies to one paragraph; findings belong in `## Notes`.
   - **`prettier --check` never looks at prose width**, because `.prettierrc.json` sets
     `proseWrap: "preserve"` and `printWidth: 100` governs only code and reflowed tables. So the gate

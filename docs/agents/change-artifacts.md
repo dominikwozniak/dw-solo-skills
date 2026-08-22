@@ -5,7 +5,7 @@ Artifacts are real work documents, committed with the code — not scratch.
 - **No shared index file.** A central registry becomes a merge-conflict magnet once tracked. Discovery
   is by directory name + per-file frontmatter instead: the resume step globs the work dirs and matches
   the current branch, so two branches never fight over one file.
-- **One folder per change** (`.ai/work/<slug>/`) — parallel branches and worktrees don't collide.
+- **One folder per change** (`.ai/work/<date>-<slug>/`) — parallel branches and worktrees don't collide.
 - **One change is one goal**, and the count is one unless the pieces answer to **different** goals —
   asked at **shape time** rather than discovered mid-build. Not independent shippability, which is a
   good _task_'s property and splits work sharing a goal when borrowed one level up; `dw-shape` carries
@@ -17,16 +17,26 @@ Artifacts are real work documents, committed with the code — not scratch.
   unopened change from an open one, so anything touching `.ai/work/` must respect it. Who flips it and
   when belongs to `dw-start` and `dw-next`.
 - **The promotion commit lands on the feature branch**, so a squash-merge carries it to the default
-  branch — as it does the change folder's move to `.ai/archive/<slug>/`, which is the same commit. What
+  branch — as it does the change folder's move to `.ai/archive/<date>-<slug>/`, which is the same commit. What
   gets promoted where is `CONTEXT.md`'s **Promotion** entry.
 - **A work doc can come back from the dead, and the archive twin is how you tell.** Where the shaping
   commit was still local-only when the PR squashed, the rebase replays it on top of the squash and
-  re-creates `.ai/work/<slug>/CHANGE.md` at its shaping-time state, for a change that has landed. Both
-  halves of the pair then exist, and the `work/` one is the stale half — the check is whether
-  `.ai/archive/<slug>/` is already there, never the date or the `status:`. `dw-ship` sweeps it as its
-  last step; the procedure is there.
+  re-creates `.ai/work/<date>-<slug>/CHANGE.md` at its shaping-time state, for a change that has
+  landed. Both halves of the pair then exist, and the `work/` one is the stale half — the check is
+  whether the **bare slug** is already in `.ai/archive/`, never the date prefix, which the two lanes
+  stamp separately. The slug alone no longer proves it, though: a slug is reusable where an exact
+  folder name was not, so `unclaimed` + `shaping` against a twin reading `landed:` is the other half.
+  `dw-ship` sweeps it as its last step; the procedure is there.
 
 ## Gotchas
+
+- **`templates/*-README.md` and the live `.ai/*/README.md` are edited in parallel by hand, and nothing
+  pins them.** They are not byte-identical twins: each live one is the template plus a paragraph only
+  this repo needs (the cap, `rejected` covers cancelled), so `cmp` can't gate them and a template-only
+  edit leaves the live file — the one a reader of the folder actually opens, and the one `dw-land` is
+  pointed at for the backlog's two bars — describing the old behaviour. Landed that way twice in one
+  change here. Edit both halves in the same commit, then `diff` them and confirm the only difference is
+  the repo-specific paragraph.
 
 - **A script that splits a `CHANGE.md` at its first `## Notes` truncates the file**, because a task can
   quote that heading inline while describing where a finding goes. It ate a task and the whole

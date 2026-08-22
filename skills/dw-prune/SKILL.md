@@ -28,7 +28,7 @@ against taste.
 
 ### 2. One pass, four outcomes, every entry gets one out loud
 
-Oldest first, because age is the only signal the folder records:
+Oldest first — the date prefix sorts them, so the folder reads in that order already:
 
 - **Stale or already done** — the code moved on, another change closed it, the tool is gone. `git rm`
   it, reason in the commit message. A queue you never delete from is a record.

@@ -9,7 +9,7 @@ date: 2026-08-19
 ## Context
 
 This repo does not test its own CI validators. `validate-docs.sh` and `validate-manifests.sh` have no
-`scripts/tests/` file, stated as deliberate in `.ai/archive/skill-routing-evals/`: what they assert is
+`scripts/tests/` file, stated as deliberate in `.ai/archive/2026-08-02-skill-routing-evals/`: what they assert is
 visible by looking, and `scripts/tests/` is for the shipped runtime scripts and the guardrail hooks.
 `de-ratchet-the-solo-lane` went further and deleted `check-decisions.sh` outright — 489 lines of
 enforcement over 229 lines of records, in a repo with one reader who does not need a parser to notice a

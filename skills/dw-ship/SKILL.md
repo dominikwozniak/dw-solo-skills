@@ -93,14 +93,20 @@ already gone, which is what a repo with automatic head-branch deletion looks lik
 ### 5. Sync, then sweep what the squash brought back
 
 `git pull` on the default branch, so the main tree sees the squash. Then look for its residue:
-**a `.ai/work/<slug>/` whose twin already sits in `.ai/archive/<slug>/`.** A shaping commit still
+**a `.ai/work/` folder whose bare slug already sits in `.ai/archive/`** — `slugify.sh undate` both
+sides, since the two lanes carry different dates for the same change. A shaping commit still
 local-only when its PR squashed is **replayed on top of the squash** by the rebase, re-creating that
 change's `CHANGE.md` at its shaping-time state — `branch: unclaimed`, `status: shaping` — for a change
 that landed minutes ago, which `dw-next` then offers as fresh work. Twice cleaned up by hand before
 this step existed: `73e003a`, `9eef63d`.
 
-`git rm -r` every such folder — matched on the archive twin, never on the slug just shipped, since one
-shaping commit can carry several changes and the rest are live work. Commit on the default branch and
+**That state is half the match, not a description of it.** A bare slug is reusable where an exact
+folder name was not, so the slug alone no longer proves resurrection: a folder with a real `branch:`
+or `status: building` is live work that happens to share a name. Sweep only what is `unclaimed` and
+`shaping` **and** whose twin reads `landed:` or `rejected:`; on one half only, **stop and report**.
+
+`git rm -r` every folder that clears both — matched on the archive twin, never on the slug just
+shipped, since one shaping commit can carry several changes and the rest are live work. Commit on the default branch and
 push, confirming that push the way `dw-git` does. Nothing is lost: the landed copy is in the archive,
 and a sibling doc the same commit carried rides along untouched.
 

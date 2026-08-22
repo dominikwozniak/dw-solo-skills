@@ -14,11 +14,11 @@ archive move, and the PR that carries them. The report ends with a link; `dw-shi
 
 ## What it reads and writes
 
-Reads the diff against the default branch, and `.ai/work/<slug>/CHANGE.md` (found by branch, the same
+Reads the diff against the default branch, and `.ai/work/<date>-<slug>/CHANGE.md` (found by branch, the same
 way `dw-next` finds it — by land time the change is always claimed). Writes to four **tracked,
 durable** places — `docs/decisions/<NNNN>-<slug>.md`, `CONTEXT.md`, wherever this repo keeps its
 gotchas (below), and `.ai/backlog/` (one file per follow-up) — and then moves the `CHANGE.md` scaffolding to
-`.ai/archive/<slug>/`, flipping its `status:` to `landed`. `.ai/` is tracked in git; this is the one
+`.ai/archive/<date>-<slug>/`, flipping its `status:` to `landed`. `.ai/` is tracked in git; this is the one
 skill that takes something out of `work/` on purpose. Then it pushes the branch and opens the PR the
 way `dw-git` does — untracked output, and the last thing it reports.
 
@@ -88,7 +88,7 @@ Then **stop.** You've graded the work; the user decides what happens next.
 When the user approves — an unambiguous affirmative like "close" or "go", not a hedged "looks fine,
 I guess"; wait for a plain one — and only then promote, in this order: the **decisions** to
 `docs/decisions/`, the **vocabulary** to `CONTEXT.md`, the **gotchas** to wherever this repo keeps
-them, the **follow-ups** to `.ai/backlog/`, the **scaffolding** to `.ai/archive/<slug>/` — then one
+them, the **follow-ups** to `.ai/backlog/`, the **scaffolding** to `.ai/archive/<date>-<slug>/` — then one
 commit carrying all of it.
 
 `references/promote.md` is that procedure: the bar each target holds to, where a gotcha goes when the
@@ -136,12 +136,13 @@ is the default.
 - **`reject`** — the idea was turned down, or the work was abandoned half-built; one status covers
   both. Skip the verdict; there is no diff worth judging. Promote as usual (a rejection still leaves
   follow-ups worth keeping), then archive with `status: rejected`,
-  `rejected: YYYY-MM-DD` and `pr:` naming the **closed, unmerged** PR. The doc must carry a
+  `rejected: YYYY-MM-DD` — also the archive folder's date prefix — and `pr:` naming the **closed,
+  unmerged** PR. The doc must carry a
   `## Why rejected` — what was tried, what killed it, what would justify revisiting — and **writing it
   without a reason is refused**: an empty one costs a folder and teaches nothing, which is the whole
   failure this mode exists to prevent. An idea turned down before it was ever shaped has nothing to
-  move: write `.ai/archive/<slug>/CHANGE.md` directly, slug derived the way `dw-shape` does so a
-  re-shape collides with it. **Commit somewhere that survives**: nothing will be merged here, so a
+  move: write `.ai/archive/<rejected date>-<slug>/CHANGE.md` directly, the slug derived the way
+  `dw-shape` does so a re-shape still finds it by bare slug. **Commit somewhere that survives**: nothing will be merged here, so a
   record on the rejected branch dies with it — use a short branch off the default one and open a PR
   for that.
 

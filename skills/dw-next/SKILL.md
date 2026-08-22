@@ -14,7 +14,7 @@ laptop or a week away must change nothing about the answer.
 
 ## What it reads and writes
 
-Reads `.ai/work/<slug>/CHANGE.md` (written by `dw-shape`), plus a `HANDOFF.md` beside it when a
+Reads `.ai/work/<date>-<slug>/CHANGE.md` (written by `dw-shape`), plus a `HANDOFF.md` beside it when a
 session ended mid-task and left one. Writes code, ticks that file's checkboxes, appends to its Notes,
 clears a handoff it has consumed, and commits — plus a file in `.ai/backlog/` for an idea that
 belongs to a different change. `.ai/` is tracked in git. Also reads `CONTEXT.md` if the project has

@@ -36,7 +36,7 @@ baseline exists, appending is what makes the build fail.
   - **Ask first whether a mechanism would catch it.** A trap a hook, a validator, a self-test or a lint
     rule could refuse outright does not belong in prose — prose is for what no mechanism can enforce,
     and a rule enforced on trust is one a tired session skips. Where a mechanism would work the
-    promotion is one `.ai/backlog/<slug>.md` naming it and **no `## Gotchas` entry**; a trap written up
+    promotion is one `.ai/backlog/<date>-<slug>.md` naming it and **no `## Gotchas` entry**; a trap written up
     as prose is a trap you have decided to keep hitting. Where none fits, write the entry.
   - **Delete what this trap replaces.** A gotcha the change made untrue — the tool is gone, the hook
     is fixed, the flag now defaults the other way — comes out in this edit. Leaving it beside its
@@ -51,14 +51,14 @@ baseline exists, appending is what makes the build fail.
     move where you can see it. A silent increase is the one option that isn't there.
 
 - **Promote the follow-ups.** Every follow-up named in the verdict, plus anything deliberately left
-  out, becomes one file `.ai/backlog/<slug>.md` — slug from
-  `bash "${CLAUDE_PLUGIN_ROOT}/scripts/slugify.sh" slug "<the follow-up>"`, carrying
-  `source: <this change's slug>`. `.ai/backlog/README.md` states the entry shape and both bars —
+  out, becomes one file `.ai/backlog/<YYYY-MM-DD>-<slug>.md` — name from
+  `bash "${CLAUDE_PLUGIN_ROOT}/scripts/slugify.sh" dated "<the follow-up>"`, carrying
+  `source: <this change's bare slug>`. `.ai/backlog/README.md` states the entry shape and both bars —
   **will you ever?** and **should it have been done now?** — so they are not restated here; judge
   against those. Where the repo has no such README, create the dir and say so: `dw-init` owns the
   payload it comes from, and the bars are not reproducible from here. If
-  `.ai/backlog/<slug>.md` already exists, merge into it or re-slug with a more specific
-  description — **never overwrite it silently**; the existing entry is queued work. Zero is a normal
+  an entry already carries this bare slug (`undate` each name), merge into it or re-slug with a more
+  specific description — **never overwrite it silently**; the existing entry is queued work. Zero is a normal
   answer, and a folder already too long is what `dw-prune` is for — say its name rather than triaging
   the queue from here.
   **Then clear what this change closed**: an entry whose work the diff just did, or which the change
@@ -66,13 +66,16 @@ baseline exists, appending is what makes the build fail.
   gets rewritten to what is left. A queue holding finished work reads as a backlog you have stopped
   believing.
 - **Archive the scaffolding.** `git rm` a leftover `HANDOFF.md` first — it described the middle of a
-  task, and post-merge it is noise — then `git mv .ai/work/<slug>/ .ai/archive/<slug>/` and, in the
-  moved `CHANGE.md`, flip `status:` to `landed` with `landed: YYYY-MM-DD` plus `pr: "#<n>"` where the
+  task, and post-merge it is noise — then `git mv .ai/work/<shaped date>-<slug>/`
+  `.ai/archive/<landed date>-<slug>/`: the destination takes **today's** date, not the one the work
+  folder carried, so the name records when the change landed — only the bare slug travels. In the
+  moved `CHANGE.md`, flip `status:` to `landed` with `landed: YYYY-MM-DD`, the same date as the
+  folder, plus `pr: "#<n>"` where the
   branch already has one (`gh pr view --json number`) — otherwise step 4 fills it, since on the usual
   path the PR does not exist yet. `.ai/archive/README.md` states the convention; create it from that
-  one line if the repo predates the scaffold. If `.ai/archive/<slug>/` already exists, stop and pick a
-  suffixed destination (`<slug>-2`): `git mv` into an existing directory silently nests the folder
-  inside it. If something in the doc still feels too valuable to bury, that is the signal it belonged
+  one line if the repo predates the scaffold. If that destination already exists — same day, same slug —
+  stop and pick a suffixed one (`<date>-<slug>-2`): `git mv` into an existing directory silently nests
+  the folder inside it. If something in the doc still feels too valuable to bury, that is the signal it belonged
   in a record, a gotcha or the backlog — promote it first, then archive.
 - **Commit** the promotion and the archive move together, the way `dw-git` does — **on the branch you
   are on.** In a worktree that means the feature branch: the promotion rides the PR, the squash-merge

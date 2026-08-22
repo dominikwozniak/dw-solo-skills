@@ -39,6 +39,17 @@ rid() {
   fi
 }
 
+# dtd <name> <expected> <desc> — dated with a pinned $SLUG_DATE for determinism.
+dtd() {
+  name="$1"; want="$2"; shift 2
+  got=$(SLUG_DATE=2026-06-20 "$SLUGIFY" dated "$@" 2>/dev/null); rc=$?
+  if [ "$rc" -eq 0 ] && [ "$got" = "$want" ]; then
+    note_pass "$name"
+  else
+    note_fail "$name" "want '$want' got '$got' (exit $rc)"
+  fi
+}
+
 # fails <name> <slugify args...> — must exit non-zero.
 fails() {
   name="$1"; shift
@@ -66,9 +77,28 @@ rid "run-id-no-ticket" "20260620-add-foo"         ""        "add foo"
 rid "run-id-no-desc"   "20260620-abc-123"         "ABC-123" ""
 rid "run-id-date-only" "20260620"                 ""        ""
 
+echo "dated (SLUG_DATE=2026-06-20):"
+dtd "dated-basic"      "2026-06-20-add-foo"  "add foo"
+dtd "dated-upper"      "2026-06-20-abc-123"  "ABC-123"
+dtd "dated-punct"      "2026-06-20-foo-bar"  "Foo/Bar"
+dtd "dated-empty-slug" "2026-06-20"          "..."
+
+# undate strips, never slugifies: the input is a name off disk, so a name that
+# already broke the rule must come back unchanged rather than be rewritten.
+echo "undate:"
+eq "undate-strips"     "add-foo"            undate "2026-06-20-add-foo"
+eq "undate-idempotent" "add-foo"            undate "add-foo"
+eq "undate-run-id"     "20260620-add-foo"   undate "20260620-add-foo"
+eq "undate-date-only"  "2026-06-20"         undate "2026-06-20"
+eq "undate-inner-date" "add-2026-06-20-foo" undate "add-2026-06-20-foo"
+eq "undate-uppercase"  "Add-Foo"            undate "2026-06-20-Add-Foo"
+eq "undate-empty"      ""                   undate ""
+
 echo "errors (expect non-zero exit):"
 fails "slug-no-arg"    slug
 fails "run-id-too-few" run-id "ABC-123"
+fails "dated-no-arg"   dated
+fails "undate-no-arg"  undate
 fails "unknown-subcmd" bogus
 fails "no-subcmd"
 

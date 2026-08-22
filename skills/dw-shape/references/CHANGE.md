@@ -1,5 +1,5 @@
 ---
-change: slug-of-this-change
+change: slug-of-this-change # the bare slug, no date — this is the identity across the lanes
 branch: FILL — `unclaimed` when shaping on the default branch, else `git rev-parse --abbrev-ref HEAD` verbatim (never HEAD, never this placeholder)
 created: YYYY-MM-DD
 status: shaping # shaping | building | landed

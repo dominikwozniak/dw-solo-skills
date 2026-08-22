@@ -33,7 +33,7 @@ resurrection sweep and `dw-shape`'s duplicate-work guard both keep working acros
 ## Tasks
 
 - [x] 1. `slugify.sh` gains `dated` and `undate`, with pinned `SLUG_DATE` cases in its self-test.
-- [ ] 2. `dw-shape` mints dated slugs for work and backlog, and runs its taken-slug guard on bare slugs.
+- [x] 2. `dw-shape` mints dated slugs for work and backlog, and runs its taken-slug guard on bare slugs.
 - [ ] 3. `dw-land` re-stamps the archive destination to `landed:`/`rejected:`; its backlog writes are dated.
 - [ ] 4. `dw-ship`'s resurrection sweep pairs work to archive on the bare slug — the destructive one.
 - [ ] 5. `dw-start` and `dw-prune` sort by name; prune's "age is the only signal" line stops being wrong.
@@ -56,6 +56,9 @@ resurrection sweep and `dw-shape`'s duplicate-work guard both keep working acros
 - `docs/agents/change-artifacts.md:25` — "never the date or the `status:`"; still true, now the bare slug.
 
 ## Notes
+
+- The skill-corpus ratchet moves with each skill edit here — the dated-name/bare-slug
+  distinction is a new concept the hot-loop skills have to carry, so it is recorded, not trimmed away.
 
 - `undate` strips only the `%F` form — eating 8 leading digits could truncate a real slug,
   and the `run-id` prefix belongs to a lane these three don't share.

@@ -30,6 +30,14 @@ Artifacts are real work documents, committed with the code — not scratch.
 
 ## Gotchas
 
+- **`templates/*-README.md` and the live `.ai/*/README.md` are edited in parallel by hand, and nothing
+  pins them.** They are not byte-identical twins: each live one is the template plus a paragraph only
+  this repo needs (the cap, `rejected` covers cancelled), so `cmp` can't gate them and a template-only
+  edit leaves the live file — the one a reader of the folder actually opens, and the one `dw-land` is
+  pointed at for the backlog's two bars — describing the old behaviour. Landed that way twice in one
+  change here. Edit both halves in the same commit, then `diff` them and confirm the only difference is
+  the repo-specific paragraph.
+
 - **A script that splits a `CHANGE.md` at its first `## Notes` truncates the file**, because a task can
   quote that heading inline while describing where a finding goes. It ate a task and the whole
   `## Anchors` section here, and two commits shipped short before anyone noticed — the file still

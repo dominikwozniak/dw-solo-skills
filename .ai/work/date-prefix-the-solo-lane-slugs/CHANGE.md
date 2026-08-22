@@ -1,6 +1,6 @@
 ---
 change: date-prefix-the-solo-lane-slugs
-branch: unclaimed
+branch: date-prefix-the-solo-lane-slugs
 created: 2026-08-22
 status: shaping # shaping | building | landed
 ---

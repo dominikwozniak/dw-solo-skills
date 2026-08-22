@@ -35,7 +35,7 @@ resurrection sweep and `dw-shape`'s duplicate-work guard both keep working acros
 - [x] 1. `slugify.sh` gains `dated` and `undate`, with pinned `SLUG_DATE` cases in its self-test.
 - [x] 2. `dw-shape` mints dated slugs for work and backlog, and runs its taken-slug guard on bare slugs.
 - [x] 3. `dw-land` re-stamps the archive destination to `landed:`/`rejected:`; its backlog writes are dated.
-- [ ] 4. `dw-ship`'s resurrection sweep pairs work to archive on the bare slug — the destructive one.
+- [x] 4. `dw-ship`'s resurrection sweep pairs work to archive on the bare slug — the destructive one.
 - [ ] 5. `dw-start` and `dw-prune` sort by name; prune's "age is the only signal" line stops being wrong.
 - [ ] 6. Templates and docs say "one slug, re-dated at each lane"; bump the plugins, refresh the ratchet.
 - [ ] 7. Rename this repo's 43 archive dirs, the loose `design-rationale.md` and 7 backlog files; fix the
@@ -56,6 +56,9 @@ resurrection sweep and `dw-shape`'s duplicate-work guard both keep working acros
 - `docs/agents/change-artifacts.md:25` — "never the date or the `status:`"; still true, now the bare slug.
 
 ## Notes
+
+- A bare slug is reusable where an exact folder name was not, so `dw-ship`'s sweep needed a second
+  condition (`unclaimed` + `shaping`, twin `landed:`/`rejected:`) or it could `git rm -r` live work.
 
 - The skill-corpus ratchet moves with each skill edit here — the dated-name/bare-slug
   distinction is a new concept the hot-loop skills have to carry, so it is recorded, not trimmed away.

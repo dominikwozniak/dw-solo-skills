@@ -17,7 +17,7 @@ the backlog.
 
 ## Output location
 
-`.ai/work/<slug>/HANDOFF.md`, beside the `CHANGE.md` it describes. `.ai/` is tracked in git.
+`.ai/work/<date>-<slug>/HANDOFF.md`, beside the `CHANGE.md` it describes. `.ai/` is tracked in git.
 
 Find the change by branch, the same way the rest of the loop does:
 

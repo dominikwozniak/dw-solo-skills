@@ -81,7 +81,7 @@ rows — read all of them. Explore on your own only what no row covers.
 
 ## Solo lane
 
-`.ai/work/<slug>/CHANGE.md` is the state of the change in progress — tracked, so it survives a
+`.ai/work/<date>-<slug>/CHANGE.md` is the state of the change in progress — tracked, so it survives a
 `/clear`. Where each step promotes its durable output is the Task Router above.
 
 The four below are **grep-read by the hooks**, so they live here and nowhere else: `lint-on-edit`

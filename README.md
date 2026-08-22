@@ -70,7 +70,7 @@ Parallel changes: shape several on the default branch, then one worktree + sessi
 | Skill                                      | Task                                                           | What you get                                                             |
 | ------------------------------------------ | -------------------------------------------------------------- | ------------------------------------------------------------------------ |
 | [`dw-grill`](skills/dw-grill/SKILL.md)     | Interview a fuzzy idea into decisions — max five questions     | shared understanding (writes nothing)                                    |
-| [`dw-shape`](skills/dw-shape/SKILL.md)     | Synthesize it into one goal + decisions + task checklist       | `.ai/work/<slug>/CHANGE.md` · backlog                                    |
+| [`dw-shape`](skills/dw-shape/SKILL.md)     | Synthesize it into one goal + decisions + task checklist       | `.ai/work/<date>-<slug>/CHANGE.md` · backlog                             |
 | [`dw-start`](skills/dw-start/SKILL.md) `⭑` | Open a shaped change: worktree + branch + claim, then build    | `.claude/worktrees/<slug>` on branch `<slug>`                            |
 | [`dw-next`](skills/dw-next/SKILL.md)       | Build step _and_ resume point (`status` reports and stops)     | code + ticked box + commit                                               |
 | [`dw-check`](skills/dw-check/SKILL.md)     | Fast optional QA gate — delegates by default, else self-review | findings at `file:line`, fixed in-session                                |
@@ -86,11 +86,11 @@ Parallel changes: shape several on the default branch, then one worktree + sessi
 **Off-loop** — the `dw-solo-extras` plugin; reached for beside the loop, not on the way from shape to
 ship.
 
-| Skill                                          | Task                                                           | What you get                    |
-| ---------------------------------------------- | -------------------------------------------------------------- | ------------------------------- |
-| [`dw-handoff`](skills/dw-handoff/SKILL.md) `⭑` | Compact the session mid-task — where you are, what's ruled out | `.ai/work/<slug>/HANDOFF.md`    |
-| [`dw-prune`](skills/dw-prune/SKILL.md) `⭑`     | Walk the backlog — drop, do, bundle, or leave each entry       | a shorter queue, one commit     |
-| [`dw-unslop`](skills/dw-unslop/SKILL.md) `⭑`   | Cut the AI tells from a PR or commit body, keep the voice      | the rewritten text, rules named |
+| Skill                                          | Task                                                           | What you get                        |
+| ---------------------------------------------- | -------------------------------------------------------------- | ----------------------------------- |
+| [`dw-handoff`](skills/dw-handoff/SKILL.md) `⭑` | Compact the session mid-task — where you are, what's ruled out | `.ai/work/<date>-<slug>/HANDOFF.md` |
+| [`dw-prune`](skills/dw-prune/SKILL.md) `⭑`     | Walk the backlog — drop, do, bundle, or leave each entry       | a shorter queue, one commit         |
+| [`dw-unslop`](skills/dw-unslop/SKILL.md) `⭑`   | Cut the AI tells from a PR or commit body, keep the voice      | the rewritten text, rules named     |
 
 **Setup** — the `dw-solo-setup` plugin; run once per repo.
 

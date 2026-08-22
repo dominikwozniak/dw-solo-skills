@@ -37,7 +37,7 @@ resurrection sweep and `dw-shape`'s duplicate-work guard both keep working acros
 - [x] 3. `dw-land` re-stamps the archive destination to `landed:`/`rejected:`; its backlog writes are dated.
 - [x] 4. `dw-ship`'s resurrection sweep pairs work to archive on the bare slug — the destructive one.
 - [x] 5. `dw-start` and `dw-prune` sort by name; prune's "age is the only signal" line stops being wrong.
-- [ ] 6. Templates and docs say "one slug, re-dated at each lane"; bump the plugins, refresh the ratchet.
+- [x] 6. Templates and docs say "one slug, re-dated at each lane"; bump the plugins, refresh the ratchet.
 - [ ] 7. Rename this repo's 43 archive dirs, the loose `design-rationale.md` and 7 backlog files; fix the
       `AGENTS.md` archive pointer.
 - [ ] 8. Rename grateful-me-app-v2's 20 entries; fix its 3 code/doc pointers and its own lane prose.
@@ -56,6 +56,11 @@ resurrection sweep and `dw-shape`'s duplicate-work guard both keep working acros
 - `docs/agents/change-artifacts.md:25` — "never the date or the `status:`"; still true, now the bare slug.
 
 ## Notes
+
+- `docs/decisions/0004` states "one slug travels backlog → work → archive" and is now partly
+  superseded — records are never rewritten, so this change owes a new one at land time.
+- `templates/work-README.md`'s layout block is where the name shape is stated once; every other
+  `<date>-<slug>` in the docs is a placeholder swap that added no words to the corpus.
 
 - Branches and worktrees stay undated — only the three lanes carry a date, and `worktree.sh`
   has no `.ai/` coupling at all, so `dw-start` says "the bare slug" where the ambiguity is new.

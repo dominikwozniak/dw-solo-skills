@@ -7,27 +7,34 @@ active change is and where it stands.
 ## Layout
 
 ```
-backlog/<slug>.md       follow-ups not being done now   (dw-land + dw-shape park, dw-shape takes)
-                        entry shape and the two bars: backlog/README.md
-work/<slug>/CHANGE.md   the live state of ONE change    (dw-shape writes, dw-next ticks)
-                        goal · decisions taken · task checklist · anchors
-                        branch: unclaimed until dw-start / dw-next claims it into a branch
-work/<slug>/HANDOFF.md  the middle of a task, saved     (dw-handoff writes, dw-next clears)
-                        optional — appears only with the dw-solo-extras plugin installed
-archive/<slug>/         landed changes, kept as history (dw-land moves the doc at close)
+backlog/<date>-<slug>.md      follow-ups not being done now   (dw-land + dw-shape park, dw-shape takes)
+                              entry shape and the two bars: backlog/README.md
+work/<date>-<slug>/CHANGE.md  the live state of ONE change    (dw-shape writes, dw-next ticks)
+                              goal · decisions taken · task checklist · anchors
+                              branch: unclaimed until dw-start / dw-next claims it
+work/<date>-<slug>/HANDOFF.md the middle of a task, saved     (dw-handoff writes, dw-next clears)
+                              optional — only with the dw-solo-extras plugin installed
+archive/<date>-<slug>/        landed changes, kept as history (dw-land moves the doc at close)
 ```
 
-One slug travels the three states: an idea starts as `backlog/<slug>.md`, `dw-shape` moves
-it in as `work/<slug>/CHANGE.md` (`status: shaping → building`), and `dw-land` closes it
-into `archive/<slug>/` (`status: landed`, stamped `landed:` + `pr:`).
+`<date>` is `YYYY-MM-DD` from `slugify.sh dated`, and **each lane stamps its own**: the day
+the entry was noted, the day the change was shaped, the day it landed. That is what makes a
+plain listing read as a timeline.
+
+The **bare slug** is what travels the three states: an idea starts as `backlog/<date>-<slug>.md`,
+`dw-shape` moves it in as `work/<date>-<slug>/CHANGE.md` (`status: shaping → building`), and
+`dw-land` closes it into `archive/<date>-<slug>/` (`status: landed`, stamped `landed:` + `pr:`)
+under a fresh date. Only the slug is comparable across the lanes — which is why `CHANGE.md`'s
+`change:` field holds it bare, and why anything matching one lane against another strips the
+prefix with `slugify.sh undate` rather than comparing folder names.
 
 ## The lifetimes to know
 
-- **`work/<slug>/CHANGE.md` is persistent, then archived.** Tracked, so a week-long
+- **`work/<date>-<slug>/CHANGE.md` is persistent, then archived.** Tracked, so a week-long
   gap and a `/clear` change nothing — and **moved to `archive/` by `dw-land`** at
   merge, once anything durable has been promoted out. A squash merge would otherwise
   erase its worked state from history entirely.
-- **`work/<slug>/HANDOFF.md` is short-lived.** It describes the middle of one task, so
+- **`work/<date>-<slug>/HANDOFF.md` is short-lived.** It describes the middle of one task, so
   `dw-next` deletes it as soon as that task is ticked — and `dw-land` removes a
   leftover one before archiving. Only ever one at a time; a new handoff overwrites
   the old.
@@ -44,8 +51,8 @@ into `archive/<slug>/` (`status: landed`, stamped `landed:` + `pr:`).
 - `## Gotchas` — traps that cost real time. An existing root section stays the home
   where the repo already keeps one; otherwise the matching `docs/agents/<topic>.md`,
   beside the topic that sprang the trap rather than in the always-loaded root
-- `.ai/backlog/<slug>.md` — ordinary follow-ups that clear none of the above bars;
-  findings by pointer to `.ai/archive/<slug>`, never inlined
+- `.ai/backlog/<date>-<slug>.md` — ordinary follow-ups that clear none of the above bars;
+  findings by pointer to `.ai/archive/<date>-<slug>`, never inlined
 
 ## Rules
 

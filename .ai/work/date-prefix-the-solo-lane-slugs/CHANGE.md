@@ -36,7 +36,7 @@ resurrection sweep and `dw-shape`'s duplicate-work guard both keep working acros
 - [x] 2. `dw-shape` mints dated slugs for work and backlog, and runs its taken-slug guard on bare slugs.
 - [x] 3. `dw-land` re-stamps the archive destination to `landed:`/`rejected:`; its backlog writes are dated.
 - [x] 4. `dw-ship`'s resurrection sweep pairs work to archive on the bare slug — the destructive one.
-- [ ] 5. `dw-start` and `dw-prune` sort by name; prune's "age is the only signal" line stops being wrong.
+- [x] 5. `dw-start` and `dw-prune` sort by name; prune's "age is the only signal" line stops being wrong.
 - [ ] 6. Templates and docs say "one slug, re-dated at each lane"; bump the plugins, refresh the ratchet.
 - [ ] 7. Rename this repo's 43 archive dirs, the loose `design-rationale.md` and 7 backlog files; fix the
       `AGENTS.md` archive pointer.
@@ -56,6 +56,9 @@ resurrection sweep and `dw-shape`'s duplicate-work guard both keep working acros
 - `docs/agents/change-artifacts.md:25` — "never the date or the `status:`"; still true, now the bare slug.
 
 ## Notes
+
+- Branches and worktrees stay undated — only the three lanes carry a date, and `worktree.sh`
+  has no `.ai/` coupling at all, so `dw-start` says "the bare slug" where the ambiguity is new.
 
 - A bare slug is reusable where an exact folder name was not, so `dw-ship`'s sweep needed a second
   condition (`unclaimed` + `shaping`, twin `landed:`/`rejected:`) or it could `git rm -r` live work.

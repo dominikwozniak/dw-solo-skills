@@ -25,13 +25,14 @@ to every other session, which is the race this protocol closes. Everything after
 
 ### 1. Pick the change
 
-- `$ARGUMENTS` names a slug → that change — but if its `branch:` is no longer `unclaimed`, say
-  which branch owns it and **stop**: stealing a change is the user's edit to make, never yours.
-- Bare → list every `CHANGE.md` with `branch: unclaimed`, newest first, and ask.
+- `$ARGUMENTS` names a slug → that change, matched on the bare slug so the date prefix need not be
+  typed — but if its `branch:` is no longer `unclaimed`, say which branch owns it and **stop**: stealing a change is the user's edit to make, never yours.
+- Bare → list every `CHANGE.md` with `branch: unclaimed`, newest first — the folder names sort that
+  way, so reverse them — and ask.
 - A description with no shaped change behind it → shape first: offer `dw-shape` here in the main
   tree, then come back.
 
-Then confirm the doc is committed: `git status --porcelain .ai/work/<slug>/`. A worktree checks out
+Then confirm the doc is committed: `git status --porcelain .ai/work/<YYYY-MM-DD>-<slug>/`. A worktree checks out
 committed state only — if `dw-shape`'s commit step was skipped, do it now, the way `dw-git` does.
 
 ### 2. Create and enter
@@ -40,7 +41,8 @@ committed state only — if `dw-shape`'s commit step was skipped, do it now, the
 bash "${CLAUDE_PLUGIN_ROOT}/scripts/worktree.sh" create <slug>
 ```
 
-Run it from the main tree while it sits on the default branch. The script refuses every start it can
+**The bare slug, no date** — a branch and a worktree are not lane entries, and only the lanes carry
+dates. Run it from the main tree while it sits on the default branch. The script refuses every start it can
 see — a branch named `<slug>` or `worktree-<slug>`, locally **or on origin**, and a worktree already
 at `.claude/worktrees/<slug>` — so a refusal means report and stop, never retry. A claimed
 `branch:` field is the one start it cannot see, which is why step 1 checks it. On stdout it prints

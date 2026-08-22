@@ -4,7 +4,7 @@ branch: date-prefix-the-solo-lane-slugs
 created: 2026-08-22
 status: landed
 landed: 2026-08-22
-pr: "#TBD"
+pr: "#44"
 ---
 
 # Change — the three `.ai/` lanes carry their date in the directory name

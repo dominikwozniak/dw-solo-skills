@@ -41,6 +41,7 @@ resurrection sweep and `dw-shape`'s duplicate-work guard both keep working acros
 - [x] 7. Rename this repo's 43 archive dirs, the loose `design-rationale.md` and 7 backlog files; fix the
       `AGENTS.md` archive pointer.
 - [x] 8. Rename grateful-me-app-v2's 20 entries; fix its 3 code/doc pointers and its own lane prose.
+- [x] 10. Seed `.ai/README.md`; fix the two live lane READMEs task 6 left stale.
 - [x] 9. Park grateful-me-app-v2's five verbatim-template `status:` comments in its own `.ai/backlog/`.
 
 ## Anchors
@@ -56,6 +57,13 @@ resurrection sweep and `dw-shape`'s duplicate-work guard both keep working acros
 - `docs/agents/change-artifacts.md:25` — "never the date or the `status:`"; still true, now the bare slug.
 
 ## Notes
+
+- Task 6 edited `templates/*-README.md` and left the **live** `.ai/{archive,backlog}/README.md`
+  stale — those are the contracts a reader of the folder opens. The pairs are not byte-identical:
+  each live one is the template plus a repo-specific paragraph, so they are edited in parallel by hand.
+- `.ai/README.md` is a verbatim copy of `templates/work-README.md`, as `dw-init` prescribes — a third
+  unpinned twin, which makes `2026-08-14-nothing-tests-a-templates-readme-against-its-live-ai-twin`
+  more worth doing, not less.
 
 - grateful-me-app-v2's lanes are dated before it installs dw-solo 0.5.0, so a `dw-shape` run there
   on the cached 0.4.x plugin still mints an undated folder until this merges and it updates.

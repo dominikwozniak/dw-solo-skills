@@ -25,8 +25,8 @@ Artifacts are real work documents, committed with the code — not scratch.
   landed. Both halves of the pair then exist, and the `work/` one is the stale half — the check is
   whether the **bare slug** is already in `.ai/archive/`, never the date prefix, which the two lanes
   stamp separately. The slug alone no longer proves it, though: a slug is reusable where an exact
-  folder name was not, so `unclaimed` + `shaping` against a twin reading `landed:` is the other half. `dw-ship` sweeps it as its
-  last step; the procedure is there.
+  folder name was not, so `unclaimed` + `shaping` against a twin reading `landed:` is the other half.
+  `dw-ship` sweeps it as its last step; the procedure is there.
 
 ## Gotchas
 

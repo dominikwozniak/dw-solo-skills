@@ -5,8 +5,14 @@ the second when shaping decides an item is out of the change. `dw-shape` also ta
 a new change (`git mv` → `.ai/work/<date>-<slug>/CHANGE.md`) — the **bare slug** travels backlog →
 work → archive, while each lane stamps its own date.
 
-Shape of an entry, `<date>-<slug>.md` from `slugify.sh dated`: frontmatter `created: YYYY-MM-DD`, the
-same date as the prefix (optional `source:` naming the change that parked it), an H1 saying
+**An entry is the expensive tier, and most follow-ups never reach it.** The default resting place
+for a leftover is a line in the land report and the PR body — no file. A file here is only for work
+that genuinely exceeds the session it was found in, and it pays for that: frontmatter
+`created: YYYY-MM-DD` (the same date as the prefix), `why-not-now:` naming what blocks it, and
+`effort:` with an honest size (optional `source:` naming the change that parked it). A blocker you
+cannot name means the item belonged in the report — or done on the spot.
+
+Shape of an entry, `<date>-<slug>.md` from `slugify.sh dated`: the frontmatter above, an H1 saying
 what-and-why in one line, at most ~3 lines of context. Findings go by pointer to
 `.ai/archive/<date>-<slug>` — never inlined. No status, no priority, and
 nothing validates these files, deliberately.

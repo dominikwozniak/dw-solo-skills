@@ -37,6 +37,14 @@ change.
 
 - `path/to/file.ext:42` — [what it is and why it matters here]
 
+## References
+
+Every resource the conversation pointed at — an inspiration folder, a URL, a doc outside this repo —
+one line each. `dw-next` reads these before building and reports which it read. Delete the section
+when nothing was pointed at.
+
+- `path-or-url` — [why it matters to this change]
+
 ## Notes
 
 Appended while building — surprises, dead ends, things the next session needs, **one line each**; the

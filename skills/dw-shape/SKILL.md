@@ -60,6 +60,10 @@ rather than a deliverable**: `dw-land` archives it at merge, after promoting any
   also candidates, but only offer them; never widen the change on your own.
 - The **real sibling patterns** this change should follow. Confirm each with Read or grep; these
   become the anchors.
+- The **resources the conversation pointed at** — an inspiration folder, a URL, a design doc, a
+  sibling repo. Every one of them becomes a `## References` line (path or URL, plus why it matters);
+  a pointer that stays only in the conversation is gone by the first `dw-next`, and the build either
+  rediscovers it or runs without it. Nothing pointed at → no section.
 
 ### 2. Size it, match the depth, then count the scopes
 
@@ -76,7 +80,7 @@ Judge the change honestly, then write accordingly — this is the step that keep
 
 **Every size writes short.** Depth chooses which sections exist, never how much prose they get: a
 `## Goal` is **~5 lines at most**, a decision is **one line — the call, then why**, a task is one line,
-an anchor one line. This file is read on every `dw-next` invocation, so a paragraph where a line would
+an anchor one line, a reference one line. This file is read on every `dw-next` invocation, so a paragraph where a line would
 do is a cost paid on every resume. Detail that argues for the shape belongs in the commit message; the
 diff holds what changed.
 

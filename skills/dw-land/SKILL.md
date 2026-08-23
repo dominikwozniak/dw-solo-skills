@@ -61,9 +61,13 @@ never written up as settled. Where the repo records how to drive itself — a `V
 keeps — the bottom two rungs cost a read instead of a re-derivation; where it records nothing, that
 ceiling is itself part of the answer.
 
-Close with one line — **ready to merge**, **ready with follow-ups** (name them; each becomes a
-backlog file in phase 3, and an unnamed follow-up vanishes into the archive unread), or **not
-ready** and why.
+Close with one line — **ready to merge**, **ready with follow-ups**, or **not ready** and why.
+Name every follow-up and sort each into one of three fates, cheapest first: **done now** — it
+fits this session, so phase 3 starts by doing it, not filing it; **report-open** — worth a line
+in the report and the PR body, no file; **backlog** — it genuinely exceeds the session, and
+phase 3 writes it in the full format `references/promote.md` states. An unnamed follow-up
+vanishes into the archive unread, and a session-sized one written up instead of done is the
+queue growth this lane exists to refuse.
 
 **The completion gate.** Read the `## Goal` as a list of observable results and check each against
 the **diff, not the checklist** — every box can be ticked with a result still unmet. An undelivered

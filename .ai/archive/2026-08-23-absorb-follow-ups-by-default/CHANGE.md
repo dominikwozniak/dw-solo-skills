@@ -4,6 +4,7 @@ branch: absorb-follow-ups-by-default
 created: 2026-08-23
 status: landed
 landed: 2026-08-23
+pr: "#45"
 ---
 
 # Change — the loop absorbs session-sized follow-ups instead of manufacturing backlog and doc churn

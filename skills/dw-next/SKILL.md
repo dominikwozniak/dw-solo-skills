@@ -16,8 +16,9 @@ laptop or a week away must change nothing about the answer.
 
 Reads `.ai/work/<date>-<slug>/CHANGE.md` (written by `dw-shape`), plus a `HANDOFF.md` beside it when a
 session ended mid-task and left one. Writes code, ticks that file's checkboxes, appends to its Notes,
-clears a handoff it has consumed, and commits — plus a file in `.ai/backlog/` for an idea that
-belongs to a different change. `.ai/` is tracked in git. Also reads `CONTEXT.md` if the project has
+clears a handoff it has consumed, and commits — plus, rarely, a file in `.ai/backlog/` for work that
+genuinely exceeds the session (step 3's absorb rule makes doing it now the default). `.ai/` is
+tracked in git. Also reads `CONTEXT.md` if the project has
 one, for the terms the code being written should be named in.
 
 Find the active change by branch, not by guessing:
@@ -61,11 +62,20 @@ your control, take the later one and say why.
 One task at a time, however many the mode allows.
 
 - **Narrow and complete.** A vertical slice through whatever layers it needs, not a whole layer.
-  Resist widening scope mid-task; a second task is free, a sprawling commit is not. An idea that
-  belongs to a **different change** is one small file in `.ai/backlog/` (an H1 plus `created:`)
-  against the two bars `dw-land` states — but **never park a gap in this change's `## Goal`**: that is
+  Resist widening scope mid-task; a second task is free, a sprawling commit is not.
+- **Absorb what you find; deferring it is the failure mode.** A discovery that is reversible,
+  related, and session-sized — a wrong string, a missing guard, a lint rule this bug just earned —
+  is **fixed now, as its own commit**, never queued for a later session to rediscover. Only work
+  that genuinely exceeds the session or belongs to a different goal defers, and then through
+  `dw-land`'s two tiers: a one-line open item in Notes for the land report to carry, or — above
+  that bar only — a `.ai/backlog/` file paying the full format `dw-land` states (`why-not-now:` +
+  `effort:`). But **never park a gap in this change's `## Goal`**: that is
   abandonment wearing a queue entry's clothes, the completion gate refuses to close over it, and
   shrinking the goal is never your call alone. It is a new task here, or a `## Goal` the user amends.
+- **No drive-by edits.** An absorbed fix is a commit with your name on the reason; a hunk smuggled
+  into the current task's commit — an opportunistic doc touch-up, a backlog rewrite, a copy tweak
+  "while you're in there" — is scope leak the diff reader pays for. Outside the task and the
+  absorbed-fix commits, touch nothing.
 - **Test the way the project does.** Read the test command from `CLAUDE.md` / `CLAUDE.local.md` /
   `AGENTS.md`, else the manifests. Where the project has a real test suite and the task has a
   meaningful assertion, write the failing test first and make it pass — where it genuinely doesn't

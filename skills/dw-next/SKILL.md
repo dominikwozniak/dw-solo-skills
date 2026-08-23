@@ -40,7 +40,11 @@ grep -l "^branch: $(git rev-parse --abbrev-ref HEAD)$" .ai/work/*/CHANGE.md 2>/d
 ### 1. Report, always
 
 Whatever the mode, start by stating from the file: the **goal** in one line, which tasks are done,
-what the **next unchecked task** is, and anything in Notes that changes how to approach it.
+what the **next unchecked task** is, and anything in Notes that changes how to approach it. Where
+the file has a `## References` section, list its entries and say which you have read — read the
+ones the next task leans on **before** building, and name any you are skipping and why. Those
+pointers were given at grill or shape time; a session that ignores them rebuilds that knowledge
+from nothing or, worse, without it.
 
 When a `HANDOFF.md` sits beside it, read that one **first** and lead the report with it: a previous
 session stopped in the middle of a task, and the approaches it ruled out are exactly the work you

@@ -2,7 +2,7 @@
 change: absorb-follow-ups-by-default
 branch: absorb-follow-ups-by-default
 created: 2026-08-23
-status: shaping
+status: building
 ---
 
 # Change — the loop absorbs session-sized follow-ups instead of manufacturing backlog and doc churn
@@ -33,22 +33,22 @@ proves it read them.
 
 ## Tasks
 
-- [ ] 1. `skills/dw-next/SKILL.md` — step 3 absorb rule (reversible + related + session-sized →
+- [x] 1. `skills/dw-next/SKILL.md` — step 3 absorb rule (reversible + related + session-sized →
       fix now, own commit), no-drive-by rule, and deferral routed through the two tiers.
-- [ ] 2. `skills/dw-next/SKILL.md` — step 1 report lists the `## References` entries and which
+- [x] 2. `skills/dw-next/SKILL.md` — step 1 report lists the `## References` entries and which
       were read before building.
-- [ ] 3. `skills/dw-land/SKILL.md` — the verdict's "ready with follow-ups" splits report-open
+- [x] 3. `skills/dw-land/SKILL.md` — the verdict's "ready with follow-ups" splits report-open
       items (report + PR body only) from backlog candidates.
-- [ ] 4. `skills/dw-land/references/promote.md` — invert the follow-up default: test
+- [x] 4. `skills/dw-land/references/promote.md` — invert the follow-up default: test
       "should it have been done now?" first, do it before closing when it passes; a file only for
       work exceeding the session, with `why-not-now:` + `effort:`; zero files stays normal.
-- [ ] 5. `skills/dw-land/references/promote.md` — raise the decisions/CONTEXT/gotchas bar: only
+- [x] 5. `skills/dw-land/references/promote.md` — raise the decisions/CONTEXT/gotchas bar: only
       what the verdict named, three-part ADR test, most lands promote nothing.
-- [ ] 6. `skills/dw-shape/SKILL.md` + `references/CHANGE.md` — add `## References` (one line:
+- [x] 6. `skills/dw-shape/SKILL.md` + `references/CHANGE.md` — add `## References` (one line:
       path/URL + why), mandatory for every resource the conversation pointed at; skippable when none.
-- [ ] 7. `templates/backlog-README.md` — the two-tier rule and the expensive entry format, so
+- [x] 7. `templates/backlog-README.md` — the two-tier rule and the expensive entry format, so
       `dw-init` ships it.
-- [ ] 8. Housekeeping — bump dw-solo (and dw-solo-setup if templates count as its payload) in both
+- [x] 8. Housekeeping — bump dw-solo (and dw-solo-setup if templates count as its payload) in both
       manifests, re-record the corpus baseline, run the full `scripts` gate incl. `eval:routing`.
 
 ## Anchors
@@ -65,3 +65,7 @@ proves it read them.
 - Evidence pattern: grateful-me-app-v2 PRs #37→#38→#39 (parked lint rule became two extra PRs), backlog at 11 entries.
 
 ## Notes
+
+- The three-part ADR bar already existed verbatim in `decision-record.md`; task 5 became the verdict-scoping rule instead.
+- Task 7 also updated the live `.ai/backlog/README.md` twin in the same commit — the absorb rule, applied to itself.
+- Gotcha-to-mechanism promotion now routes through the same two tiers (session-sized mechanism → build before closing).

@@ -2,7 +2,8 @@
 change: absorb-follow-ups-by-default
 branch: absorb-follow-ups-by-default
 created: 2026-08-23
-status: building
+status: landed
+landed: 2026-08-23
 ---
 
 # Change — the loop absorbs session-sized follow-ups instead of manufacturing backlog and doc churn

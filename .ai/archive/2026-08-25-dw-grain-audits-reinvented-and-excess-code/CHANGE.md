@@ -3,7 +3,7 @@ change: dw-grain-audits-reinvented-and-excess-code
 branch: dw-grain-audits-reinvented-and-excess-code
 created: 2026-08-25
 landed: 2026-08-25
-pr: "TBD"
+pr: "#46"
 status: landed
 ---
 

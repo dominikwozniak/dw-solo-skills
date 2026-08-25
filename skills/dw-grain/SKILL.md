@@ -58,10 +58,13 @@ unprovable without it.
   beyond forwarding. Remedy: **delete** it and inline it at that call site.
 - **Speculative** — a flag, option, parameter or mode carrying a case that never occurs: every call
   site passes the same value. Remedy: **delete** the parameter and the branch it feeds.
-- **Drift** — the change builds something the neighbouring files already build another way: a
-  different error shape, a second name for one concept, the same kind of logic in a different layer.
-  Remedy: **reuse** the neighbours' shape. The direction is fixed and does not depend on which is
-  better — the neighbours win, because one inconsistency is paid by every later reader.
+- **Drift** — the change builds its own version of something the neighbouring files already have: a
+  second name for one concept, a parallel error type, the same kind of logic outside the layer that
+  owns it. It is a row only where the neighbours have something concrete to point at — a type, a
+  helper, a module with a home — because the remedy is **reuse**: call theirs, delete yours. Where
+  their way is a habit with nothing to call, the gate below refuses it as a preference. The
+  direction is fixed and does not turn on which is better: the neighbours win, because one
+  inconsistency is paid by every later reader.
 - **Stranded** — what the change made unreachable and left behind: the branch nothing takes now, the
   import nothing uses, the export with no consumer, a comment describing behaviour that is gone.
   Remedy: **delete**.
@@ -70,13 +73,19 @@ All five run over every file in scope, and the pass is not finished until they h
 never applied returns the same empty table as a category that found nothing, and nothing downstream
 can tell those two apart.
 
+They overlap, and one deletion is still one row. A parameter nobody varies also strands the branch it
+feeds; a helper reinvented in the wrong layer is drift too. Where two categories land on the same
+lines, file it under whichever comes first in the list above and move on — the remedy is the same
+edit either way, and a second row for it pads the one thing this table has going for it.
+
 ### 3. The gate a row passes before it is written
 
 - **Quote it, or it does not exist.** Every row carries `file:line` plus the verbatim text that
-  motivated it. Reinvented and drift carry **two** quotes — the new code, and the canonical or
-  neighbouring code it should have used. A "this already exists" claim with nothing quoted on the
-  other side is the exact false positive this gate is built for. Cannot produce both? **Drop the
-  row.** Not soften it, not report it as possible — this lane has no appendix to hide a weak row in.
+  motivated it, in the evidence block under the table. Reinvented and Drift carry **two** quotes —
+  the new code, and the canonical or neighbouring code it should have used. A "this already exists"
+  claim with nothing quoted on the other side is the exact false positive this gate is built for.
+  Cannot produce both? **Drop the row.** Not soften it, not report it as possible — this lane has no
+  appendix to hide a weak row in.
 - **The repo's own conventions suppress.** A shape the project has declared for itself is not a row,
   however it reads: a pattern its root agent file prescribes, a term its glossary defines, a
   duplication a decision record already settled as deliberate. Read those in step 1 so the
@@ -95,10 +104,16 @@ can tell those two apart.
 ```
 ## dw-grain — <N> rows over <scope>
 
-| # | Category     | Location      | What is there                                        | Remedy                                      |
-| - | ------------ | ------------- | ---------------------------------------------------- | ------------------------------------------- |
-| 1 | reinvented   | src/f.ts:41   | `parseWindow()` re-derives what `lib/time.ts:88` returns | call `lib/time.ts:88`; delete 41-63     |
-| 2 | pass-through | src/bar.ts:12 | `wrapClient()` forwards to `Client`, one caller      | delete; inline at `src/baz.ts:30`           |
+| # | Category     | Location      | What is there                                 | Remedy                              |
+| - | ------------ | ------------- | --------------------------------------------- | ----------------------------------- |
+| 1 | reinvented   | src/f.ts:41   | `parseWindow()` re-derives an existing helper | call `lib/time.ts:88`, delete 41-63 |
+| 2 | pass-through | src/bar.ts:12 | `wrapClient()` only forwards; one caller      | delete, inline at `src/baz.ts:30`   |
+
+Evidence — the quotes step 3 requires, one block per row, two of them where the remedy is a reuse:
+
+1. src/f.ts:41     `const ms = (to - from) * 1000`
+   lib/time.ts:88  `export const windowMs = (w: Window) => (w.to - w.from) * 1000`
+2. src/bar.ts:12   `const wrapClient = (c: Client) => c`
 
 Suppressed: <n> — one line each, naming the convention or record that blessed it.
 ```

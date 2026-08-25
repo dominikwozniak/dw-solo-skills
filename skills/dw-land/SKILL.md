@@ -147,7 +147,10 @@ is the default.
   unmerged** PR. The doc must carry a
   `## Why rejected` — what was tried, what killed it, what would justify revisiting — and **writing it
   without a reason is refused**: an empty one costs a folder and teaches nothing, which is the whole
-  failure this mode exists to prevent. An idea turned down before it was ever shaped has nothing to
+  failure this mode exists to prevent. **The archive trim spares that section** — it deletes
+  `## Goal`, `## Decisions`, `## Anchors` and `## References`, and `## Why rejected` is on no such
+  list: here it is the entire reason the folder exists, and the line `dw-shape` reads to refuse
+  shaping the same idea twice. An idea turned down before it was ever shaped has nothing to
   move: write `.ai/archive/<rejected date>-<slug>/CHANGE.md` directly, the slug derived the way
   `dw-shape` does so a re-shape still finds it by bare slug. **Commit somewhere that survives**: nothing will be merged here, so a
   record on the rejected branch dies with it — use a short branch off the default one and open a PR

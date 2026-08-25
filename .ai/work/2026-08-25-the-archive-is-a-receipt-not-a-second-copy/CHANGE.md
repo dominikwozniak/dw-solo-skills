@@ -36,7 +36,7 @@ keeps its `## Why rejected`. A new entry lands near 15 lines where today's avera
       Tasks and unpromoted Notes; delete Goal, Decisions, Anchors, References.
 - [x] 2. `promote.md` — a note whose finding went to a durable target is dropped from the archive,
       stated where each target already says what it deletes.
-- [ ] 3. `dw-land`'s `reject` mode — `## Why rejected` survives the trim, said where the mode is
+- [x] 3. `dw-land`'s `reject` mode — `## Why rejected` survives the trim, said where the mode is
       described, since that section is the only part of a rejected doc worth keeping.
 - [ ] 4. `templates/archive-README.md` and `.ai/archive/README.md` — describe the trimmed entry and
       drop the "backlog entries may point here" line. The two are **not** byte-identical; the live

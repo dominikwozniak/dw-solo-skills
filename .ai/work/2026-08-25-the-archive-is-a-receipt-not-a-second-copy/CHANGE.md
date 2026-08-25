@@ -1,6 +1,6 @@
 ---
 change: the-archive-is-a-receipt-not-a-second-copy
-branch: unclaimed
+branch: the-archive-is-a-receipt-not-a-second-copy
 created: 2026-08-25
 status: shaping # shaping | building | landed
 ---

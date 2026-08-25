@@ -47,7 +47,7 @@ pattern the project's own conventions bless is absent from it.
 - [x] 3. Versions — extras `0.1.8` → `0.1.9` and `dw-solo` `0.5.1` → `0.5.2`, each identical in both
       manifests; rewrite the extras plugin's "Three today:" clause to four; extend the marketplace
       `keywords`.
-- [ ] 4. `node scripts/check-skill-corpus.mjs --update-baseline`, then the full gate.
+- [x] 4. `node scripts/check-skill-corpus.mjs --update-baseline`, then the full gate.
 
 ## Anchors
 
@@ -105,5 +105,13 @@ pattern the project's own conventions bless is absent from it.
   tree, or read those paths through the main tree's absolute path.
 - The headroom held: with `dw-grain`'s description in the corpus, rank-1 stays 68% / 21-31 and the
   closest description pair is 0.165, so no word had to be traded.
-- `dw-grain` measures 1290 words, above every existing extra (`dw-unslop` 849) — the five categories,
-  the three-part gate and the table template each carry a rule, so the size is the content.
+- `dw-grain` measures 1325 words, above every existing extra (`dw-unslop` 849) — the five categories,
+  the three-part gate and the table template each carry a rule, so the size is the content. Nothing in
+  it is branch-only, so there is no block to shed to `references/` the way `dw-unslop` shed its catalog.
+- An audit against `.inspirations/mattpocock-skills/skills/productivity/writing-for-agents/` bought
+  three edits: step 2 gained an exhaustiveness bar (flat reference needs one as much as a sequence
+  does), the fourth category became the leading word **Speculative** so all five are single tokens
+  that recruit priors, and step 1 stopped restating the scope the reads section already fixes.
+- That same source says a `disable-model-invocation` description should be a human-facing one-liner
+  with triggers stripped. Not taken: all three existing extras end theirs "Explicit-invoke only." after
+  a full description, and `dw-grain`'s own **Drift** rule gives the neighbours the tie.

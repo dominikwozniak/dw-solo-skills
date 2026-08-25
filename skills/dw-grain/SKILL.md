@@ -44,10 +44,10 @@ artifact** — a table you act on in the same session needs no file to rot betwe
 
 ### 1. Resolve the scope, then read past it
 
-Resolve the file list as above. Then open each one whole, and open its neighbours: the audit turns on
-what already exists, and a hunk cannot tell you that. Before judging anything, find where this project
-keeps the kind of thing the change added — the utility module, the service layer, the shared types —
-because "reinvented" is unprovable without it.
+Open each file in scope whole, and open its neighbours: the audit turns on what already exists, and a
+hunk cannot tell you that. Before judging anything, find where this project keeps the kind of thing
+the change added — the utility module, the service layer, the shared types — because "reinvented" is
+unprovable without it.
 
 ### 2. Five categories, each with its remedy fixed
 
@@ -56,8 +56,8 @@ because "reinvented" is unprovable without it.
   delete the new one, call the existing one.
 - **Pass-through** — a wrapper, adapter or indirection with one caller that adds nothing of its own
   beyond forwarding. Remedy: **delete** it and inline it at that call site.
-- **Config for a case that never occurs** — a flag, option, parameter or mode whose every call site
-  passes the same value. Remedy: **delete** the parameter and the branch it feeds.
+- **Speculative** — a flag, option, parameter or mode carrying a case that never occurs: every call
+  site passes the same value. Remedy: **delete** the parameter and the branch it feeds.
 - **Drift** — the change builds something the neighbouring files already build another way: a
   different error shape, a second name for one concept, the same kind of logic in a different layer.
   Remedy: **reuse** the neighbours' shape. The direction is fixed and does not depend on which is
@@ -65,6 +65,10 @@ because "reinvented" is unprovable without it.
 - **Stranded** — what the change made unreachable and left behind: the branch nothing takes now, the
   import nothing uses, the export with no consumer, a comment describing behaviour that is gone.
   Remedy: **delete**.
+
+All five run over every file in scope, and the pass is not finished until they have. A category you
+never applied returns the same empty table as a category that found nothing, and nothing downstream
+can tell those two apart.
 
 ### 3. The gate a row passes before it is written
 

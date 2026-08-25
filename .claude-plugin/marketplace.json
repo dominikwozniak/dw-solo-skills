@@ -10,7 +10,7 @@
   "plugins": [
     {
       "name": "dw-solo",
-      "version": "0.5.1",
+      "version": "0.5.2",
       "source": "./plugins/dw-solo",
       "keywords": ["solo", "personal", "lightweight", "workflow"],
       "category": "workflow",
@@ -26,9 +26,20 @@
     },
     {
       "name": "dw-solo-extras",
-      "version": "0.1.8",
+      "version": "0.1.9",
       "source": "./plugins/dw-solo-extras",
-      "keywords": ["solo", "handoff", "session", "backlog", "prune", "writing", "slop"],
+      "keywords": [
+        "solo",
+        "handoff",
+        "session",
+        "backlog",
+        "prune",
+        "writing",
+        "slop",
+        "audit",
+        "duplication",
+        "cleanup"
+      ],
       "category": "workflow",
       "tags": ["solo", "handoff", "backlog", "writing"]
     }

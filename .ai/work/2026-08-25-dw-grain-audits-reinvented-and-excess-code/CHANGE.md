@@ -44,7 +44,7 @@ pattern the project's own conventions bless is absent from it.
 - [x] 2. Ship it — the `plugins/dw-solo-extras/skills/dw-grain` symlink, the README Off-loop row with
       `⭑`, the name in the explicit-only sentence, the badge `skills-13` → `skills-14`, the extras
       line in `AGENTS.md`, and `dw-grain` on `dw-check`'s `**Next:**` line.
-- [ ] 3. Versions — extras `0.1.8` → `0.1.9` and `dw-solo` `0.5.1` → `0.5.2`, each identical in both
+- [x] 3. Versions — extras `0.1.8` → `0.1.9` and `dw-solo` `0.5.1` → `0.5.2`, each identical in both
       manifests; rewrite the extras plugin's "Three today:" clause to four; extend the marketplace
       `keywords`.
 - [ ] 4. `node scripts/check-skill-corpus.mjs --update-baseline`, then the full gate.

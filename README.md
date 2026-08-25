@@ -28,8 +28,7 @@ smallest weight that still works:
 - **A private repo rots** — the change doc is archived at merge (`.ai/archive/`), and what's durable
   is **promoted** first: decisions to `docs/decisions/`, terms to `CONTEXT.md`, traps to the routed
   topic file that covers them, pointers the change made stale to wherever they point, follow-ups to
-  `.ai/backlog/`. Without that step you accumulate stale
-  specs and lose the decisions worth keeping.
+  `.ai/backlog/`. Without that step you accumulate stale specs and lose the decisions worth keeping.
 - **Commits drift from your conventions** — the repo's own `## Git conventions` are applied instead
   of generic defaults.
 

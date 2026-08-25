@@ -53,8 +53,8 @@ prefix with `slugify.sh undate` rather than comparing folder names.
   beside the topic that sprang the trap rather than in the always-loaded root
 - wherever a `## References` entry points — a pointer this change made untrue,
   rewritten in place on your go, never silently. Nothing to do where the doc named none
-- `.ai/backlog/<date>-<slug>.md` — ordinary follow-ups that clear none of the above bars;
-  findings by pointer to `.ai/archive/<date>-<slug>`, never inlined
+- `.ai/backlog/<date>-<slug>.md` — ordinary follow-ups that clear none of the above bars,
+  each carrying its finding inline; the archive keeps only what none of these five took
 
 ## Rules
 

@@ -43,7 +43,7 @@ keeps its `## Why rejected`. A new entry lands near 15 lines where today's avera
       one carries an extra `rejected`-covers-cancelled paragraph that stays.
 - [x] 5. `skills/dw-next/SKILL.md:114-119` — the one-line rule gains the action it lacks: a finding
       that outgrows one line is cut to one, its detail left to the diff and the commit message.
-- [ ] 6. The other four copies of the dangling pointer, which the shape checklist missed: the
+- [x] 6. The other four copies of the dangling pointer, which the shape checklist missed: the
       backlog pair (`.ai/backlog/README.md`, `templates/backlog-README.md`) says findings go by
       pointer, "never inlined"; the work pair (`.ai/README.md`, `templates/work-README.md:55`, which
       are byte-identical) says the same in its promote-targets list. All four say the entry carries

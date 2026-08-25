@@ -48,7 +48,7 @@ keeps its `## Why rejected`. A new entry lands near 15 lines where today's avera
       pointer, "never inlined"; the work pair (`.ai/README.md`, `templates/work-README.md:55`, which
       are byte-identical) says the same in its promote-targets list. All four say the entry carries
       its finding instead.
-- [ ] 7. Bump `dw-solo` and `dw-solo-setup` in both manifests, re-record the corpus baseline, run
+- [x] 7. Bump `dw-solo` and `dw-solo-setup` in both manifests, re-record the corpus baseline, run
       every check in the `scripts` block.
 
 ## Anchors
@@ -96,3 +96,5 @@ keeps its `## Why rejected`. A new entry lands near 15 lines where today's avera
   numbers are **equal**, never that either moved, so it will not catch a duplicate.
 - The pointer the decision retires lives in six files, not the two task 4 names: the backlog pair and
   the work pair say it too — added as task 6.
+- The sibling merged mid-build, so this rebased onto it and took `0.5.4` / `0.1.33`; the only conflict
+  was the work-README promote-target list, which gained a fifth entry.

@@ -4,7 +4,7 @@ branch: the-archive-is-a-receipt-not-a-second-copy
 created: 2026-08-25
 status: landed # shaping | building | landed
 landed: 2026-08-25
-pr:
+pr: "#48"
 ---
 
 # Change — an archive entry proves a change landed, and stops repeating what was promoted

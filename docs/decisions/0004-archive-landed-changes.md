@@ -1,7 +1,8 @@
 ---
 decision: 0004
-status: active
+status: superseded
 date: 2026-08-02
+superseded-by: 0018
 ---
 
 # 0004 — Landed change docs are archived, not deleted

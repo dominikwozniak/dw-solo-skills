@@ -11,9 +11,10 @@ and drops every note whose finding it has just promoted: those sections steered 
 holds, and a finding worth keeping lives in the durable layer instead of in a second copy here.
 
 A turned-down idea ends here too — `dw-land reject` writes `status: rejected` with a `rejected:`
-date, which is that folder's prefix, the closed-unmerged `pr:` if there was one, and a `## Why rejected` section, which is the only
-part of such a doc worth keeping. An idea rejected before it was ever shaped is written straight
-here, having never passed through `.ai/work/`.
+date, which is that folder's prefix, the closed-unmerged `pr:` if there was one, and a
+`## Why rejected` section. The trim keeps that section **on top of** the receipt above, not instead
+of it: for a rejection it is the part that earns the folder. An idea rejected before it was ever
+shaped is written straight here, having never passed through `.ai/work/`.
 
 **History, not guidance** — nothing browses this folder for advice; the durable layer lives in
 `docs/decisions/`, `CONTEXT.md` and wherever the repo keeps its `## Gotchas`. It is reached by the **bare slug** —

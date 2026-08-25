@@ -107,4 +107,6 @@ approval.** On approval, fix the accepted findings in-session and commit the way
 related fixes together, unrelated ones apart. Then offer to run again: the second look is the
 point of a gate this cheap.
 
-**Next:** `dw-next` for the next task, or `dw-land` when the boxes are all ticked.
+**Next:** `dw-next` for the next task, `dw-land` when the boxes are all ticked, or `dw-grain` where
+`dw-solo-extras` is installed — it audits code this pass found correct but heavier than the change
+needed.

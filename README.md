@@ -6,7 +6,7 @@
 
 <p align="center">
   <img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-111111?style=flat-square">
-  <img alt="13 skills" src="https://img.shields.io/badge/skills-13-111111?style=flat-square">
+  <img alt="14 skills" src="https://img.shields.io/badge/skills-14-111111?style=flat-square">
   <img alt="3 plugins" src="https://img.shields.io/badge/plugins-3-111111?style=flat-square">
   <img alt="Claude Code plugin" src="https://img.shields.io/badge/Claude_Code-plugin-111111?style=flat-square">
 </p>
@@ -49,7 +49,8 @@ A task may match several rows — read all that apply. `⭑` = explicit-invoke o
 never auto-fires). The phrases that trigger each skill live in its own `description`, and the
 arguments it takes in its own `argument-hint` — neither is copied here.
 
-**Explicit-only skills**: `dw-start`, `dw-ship`, `dw-init`, `dw-handoff`, `dw-prune` and `dw-unslop`.
+**Explicit-only skills**: `dw-start`, `dw-ship`, `dw-init`, `dw-grain`, `dw-handoff`, `dw-prune` and
+`dw-unslop`.
 Marked `⭑` in the router; they never auto-fire — say the name. Being invisible to the model, no other
 skill can delegate to one; another skill suggesting you run it is the route in.
 
@@ -86,11 +87,12 @@ Parallel changes: shape several on the default branch, then one worktree + sessi
 **Off-loop** — the `dw-solo-extras` plugin; reached for beside the loop, not on the way from shape to
 ship.
 
-| Skill                                          | Task                                                           | What you get                        |
-| ---------------------------------------------- | -------------------------------------------------------------- | ----------------------------------- |
-| [`dw-handoff`](skills/dw-handoff/SKILL.md) `⭑` | Compact the session mid-task — where you are, what's ruled out | `.ai/work/<date>-<slug>/HANDOFF.md` |
-| [`dw-prune`](skills/dw-prune/SKILL.md) `⭑`     | Walk the backlog — drop, do, bundle, or leave each entry       | a shorter queue, one commit         |
-| [`dw-unslop`](skills/dw-unslop/SKILL.md) `⭑`   | Cut the AI tells from a PR or commit body, keep the voice      | the rewritten text, rules named     |
+| Skill                                          | Task                                                                            | What you get                                    |
+| ---------------------------------------------- | ------------------------------------------------------------------------------- | ----------------------------------------------- |
+| [`dw-grain`](skills/dw-grain/SKILL.md) `⭑`     | Audit the new code for what did not need writing — reinvented, surplus, drifted | a table of deletions and reuses, then the fixes |
+| [`dw-handoff`](skills/dw-handoff/SKILL.md) `⭑` | Compact the session mid-task — where you are, what's ruled out                  | `.ai/work/<date>-<slug>/HANDOFF.md`             |
+| [`dw-prune`](skills/dw-prune/SKILL.md) `⭑`     | Walk the backlog — drop, do, bundle, or leave each entry                        | a shorter queue, one commit                     |
+| [`dw-unslop`](skills/dw-unslop/SKILL.md) `⭑`   | Cut the AI tells from a PR or commit body, keep the voice                       | the rewritten text, rules named                 |
 
 **Setup** — the `dw-solo-setup` plugin; run once per repo.
 

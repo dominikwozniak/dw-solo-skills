@@ -78,6 +78,14 @@ than re-deriving this checklist by hand.
 
 ## Gotchas
 
+- **A fenced template outranks the prose rule above it.** `dw-grain` step 3 demanded `file:line` plus the
+  verbatim text, and two quotes wherever the remedy is a reuse — then the example table below it carried a
+  paraphrase and a single location, demonstrating the exact shortcut the rule forbids. The template is the
+  part an agent copies, so where the two disagree the template wins silently and the rule never fires. Two
+  passes over that file missed it; the delegated reviewer caught it. So **write the template so it
+  satisfies its own rule at the rule's strictest**, and where a rule says "every row carries X", check that
+  the example row visibly carries X. Evidence too bulky for a table cell goes in a block beneath it, keyed
+  to the row.
 - **The idf risk is a reason to run the eval, never a reason to leave a `description` wrong.** Editing
   one shifts every term's idf and can knock an unrelated skill off rank-1 (step 8), and that risk once
   kept a **known-false** sentence in place: `dw-shape` advertised "one per independently shippable scope"

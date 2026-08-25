@@ -2,7 +2,9 @@
 change: dw-grain-audits-reinvented-and-excess-code
 branch: dw-grain-audits-reinvented-and-excess-code
 created: 2026-08-25
-status: building
+landed: 2026-08-25
+pr: "TBD"
+status: landed
 ---
 
 # Change — `dw-grain`, an off-loop audit for the code the gate passes

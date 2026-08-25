@@ -39,7 +39,7 @@ user's go, never on its own.
       already writes; `:63-66` already requires the section.
 - [x] 3. `templates/work-README.md:13` and its byte-identical `.ai/README.md` twin — the change-doc
       line gains references, in one commit, verified with `cmp`.
-- [ ] 4. `promote.md` + `dw-land` step 3 — a reference this change made stale becomes a target:
+- [x] 4. `promote.md` + `dw-land` step 3 — a reference this change made stale becomes a target:
       flagged with the others, edited on the user's go, and **skipped outright when the doc named
       none**. Title and count move from five to six.
 - [ ] 5. Bump `dw-solo` and `dw-solo-setup` in both manifests, re-record the corpus baseline, run

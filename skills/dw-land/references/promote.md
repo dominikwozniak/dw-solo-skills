@@ -8,6 +8,13 @@ writing, and delete what this change supersedes in the same edit. A durable laye
 stops being read, which costs you the promotion step entirely — and where a cap, a ceiling or a
 baseline exists, appending is what makes the build fail.
 
+**A promoted finding leaves the archive.** Promotion moves a finding; it never copies one. What a
+target below takes — a decision record, a `CONTEXT.md` term, a `## Gotchas` entry, a backlog file —
+comes out of the `## Notes` line that carried it, so the archived doc keeps only the residue that
+found no durable home. Two copies of one finding is how the durable copy stops being trusted: the
+reader who meets the archived note first cannot tell it is the stale half, and the archive is the
+half nothing maintains.
+
 **Promotion is scoped by the verdict.** Each target takes only what the verdict explicitly named —
 a decision candidate, a term, a trap, a stale pointer, a follow-up. Nothing is harvested here after
 the fact: a candidate discovered while promoting is a verdict finding that arrived late, so name it
@@ -82,7 +89,10 @@ the archive move is the lane working, not a step skipped.
   name from `bash "${CLAUDE_PLUGIN_ROOT}/scripts/slugify.sh" dated "<the follow-up>"` — and it is
   deliberately expensive: frontmatter `created:`, `source: <this change's bare slug>`,
   `why-not-now: <what blocks it>` and `effort: <honest size>`. **A blocker you cannot name is the
-  tell the item was tier one or tier zero** — report it or do it, don't file it.
+  tell the item was tier one or tier zero** — report it or do it, don't file it. **Write the finding
+  into the entry**, in as few lines as leave it actionable — never as a pointer at the archived
+  change, because the note that pointer would land on is the one this promotion just dropped. An
+  entry you cannot pick up without opening another folder is one you will not pick up.
   `.ai/backlog/README.md` states the entry shape and the bars (**will you ever?** included); judge
   against those. Where the repo has no such README, create the dir and say so: `dw-init` owns the
   payload it comes from, and the bars are not reproducible from here. If
@@ -104,8 +114,20 @@ the archive move is the lane working, not a step skipped.
   path the PR does not exist yet. `.ai/archive/README.md` states the convention; create it from that
   one line if the repo predates the scaffold. If that destination already exists — same day, same slug —
   stop and pick a suffixed one (`<date>-<slug>-2`): `git mv` into an existing directory silently nests
-  the folder inside it. If something in the doc still feels too valuable to bury, that is the signal it belonged
-  in a record, a gotcha or the backlog — promote it first, then archive.
+  the folder inside it.
+
+  **Then trim the moved doc to a receipt.** Delete `## Goal`, `## Decisions`, `## Anchors` and
+  `## References`. What is left is the receipt: the frontmatter, the H1 title, the `## Tasks` list
+  exactly as `dw-next` left it — ticks, skip markers and their reasons — and the `## Notes` lines
+  that found no durable home above. Those four sections were spent getting here. Goal and Decisions
+  steered a build the diff now holds; Anchors point at lines this very change moved, so half of them
+  are wrong the moment it lands; References were read earlier in this phase and the stale ones
+  rewritten where they live, which is the last thing that section had to give. The archive is
+  reached by slug to prove a change landed and see what it did — never read end to end — so a
+  section that only made sense while the work was open costs every later listing and pays nothing
+  back. If something still feels too valuable to delete, that is the signal it belonged in a record,
+  a gotcha or the backlog — promote it there first, then trim.
+
 - **Commit** the promotion and the archive move together, the way `dw-git` does — **on the branch you
   are on.** In a worktree that means the feature branch: the promotion rides the PR, the squash-merge
   carries it to the default branch, and post-merge `main` is already clean.

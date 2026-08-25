@@ -113,10 +113,15 @@ One task at a time, however many the mode allows.
   stays open, or the `## Goal` is something the user amends.
 - Append to Notes only what a future session would actually need: a surprise, a dead end, a decision
   taken while building, a term this task had to coin. Not a narration of what the diff already shows.
-  **One finding, one line.** You read this file on every invocation, so a note that runs to a paragraph
-  is a tax on every resume — and the details are already in the diff and the commit message. If a
-  finding genuinely needs more, it has outgrown Notes and belongs where `dw-land` promotes it — a
-  decision record, a `CONTEXT.md` term, a gotcha in its topic file — or it is a task here.
+  **One finding, one line** — one sentence, wrapped as the file's width needs; not a paragraph that
+  happens to begin with a dash. You read this file on every invocation, so a note that runs long is
+  a tax on every resume, and the detail is already in the diff and the commit message. **So cut it
+  before you commit.** Re-read what you just appended and, where it runs past a sentence, keep the
+  one a later session would act on and delete the rest — the reasoning belongs in that task's commit
+  message, which is where a reader who wants it goes. What survives the cut and still needs more has
+  outgrown Notes: it belongs where `dw-land` promotes it — a decision record, a `CONTEXT.md` term, a
+  gotcha in its topic file — or it is a task here. Whatever these lines still hold at close is what
+  the archive keeps verbatim, so a paragraph written here is one `dw-land` has to trim.
 - **Clear a `HANDOFF.md` you consumed** — `git rm` it in this same commit. It described the middle of
   the task you just finished, so leaving it behind strands the next session on a state that is gone.
   Anything in it worth keeping goes to Notes first.

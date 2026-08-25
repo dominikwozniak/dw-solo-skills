@@ -2,7 +2,7 @@
 change: dw-grain-audits-reinvented-and-excess-code
 branch: dw-grain-audits-reinvented-and-excess-code
 created: 2026-08-25
-status: shaping
+status: building
 ---
 
 # Change — `dw-grain`, an off-loop audit for the code the gate passes
@@ -36,7 +36,7 @@ pattern the project's own conventions bless is absent from it.
 
 ## Tasks
 
-- [ ] 1. `skills/dw-grain/SKILL.md` — the extras anatomy: H1 as a claim, the reads-and-writes
+- [x] 1. `skills/dw-grain/SKILL.md` — the extras anatomy: H1 as a claim, the reads-and-writes
       section, a numbered workflow, a fenced table template, `**Next:**`. Five categories, the
       quote-or-drop gate, the suppression layer, the `dw-check` boundary written into step 3, and
       `$ARGUMENTS` named where scope resolves. Run `pnpm eval:routing` the moment the frontmatter
@@ -103,3 +103,7 @@ pattern the project's own conventions bless is absent from it.
 - `AGENTS.md` sits at 116 of its 120 lines.
 - `.inspirations/` is gitignored, so a `dw-start` worktree will not have it — build this in the main
   tree, or read those paths through the main tree's absolute path.
+- The headroom held: with `dw-grain`'s description in the corpus, rank-1 stays 68% / 21-31 and the
+  closest description pair is 0.165, so no word had to be traded.
+- `dw-grain` measures 1290 words, above every existing extra (`dw-unslop` 849) — the five categories,
+  the three-part gate and the table template each carry a rule, so the size is the content.

@@ -104,8 +104,19 @@ the archive move is the lane working, not a step skipped.
   path the PR does not exist yet. `.ai/archive/README.md` states the convention; create it from that
   one line if the repo predates the scaffold. If that destination already exists — same day, same slug —
   stop and pick a suffixed one (`<date>-<slug>-2`): `git mv` into an existing directory silently nests
-  the folder inside it. If something in the doc still feels too valuable to bury, that is the signal it belonged
-  in a record, a gotcha or the backlog — promote it first, then archive.
+  the folder inside it.
+
+  **Then trim the moved doc to a receipt.** Delete `## Goal`, `## Decisions`, `## Anchors` and
+  `## References`. What is left is the receipt: the frontmatter, the H1 title, the `## Tasks` list
+  exactly as `dw-next` left it — ticks, skip markers and their reasons — and the `## Notes` lines
+  that found no durable home above. Those four sections were spent getting here. Goal and Decisions
+  steered a build the diff now holds; Anchors point at lines this very change moved, so half of them
+  are wrong the moment it lands; References were pointers for the build, and a built change has
+  consumed them. The archive is reached by slug to prove a change landed and see what it did — never
+  read end to end — so a section that only made sense while the work was open costs every later
+  listing and pays nothing back. If something still feels too valuable to delete, that is the signal
+  it belonged in a record, a gotcha or the backlog — promote it there first, then trim.
+
 - **Commit** the promotion and the archive move together, the way `dw-git` does — **on the branch you
   are on.** In a worktree that means the feature branch: the promotion rides the PR, the squash-merge
   carries it to the default branch, and post-merge `main` is already clean.

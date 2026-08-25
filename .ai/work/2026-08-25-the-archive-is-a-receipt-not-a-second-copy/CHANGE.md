@@ -2,7 +2,7 @@
 change: the-archive-is-a-receipt-not-a-second-copy
 branch: the-archive-is-a-receipt-not-a-second-copy
 created: 2026-08-25
-status: shaping # shaping | building | landed
+status: building # shaping | building | landed
 ---
 
 # Change — an archive entry proves a change landed, and stops repeating what was promoted
@@ -32,7 +32,7 @@ keeps its `## Why rejected`. A new entry lands near 15 lines where today's avera
 
 ## Tasks
 
-- [ ] 1. `promote.md`'s archive bullet — the `git mv` gains a trim: keep frontmatter, H1, ticked
+- [x] 1. `promote.md`'s archive bullet — the `git mv` gains a trim: keep frontmatter, H1, ticked
       Tasks and unpromoted Notes; delete Goal, Decisions, Anchors, References.
 - [ ] 2. `promote.md` — a note whose finding went to a durable target is dropped from the archive,
       stated where each target already says what it deletes.

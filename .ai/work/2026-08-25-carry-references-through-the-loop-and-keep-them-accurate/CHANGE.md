@@ -1,6 +1,6 @@
 ---
 change: carry-references-through-the-loop-and-keep-them-accurate
-branch: unclaimed
+branch: carry-references-through-the-loop-and-keep-them-accurate
 created: 2026-08-25
 status: shaping # shaping | building | landed
 ---

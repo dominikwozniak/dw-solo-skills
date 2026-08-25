@@ -57,6 +57,21 @@ the archive move is the lane working, not a step skipped.
     paid for: cut what it made untrue, or re-record on purpose in this commit and let the number
     move where you can see it. A silent increase is the one option that isn't there.
 
+- **Promote the references — only where this change made one wrong.** Read the doc's `## References`
+  and ask of each entry whether the diff just made it untrue: it routes to something this change
+  built, names a version it bumped, a path it moved, a question it settled. A reference that lies is
+  worse than one that is missing, because it gets followed. **No `## References` section, or nothing
+  in it gone stale, and this target is skipped** — that is the normal answer and it needs no comment.
+  Same rule as the vocabulary: **rewrite the line, never add a second beside it**; two states of one
+  pointer is the drift this target exists to end.
+
+  This is the one target that edits a file the change never touched, so **name it to the user before
+  writing it** applies at its sharpest: give the file, the line and the correction, and get a plain
+  yes for that edit. The go that opened this phase approved closing the change, not rewriting
+  somebody else's line. Where the pointer lives outside this repo — a sibling checkout, a URL, a file
+  this commit cannot reach — it is not promotable at all: hand it to the follow-up bullet below as a
+  report-open item.
+
 - **Promote the follow-ups — after doing the ones that don't deserve to be one.** Take every
   follow-up the verdict named, plus anything deliberately left out, and test each against
   **should it have been done now?** first: nothing blocks it and doing it costs no more than
@@ -79,21 +94,6 @@ the archive move is the lane working, not a step skipped.
   made moot, is `git rm`'d in this same commit — and one that survives with fewer bullets than it had
   gets rewritten to what is left. A queue holding finished work reads as a backlog you have stopped
   believing.
-- **Promote the references — only where this change made one wrong.** Read the doc's `## References`
-  and ask of each entry whether the diff just made it untrue: it routes to something this change
-  built, names a version it bumped, a path it moved, a question it settled. A reference that lies is
-  worse than one that is missing, because it gets followed. **No `## References` section, or nothing
-  in it gone stale, and this target is skipped** — that is the normal answer and it needs no comment.
-  Same rule as the vocabulary: **rewrite the line, never add a second beside it**; two states of one
-  pointer is the drift this target exists to end.
-
-  This is the one target that edits a file the change never touched, so **name it to the user before
-  writing it** applies at its sharpest: give the file, the line and the correction, and get a plain
-  yes for that edit. The go that opened this phase approved closing the change, not rewriting
-  somebody else's line. Where the pointer lives outside this repo — a sibling checkout, a URL, a file
-  this commit cannot reach — it is not promotable at all: hand it to the follow-up bullet below as a
-  report-open item.
-
 - **Archive the scaffolding.** `git rm` a leftover `HANDOFF.md` first — it described the middle of a
   task, and post-merge it is noise — then `git mv .ai/work/<shaped date>-<slug>/`
   `.ai/archive/<landed date>-<slug>/`: the destination takes **today's** date, not the one the work

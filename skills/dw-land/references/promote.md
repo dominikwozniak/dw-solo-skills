@@ -8,6 +8,13 @@ writing, and delete what this change supersedes in the same edit. A durable laye
 stops being read, which costs you the promotion step entirely — and where a cap, a ceiling or a
 baseline exists, appending is what makes the build fail.
 
+**A promoted finding leaves the archive.** Promotion moves a finding; it never copies one. What a
+target below takes — a decision record, a `CONTEXT.md` term, a `## Gotchas` entry, a backlog file —
+comes out of the `## Notes` line that carried it, so the archived doc keeps only the residue that
+found no durable home. Two copies of one finding is how the durable copy stops being trusted: the
+reader who meets the archived note first cannot tell it is the stale half, and the archive is the
+half nothing maintains.
+
 **Promotion is scoped by the verdict.** Each target takes only what the verdict explicitly named —
 a decision candidate, a term, a trap, a stale pointer, a follow-up. Nothing is harvested here after
 the fact: a candidate discovered while promoting is a verdict finding that arrived late, so name it
@@ -82,7 +89,10 @@ the archive move is the lane working, not a step skipped.
   name from `bash "${CLAUDE_PLUGIN_ROOT}/scripts/slugify.sh" dated "<the follow-up>"` — and it is
   deliberately expensive: frontmatter `created:`, `source: <this change's bare slug>`,
   `why-not-now: <what blocks it>` and `effort: <honest size>`. **A blocker you cannot name is the
-  tell the item was tier one or tier zero** — report it or do it, don't file it.
+  tell the item was tier one or tier zero** — report it or do it, don't file it. **Write the finding
+  into the entry**, in as few lines as leave it actionable — never as a pointer at the archived
+  change, because the note that pointer would land on is the one this promotion just dropped. An
+  entry you cannot pick up without opening another folder is one you will not pick up.
   `.ai/backlog/README.md` states the entry shape and the bars (**will you ever?** included); judge
   against those. Where the repo has no such README, create the dir and say so: `dw-init` owns the
   payload it comes from, and the bars are not reproducible from here. If

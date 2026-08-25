@@ -34,7 +34,7 @@ keeps its `## Why rejected`. A new entry lands near 15 lines where today's avera
 
 - [x] 1. `promote.md`'s archive bullet — the `git mv` gains a trim: keep frontmatter, H1, ticked
       Tasks and unpromoted Notes; delete Goal, Decisions, Anchors, References.
-- [ ] 2. `promote.md` — a note whose finding went to a durable target is dropped from the archive,
+- [x] 2. `promote.md` — a note whose finding went to a durable target is dropped from the archive,
       stated where each target already says what it deletes.
 - [ ] 3. `dw-land`'s `reject` mode — `## Why rejected` survives the trim, said where the mode is
       described, since that section is the only part of a rejected doc worth keeping.
@@ -43,7 +43,10 @@ keeps its `## Why rejected`. A new entry lands near 15 lines where today's avera
       one carries an extra `rejected`-covers-cancelled paragraph that stays.
 - [ ] 5. `skills/dw-next/SKILL.md:114-119` — the one-line rule gains the action it lacks: a finding
       that outgrows one line is cut to one, its detail left to the diff and the commit message.
-- [ ] 6. Bump `dw-solo` and `dw-solo-setup` in both manifests, re-record the corpus baseline, run
+- [ ] 6. `.ai/backlog/README.md` and `templates/backlog-README.md` — "Findings go by pointer to
+      `.ai/archive/<date>-<slug>` — never inlined" is the same dangling pointer as task 4's line, in
+      two files the shape checklist missed. Both say the entry carries its finding instead.
+- [ ] 7. Bump `dw-solo` and `dw-solo-setup` in both manifests, re-record the corpus baseline, run
       every check in the `scripts` block.
 
 ## Anchors
@@ -89,3 +92,5 @@ keeps its `## Why rejected`. A new entry lands near 15 lines where today's avera
   take the same number: whichever lands later re-reads both manifests and takes the next one, and
   re-records the corpus baseline against its own base. `validate-manifests.sh` only checks the two
   numbers are **equal**, never that either moved, so it will not catch a duplicate.
+- `.ai/backlog/README.md` and its template said findings go by pointer, never inlined — the decision's
+  own second half, in two files the task list did not name; added as task 6.

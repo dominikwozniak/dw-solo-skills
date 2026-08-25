@@ -41,7 +41,7 @@ keeps its `## Why rejected`. A new entry lands near 15 lines where today's avera
 - [x] 4. `templates/archive-README.md` and `.ai/archive/README.md` — describe the trimmed entry and
       drop the "backlog entries may point here" line. The two are **not** byte-identical; the live
       one carries an extra `rejected`-covers-cancelled paragraph that stays.
-- [ ] 5. `skills/dw-next/SKILL.md:114-119` — the one-line rule gains the action it lacks: a finding
+- [x] 5. `skills/dw-next/SKILL.md:114-119` — the one-line rule gains the action it lacks: a finding
       that outgrows one line is cut to one, its detail left to the diff and the commit message.
 - [ ] 6. The other four copies of the dangling pointer, which the shape checklist missed: the
       backlog pair (`.ai/backlog/README.md`, `templates/backlog-README.md`) says findings go by

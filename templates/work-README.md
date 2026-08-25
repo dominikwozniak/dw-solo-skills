@@ -44,13 +44,15 @@ prefix with `slugify.sh undate` rather than comparing folder names.
 
 ## Where the durable parts go
 
-`dw-land` promotes out of `CHANGE.md` before archiving it, to four targets:
+`dw-land` promotes out of `CHANGE.md` before archiving it, to five targets:
 
 - `docs/decisions/` — hard-to-reverse decisions, one record each
 - `CONTEXT.md` — domain terms, glossary only
 - `## Gotchas` — traps that cost real time. An existing root section stays the home
   where the repo already keeps one; otherwise the matching `docs/agents/<topic>.md`,
   beside the topic that sprang the trap rather than in the always-loaded root
+- wherever a `## References` entry points — a pointer this change made untrue,
+  rewritten in place on your go, never silently. Nothing to do where the doc named none
 - `.ai/backlog/<date>-<slug>.md` — ordinary follow-ups that clear none of the above bars;
   findings by pointer to `.ai/archive/<date>-<slug>`, never inlined
 

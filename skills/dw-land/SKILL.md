@@ -15,9 +15,10 @@ archive move, and the PR that carries them. The report ends with a link; `dw-shi
 ## What it reads and writes
 
 Reads the diff against the default branch, and `.ai/work/<date>-<slug>/CHANGE.md` (found by branch, the same
-way `dw-next` finds it — by land time the change is always claimed). Writes to four **tracked,
+way `dw-next` finds it — by land time the change is always claimed). Writes to five **tracked,
 durable** places — `docs/decisions/<NNNN>-<slug>.md`, `CONTEXT.md`, wherever this repo keeps its
-gotchas (below), and `.ai/backlog/` (one file per follow-up) — and then moves the `CHANGE.md` scaffolding to
+gotchas (below), whatever file a `## References` entry points at, and `.ai/backlog/` (one file per
+follow-up) — and then moves the `CHANGE.md` scaffolding to
 `.ai/archive/<date>-<slug>/`, flipping its `status:` to `landed`. `.ai/` is tracked in git; this is the one
 skill that takes something out of `work/` on purpose. Then it pushes the branch and opens the PR the
 way `dw-git` does — untracked output, and the last thing it reports.

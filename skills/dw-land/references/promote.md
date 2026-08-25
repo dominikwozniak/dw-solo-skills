@@ -121,11 +121,12 @@ the archive move is the lane working, not a step skipped.
   exactly as `dw-next` left it — ticks, skip markers and their reasons — and the `## Notes` lines
   that found no durable home above. Those four sections were spent getting here. Goal and Decisions
   steered a build the diff now holds; Anchors point at lines this very change moved, so half of them
-  are wrong the moment it lands; References were pointers for the build, and a built change has
-  consumed them. The archive is reached by slug to prove a change landed and see what it did — never
-  read end to end — so a section that only made sense while the work was open costs every later
-  listing and pays nothing back. If something still feels too valuable to delete, that is the signal
-  it belonged in a record, a gotcha or the backlog — promote it there first, then trim.
+  are wrong the moment it lands; References were checked one bullet ago and the stale ones rewritten
+  where they live, which is the last thing that section had to give. The archive is reached by slug
+  to prove a change landed and see what it did — never read end to end — so a section that only made
+  sense while the work was open costs every later listing and pays nothing back. If something still
+  feels too valuable to delete, that is the signal it belonged in a record, a gotcha or the backlog
+  — promote it there first, then trim.
 
 - **Commit** the promotion and the archive move together, the way `dw-git` does — **on the branch you
   are on.** In a worktree that means the feature branch: the promotion rides the PR, the squash-merge

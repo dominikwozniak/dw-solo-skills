@@ -35,7 +35,7 @@ user's go, never on its own.
 
 - [x] 1. `dw-grill` step 5 — the playback names every resource the conversation pointed at, beside
       the left-out list, so `dw-shape` has them to write down.
-- [ ] 2. `skills/dw-shape/SKILL.md:166` — add `References` to the enumeration of the skeleton it
+- [x] 2. `skills/dw-shape/SKILL.md:166` — add `References` to the enumeration of the skeleton it
       already writes; `:63-66` already requires the section.
 - [ ] 3. `templates/work-README.md:13` and its byte-identical `.ai/README.md` twin — the change-doc
       line gains references, in one commit, verified with `cmp`.

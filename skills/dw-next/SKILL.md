@@ -120,8 +120,8 @@ One task at a time, however many the mode allows.
   one a later session would act on and delete the rest — the reasoning belongs in that task's commit
   message, which is where a reader who wants it goes. What survives the cut and still needs more has
   outgrown Notes: it belongs where `dw-land` promotes it — a decision record, a `CONTEXT.md` term, a
-  gotcha in its topic file — or it is a task here. The archived doc keeps these lines, so a
-  paragraph written here is one `dw-land` has to trim at close.
+  gotcha in its topic file — or it is a task here. Whatever these lines still hold at close is what
+  the archive keeps verbatim, so a paragraph written here is one `dw-land` has to trim.
 - **Clear a `HANDOFF.md` you consumed** — `git rm` it in this same commit. It described the middle of
   the task you just finished, so leaving it behind strands the next session on a state that is gone.
   Anything in it worth keeping goes to Notes first.

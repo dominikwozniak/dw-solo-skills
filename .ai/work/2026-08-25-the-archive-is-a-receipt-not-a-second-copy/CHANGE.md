@@ -98,3 +98,5 @@ keeps its `## Why rejected`. A new entry lands near 15 lines where today's avera
   the work pair say it too — added as task 6.
 - The sibling merged mid-build, so this rebased onto it and took `0.5.4` / `0.1.33`; the only conflict
   was the work-README promote-target list, which gained a fifth entry.
+- `0004`'s Decision still mandates the pointer this change retires, so the amending record `dw-land`
+  promotes at close is what keeps the seventh copy from shipping (codex found it).

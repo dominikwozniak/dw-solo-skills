@@ -78,13 +78,20 @@ order.
 ### 5. Close explicitly
 
 Stop when the remaining unknowns wouldn't change what gets built. Say so, and play back the shared
-understanding in a few lines: what we're building, what we decided, what we deliberately left out.
+understanding in a few lines: what we're building, what we decided, every resource the conversation
+pointed at, and what we deliberately left out.
 
 Keep that last list explicit and separate: `dw-shape` reads it back as a Decision in `CHANGE.md`, and
 gives each item its own choice at shape time — into the change, into `.ai/backlog/`, or dropped. So
-name every one of them; an item you leave out of the playback never gets that choice. **This skill
-still writes nothing** — a playback the next step can act on is the deliverable, and an interviewer
-that also files things is one you can't run to think out loud.
+name every one of them; an item you leave out of the playback never gets that choice.
+
+**Name the resources too** — a URL, a design doc, a sibling repo, a file you were told to read.
+`dw-shape` writes them into the change's `## References`, which `dw-next` reads before it builds; a
+pointer you had and didn't play back is one the build session rediscovers from nothing, or works
+without.
+
+**This skill still writes nothing** — a playback the next step can act on is the deliverable, and an
+interviewer that also files things is one you can't run to think out loud.
 
 **Do not start implementing.** Getting agreement is the whole job here — writing it down is
 `dw-shape`'s, and building it is `dw-next`'s.

@@ -2,7 +2,7 @@
 change: carry-references-through-the-loop-and-keep-them-accurate
 branch: carry-references-through-the-loop-and-keep-them-accurate
 created: 2026-08-25
-status: shaping # shaping | building | landed
+status: building # shaping | building | landed
 ---
 
 # Change — a reference given at grill or shape time reaches the build, and stays true
@@ -33,7 +33,7 @@ user's go, never on its own.
 
 ## Tasks
 
-- [ ] 1. `dw-grill` step 5 — the playback names every resource the conversation pointed at, beside
+- [x] 1. `dw-grill` step 5 — the playback names every resource the conversation pointed at, beside
       the left-out list, so `dw-shape` has them to write down.
 - [ ] 2. `skills/dw-shape/SKILL.md:166` — add `References` to the enumeration of the skeleton it
       already writes; `:63-66` already requires the section.

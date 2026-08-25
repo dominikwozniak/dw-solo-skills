@@ -37,7 +37,7 @@ user's go, never on its own.
       the left-out list, so `dw-shape` has them to write down.
 - [x] 2. `skills/dw-shape/SKILL.md:166` — add `References` to the enumeration of the skeleton it
       already writes; `:63-66` already requires the section.
-- [ ] 3. `templates/work-README.md:13` and its byte-identical `.ai/README.md` twin — the change-doc
+- [x] 3. `templates/work-README.md:13` and its byte-identical `.ai/README.md` twin — the change-doc
       line gains references, in one commit, verified with `cmp`.
 - [ ] 4. `promote.md` + `dw-land` step 3 — a reference this change made stale becomes a target:
       flagged with the others, edited on the user's go, and **skipped outright when the doc named

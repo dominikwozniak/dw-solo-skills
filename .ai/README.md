@@ -10,7 +10,7 @@ active change is and where it stands.
 backlog/<date>-<slug>.md      follow-ups not being done now   (dw-land + dw-shape park, dw-shape takes)
                               entry shape and the two bars: backlog/README.md
 work/<date>-<slug>/CHANGE.md  the live state of ONE change    (dw-shape writes, dw-next ticks)
-                              goal · decisions taken · task checklist · anchors
+                              goal · decisions taken · task checklist · anchors · references
                               branch: unclaimed until dw-start / dw-next claims it
 work/<date>-<slug>/HANDOFF.md the middle of a task, saved     (dw-handoff writes, dw-next clears)
                               optional — only with the dw-solo-extras plugin installed

@@ -15,9 +15,10 @@ archive move, and the PR that carries them. The report ends with a link; `dw-shi
 ## What it reads and writes
 
 Reads the diff against the default branch, and `.ai/work/<date>-<slug>/CHANGE.md` (found by branch, the same
-way `dw-next` finds it — by land time the change is always claimed). Writes to four **tracked,
+way `dw-next` finds it — by land time the change is always claimed). Writes to five **tracked,
 durable** places — `docs/decisions/<NNNN>-<slug>.md`, `CONTEXT.md`, wherever this repo keeps its
-gotchas (below), and `.ai/backlog/` (one file per follow-up) — and then moves the `CHANGE.md` scaffolding to
+gotchas (below), whatever file a `## References` entry points at, and `.ai/backlog/` (one file per
+follow-up) — and then moves the `CHANGE.md` scaffolding to
 `.ai/archive/<date>-<slug>/`, flipping its `status:` to `landed`. `.ai/` is tracked in git; this is the one
 skill that takes something out of `work/` on purpose. Then it pushes the branch and opens the PR the
 way `dw-git` does — untracked output, and the last thing it reports.
@@ -92,8 +93,10 @@ Then **stop.** You've graded the work; the user decides what happens next.
 When the user approves — an unambiguous affirmative like "close" or "go", not a hedged "looks fine,
 I guess"; wait for a plain one — and only then promote, in this order: the **decisions** to
 `docs/decisions/`, the **vocabulary** to `CONTEXT.md`, the **gotchas** to wherever this repo keeps
-them, the **follow-ups** to `.ai/backlog/`, the **scaffolding** to `.ai/archive/<date>-<slug>/` — then one
-commit carrying all of it.
+them, the **references** this change made stale to wherever they point, the **follow-ups** to
+`.ai/backlog/`, the **scaffolding** to `.ai/archive/<date>-<slug>/` — then one commit carrying all
+of it. A reference edit takes its own yes: it rewrites a line the change never touched, and the doc
+naming no references skips the step entirely.
 
 `references/promote.md` is that procedure: the bar each target holds to, where a gotcha goes when the
 repo has no `## Gotchas` section, and what each target deletes rather than appends. Read it before
@@ -152,7 +155,7 @@ is the default.
 
 ## References
 
-- `references/promote.md` — phase 3's procedure: the five targets in order, the bar each one holds
+- `references/promote.md` — phase 3's procedure: the six targets in order, the bar each one holds
   to, and what each deletes rather than appends. Read it when the go arrives.
 - `references/decision-record.md` — the shape for `docs/decisions/<NNNN>-<slug>.md`, the test for
   whether a decision deserves a record at all, and how a record is superseded rather than rewritten.

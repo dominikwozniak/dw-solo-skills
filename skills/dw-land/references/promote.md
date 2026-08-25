@@ -1,6 +1,6 @@
-# Promotion — the five targets, in order, and what each one deletes
+# Promotion — the six targets, in order, and what each one deletes
 
-Phase 3 of `dw-land`, after the user's go and never before it. The five bullets below run in the
+Phase 3 of `dw-land`, after the user's go and never before it. The six bullets below run in the
 order they appear, and the commit at the end carries all of them.
 
 **Promotion replaces; it does not append.** For each target below, read what is already there before
@@ -9,9 +9,9 @@ stops being read, which costs you the promotion step entirely — and where a ca
 baseline exists, appending is what makes the build fail.
 
 **Promotion is scoped by the verdict.** Each target takes only what the verdict explicitly named —
-a decision candidate, a term, a trap, a follow-up. Nothing is harvested here after the fact: a
-candidate discovered while promoting is a verdict finding that arrived late, so name it to the user
-before writing it. **Most lands promote nothing to any target**, and a close whose only residue is
+a decision candidate, a term, a trap, a stale pointer, a follow-up. Nothing is harvested here after
+the fact: a candidate discovered while promoting is a verdict finding that arrived late, so name it
+to the user before writing it. **Most lands promote nothing to any target**, and a close whose only residue is
 the archive move is the lane working, not a step skipped.
 
 - **Promote the decisions.** Anything from Decisions or Notes that a future session would need and
@@ -56,6 +56,21 @@ the archive move is the lane working, not a step skipped.
     the layer may shrink freely and grows only through a commit that re-records it. So the entry is
     paid for: cut what it made untrue, or re-record on purpose in this commit and let the number
     move where you can see it. A silent increase is the one option that isn't there.
+
+- **Promote the references — only where this change made one wrong.** Read the doc's `## References`
+  and ask of each entry whether the diff just made it untrue: it routes to something this change
+  built, names a version it bumped, a path it moved, a question it settled. A reference that lies is
+  worse than one that is missing, because it gets followed. **No `## References` section, or nothing
+  in it gone stale, and this target is skipped** — that is the normal answer and it needs no comment.
+  Same rule as the vocabulary: **rewrite the line, never add a second beside it**; two states of one
+  pointer is the drift this target exists to end.
+
+  This is the one target that edits a file the change never touched, so **name it to the user before
+  writing it** applies at its sharpest: give the file, the line and the correction, and get a plain
+  yes for that edit. The go that opened this phase approved closing the change, not rewriting
+  somebody else's line. Where the pointer lives outside this repo — a sibling checkout, a URL, a file
+  this commit cannot reach — it is not promotable at all: hand it to the follow-up bullet below as a
+  report-open item.
 
 - **Promote the follow-ups — after doing the ones that don't deserve to be one.** Take every
   follow-up the verdict named, plus anything deliberately left out, and test each against

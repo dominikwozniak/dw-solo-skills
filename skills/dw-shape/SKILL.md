@@ -163,7 +163,7 @@ assumptions.
 - `references/splitting.md` — what to write once the HARD STOP is answered, either way. Read it only
   at N ≥ 2; the default count of one never reaches it.
 - `references/CHANGE.md` — the exact shape to copy: frontmatter (`change / branch / created / status`)
-  plus Goal · Decisions · Tasks · Anchors · Notes. Keep it a note to your future self, not
+  plus Goal · Decisions · Tasks · Anchors · References · Notes. Keep it a note to your future self, not
   documentation; durable knowledge is what `dw-land` promotes to `docs/decisions/` and `CONTEXT.md`.
 
 **Next:** `dw-start` to open the change in its own worktree, `dw-next` to build it right here, or `dw-grill` if the read-back exposed something still undecided.

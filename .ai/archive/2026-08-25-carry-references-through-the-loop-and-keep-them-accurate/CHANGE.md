@@ -1,8 +1,10 @@
 ---
 change: carry-references-through-the-loop-and-keep-them-accurate
-branch: unclaimed
+branch: carry-references-through-the-loop-and-keep-them-accurate
 created: 2026-08-25
-status: shaping # shaping | building | landed
+status: landed # shaping | building | landed
+landed: 2026-08-25
+pr: "#47"
 ---
 
 # Change — a reference given at grill or shape time reaches the build, and stays true
@@ -33,16 +35,16 @@ user's go, never on its own.
 
 ## Tasks
 
-- [ ] 1. `dw-grill` step 5 — the playback names every resource the conversation pointed at, beside
+- [x] 1. `dw-grill` step 5 — the playback names every resource the conversation pointed at, beside
       the left-out list, so `dw-shape` has them to write down.
-- [ ] 2. `skills/dw-shape/SKILL.md:166` — add `References` to the enumeration of the skeleton it
+- [x] 2. `skills/dw-shape/SKILL.md:166` — add `References` to the enumeration of the skeleton it
       already writes; `:63-66` already requires the section.
-- [ ] 3. `templates/work-README.md:13` and its byte-identical `.ai/README.md` twin — the change-doc
+- [x] 3. `templates/work-README.md:13` and its byte-identical `.ai/README.md` twin — the change-doc
       line gains references, in one commit, verified with `cmp`.
-- [ ] 4. `promote.md` + `dw-land` step 3 — a reference this change made stale becomes a target:
+- [x] 4. `promote.md` + `dw-land` step 3 — a reference this change made stale becomes a target:
       flagged with the others, edited on the user's go, and **skipped outright when the doc named
       none**. Title and count move from five to six.
-- [ ] 5. Bump `dw-solo` and `dw-solo-setup` in both manifests, re-record the corpus baseline, run
+- [x] 5. Bump `dw-solo` and `dw-solo-setup` in both manifests, re-record the corpus baseline, run
       every check in the `scripts` block.
 
 ## Anchors
@@ -86,3 +88,8 @@ user's go, never on its own.
   take the same number: whichever lands later re-reads both manifests and takes the next one, and
   re-records the corpus baseline against its own base. `validate-manifests.sh` only checks the two
   numbers are **equal**, never that either moved, so it will not catch a duplicate.
+- Took `dw-solo` `0.5.2` and `dw-solo-setup` `0.1.32`; `dw-grain` must now take `0.5.3`.
+- The corpus ratchet counts `skills/*/SKILL.md` only, so `references/*.md` prose is unratcheted —
+  which is why the sixth target's detail lives in `promote.md` and step 3 stays four lines.
+- `dw-land`'s frontmatter description still names four promote targets, left alone on purpose: it is
+  a routing surface, and step 3 is what a reader follows.

@@ -48,11 +48,11 @@ keeps its `## Why rejected`. A new entry lands near 15 lines where today's avera
 
 ## Anchors
 
-- `skills/dw-land/references/promote.md:82-92` — the archive bullet: a bare `git mv` plus three
+- `skills/dw-land/references/promote.md:97-108` — the archive bullet: a bare `git mv` plus three
   frontmatter flips, which is why nothing today shortens anything.
-- `skills/dw-land/references/promote.md:1` — "the five targets, in order, and **what each one
+- `skills/dw-land/references/promote.md:1` — "the six targets, in order, and **what each one
   deletes**": the delete-half is the shape task 2 follows.
-- `skills/dw-land/SKILL.md:140-148` — `reject`, and the refusal to write one without a reason.
+- `skills/dw-land/SKILL.md:143-154` — `reject`, and the refusal to write one without a reason.
 - `skills/dw-next/SKILL.md:114-119` — "**One finding, one line.** […] a note that runs to a paragraph
   is a tax on every resume" — the rule that exists and does not bind.
 - `skills/dw-shape/references/CHANGE.md` — `## Notes` says "one line each"; the second ignored copy.

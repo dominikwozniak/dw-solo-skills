@@ -38,6 +38,14 @@ Artifacts are real work documents, committed with the code — not scratch.
   change here. Edit both halves in the same commit, then `diff` them and confirm the only difference is
   the repo-specific paragraph.
 
+- **What one file says about another's contents goes stale silently.** Adding a sixth promote target
+  left the count wrong in `dw-land`'s body, in its `## References` row and in both `*-README.md`
+  twins — and those twins legitimately count one fewer, excluding the archive move that `promote.md`
+  includes, so the two numbers differ on purpose. Separately, shifting lines inside a `SKILL.md` broke
+  three `## Anchors` ranges in an _unclaimed sibling_ `CHANGE.md` — which no promote target reads,
+  since the reference target reads the landing change's own `## References`. Before committing a
+  structural edit to a skill, grep the count words and `git grep` the file's path across `.ai/work/`.
+
 - **A script that splits a `CHANGE.md` at its first `## Notes` truncates the file**, because a task can
   quote that heading inline while describing where a finding goes. It ate a task and the whole
   `## Anchors` section here, and two commits shipped short before anyone noticed — the file still

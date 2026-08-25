@@ -2,7 +2,8 @@
 change: carry-references-through-the-loop-and-keep-them-accurate
 branch: carry-references-through-the-loop-and-keep-them-accurate
 created: 2026-08-25
-status: building # shaping | building | landed
+status: landed # shaping | building | landed
+landed: 2026-08-25
 ---
 
 # Change — a reference given at grill or shape time reaches the build, and stays true

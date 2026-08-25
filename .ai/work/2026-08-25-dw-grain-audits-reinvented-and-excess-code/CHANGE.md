@@ -1,6 +1,6 @@
 ---
 change: dw-grain-audits-reinvented-and-excess-code
-branch: unclaimed
+branch: dw-grain-audits-reinvented-and-excess-code
 created: 2026-08-25
 status: shaping
 ---

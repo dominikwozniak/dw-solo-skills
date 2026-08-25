@@ -4,6 +4,7 @@ branch: carry-references-through-the-loop-and-keep-them-accurate
 created: 2026-08-25
 status: landed # shaping | building | landed
 landed: 2026-08-25
+pr: "#47"
 ---
 
 # Change — a reference given at grill or shape time reaches the build, and stays true

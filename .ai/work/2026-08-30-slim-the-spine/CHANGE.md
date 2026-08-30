@@ -45,7 +45,7 @@ baseline is re-recorded lower.
 - [x] 4. dw-grill ≤40 lines, behaviour unchanged
 - [x] 5. dw-check ≤70 lines
 - [x] 6. dw-git ≤90 lines
-- [ ] 7. dw-start and dw-ship: claim and sweep logic out, worktree mechanics kept
+- [x] 7. dw-start and dw-ship: claim and sweep logic out, worktree mechanics kept
 - [ ] 8. templates: typecheck hook incremental + commit-time variant, one bash-guard dispatcher for
       the four PreToolUse hooks, check-agents-docs.mjs format checks downgraded to warnings,
       templates/AGENTS.md solo-lane section matches the new skills

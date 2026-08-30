@@ -304,7 +304,7 @@ echo "legacy CLAUDE.local.md is NOT carried in — the link class is retired:"
 # group pins is the retirement itself, in the one case that used to trigger it: a legacy file sitting
 # in the main tree.
 #
-# A legacy repo still READS its own file — lint-on-edit and typecheck-on-stop resolve AGENTS.md first
+# A legacy repo still READS its own file — lint-on-edit and typecheck-on-commit resolve AGENTS.md first
 # and CLAUDE.local.md second, and that is untouched. Nothing carries it across a worktree boundary any
 # more, and `create` must not mention it in either direction: a message about a file the scaffold
 # stopped writing is noise on every worktree of every repo made from here on.

@@ -4,8 +4,8 @@
 # One change, one worktree, one branch: `create <slug>` puts a worktree at
 # .claude/worktrees/<slug> on a new branch <slug> — the same parent dir `claude --worktree`
 # uses, already gitignored by the managed block. `remove <slug>` tears the pair down after
-# the change shipped. Mechanics only: which change to build, claiming it in CHANGE.md, and
-# whether the branch is merged are the calling skill's judgment, not this script's.
+# the change shipped. Mechanics only: which change to build and whether the branch
+# is merged are the calling skill's judgment, not this script's.
 #
 # Subcommands:
 #   worktree.sh create <slug> [base]   worktree + branch <slug> at [base] (default HEAD);
@@ -117,7 +117,7 @@ EOF
 # nothing, in a lane whose whole argument is that unused machinery costs more than it saves.
 #
 # What NOT to conclude from this: the `AGENTS.md`-first, `CLAUDE.local.md`-second resolution in
-# `lint-on-edit` and `typecheck-on-stop` is a different thing and stays. A legacy repo still reads its
+# `lint-on-edit` and `typecheck-on-commit` is a different thing and stays. A legacy repo still reads its
 # own file; nothing carries it into a worktree any more, because nothing needs to.
 #
 # Name what the worktree still hasn't got. Copy is handled above; the other class —
@@ -255,7 +255,7 @@ case "$cmd" in
       exit 1
     fi
     # A branch living only on origin is invisible to show-ref, so a fresh clone would happily
-    # re-create it and race the claim. Best-effort by design: no origin configured answers the
+    # re-create it and collide with work already pushed elsewhere. Best-effort by design: no origin configured answers the
     # question with "no remote to conflict with", and an unreachable one must not block offline
     # work — it gets a warning, never a refusal.
     #

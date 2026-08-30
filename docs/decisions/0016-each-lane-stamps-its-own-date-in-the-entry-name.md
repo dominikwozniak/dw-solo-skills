@@ -37,6 +37,10 @@ must also read `branch: unclaimed` and `status: shaping` against a twin reading 
 `rejected:` — where before the name alone was proof. Paying for a sortable listing with a weaker
 identity on the one step that deletes work is the real cost here.
 
+Since [0019](0019-a-change-doc-exists-only-on-its-feature-branch.md), the resurrection sweep and the
+`branch: unclaimed` sentinel it read are gone — a change doc exists only on its feature branch — so
+the sweep's second condition retired with them. The naming rule this record decides is unaffected.
+
 Keeping the date only in frontmatter was the alternative, and it costs nothing to maintain: no
 renames, no per-lane rule, no prefix to strip. It was rejected because the date is then invisible at
 exactly the moment it is wanted — reading the folder — and `dw-prune` and `dw-start` both had to

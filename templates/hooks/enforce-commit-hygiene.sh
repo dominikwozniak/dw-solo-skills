@@ -66,7 +66,7 @@ DEFAULT_PATTERN='^(build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test)
 # resolve_declared <label> <default> — echoes the declared value, the literal
 # `none`, or <default>. POSIX classes, not `\s`: BSD sed does not implement it in
 # ERE, and `:\s*` captures a leading space that reads as "declared" downstream —
-# the trap lint-on-edit.sh and typecheck-on-stop.sh each sprang once.
+# the trap lint-on-edit.sh and the since-retired typecheck-on-stop.sh each sprang once.
 resolve_declared() {
   local label="$1" fallback="$2" md line rest value
   for md in "$repo_root/AGENTS.md" "$repo_root/CLAUDE.local.md"; do

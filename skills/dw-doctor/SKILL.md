@@ -11,7 +11,7 @@ description: >-
 Confirm the machine actually has what this repo's hooks and skills assume, and that the wiring
 resolves — before a missing tool silently degrades things. The sharpest case: every
 `.claude/hooks/*.sh` opens with `command -v jq >/dev/null || exit 0`, so on a box without `jq` the
-dangerous-command block, `.env` protection, pnpm enforcement, and lint/typecheck-on-edit hooks
+dangerous-command block, `.env` protection, pnpm enforcement, and lint-on-edit/typecheck-on-commit hooks
 **all quietly no-op** and nobody notices. Same failure class for a missing `pnpm`, a
 `settings.json` pointing at a hook that isn't executable, or a typecheck hook with no `tsc` to
 call.

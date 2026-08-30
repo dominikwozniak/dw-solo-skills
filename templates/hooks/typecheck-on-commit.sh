@@ -38,7 +38,7 @@ fi
 
 [[ -z "$staged" ]] && exit 0
 
-# Same resolver as typecheck-on-stop.sh — POSIX classes, `none` tested on the
+# Same resolver as lint-on-edit.sh — POSIX classes, `none` tested on the
 # raw remainder before backtick extraction, blank-safe.
 resolve_typecheck_cmd() {
   local md line rest from_md

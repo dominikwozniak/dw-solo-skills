@@ -37,7 +37,7 @@ baseline is re-recorded lower.
 
 <!-- Convention: `- [ ]` pending, `- [x]` done; append ` — <short sha>` when the task's commit lands. -->
 
-- [ ] 1. dw-shape ≤70 lines: shape on the branch (offer `git switch -c <slug>` from the default
+- [x] 1. dw-shape ≤70 lines: shape on the branch (offer `git switch -c <slug>` from the default
       branch, or a backlog entry when queueing), fold splitting.md in, one stop instead of three
 - [ ] 2. dw-next ≤70 lines: claiming ladder out (claiming.md deleted), fixed resume-report contract
       with status tags, inline promotion rule, tick-convention moved into references/CHANGE.md

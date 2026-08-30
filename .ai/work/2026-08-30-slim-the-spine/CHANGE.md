@@ -39,7 +39,7 @@ baseline is re-recorded lower.
 
 - [x] 1. dw-shape ≤70 lines: shape on the branch (offer `git switch -c <slug>` from the default
       branch, or a backlog entry when queueing), fold splitting.md in, one stop instead of three
-- [ ] 2. dw-next ≤70 lines: claiming ladder out (claiming.md deleted), fixed resume-report contract
+- [x] 2. dw-next ≤70 lines: claiming ladder out (claiming.md deleted), fixed resume-report contract
       with status tags, inline promotion rule, tick-convention moved into references/CHANGE.md
 - [ ] 3. dw-land ≤80 lines + promote.md deleted + decision-record.md ≤40 lines
 - [ ] 4. dw-grill ≤40 lines, behaviour unchanged

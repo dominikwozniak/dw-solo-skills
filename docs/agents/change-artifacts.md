@@ -13,20 +13,20 @@ Artifacts are real work documents, committed with the code — not scratch.
   goals. Where two of them touch the same file, that's an **ordering** sentence in the `## Notes` of
   whichever lands second — never a dependency field, which would be the status column this lane exists
   to avoid.
-- **The `branch: unclaimed` sentinel is load-bearing.** With no index, it is the only thing telling an
-  unopened change from an open one, so anything touching `.ai/work/` must respect it. Who flips it and
-  when belongs to `dw-start` and `dw-next`.
+- **A change doc exists only on its feature branch** ([`0019`](../decisions/0019-a-change-doc-exists-only-on-its-feature-branch.md)).
+  The unopened queue is `.ai/backlog/`, one entry per idea; `dw-shape` on the default branch writes
+  there or switches to a new branch first, and `dw-start` opens a worktree whose `dw-shape` expands
+  the entry. There is no `branch: unclaimed` sentinel and no claim step any more — the branch field
+  is written once, verbatim, at shape time.
 - **The promotion commit lands on the feature branch**, so a squash-merge carries it to the default
   branch — as it does the change folder's move to `.ai/archive/<date>-<slug>/`, which is the same commit. What
   gets promoted where is `CONTEXT.md`'s **Promotion** entry.
-- **A work doc can come back from the dead, and the archive twin is how you tell.** Where the shaping
-  commit was still local-only when the PR squashed, the rebase replays it on top of the squash and
-  re-creates `.ai/work/<date>-<slug>/CHANGE.md` at its shaping-time state, for a change that has
-  landed. Both halves of the pair then exist, and the `work/` one is the stale half — the check is
-  whether the **bare slug** is already in `.ai/archive/`, never the date prefix, which the two lanes
-  stamp separately. The slug alone no longer proves it, though: a slug is reusable where an exact
-  folder name was not, so `unclaimed` + `shaping` against a twin reading `landed:` is the other half.
-  `dw-ship` sweeps it as its last step; the procedure is there.
+- **Residue after a squash: the archive twin is how you tell.** A local-only commit on the default
+  branch that created a lane entry a landed branch consumed is replayed by the post-squash rebase,
+  re-creating the entry for a change that already landed. The check is whether the **bare slug** is
+  already in `.ai/archive/` with `landed:` or `rejected:` — never the date prefix, which the lanes
+  stamp separately. `dw-ship`'s last step looks once; with shaping confined to feature branches the
+  answer is almost always "nothing".
 
 ## Gotchas
 

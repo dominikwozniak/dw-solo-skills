@@ -49,7 +49,7 @@ baseline is re-recorded lower.
 - [x] 8. templates: typecheck hook incremental + commit-time variant, one bash-guard dispatcher for
       the four PreToolUse hooks, check-agents-docs.mjs format checks downgraded to warnings,
       templates/AGENTS.md solo-lane section matches the new skills
-- [ ] 9. docs sweep: AGENTS.md loop, README, CONTEXT.md (Claim term out, duplicate Ratchet entry
+- [x] 9. docs sweep: AGENTS.md loop, README, CONTEXT.md (Claim term out, duplicate Ratchet entry
       merged), docs/agents/change-artifacts.md, a decision record for the queue move
 - [ ] 10. wiring: evals cases still route, plugin versions bumped (dw-solo, dw-solo-setup),
       corpus baseline re-recorded, full gate green

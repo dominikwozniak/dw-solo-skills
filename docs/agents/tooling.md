@@ -43,7 +43,8 @@ you ship.
 
 Every one opens with `command -v jq >/dev/null || exit 0` — **without `jq` on `PATH` they all silently
 no-op**, and nothing says so. `/dw-doctor` is the check. `templates/hooks/` ships a ninth,
-`typecheck-on-stop.sh`, deliberately unwired here because this repo has no typecheck.
+`typecheck-on-commit.sh` and `typecheck-on-stop.sh`, deliberately unwired here because this repo
+has no typecheck.
 
 `hooks-in-sync.test.sh` pins the templates ≡ installed copies invariant **inside this repo only**;
 `dw-doctor` is the only thing that sees it in a consumer, comparing every wired `.claude/hooks/*.sh`

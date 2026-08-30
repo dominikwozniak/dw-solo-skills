@@ -65,10 +65,11 @@ any tree and past the guard that refuses `git push origin --delete`.
 
 ### 5. Sync, and one safety check
 
-`git pull` on the default branch. Then look once: a `.ai/work/` folder here whose bare slug
-(`slugify.sh undate` both sides) has an `.ai/archive/` twin reading `landed:` or `rejected:` is
-residue a pre-slim shape-on-main commit replayed after the squash — `git rm -r` it, commit and
-push. With change docs shaped only on feature branches this finds nothing.
+`git pull` on the default branch. Then look once: a `.ai/work/` folder or `.ai/backlog/` entry
+here whose bare slug (`slugify.sh undate` both sides) has an `.ai/archive/` twin reading `landed:`
+or `rejected:` is residue a replayed local-only commit brought back after the squash — `git rm -r`
+it, commit and push. With change docs shaped only on feature branches this almost always finds
+nothing.
 
 ### 6. Report
 

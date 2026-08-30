@@ -58,9 +58,9 @@ stale task. Order is a hint — take a later task when this one is blocked, and 
 - **Test the way the project does** — failing test first where the task has a real assertion; say
   so where it genuinely doesn't, instead of fabricating one.
 - **Follow the anchors, use the project's words** — patterns from the doc, names from `CONTEXT.md`.
-- **Promote as you decide** — a decision clearing the bar in `dw-land`'s
-  `references/decision-record.md`, or a term the glossary lacks, is written to `docs/decisions/` /
-  `CONTEXT.md` in this task's commit rather than saved up for the close.
+- **Promote as you decide** — a decision clearing the decision-record bar (`dw-land` carries it as
+  a reference), or a term the glossary lacks, is written to `docs/decisions/` / `CONTEXT.md` in
+  this task's commit rather than saved up for the close.
 - **Leave it green** — run the tests; lint and typecheck are hook-owned in this lane.
 
 ### 4. Tick, note, commit

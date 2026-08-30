@@ -51,7 +51,7 @@ baseline is re-recorded lower.
       templates/AGENTS.md solo-lane section matches the new skills
 - [x] 9. docs sweep: AGENTS.md loop, README, CONTEXT.md (Claim term out, duplicate Ratchet entry
       merged), docs/agents/change-artifacts.md, a decision record for the queue move
-- [ ] 10. wiring: evals cases still route, plugin versions bumped (dw-solo, dw-solo-setup),
+- [x] 10. wiring: evals cases still route, plugin versions bumped (dw-solo, dw-solo-setup),
       corpus baseline re-recorded, full gate green
 
 ## Anchors

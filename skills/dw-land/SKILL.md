@@ -9,159 +9,95 @@ argument-hint: "bare for the verdict — your go closes it and opens the PR · c
 
 # dw-land — one thin verdict, then keep what's worth keeping
 
-Two phases with an explicit gate between them: a verdict, then — on your word — promotion, the
-archive move, and the PR that carries them. The report ends with a link; `dw-ship` merges it.
+Two phases with an explicit gate: a verdict, then — on your word — the closing sweep, the archive
+move, and the PR. `dw-ship` merges it.
 
 ## What it reads and writes
 
-Reads the diff against the default branch, and `.ai/work/<date>-<slug>/CHANGE.md` (found by branch, the same
-way `dw-next` finds it — by land time the change is always claimed). Writes to five **tracked,
-durable** places — `docs/decisions/<NNNN>-<slug>.md`, `CONTEXT.md`, wherever this repo keeps its
-gotchas (below), whatever file a `## References` entry points at, and `.ai/backlog/` (one file per
-follow-up) — and then moves the `CHANGE.md` scaffolding to
-`.ai/archive/<date>-<slug>/`, flipping its `status:` to `landed`. `.ai/` is tracked in git; this is the one
-skill that takes something out of `work/` on purpose. Then it pushes the branch and opens the PR the
-way `dw-git` does — untracked output, and the last thing it reports.
+The diff against the default branch — base and its ref resolved the way `dw-git` does — plus the
+branch's `.ai/work/<date>-<slug>/CHANGE.md` (found by the same grep `dw-next` uses), `CONTEXT.md`
+and `docs/decisions/`, so the verdict judges against this project's choices. Writes the closing
+checklist's targets, moves the change doc to `.ai/archive/`, then pushes and opens the PR.
 
 ## Workflow
 
-### 1. Establish what actually changed
+### 1. The verdict — one pass, four questions
 
-- `git diff <base>...HEAD` plus `git log --oneline <base>..HEAD`, where `<base>` is the default branch
-  **and the ref of it** resolved the way `dw-git` does — never `origin/` by reflex. Picking the wrong
-  one of the two moves the merge-base off your branch point, and the diff swallows commits you didn't
-  write.
-- Read the `CHANGE.md`: the goal, the ticked tasks, the Notes.
-- Read `CONTEXT.md` and `docs/decisions/` if present, so the verdict is against this project's
-  established choices rather than a generic standard.
-
-### 2. The verdict — one pass, four questions
-
-One thin pass, all four together, every finding at a real `file:line` you opened — **if you can't
-ground it, don't report it.**
-
-**Read the diff yourself; never delegate this pass.** It is a last look, not a review pipeline —
-mid-build scrutiny is `dw-check`'s job, and giving the verdict its own reviewer is the one thing this
-step must not grow. It is also **not a toll gate**: when you already trust the diff, say so and go
+Read the diff yourself — never delegate this pass; mid-build scrutiny was `dw-check`'s job. Every
+finding sits at a real `file:line` you opened, and when you already trust the diff, say so and go
 straight to closing.
 
-- **Correct?** Does it do what the goal said — including the edge case, the error path, the empty
-  input?
-- **Does it fit?** A pattern used once elsewhere in this repo beats a better pattern used nowhere
-  in it.
-- **Blast radius?** What else reaches this code — and name every **one-way door** (migration, data
-  deletion, renamed public API, changed env var) explicitly as irreversible.
-- **Is "done" proven?** A box ticked because the code "looks right" is unproven — say so rather
-  than ratifying it; where a cheap check settles it, run the project's own command.
+- **Correct?** — the goal's behaviour, plus the edge case, the error path, the empty input.
+- **Does it fit?** — a pattern used once elsewhere in this repo beats a better one used nowhere.
+- **Blast radius?** — what else reaches this code; name every one-way door (migration, data
+  deletion, renamed public API) as irreversible.
+- **Is "done" proven?** — name the rung each claim reached: said so · pointed at the line · showed
+  the bad case impossible · ran it · reproduced it in the artifact a user gets. A claim short of
+  "ran it" is spoken aloud, never written up as settled.
 
-**Name the rung each proof reached** — for that question and for blast radius both. Five, weakest
-first: you said so · you pointed at the line · you showed the bad case cannot happen · **you ran it** ·
-you reproduced it in the artifact a user gets rather than the tree you edited. Push each safety claim
-as far down as is cheap, then **say where it stopped**: a claim short of "you ran it" is spoken aloud,
-never written up as settled. Where the repo records how to drive itself — a `VERIFY.md`, or whatever it
-keeps — the bottom two rungs cost a read instead of a re-derivation; where it records nothing, that
-ceiling is itself part of the answer.
+**The completion gate:** read the `## Goal` against the **diff, not the checklist** — an
+undelivered result is **not ready**, never "ready with follow-ups"; finish it, or the user amends
+the goal. One carve-out: a result only CI can show is **pending on the push**, handed to `dw-ship`.
 
-Close with one line — **ready to merge**, **ready with follow-ups**, or **not ready** and why.
-Name every follow-up and sort each into one of three fates, cheapest first: **done now** — it
-fits this session, so phase 3 starts by doing it, not filing it; **report-open** — worth a line
-in the report and the PR body, no file; **backlog** — it genuinely exceeds the session, and
-phase 3 writes it in the full format `references/promote.md` states. An unnamed follow-up
-vanishes into the archive unread, and a session-sized one written up instead of done is the
-queue growth this lane exists to refuse.
+Close with one line — **ready to merge**, **ready with follow-ups**, or **not ready** and why —
+and sort each follow-up: **done now** (phase 2 starts by doing it) · **report-open** (a line in
+the report and PR body) · **backlog** (genuinely exceeds the session). Then **stop**: the user
+decides what happens next.
 
-**The completion gate.** Read the `## Goal` as a list of observable results and check each against
-the **diff, not the checklist** — every box can be ticked with a result still unmet. An undelivered
-result is **not ready**, never _ready with follow-ups_: parking it is how a change sheds the thing it
-existed to do. Two ways out, both the user's call — finish it, or amend the `## Goal` and re-run the
-verdict against what the change now claims.
+### 2. Close — on an explicit go
 
-**One carve-out, and it is not an escape hatch.** A result the working tree cannot show — "CI is
-green", where the project's workflows only run on a pull request or a push to the default branch — is
-not _undelivered_ at land time; it is _unobservable_ at land time, and the closing order (this skill
-before `dw-ship`) is what makes it so. Record it in the verdict as **pending on the push**, name the
-task that carries it, and hand it to `dw-ship`, which reads the checks on the PR step 4 opens. Such a
-change closes **ready to merge** with that line attached — nothing is undelivered — and never _ready
-with follow-ups_, which would park the very thing step 4 is about to set running. Anything you could
-have run yourself gets no such pass — the bar is that the evidence does not exist yet, never that
-gathering it is inconvenient.
+`dw-next` already promoted decisions and terms as they happened, so most closes only sweep. Each
+target is read first — **replace, don't append**, deleting what this change made untrue:
 
-Then **stop.** You've graded the work; the user decides what happens next.
+- **Decisions** — anything unpromoted that clears `references/decision-record.md`'s bar; most
+  changes add zero records, and that is correct. Flip a superseded record in the same pass.
+- **Vocabulary** — new or sharpened terms into `CONTEXT.md`, one line each; rewrite a line, never
+  add a second definition beside it.
+- **Gotchas** — a trap that cost real time goes to the routed topic file covering it (the root
+  file only where it already keeps a `## Gotchas`) — and where a mechanism (hook, lint rule,
+  check) could refuse the trap outright, build or backlog that instead of writing prose.
+- **Stale references** — a `## References` entry the diff made untrue is rewritten where it lives;
+  that edits a file the change never touched, so name the exact line and get a yes first.
+- **Follow-ups** — do the ones cheaper to do than to file; report-open is the default; a
+  `.ai/backlog/<date>-<slug>.md` file (frontmatter `created:`, `source:`, `why-not-now:`,
+  `effort:`) only for work that genuinely exceeds the session. `git rm` any entry the diff
+  completed.
+- **Archive** — `git mv .ai/work/<shaped date>-<slug>/ .ai/archive/<today>-<slug>/`; flip to
+  `status: landed` with `landed: YYYY-MM-DD`. Trim the doc to a receipt: delete Goal, Decisions,
+  Anchors and References — keep the frontmatter, the H1, the task list as `dw-next` left it, and
+  the Notes no target took.
 
-### 3. Close — only on explicit approval
+One commit carries all of it.
 
-When the user approves — an unambiguous affirmative like "close" or "go", not a hedged "looks fine,
-I guess"; wait for a plain one — and only then promote, in this order: the **decisions** to
-`docs/decisions/`, the **vocabulary** to `CONTEXT.md`, the **gotchas** to wherever this repo keeps
-them, the **references** this change made stale to wherever they point, the **follow-ups** to
-`.ai/backlog/`, the **scaffolding** to `.ai/archive/<date>-<slug>/` — then one commit carrying all
-of it. A reference edit takes its own yes: it rewrites a line the change never touched, and the doc
-naming no references skips the step entirely.
+### 3. Open the PR — under the same go
 
-`references/promote.md` is that procedure: the bar each target holds to, where a gotcha goes when the
-repo has no `## Gotchas` section, and what each target deletes rather than appends. Read it before
-writing any of them.
+`git push -u origin <branch>`, then `gh pr create`, both the way `dw-git` does; fill the archived
+doc's `pr:` as a one-line follow-up commit. Don't wait on CI — opening the PR is what starts it,
+and `dw-ship` reads the checks. On the default branch there is no PR — the close was the whole
+step. No `origin` at all — say so and stop at the close commit.
 
-### 4. Open the PR — under the same go
+### 4. Report
 
-The go that closed the change opens its PR: nothing here is irreversible — a pushed branch is
-deletable, an open PR closeable, the squash `dw-ship`'s — and CI and a second pair of eyes have
-nothing to look at until the PR exists. Where the change skipped `dw-check`, the link is the moment to
-say so and offer `/codex:review --wait`; the window before the merge is what it is for.
-
-- **On the default branch there is no PR**, so closing the artifacts was the whole step. Point at
-  `dw-ship`, whose fast path is the plain `git push` — irreversible, which is why it stays a separate
-  command, and the run it starts is the change's first CI.
-- **No `origin` at all** → say so and stop at the close commit. Never pretend to have pushed, and don't
-  reach for a remote that isn't there: `dw-ship` still owns the local ending (switch, merge, delete).
-- Otherwise, both the way `dw-git` does them: `git push -u origin <branch>`, then `gh pr create`.
-- **Then record the number**, which step 3 could not know: fill `pr:` in the archived doc and push that
-  one-line commit on top, which the squash folds back into the close commit.
-- **Don't wait on CI.** **Opening the PR** is what starts the run — the workflows of a repo like this
-  one trigger on `pull_request` and on a push to the default branch, so pushing the branch alone
-  triggers nothing. `dw-ship` reads the checks; a result the verdict left **pending on the push** is
-  named in the report, not watched here.
-
-### 5. Report
-
-What was promoted, what was parked, what was archived — and **the PR link last**, the thing acted on
-next. Then stop: this skill does not merge, because the squash is the one-way door and that call is
-`dw-ship`'s.
+What was promoted, parked and archived — the PR link last. This skill never merges; the squash is
+`dw-ship`'s one-way door.
 
 ## Modes
 
-The mode is read from `$ARGUMENTS`. Empty means bare — nothing mutates until the user's go, so that
-is the default.
-
-- **bare** — the verdict, then **stop**. An unambiguous go in the conversation — "close", "close
-  it", "go" — runs steps 3 to 5 in this same invocation, PR included; never send the user back for a
-  second slash command. A hedged reply is not a go.
-- **`close`** — the trust shortcut: the user already trusts the diff, so state the verdict in one
-  line and close — PR and all — without waiting for a go. One exception: a verdict that comes out
-  **not ready** stops here too — report it and wait; closing over it takes an explicit word from a
-  user who has seen it. Never close blind.
-- **`reject`** — the idea was turned down, or the work was abandoned half-built; one status covers
-  both. Skip the verdict; there is no diff worth judging. Promote as usual (a rejection still leaves
-  follow-ups worth keeping), then archive with `status: rejected`,
-  `rejected: YYYY-MM-DD` — also the archive folder's date prefix — and `pr:` naming the **closed,
-  unmerged** PR. The doc must carry a
-  `## Why rejected` — what was tried, what killed it, what would justify revisiting — and **writing it
-  without a reason is refused**: an empty one costs a folder and teaches nothing, which is the whole
-  failure this mode exists to prevent. **The archive trim spares that section** — it deletes
-  `## Goal`, `## Decisions`, `## Anchors` and `## References`, and `## Why rejected` is on no such
-  list: here it is the entire reason the folder exists, and the line `dw-shape` reads to refuse
-  shaping the same idea twice. An idea turned down before it was ever shaped has nothing to
-  move: write `.ai/archive/<rejected date>-<slug>/CHANGE.md` directly, the slug derived the way
-  `dw-shape` does so a re-shape still finds it by bare slug. **Commit somewhere that survives**: nothing will be merged here, so a
-  record on the rejected branch dies with it — use a short branch off the default one and open a PR
-  for that.
+- **bare** — the verdict, then stop. A plain "go" or "close" in the conversation runs phases 2–3
+  in this same invocation; a hedged reply is not a go.
+- **`close`** — the trust shortcut: one-line verdict, then close at once — unless it comes out
+  **not ready**, which always stops.
+- **`reject`** — the idea was turned down or the work abandoned: skip the verdict, promote what is
+  still worth keeping, archive with `status: rejected`, `rejected: YYYY-MM-DD` and a
+  `## Why rejected` naming what was tried and what killed it — refuse to write one without a
+  reason. The archive trim spares that section. Commit it somewhere that survives the branch — a
+  short branch off the default one and a PR.
 
 ## References
 
-- `references/promote.md` — phase 3's procedure: the six targets in order, the bar each one holds
-  to, and what each deletes rather than appends. Read it when the go arrives.
-- `references/decision-record.md` — the shape for `docs/decisions/<NNNN>-<slug>.md`, the test for
-  whether a decision deserves a record at all, and how a record is superseded rather than rewritten.
-  Read it before promoting.
+- `references/decision-record.md` — the bar a decision record must clear, and its shape. Read it
+  before writing any record.
 
 **Next:** `dw-ship` to merge the PR and clean up, or `dw-shape` for the next change.
+
+$ARGUMENTS

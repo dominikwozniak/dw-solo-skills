@@ -34,19 +34,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash \"${CLAUDE_PROJECT_DIR}/.claude/hooks/block-dangerous-commands.sh\""
-          },
-          {
-            "type": "command",
-            "command": "bash \"${CLAUDE_PROJECT_DIR}/.claude/hooks/block-non-pnpm.sh\""
-          },
-          {
-            "type": "command",
-            "command": "bash \"${CLAUDE_PROJECT_DIR}/.claude/hooks/enforce-commit-hygiene.sh\""
-          },
-          {
-            "type": "command",
-            "command": "bash \"${CLAUDE_PROJECT_DIR}/.claude/hooks/credential-leak-guard.sh\""
+            "command": "bash \"${CLAUDE_PROJECT_DIR}/.claude/hooks/bash-guard.sh\"",
+            "timeout": 120
           }
         ]
       },
@@ -87,18 +76,6 @@
           {
             "type": "command",
             "command": "bash \"${CLAUDE_PROJECT_DIR}/.claude/hooks/large-file-guard.sh\""
-          }
-        ]
-      }
-    ],
-    "Stop": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash \"${CLAUDE_PROJECT_DIR}/.claude/hooks/typecheck-on-stop.sh\"",
-            "timeout": 120,
-            "statusMessage": "Typechecking..."
           }
         ]
       }

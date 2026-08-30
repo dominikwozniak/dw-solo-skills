@@ -7,10 +7,14 @@
 
 set -uo pipefail
 
-command -v jq >/dev/null || exit 0
-
-INPUT=$(cat)
-COMMAND=$(jq -r '.tool_input.command // empty' <<<"$INPUT")
+# Fast path: the bash-guard.sh dispatcher already parsed stdin — reuse it.
+if [[ -n "${DW_GUARD_COMMAND:-}" ]]; then
+  COMMAND="$DW_GUARD_COMMAND"
+else
+  command -v jq >/dev/null || exit 0
+  INPUT=$(cat)
+  COMMAND=$(jq -r '.tool_input.command // empty' <<<"$INPUT")
+fi
 
 [[ -z "$COMMAND" ]] && exit 0
 

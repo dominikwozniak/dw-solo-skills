@@ -13,7 +13,7 @@
 ## Always
 
 _(this project's invariants — start with whatever you have already had to say twice. Two worth seeding:
-the existing layout wins over any skill's preference, and docs follow the change in the same commit.)_
+the existing layout wins over any skill's preference, and docs are updated before the change lands.)_
 
 ## Ask First
 
@@ -56,10 +56,10 @@ Match a task against this table **before** researching or coding, and read every
 the last two, one decision each: `/dw-land` ends with an open PR, `/dw-ship` merges it.
 
 The four below are **grep-read by the hooks**, so they live here and nowhere else: `lint-on-edit`
-appends one file path to the first, so it must accept one; `typecheck-on-stop` runs the second over the
-whole project; `enforce-commit-hygiene` matches the third as an ERE against a `-m` subject and requires
-the fourth as a trailer line. `none` disables any of them, standing alone on the line — write it where
-the project genuinely has none, because a stale rule is worse than an honest gap.
+appends one file path to the first, so it must accept one; `typecheck-on-commit` runs the second before
+a `git commit` that stages TS; `enforce-commit-hygiene` matches the third as an ERE against a `-m`
+subject and requires the fourth as a trailer line. `none` disables any of them, standing alone on the
+line — write it where the project genuinely has none, because a stale rule is worse than an honest gap.
 
 - **Lint command**: {{LINT_COMMAND}}
 - **Typecheck command**: {{TYPECHECK_COMMAND}}

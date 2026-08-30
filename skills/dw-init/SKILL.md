@@ -72,11 +72,14 @@ Templates come from `${CLAUDE_PLUGIN_ROOT}/templates/` — this lane's own paylo
 
 ### 2. Pick the hooks
 
-Five are always offered because they're stack-agnostic: `block-dangerous-commands`,
-`block-env-access`, `enforce-commit-hygiene`, `credential-leak-guard` and `large-file-guard`. Add the
-JS/TS ones only where that stack is actually present: `block-non-pnpm`, `lint-on-edit`,
-`typecheck-on-stop`. On a stack with no lint or typecheck hook, offer the five alone and say the rest
-are stack-specific rather than silently writing nothing.
+Six are always offered because they're stack-agnostic: `bash-guard` (the PreToolUse dispatcher —
+one stdin parse, then it spawns each guard only when the command could trip it),
+`block-dangerous-commands`, `block-env-access`, `enforce-commit-hygiene`, `credential-leak-guard`
+and `large-file-guard`. Add the JS/TS ones only where that stack is actually present:
+`block-non-pnpm`, `lint-on-edit`, `typecheck-on-commit` (the declared typecheck before a commit
+that stages TS — `typecheck-on-stop` remains available for a repo that prefers a per-turn pass, at
+a measured 4-5 s per turn). On a stack with no lint or typecheck hook, offer the six alone and say
+the rest are stack-specific rather than silently writing nothing.
 
 `guard-plugin-canon` is **shape-specific, not stack-specific** — offer it only where step 1 found a
 `plugins/` directory whose entries are symlinks back into the tree. It refuses an edit aimed through

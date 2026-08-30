@@ -46,7 +46,7 @@ baseline is re-recorded lower.
 - [x] 5. dw-check ≤70 lines
 - [x] 6. dw-git ≤90 lines
 - [x] 7. dw-start and dw-ship: claim and sweep logic out, worktree mechanics kept
-- [ ] 8. templates: typecheck hook incremental + commit-time variant, one bash-guard dispatcher for
+- [x] 8. templates: typecheck hook incremental + commit-time variant, one bash-guard dispatcher for
       the four PreToolUse hooks, check-agents-docs.mjs format checks downgraded to warnings,
       templates/AGENTS.md solo-lane section matches the new skills
 - [ ] 9. docs sweep: AGENTS.md loop, README, CONTEXT.md (Claim term out, duplicate Ratchet entry
@@ -70,3 +70,7 @@ baseline is re-recorded lower.
 - `.inspirations/open-mercato-skills` — convention embedded in the artifact (`om-auto-continue-pr`)
 
 ## Notes
+
+- The template check-agents-docs.mjs needed no loosening — the strict format checks (ADR gapless
+  numbering, lane frontmatter stamps) are grateful-me-app-v2's own vendored extensions, so the
+  relaxation belongs in that repo.

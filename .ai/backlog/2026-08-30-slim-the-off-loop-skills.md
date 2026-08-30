@@ -11,3 +11,7 @@ effort: one sitting — same editing rules, six files
 the pre-slim prose density. Apply the same rules: rationale ≤1 sentence per rule, edge cases the
 model handles anyway cut, no mandatory references — mechanics unchanged. Re-record the corpus
 baseline after.
+
+Fold in while there: `dw-init` should tell the scaffold to prune `guard-plugin-canon.sh` from the
+consumer's settings — outside a repo with symlinked `plugins/` it can never fire, yet the wired
+entry pays two jq spawns on every edit forever (its own SKILL.md already admits this at 84-87).

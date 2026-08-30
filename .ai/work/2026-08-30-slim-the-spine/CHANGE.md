@@ -43,7 +43,7 @@ baseline is re-recorded lower.
       with status tags, inline promotion rule, tick-convention moved into references/CHANGE.md
 - [x] 3. dw-land ≤80 lines + promote.md deleted + decision-record.md ≤40 lines
 - [x] 4. dw-grill ≤40 lines, behaviour unchanged
-- [ ] 5. dw-check ≤70 lines
+- [x] 5. dw-check ≤70 lines
 - [ ] 6. dw-git ≤90 lines
 - [ ] 7. dw-start and dw-ship: claim and sweep logic out, worktree mechanics kept
 - [ ] 8. templates: typecheck hook incremental + commit-time variant, one bash-guard dispatcher for

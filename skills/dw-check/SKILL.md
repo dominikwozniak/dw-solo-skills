@@ -10,103 +10,60 @@ argument-hint: "bare delegates the pass · codex forces it on a trivial diff · 
 
 # dw-check — a fast look, then fixes
 
-**This is the review step, and it is repeatable mid-build.** Run it twice while the diff is small;
-`dw-land`'s closing verdict stays a thin last look and never grows a reviewer of its own.
+**The review step, repeatable mid-build.** Run it while the diff is small; `dw-land`'s closing
+verdict stays a thin last look and never grows a reviewer of its own.
 
 ## What it reads
 
-The diff against the default branch — both the branch and **the ref of it** resolved the way `dw-git`
-does, never `origin/` by reflex; `<base>` below is that ref. Plus the change's `CHANGE.md` for the
-goal, found by branch the same way `dw-next` finds it. `$ARGUMENTS` is read two ways, and this is the
-one skill in the catalog that mixes them: the single word **`codex`** forces the delegated pass past
-the triviality floor (step 2), and anything else — including whatever follows that word — narrows the
-focus to a path or a topic.
-
-It writes **no `.ai/` artifact** — approved fixes land as code commits, and a gate you re-run
-freely doesn't need a report file rotting between runs.
+The diff against the default branch — base and its ref resolved the way `dw-git` does — plus the
+branch's `CHANGE.md` goal, so findings are judged against what the change is trying to do, not
+against taste. `$ARGUMENTS` is read two ways: the single word `codex` forces the delegated pass
+past the triviality floor, and anything else narrows the focus to a path or a topic. It writes no
+`.ai/` artifact — approved fixes land as code commits.
 
 ## Workflow
 
 ### 1. Establish the diff
 
-`git diff <base>...HEAD` plus `git log --oneline <base>..HEAD`, narrowed by the
-focus part of `$ARGUMENTS` when given — `codex` is a mode, never a path. Read the `CHANGE.md` goal so
-findings are judged against what the change is trying to do, not against taste.
+`git diff <base>...HEAD` plus `git log --oneline <base>..HEAD`, narrowed by the focus when given.
 
 ### 2. Delegate by default, above a floor
 
-**Bare delegates.** The second model is what this gate adds over reading your own diff again, and
-gating that on a word you have to remember is how it went unused — so hand the diff to `codex:rescue`
-whenever the codex plugin is installed, without asking first.
+Bare hands the diff to `codex:rescue` whenever the codex plugin is installed, without asking — the
+second model is what this gate adds. Two things send it to step 3 unassisted, each costing one
+line saying so, never a silent skip:
 
-Two things send the diff to step 3 unassisted, and each costs **one line saying so**, never a silent
-skip:
+- **A trivial diff** — 2 files or fewer **and** under 50 lines from `git diff --shortstat`.
+  `codex` overrides this floor, and only this floor.
+- **No reviewer installed** — self-review, naming the fix in the same line:
+  `/plugin marketplace add openai/codex-plugin-cc`, then `/plugin install codex@openai-codex` —
+  or `/codex:setup` when it's installed but not ready.
 
-- **A trivial diff** — 2 files or fewer **and** under 50 lines touched, from
-  `git diff --shortstat <base>...HEAD` (insertions plus deletions). A typo or a copy edit is not
-  worth the round trip; anything above the floor is.
-- **No reviewer installed** — self-review, plus the fix in that same line:
-  `/plugin marketplace add openai/codex-plugin-cc`, then `/plugin install codex@openai-codex`. Where
-  the plugin is there but not ready, `/codex:setup` is the fix instead — it checks the CLI and auth.
-  Any other installed reviewer that takes a diff and returns findings folds in the same way, and
-  **this skill never depends on one being there.**
+`/codex:review --wait` is the richer, user-typed pass — name it when the diff deserves the better
+tool, ideally once `dw-land` has opened the PR. Either way, quote delegated findings verbatim,
+then **verify each against the file before it counts** — line numbers are the first thing to check.
 
-**`codex` overrides the floor, and only the floor** — it forces the pass on a two-line diff, and it
-cannot conjure a plugin that isn't installed.
+### 3. Two axes, judged separately — never merged into one score
 
-Two paths into the plugin, and they are not interchangeable:
-
-- **`codex:rescue`** — model-invocable, so **this skill can run it itself**: the `codex:rescue`
-  command forwards to the `codex:codex-rescue` subagent via the `Agent` tool. No round trip through
-  the user. This is what bare uses.
-- **`/codex:review --wait`** — the purpose-built reviewer, and the richer report. It is
-  `disable-model-invocation: true`, so **no skill can run it** — name it for the user to type when the
-  diff deserves the better tool, and wait for the findings to land in the conversation. Its moment is
-  a change that already has an open PR — `dw-land` opens one before the merge decision, and that
-  window is what the richer pass wants.
-
-Either way the findings fold into step 3's report. `codex:rescue` returns Codex's output verbatim by
-its own contract, which pulls against that: **quote it verbatim, then verify each finding against the
-file before it counts.** A delegated finding is still a finding that has to point at a real
-`file:line` — an outside reviewer earns no exemption from step 3, and its line numbers are the first
-thing to check.
-
-### 3. Two axes, judged separately
-
-Whether delegated or self-reviewed, weigh two things and **report them side by side, never merged
-into one score** — a fit problem must not hide behind "it's correct":
-
-- **Correct?** Does the diff do what the goal says? Edge cases, error paths, the empty input, the
-  call that fails. Anything actually broken.
-- **Does it fit?** Compare against the neighbouring code, not best practice in the abstract. A
-  pattern used once elsewhere in this repo beats a better pattern used nowhere in it.
+- **Correct?** — does the diff do what the goal says: edge cases, error paths, the empty input.
+- **Does it fit?** — compared against the neighbouring code, not best practice in the abstract.
 
 Every finding points at a real `file:line` you opened — if you can't ground it, don't report it.
-"No findings on either axis" is a normal, useful answer; say it plainly and stop.
+"No findings on either axis" is a normal, useful answer; say it plainly and stop. Then filter, and
+name what you dismissed, one line each:
 
-**Then filter, and say what you dropped.** Findings arrive without the context you have — the change
-doc, the decisions already taken, what was tried and rejected. An outside reviewer never saw those, and
-a self-review has stopped weighing them by the second pass. This is judgement over the list, not a
-second review of the diff:
-
-- **All nits means the diff is probably fine — lead with that.** Anything asked for findings tends to
-  fill the space, so a report made entirely of style preferences is evidence about the code. The
-  conclusion goes first and the nits follow it as dismissals, never the other way round.
-- **"I would have done it differently" is the commonest false positive.** A preferred approach is not a
-  finding until it names a concrete problem with this one. Same for an abstraction proposed for code
-  that has to change in exactly one way, and for a pattern called odd that the neighbouring files use.
-- **More than five things to act on means the filter is too loose** — go back through them. Correctness
-  and security are the exception: those earn more scrutiny before dismissal, not less.
-- **Name what you dismissed, one line each.** That is what lets the user overrule you, and it costs
-  less than the finding did.
+- All nits means the diff is probably fine — lead with that conclusion, nits after it.
+- "I would have done it differently" is not a finding until it names a concrete problem with this.
+- More than five things to act on means the filter is too loose — except correctness and security,
+  which earn more scrutiny before dismissal, not less.
 
 ### 4. Present, wait, then fix
 
 List the findings with a severity-ordered recommendation and **stop — nothing is fixed without
-approval.** On approval, fix the accepted findings in-session and commit the way `dw-git` does —
-related fixes together, unrelated ones apart. Then offer to run again: the second look is the
-point of a gate this cheap.
+approval.** On approval, fix in-session and commit the way `dw-git` does — related fixes together,
+unrelated apart. Then offer to run again; the second look is the point of a gate this cheap.
 
-**Next:** `dw-next` for the next task, `dw-land` when the boxes are all ticked, or `dw-grain` where
-`dw-solo-extras` is installed — it audits code this pass found correct but heavier than the change
-needed.
+**Next:** `dw-next` for the next task, `dw-land` when nothing is pending, or `dw-grain` where
+`dw-solo-extras` is installed.
+
+$ARGUMENTS

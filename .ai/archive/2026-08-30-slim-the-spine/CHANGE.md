@@ -4,7 +4,7 @@ branch: slim-the-spine
 created: 2026-08-30
 status: landed
 landed: 2026-08-30
-pr: ""
+pr: "#49"
 ---
 
 # Change — slim the spine and retire the unclaimed queue

@@ -10,8 +10,8 @@
 # Subcommands:
 #   worktree.sh create <slug> [base]   worktree + branch <slug> at [base] (default HEAD);
 #                                      copies the .worktreeinclude matches in, reports what
-#                                      still needs installing; prints the worktree's absolute
-#                                      path on stdout
+#                                      still needs installing or copying by hand; prints the
+#                                      worktree's absolute path on stdout
 #   worktree.sh remove <slug>          remove the worktree, delete its branch, prune
 #
 # Everything create does past `git worktree add` is best-effort and speaks only on stderr, so
@@ -108,6 +108,22 @@ EOF
     echo "worktree.sh: copied $copied file(s) named by .worktreeinclude" >&2
 }
 
+# The one copy-class file the loop cannot self-serve: an env file is gitignored — never checked
+# out — and the block-env-access guard keeps the agent from copying it, so the only mover is the
+# human. Report-only, like everything else past `git worktree add`. Example/sample/template
+# basenames are the secret-free allowlist and stay out of the warning.
+report_missing_env() {
+  local src_root="$1" dst_root="$2" missing="" rel
+  while IFS= read -r rel; do
+    [ -n "$rel" ] || continue
+    [ -e "$dst_root/$rel" ] && continue
+    missing="$missing $rel"
+  done < <(git -C "$src_root" -c core.quotePath=false ls-files -o -i --exclude-standard 2>/dev/null |
+    grep -E '(^|/)\.env(\.[^/]+)?$|(^|/)\.envrc$' | grep -vE '\.(example|sample|template)$' || true)
+  [ -n "$missing" ] || return 0
+  echo "worktree.sh: env file(s) in the main tree but not in this worktree:$missing — gitignored, so never checked out, and the env guard stops the agent from copying them: copy by hand or list them in .worktreeinclude" >&2
+}
+
 # THE LINK CLASS IS GONE, and this note is what is left of it. Personal agent memory used to be a
 # gitignored `CLAUDE.local.md`, which `git worktree add` never checks out — so it was carried in as a
 # symlink rather than a copy: one source of truth, so an edit in either tree was visible in both.
@@ -134,11 +150,43 @@ EOF
 # worktree that exists and warns beats one that refused to finish.
 # Newline-delimited string rather than an array: macOS ships bash 3.2, where expanding an empty
 # array under `set -u` is an error, and the rest of this script stays 3.2-safe too.
+
+# The repo's own word for "make this checkout buildable": a declared
+# `- **Bootstrap command**: \`cmd\`` bullet, resolved AGENTS.md-first / CLAUDE.local.md-second like
+# the hooks' Lint and Typecheck bullets. A declared `none`, a template placeholder, or a blank
+# value resolve to nothing and the lockfile guess below takes over.
+resolve_bootstrap_cmd() {
+  local dst_root="$1" md line rest value
+  for md in "$dst_root/AGENTS.md" "$dst_root/CLAUDE.local.md"; do
+    [ -f "$md" ] || continue
+    line="$(grep -E '^[[:space:]]*[-*]?[[:space:]]*\*{0,2}Bootstrap command\*{0,2}:' "$md" | head -n1)" || true
+    [ -n "$line" ] || continue
+    rest="$(printf '%s\n' "$line" | sed -e 's/.*Bootstrap command[*]*://' -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
+    case "$rest" in
+      none | None | NONE | none[!A-Za-z0-9]* | None[!A-Za-z0-9]* | NONE[!A-Za-z0-9]*) return 0 ;;
+    esac
+    value="$(printf '%s\n' "$line" | sed -n 's/.*Bootstrap command[*]*:[^`]*`\([^`]*\)`.*/\1/p')"
+    [ -z "$value" ] && value="$rest"
+    value="$(printf '%s' "$value" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
+    if [ -n "$value" ] && [ "$value" != "{{BOOTSTRAP_COMMAND}}" ]; then
+      printf '%s\n' "$value"
+      return 0
+    fi
+  done
+}
+
 report_readiness() {
   local dst_root="$1"
   local missing=""
 
-  if [ -f "$dst_root/package.json" ] && [ ! -d "$dst_root/node_modules" ]; then
+  # A declared bootstrap beats lockfile guessing: the repo names install + codegen + submodule
+  # init in one line, so the guess below stands down.
+  local bootstrap
+  bootstrap="$(resolve_bootstrap_cmd "$dst_root")" || true
+  if [ -n "$bootstrap" ]; then
+    missing="$missing  - bootstrap — run: $bootstrap
+"
+  elif [ -f "$dst_root/package.json" ] && [ ! -d "$dst_root/node_modules" ]; then
     if [ -f "$dst_root/pnpm-lock.yaml" ]; then
       missing="$missing  - dependencies — run: pnpm install
 "
@@ -285,6 +333,7 @@ case "$cmd" in
     # `already exists` guards above make a half-created one expensive to retry. A missing include
     # file is worth a warning, never a failure.
     copy_worktree_includes "$root" "$path" || true
+    report_missing_env "$root" "$path" || true
     report_readiness "$path" || true
     printf '%s\n' "$path"
     ;;

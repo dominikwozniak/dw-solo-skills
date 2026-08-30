@@ -16,6 +16,7 @@
       "Bash(git push -f*)",
       "Bash(git reset --hard*)",
       "Bash(git clean *)",
+      "Bash(git branch -D*)",
       "Bash(rtk * repo delete *)",
       "Bash(rtk * pr close *)",
       "Bash(rtk * issue close *)",
@@ -23,7 +24,8 @@
       "Bash(rtk find * -delete*)",
       "Bash(rtk find * -exec*)",
       "Bash(rtk git push --force*)",
-      "Bash(rtk git push -f*)"
+      "Bash(rtk git push -f*)",
+      "Bash(rtk git branch -D*)"
     ],
     "deny": [
       "Read(./.env)",

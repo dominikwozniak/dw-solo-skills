@@ -32,11 +32,12 @@ you ship.
 
 | hook                          | fires on                                                                               |
 | ----------------------------- | -------------------------------------------------------------------------------------- |
+| `bash-guard.sh`               | PreToolUse(Bash) — the dispatcher: one stdin parse, spawns the Bash guards below       |
 | `block-dangerous-commands.sh` | PreToolUse(Bash) — destructive shell                                                   |
 | `block-non-pnpm.sh`           | PreToolUse(Bash) — npm/yarn/bun invocations                                            |
 | `enforce-commit-hygiene.sh`   | PreToolUse(Bash) — commit subject, trailer, backtick, `git add -A`                     |
 | `credential-leak-guard.sh`    | PreToolUse(Bash) — credential stores, env hunting, exfil                               |
-| `block-env-access.sh`         | PreToolUse(Read/Edit/Write/MultiEdit/NotebookEdit/Grep/Bash) — `.env`                  |
+| `block-env-access.sh`         | PreToolUse(Read/Edit/Write/MultiEdit/NotebookEdit/Grep) — `.env`; Bash via bash-guard  |
 | `guard-plugin-canon.sh`       | PreToolUse(Edit/Write/MultiEdit/NotebookEdit) — an edit aimed through a plugin symlink |
 | `lint-on-edit.sh`             | PostToolUse(Write/Edit/MultiEdit) — the root's Lint command                            |
 | `large-file-guard.sh`         | PostToolUse(Write) — an oversized write, after the fact                                |

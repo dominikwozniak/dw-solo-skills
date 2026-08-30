@@ -100,6 +100,14 @@ prose mentioning .env
 EOF
 cat .env"
 
+echo "the DW_GUARD_COMMAND fast path skips stdin:"
+DW_GUARD_COMMAND='cat .env' bash "$HOOK" </dev/null >/dev/null 2>&1
+rc=$?
+if [ "$rc" -eq 2 ]; then note_pass "fast-path-blocks"; else note_fail "fast-path-blocks" "want exit 2, got $rc"; fi
+DW_GUARD_COMMAND='cat .env.example' bash "$HOOK" </dev/null >/dev/null 2>&1
+rc=$?
+if [ "$rc" -eq 0 ]; then note_pass "fast-path-allows"; else note_fail "fast-path-allows" "want exit 0, got $rc"; fi
+
 echo
 echo "block-env-access self-test: $PASS passed, $FAIL failed"
 [ "$FAIL" -eq 0 ]

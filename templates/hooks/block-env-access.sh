@@ -1,7 +1,9 @@
 #!/bin/bash
 # PreToolUse hook — blocks reading/editing/writing .env files (secrets).
-# Wire with matcher "Read|Edit|Write|MultiEdit|NotebookEdit|Grep|Bash":
-# file tools are checked via tool_input.file_path/.notebook_path/.path,
+# Wire with matcher "Read|Edit|Write|MultiEdit|NotebookEdit|Grep" — Bash calls
+# arrive through the bash-guard.sh dispatcher (DW_GUARD_COMMAND); a direct
+# "…|Bash" wiring still works, stdin is parsed when the variable is absent.
+# File tools are checked via tool_input.file_path/.notebook_path/.path,
 # Bash via tokens of tool_input.command (cat .env, source .env, cp x .env).
 # Allowed basenames: .env.example / .env.sample / .env.template (secret-free).
 # Exit 2 + stderr message causes Claude to see the block and self-correct.
@@ -9,10 +11,6 @@
 # (quoted paths in Bash slip through; permissions.deny is the backstop).
 
 set -uo pipefail
-
-command -v jq >/dev/null || exit 0
-
-INPUT=$(cat)
 
 ALLOWED_BASENAMES=(".env.example" ".env.sample" ".env.template")
 
@@ -60,12 +58,24 @@ block() {
   exit 2
 }
 
-TOOL_NAME=$(jq -r '.tool_name // "tool"' <<<"$INPUT")
+# Fast path: the bash-guard.sh dispatcher already parsed stdin — reuse it. The
+# variable only ever carries a Bash payload, so the file-tool checks are
+# skipped exactly when they cannot apply.
+if [[ -n "${DW_GUARD_COMMAND:-}" ]]; then
+  COMMAND="$DW_GUARD_COMMAND"
+else
+  command -v jq >/dev/null || exit 0
+  INPUT=$(cat)
 
-# File tools: a single path field.
-FILE_PATH=$(jq -r '.tool_input.file_path // .tool_input.notebook_path // .tool_input.path // empty' <<<"$INPUT")
-if [[ -n "$FILE_PATH" ]]; then
-  is_env_file "$FILE_PATH" && block "$TOOL_NAME" "$FILE_PATH"
+  TOOL_NAME=$(jq -r '.tool_name // "tool"' <<<"$INPUT")
+
+  # File tools: a single path field.
+  FILE_PATH=$(jq -r '.tool_input.file_path // .tool_input.notebook_path // .tool_input.path // empty' <<<"$INPUT")
+  if [[ -n "$FILE_PATH" ]]; then
+    is_env_file "$FILE_PATH" && block "$TOOL_NAME" "$FILE_PATH"
+  fi
+
+  COMMAND=$(jq -r '.tool_input.command // empty' <<<"$INPUT")
 fi
 
 # Bash: drop heredoc bodies, strip quoted spans (so prose like
@@ -75,7 +85,6 @@ fi
 # leak its inner lines as tokens. That fold is also why heredocs need their own
 # line-based pass first: by the time it runs there are no lines left to find a
 # terminator on, and a heredoc body carries no quoting to strip in any case.
-COMMAND=$(jq -r '.tool_input.command // empty' <<<"$INPUT")
 if [[ -n "$COMMAND" ]]; then
   STRIPPED=$(printf '%s\n' "$COMMAND" | strip_heredocs | tr '\n' ' ' | sed -E 's/"[^"]*"//g' | sed -E "s/'[^']*'//g")
   while IFS= read -r token; do

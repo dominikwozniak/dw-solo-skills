@@ -47,7 +47,7 @@
         ]
       },
       {
-        "matcher": "Read|Edit|Write|MultiEdit|NotebookEdit|Grep|Bash",
+        "matcher": "Read|Edit|Write|MultiEdit|NotebookEdit|Grep",
         "hooks": [
           {
             "type": "command",

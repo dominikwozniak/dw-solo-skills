@@ -24,9 +24,11 @@ run() {
   bash "$DIR/$1" </dev/null
 }
 
-# Always-on guards.
+# Always-on guards. block-env-access stays wired separately for the file
+# tools (Read/Edit/…); its Bash leg runs from here.
 run block-dangerous-commands.sh || exit $?
 run credential-leak-guard.sh || exit $?
+run block-env-access.sh || exit $?
 
 # Trigger-scoped guards — the substring tests over-approximate on purpose; the
 # guard itself does the exact matching, this only skips spawns that cannot fire.

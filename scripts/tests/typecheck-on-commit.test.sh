@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# Self-test for the typecheck-on-commit.sh hook template — the commit-time
-# successor to typecheck-on-stop.sh. What is pinned: only a real `git … commit`
-# triggers it (wrapper spellings included, prose mentions excluded), the
-# staged-TS gate comes before any resolution (`-a` widens it to tracked
-# modifications), `none` stops the chain, the DW_GUARD_COMMAND fast path works,
-# and a failing typecheck refuses the commit with exit 2 + stderr.
-# The resolver chain itself is pinned by typecheck-on-stop.test.sh — same code.
+# Self-test for the typecheck-on-commit.sh hook template. What is pinned: only
+# a real `git … commit` triggers it (wrapper spellings included, prose mentions
+# excluded), the staged-TS gate comes before any resolution (`-a` widens it to
+# tracked modifications), the resolver chain (tracked AGENTS.md over the legacy
+# CLAUDE.local.md, placeholder and blank values fall through, `none` stops the
+# chain even trailed by explanatory backticks), the DW_GUARD_COMMAND fast path,
+# and a failing typecheck refusing the commit with exit 2 + stderr.
 #
 # Run standalone (`bash scripts/tests/typecheck-on-commit.test.sh`) or via
 # scripts/validate-artifacts.sh. Exit 0 iff every case matches. bash 3.2 safe.
@@ -115,11 +115,41 @@ repo="$(fixture staged.ts)"
 expect_rc "env-path-exit-0" 0 "$?"
 ran "env-path-invoked" "$repo"
 
+echo "the resolver chain — AGENTS.md wins, placeholder and blank fall through:"
+repo="$(fixture staged.ts)"
+printf '## Project specifics\n\n- **Typecheck command**: `./absent-tc.sh`\n' >"$repo/CLAUDE.local.md"
+expect_rc "agents-beats-legacy-exit-0" 0 "$(run "$repo" 'git commit -m "x"')"
+ran "agents-beats-legacy-invoked" "$repo"
+
+repo="$(fixture staged.ts)"
+printf '# Fixture\n\n- **Stack**: nothing declared here\n' >"$repo/AGENTS.md"
+printf '## Project specifics\n\n- **Typecheck command**: `./fake-tc.sh`\n' >"$repo/CLAUDE.local.md"
+expect_rc "legacy-fallback-exit-0" 0 "$(run "$repo" 'git commit -m "x"')"
+ran "legacy-fallback-invoked" "$repo"
+
+repo="$(fixture staged.ts)"
+printf '# Fixture\n\n## Solo lane\n\n- **Typecheck command**: {{TYPECHECK_COMMAND}}\n' >"$repo/AGENTS.md"
+printf '## Project specifics\n\n- **Typecheck command**: `./fake-tc.sh`\n' >"$repo/CLAUDE.local.md"
+expect_rc "placeholder-falls-through-exit-0" 0 "$(run "$repo" 'git commit -m "x"')"
+ran "placeholder-falls-through-invoked" "$repo"
+
+repo="$(fixture staged.ts)"
+printf '# Fixture\n\n## Solo lane\n\n- **Typecheck command**:\n' >"$repo/AGENTS.md"
+printf '## Project specifics\n\n- **Typecheck command**: `./fake-tc.sh`\n' >"$repo/CLAUDE.local.md"
+expect_rc "blank-falls-through-exit-0" 0 "$(run "$repo" 'git commit -m "x"')"
+ran "blank-falls-through-invoked" "$repo"
+
 echo "\`none\` stops the chain:"
 repo="$(fixture staged.ts)"
 printf '# Fixture\n\n## Solo lane\n\n- **Typecheck command**: none\n' >"$repo/AGENTS.md"
+printf '## Project specifics\n\n- **Typecheck command**: `./fake-tc.sh`\n' >"$repo/CLAUDE.local.md"
 expect_rc "none-exit-0" 0 "$(run "$repo" 'git commit -m "x"')"
 never_ran "none-nothing-run" "$repo"
+
+repo="$(fixture staged.ts)"
+printf '# Fixture\n\n## Solo lane\n\n- **Typecheck command**: none — the `./fake-tc.sh` types are stripped\n' >"$repo/AGENTS.md"
+expect_rc "none-explanatory-backticks-exit-0" 0 "$(run "$repo" 'git commit -m "x"')"
+never_ran "none-beats-explanatory-backticks" "$repo"
 
 echo "a failing typecheck refuses the commit:"
 repo="$(fixture staged.ts)"

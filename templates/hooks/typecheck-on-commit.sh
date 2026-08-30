@@ -1,10 +1,9 @@
 #!/usr/bin/env bash
 # PreToolUse Bash hook — runs the declared typecheck before a `git commit` that
 # carries TS/TSX changes, so the commit is what proves the tree green and no
-# full-project pass runs at every turn end (its predecessor, typecheck-on-stop,
-# did — measured at 4-5 s of dead wall-clock per turn on a mid-size app).
-# Skip via CLAUDE_SKIP_TYPECHECK=1. Resolution order and the `none` sentinel
-# match typecheck-on-stop.sh:
+# full-project pass runs at every turn end (its retired per-turn predecessor
+# measured 4-5 s of dead wall-clock per turn on a mid-size app).
+# Skip via CLAUDE_SKIP_TYPECHECK=1. Resolution order, shared with lint-on-edit:
 #   1. AGENTS.md "Typecheck command:" → 2. CLAUDE.local.md → 3. package.json
 #   scripts.typecheck → 4. tsc --noEmit. A declared `none` stops the chain.
 # Exit 2 + stderr on failure refuses the commit and Claude self-corrects.

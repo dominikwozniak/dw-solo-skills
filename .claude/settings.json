@@ -5,6 +5,7 @@
       "Bash(rm *)",
       "Bash(rm -*)",
       "Bash(rmdir *)",
+      "Bash(rtk rmdir *)",
       "Bash(find * -delete*)",
       "Bash(shred *)",
       "Bash(sudo *)",

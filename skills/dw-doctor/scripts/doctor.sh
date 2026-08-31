@@ -275,18 +275,23 @@ if [ -f "$settings" ]; then
   else
     report ok ".claude/settings.json" "present"
     if have jq; then
-      found_hook=0
-      while IFS= read -r cmd; do
-        [ -z "$cmd" ] && continue
-        script_path="$(printf '%s' "$cmd" | grep -oE '[^" ]*\.sh' | head -n1)"
-        [ -z "$script_path" ] && continue
-        found_hook=1
-        script_path="${script_path//\$\{CLAUDE_PROJECT_DIR\}/$ROOT}"
-        script_path="${script_path//\$CLAUDE_PROJECT_DIR/$ROOT}"
-        case "$script_path" in /*) ;; *) script_path="$ROOT/$script_path" ;; esac
+      # $2 is how a missing file reads: a hook settings.json wires is "wired" and its
+      # absence is a FAIL; one the dispatcher spawns is "dispatched", where absence is
+      # a legitimate prune (dw-init drops guard-plugin-canon) but also how a typo looks.
+      # block-env-access is both wired for the file tools and dispatched for Bash, so
+      # without this it would be reported twice.
+      CHECKED_HOOKS="|"
+      check_hook_script() {
+        local script_path="$1" origin="$2" rel tmpl
+        case "$CHECKED_HOOKS" in *"|$script_path|"*) return 0 ;; esac
+        CHECKED_HOOKS="$CHECKED_HOOKS$script_path|"
         rel="${script_path#"$ROOT"/}"
         if [ ! -f "$script_path" ]; then
-          report fail "hook script" "missing: $rel — that guardrail won't run"
+          if [ "$origin" = dispatched ]; then
+            report warn "hook script" "$rel is spawned by bash-guard.sh but absent — pruned on purpose, or a typo that silently disables that guard"
+          else
+            report fail "hook script" "missing: $rel — that guardrail won't run"
+          fi
         elif [ ! -x "$script_path" ]; then
           report fail "hook script" "not executable: $rel — fix: chmod +x"
         else
@@ -301,6 +306,29 @@ if [ -f "$settings" ]; then
           else
             report ok "hook script" "$rel"
           fi
+        fi
+      }
+
+      found_hook=0
+      while IFS= read -r cmd; do
+        [ -z "$cmd" ] && continue
+        script_path="$(printf '%s' "$cmd" | grep -oE '[^" ]*\.sh' | head -n1)"
+        [ -z "$script_path" ] && continue
+        found_hook=1
+        script_path="${script_path//\$\{CLAUDE_PROJECT_DIR\}/$ROOT}"
+        script_path="${script_path//\$CLAUDE_PROJECT_DIR/$ROOT}"
+        case "$script_path" in /*) ;; *) script_path="$ROOT/$script_path" ;; esac
+        check_hook_script "$script_path" wired
+
+        # settings.json names the dispatcher, not the guards it spawns, so without this
+        # the Bash guards — the destructive-command, .env and pnpm ones among them — are
+        # checked by nothing at all.
+        if [ "$(basename "$script_path")" = bash-guard.sh ] && [ -f "$script_path" ]; then
+          while IFS= read -r spawned; do
+            [ -z "$spawned" ] && continue
+            check_hook_script "$(dirname "$script_path")/$spawned" dispatched
+          done < <(grep -oE '\b(guard|run) +[A-Za-z0-9._-]+\.sh' "$script_path" |
+            grep -oE '[A-Za-z0-9._-]+\.sh' | sort -u)
         fi
       done < <(jq -r '.hooks // {} | to_entries[] | .value[]? | .hooks[]? | .command // empty' "$settings" 2>/dev/null)
       [ "$found_hook" -eq 0 ] && report info "hooks" "none wired in settings.json"

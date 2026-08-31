@@ -25,10 +25,11 @@ smallest weight that still works:
   anything is written.
 - **The process outweighs the change** — one artifact instead of spec + plan + notes, one gated pass
   instead of five auditors and a separate writer.
-- **A private repo rots** — the change doc is archived at merge (`.ai/archive/`), and what's durable
-  is **promoted** first: decisions to `docs/decisions/`, terms to `CONTEXT.md`, traps to the routed
-  topic file that covers them, pointers the change made stale to wherever they point, follow-ups to
-  `.ai/backlog/`. Without that step you accumulate stale specs and lose the decisions worth keeping.
+- **A private repo rots** — what's durable is **promoted as it happens**: a decision or term lands
+  in `docs/decisions/` / `CONTEXT.md` in the commit that decided it (`dw-next`), and `dw-land`
+  sweeps the rest at close — gotchas to the routed topic file, stale pointers rewritten, follow-ups
+  to `.ai/backlog/` — before archiving the change doc (`.ai/archive/`). Without that you accumulate
+  stale specs and lose the decisions worth keeping.
 - **Commits drift from your conventions** — the repo's own `## Git conventions` are applied instead
   of generic defaults.
 
@@ -65,18 +66,18 @@ skill can delegate to one; another skill suggesting you run it is the route in.
   >
 </p>
 
-Parallel changes: shape several on the default branch, then one worktree + session each via
-`dw-start` or `claude -w <slug>`.
+Parallel changes: queue the ideas as `.ai/backlog/` entries, then one worktree + session each via
+`dw-start` or `claude -w <slug>` — `dw-shape` expands the entry on its own branch.
 
 | Skill                                      | Task                                                           | What you get                                                             |
 | ------------------------------------------ | -------------------------------------------------------------- | ------------------------------------------------------------------------ |
 | [`dw-grill`](skills/dw-grill/SKILL.md)     | Interview a fuzzy idea into decisions — max five questions     | shared understanding (writes nothing)                                    |
 | [`dw-shape`](skills/dw-shape/SKILL.md)     | Synthesize it into one goal + decisions + task checklist       | `.ai/work/<date>-<slug>/CHANGE.md` · backlog                             |
-| [`dw-start`](skills/dw-start/SKILL.md) `⭑` | Open a shaped change: worktree + branch + claim, then build    | `.claude/worktrees/<slug>` on branch `<slug>`                            |
+| [`dw-start`](skills/dw-start/SKILL.md) `⭑` | Open a queued change: worktree + branch, shape there, build    | `.claude/worktrees/<slug>` on branch `<slug>`                            |
 | [`dw-next`](skills/dw-next/SKILL.md)       | Build step _and_ resume point (`status` reports and stops)     | code + ticked box + commit                                               |
 | [`dw-check`](skills/dw-check/SKILL.md)     | Fast optional QA gate — delegates by default, else self-review | findings at `file:line`, fixed in-session                                |
 | [`dw-land`](skills/dw-land/SKILL.md)       | One thin verdict, then promote, archive and open the PR        | `docs/decisions/` · `CONTEXT.md` · backlog · `.ai/archive/` · an open PR |
-| [`dw-ship`](skills/dw-ship/SKILL.md) `⭑`   | Squash-merge that PR, tear the worktree down, sync, sweep      | merged default branch, clean tree                                        |
+| [`dw-ship`](skills/dw-ship/SKILL.md) `⭑`   | Squash-merge that PR, tear the worktree down, sync             | merged default branch, clean tree                                        |
 
 **Anytime**
 

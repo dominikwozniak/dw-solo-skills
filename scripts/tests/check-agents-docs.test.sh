@@ -478,6 +478,7 @@ sed \
   -e 's|{{TYPECHECK_COMMAND}}|none|' \
   -e 's|{{COMMIT_PATTERN}}|`^(feat\|fix): .+`|' \
   -e 's|{{COMMIT_TRAILER}}|none|' \
+  -e 's|{{BOOTSTRAP_COMMAND}}|`pnpm install`|' \
   -e 's|{{HOOKS_INSTALLED}}|- `block-dangerous-commands` — blocks destructive shell.|' \
   "$ROOT/templates/AGENTS.md" >"$repo/AGENTS.md"
 ln -s AGENTS.md "$repo/CLAUDE.md"

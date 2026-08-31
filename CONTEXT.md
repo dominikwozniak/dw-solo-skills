@@ -13,11 +13,12 @@ in [`AGENTS.md`](AGENTS.md) and the procedures in the skills themselves.
   lanes. Each lane stamps **its own** date (noted, shaped, landed), so only the **bare slug** is
   comparable across them — `slugify.sh undate` strips a prefix, and `docs/decisions/` is exempt because
   its `NNNN-` numbering already sorts.
-- **Promotion** — moving the durable residue out of a `CHANGE.md` before it is archived: decisions to
-  `docs/decisions/`, terms here, traps to the `## Gotchas` of the routed topic file that covers them,
-  follow-ups to `.ai/backlog/` (one file per idea). It **replaces rather than appends**: each target
-  is read first, and what the change supersedes is deleted in the same edit. Decisions are the
-  exception — there the replacement is a `superseded-by:` link and the old record stays.
+- **Promotion** — moving the durable residue out of a `CHANGE.md`, **as it happens**: `dw-next`
+  writes a decision or term in the task's own commit, and `dw-land` sweeps what is left at close —
+  traps to the `## Gotchas` of the routed topic file, stale pointers rewritten, follow-ups to
+  `.ai/backlog/` (one file per idea). It **replaces rather than appends**: each target is read
+  first, and what the change supersedes is deleted in the same edit. Decisions are the exception —
+  there the replacement is a `superseded-by:` link and the old record stays.
 - **Cap** — the limit `validate-artifacts.sh` enforces on `.ai/backlog/`, the one durable list that
   would otherwise only grow; that script holds the number. A count of **entries**, never of bytes or
   lines, and a forcing function rather than a quota — the way past a full list is to bundle an entry
@@ -81,9 +82,6 @@ in [`AGENTS.md`](AGENTS.md) and the procedures in the skills themselves.
   from the symlink graph rather than a list.
 - **Vendored** — a consumer repo's copy of a shipped template, written there by `dw-init`. It can fall
   behind what this repo ships; `dw-doctor` is what detects that.
-- **Claim** — flipping a change doc's `branch: unclaimed` sentinel to a real branch name, committed
-  immediately. Done by `dw-start` (after creating the worktree) or offered by `dw-next` (when its
-  branch-grep misses). A change shaped on the default branch is unclaimed until then.
 - **Carry class** — which treatment an untracked file gets when a worktree is created: **copy** (local
   config, via `.worktreeinclude`), **regenerate** (`node_modules/`, `.husky/_/` — reported, never
   carried) or **absent** (caches). A fourth, **link**, held only personal agent memory; it is gone,
@@ -97,11 +95,6 @@ in [`AGENTS.md`](AGENTS.md) and the procedures in the skills themselves.
   editorial discipline, not a harness ceiling: nothing truncates there, and it is ~3× stricter than
   Codex's 32 KB `project_doc_max_bytes`. Over budget, a topic moves out to a **routed topic file** —
   trimming a rule is not the way past it.
-- **Ratchet** — a governor that records what a measure currently **is** and refuses only an increase,
-  so no threshold is ever chosen. Over the skill corpus:
-  `scripts/skill-corpus.baseline.json` plus pass 3 of `validate:artifacts`, set by
-  [`0009`](docs/decisions/0009-skill-corpus-ratchet.md). Growth stays legal at the price of a
-  re-record in the same commit.
 - **Self-measuring number** — a figure in prose that measures this repo against itself: a line count,
   a byte size, a warning tally, a count of files in a directory. Deleted rather than corrected — the
   prose states the rule and the checker reports the number, because two copies of a moving measure

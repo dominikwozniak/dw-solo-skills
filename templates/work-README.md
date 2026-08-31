@@ -11,7 +11,7 @@ backlog/<date>-<slug>.md      follow-ups not being done now   (dw-land + dw-shap
                               entry shape and the two bars: backlog/README.md
 work/<date>-<slug>/CHANGE.md  the live state of ONE change    (dw-shape writes, dw-next ticks)
                               goal · decisions taken · task checklist · anchors · references
-                              branch: unclaimed until dw-start / dw-next claims it
+                              exists only on its feature branch; branch: is the key
 work/<date>-<slug>/HANDOFF.md the middle of a task, saved     (dw-handoff writes, dw-next clears)
                               optional — only with the dw-solo-extras plugin installed
 archive/<date>-<slug>/        landed changes, kept as history (dw-land moves the doc at close)

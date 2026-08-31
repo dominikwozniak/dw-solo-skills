@@ -100,6 +100,29 @@ prose mentioning .env
 EOF
 cat .env"
 
+echo "the --bash-command fast path reads the command off stdin:"
+printf '%s' 'cat .env' | bash "$HOOK" --bash-command >/dev/null 2>&1
+rc=$?
+if [ "$rc" -eq 2 ]; then note_pass "fast-path-blocks"; else note_fail "fast-path-blocks" "want exit 2, got $rc"; fi
+printf '%s' 'cat .env.example' | bash "$HOOK" --bash-command >/dev/null 2>&1
+rc=$?
+if [ "$rc" -eq 0 ]; then note_pass "fast-path-allows"; else note_fail "fast-path-allows" "want exit 0, got $rc"; fi
+
+# The fast path must be gated on argv alone. Gated on an environment variable, a
+# stray DW_GUARD_COMMAND skipped the file-tool leg below and a real Read of a
+# real .env came back allowed.
+echo "a stray environment variable cannot skip the file-tool leg:"
+for stray in "echo hi" "" "cat .env"; do
+  rc="$(printf '{"tool_name":"Read","tool_input":{"file_path":".env"}}' |
+    DW_GUARD_COMMAND="$stray" bash "$HOOK" >/dev/null 2>&1
+    printf '%s' $?)"
+  if [ "$rc" -eq 2 ]; then
+    note_pass "stray-env-still-blocks-read [${stray:-empty}]"
+  else
+    note_fail "stray-env-still-blocks-read [${stray:-empty}]" "want exit 2, got $rc"
+  fi
+done
+
 echo
 echo "block-env-access self-test: $PASS passed, $FAIL failed"
 [ "$FAIL" -eq 0 ]

@@ -10,10 +10,16 @@
 
 set -uo pipefail
 
-command -v jq >/dev/null || exit 0
-
-INPUT=$(cat)
-COMMAND=$(jq -r '.tool_input.command // empty' <<<"$INPUT")
+# Fast path: --bash-command says the dispatcher already parsed the payload and
+# put the command on stdin. Gated on argv, never on an environment variable — a
+# stray one must not be able to skip a check below.
+if [[ "${1:-}" == "--bash-command" ]]; then
+  COMMAND=$(cat)
+else
+  command -v jq >/dev/null || exit 0
+  INPUT=$(cat)
+  COMMAND=$(jq -r '.tool_input.command // empty' <<<"$INPUT")
+fi
 
 [[ -z "$COMMAND" ]] && exit 0
 
@@ -58,14 +64,13 @@ DANGEROUS_PATTERNS=(
   "$GIT"' push( [^;&|]*)?( --delete\b| :\S)'                  # remote branch deletion (push --delete / push origin :branch)
   "$GIT"' reset( [^;&|]*)? --hard'                            # discards index + working tree
   "$GIT"' clean( +-[A-Za-z-]+)* +(-[A-Za-z]*[dfxX]|--force)'  # deletes untracked files/dirs — any flag order (-fd, -f -d, -xdf, -d, --force)
-  "$GIT"' branch( [^;&|]*)?( -D\b| -f\b| --force\b)'          # force-deletes or force-repoints a branch
+  "$GIT"' branch( [^;&|]*)?( -f\b| --force\b)'                # force-repoints a branch; -D stays ask-level — dw-ship deletes merged branches
   "$GIT"' checkout (-- +)?'"$DOT_ARG"                         # discards all working-tree changes
   "$GIT"' restore (-- +)?'"$DOT_ARG"                          # discards all working-tree changes
   "$GIT"' stash clear\b'                                      # wipes every stash, unrecoverable
   'rm( [^;&|]*)? /\*? *($|[;&|])'                         # rm aimed at / or /*
   'rm( [^;&|]*)? (~|\$HOME)/? *($|[;&|])'                 # rm aimed at the home dir
   'rm( [^;&|]*)? \.\.?/? *($|[;&|])'                      # rm aimed at . or .. (cwd wipe)
-  'rmdir\b'                                               # directory removal — ask the user instead
   'find( [^;&|]*)? -delete\b'                             # bulk delete via find
   'shred\b'                                               # irrecoverable file destruction
 )

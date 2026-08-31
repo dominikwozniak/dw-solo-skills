@@ -38,10 +38,16 @@
 
 set -uo pipefail
 
-command -v jq >/dev/null || exit 0
-
-INPUT=$(cat)
-COMMAND=$(jq -r '.tool_input.command // empty' <<<"$INPUT")
+# Fast path: --bash-command says the dispatcher already parsed the payload and
+# put the command on stdin. Gated on argv, never on an environment variable — a
+# stray one must not be able to skip a check below.
+if [[ "${1:-}" == "--bash-command" ]]; then
+  COMMAND=$(cat)
+else
+  command -v jq >/dev/null || exit 0
+  INPUT=$(cat)
+  COMMAND=$(jq -r '.tool_input.command // empty' <<<"$INPUT")
+fi
 
 [[ -z "$COMMAND" ]] && exit 0
 # Cheap bail-out before the per-character scan: nothing here can fire without a
@@ -62,7 +68,7 @@ DEFAULT_PATTERN='^(build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test)
 # resolve_declared <label> <default> — echoes the declared value, the literal
 # `none`, or <default>. POSIX classes, not `\s`: BSD sed does not implement it in
 # ERE, and `:\s*` captures a leading space that reads as "declared" downstream —
-# the trap lint-on-edit.sh and typecheck-on-stop.sh each sprang once.
+# the trap lint-on-edit.sh and the since-retired typecheck-on-stop.sh each sprang once.
 resolve_declared() {
   local label="$1" fallback="$2" md line rest value
   for md in "$repo_root/AGENTS.md" "$repo_root/CLAUDE.local.md"; do

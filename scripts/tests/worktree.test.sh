@@ -304,7 +304,7 @@ echo "legacy CLAUDE.local.md is NOT carried in — the link class is retired:"
 # group pins is the retirement itself, in the one case that used to trigger it: a legacy file sitting
 # in the main tree.
 #
-# A legacy repo still READS its own file — lint-on-edit and typecheck-on-stop resolve AGENTS.md first
+# A legacy repo still READS its own file — lint-on-edit and typecheck-on-commit resolve AGENTS.md first
 # and CLAUDE.local.md second, and that is untouched. Nothing carries it across a worktree boundary any
 # more, and `create` must not mention it in either direction: a message about a file the scaffold
 # stopped writing is noise on every worktree of every repo made from here on.
@@ -381,6 +381,57 @@ else
 fi
 "$WORKTREE" remove kappa >/dev/null 2>&1
 rm -rf "$REPO/.husky/_"
+
+echo "readiness report (declared bootstrap replaces the lockfile guess):"
+printf '# Probe\n\n- **Bootstrap command**: `pnpm install && pnpm codegen`\n' >"$REPO/AGENTS.md"
+git -C "$REPO" add AGENTS.md
+git -C "$REPO" commit -qm "declare bootstrap"
+RLOG3="$TMP/lambda.stderr"
+"$WORKTREE" create lambda 2>"$RLOG3" >/dev/null
+if grep -q "bootstrap — run: pnpm install && pnpm codegen" "$RLOG3"; then
+  note_pass "readiness-declared-bootstrap-reported"
+else
+  note_fail "readiness-declared-bootstrap-reported" "stderr: $(tr '\n' '|' <"$RLOG3")"
+fi
+if grep -q "dependencies — run:" "$RLOG3"; then
+  note_fail "readiness-bootstrap-replaces-the-guess" "lockfile guess printed alongside the declared bootstrap"
+else
+  note_pass "readiness-bootstrap-replaces-the-guess"
+fi
+"$WORKTREE" remove lambda >/dev/null 2>&1
+
+echo "env probe (gitignored env files the checkout leaves behind):"
+# The missing .env.local is named; the allowlisted .env.example is not.
+printf '.env\n.env.*\n' >>"$REPO/.gitignore"
+git -C "$REPO" add .gitignore
+git -C "$REPO" commit -qm "ignore env"
+printf 'SECRET=1\n' >"$REPO/.env.local"
+printf 'PLACEHOLDER=1\n' >"$REPO/.env.example"
+RLOG4="$TMP/mu.stderr"
+"$WORKTREE" create mu 2>"$RLOG4" >/dev/null
+# One path per line, so the allowlisted .env.example must not appear on any of them.
+if grep -qx "  - .env.local" "$RLOG4" && ! grep -q '\.env\.example' "$RLOG4"; then
+  note_pass "env-probe-names-only-the-secret-file"
+else
+  note_fail "env-probe-names-only-the-secret-file" "stderr: $(tr '\n' '|' <"$RLOG4")"
+fi
+"$WORKTREE" remove mu >/dev/null 2>&1
+
+# Once .worktreeinclude carries the file in, the probe has nothing to say.
+printf '.env.local\n' >"$REPO/.worktreeinclude"
+git -C "$REPO" add .worktreeinclude
+git -C "$REPO" commit -qm "carry env"
+RLOG5="$TMP/nu.stderr"
+"$WORKTREE" create nu 2>"$RLOG5" >/dev/null
+if [ -f "$REPO/.claude/worktrees/nu/.env.local" ] && ! grep -q "env file(s) in the main tree" "$RLOG5"; then
+  note_pass "env-probe-quiet-when-carried"
+else
+  note_fail "env-probe-quiet-when-carried" "stderr: $(tr '\n' '|' <"$RLOG5")"
+fi
+"$WORKTREE" remove nu >/dev/null 2>&1
+rm -f "$REPO/.env.local" "$REPO/.env.example" "$REPO/.worktreeinclude"
+git -C "$REPO" rm -q .worktreeinclude
+git -C "$REPO" commit -qm "drop env carry"
 
 echo "remove, superproject with populated submodules:"
 # `git worktree remove` refuses outright once a submodule is **checked out** in the worktree —

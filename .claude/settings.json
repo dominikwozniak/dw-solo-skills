@@ -5,6 +5,7 @@
       "Bash(rm *)",
       "Bash(rm -*)",
       "Bash(rmdir *)",
+      "Bash(rtk rmdir *)",
       "Bash(find * -delete*)",
       "Bash(shred *)",
       "Bash(sudo *)",
@@ -16,6 +17,7 @@
       "Bash(git push -f*)",
       "Bash(git reset --hard*)",
       "Bash(git clean *)",
+      "Bash(git branch -D*)",
       "Bash(rtk * repo delete *)",
       "Bash(rtk * pr close *)",
       "Bash(rtk * issue close *)",
@@ -23,7 +25,8 @@
       "Bash(rtk find * -delete*)",
       "Bash(rtk find * -exec*)",
       "Bash(rtk git push --force*)",
-      "Bash(rtk git push -f*)"
+      "Bash(rtk git push -f*)",
+      "Bash(rtk git branch -D*)"
     ],
     "deny": [
       "Read(./.env)",
@@ -39,24 +42,13 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash \"${CLAUDE_PROJECT_DIR}/.claude/hooks/block-dangerous-commands.sh\""
-          },
-          {
-            "type": "command",
-            "command": "bash \"${CLAUDE_PROJECT_DIR}/.claude/hooks/block-non-pnpm.sh\""
-          },
-          {
-            "type": "command",
-            "command": "bash \"${CLAUDE_PROJECT_DIR}/.claude/hooks/enforce-commit-hygiene.sh\""
-          },
-          {
-            "type": "command",
-            "command": "bash \"${CLAUDE_PROJECT_DIR}/.claude/hooks/credential-leak-guard.sh\""
+            "command": "bash \"${CLAUDE_PROJECT_DIR}/.claude/hooks/bash-guard.sh\"",
+            "timeout": 120
           }
         ]
       },
       {
-        "matcher": "Read|Edit|Write|MultiEdit|NotebookEdit|Grep|Bash",
+        "matcher": "Read|Edit|Write|MultiEdit|NotebookEdit|Grep",
         "hooks": [
           {
             "type": "command",

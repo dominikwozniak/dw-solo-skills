@@ -9,158 +9,81 @@ argument-hint: "Which git op? e.g. commit, push, open PR, sync, branch, stash"
 
 # dw-git — all git ops, by the project's own conventions
 
-Every git operation in one place, so the conventions live in exactly one place: the rest of the loop
-delegates here by prose — the build step commits the way this skill does, the ship step pushes and
-opens PRs the way this skill does.
+Every git operation in one place, so the conventions live in exactly one place — the rest of the
+loop delegates here by prose.
 
 ## What it reads
 
-Before any operation, look for a `## Git conventions` block in `AGENTS.md` (repo root) first, then in
-a legacy `CLAUDE.local.md`. **First one found wins**, and its values **override** the defaults below —
-commit format, default branch, branch naming, trailer policy, PR title format, rebase-vs-merge,
-signing. With neither file, or neither carrying such a block, use the documented defaults.
+A `## Git conventions` block in `AGENTS.md` first, then in a legacy `CLAUDE.local.md` — first one
+found wins, and its values **override** every default below: commit format, default branch, branch
+naming, trailer policy, PR title, rebase-vs-merge, signing. With neither, use the defaults.
 
-`CLAUDE.md` is deliberately not in that list: where it exists it is a symlink to `AGENTS.md`, so
-reading it is reading the first entry twice. And `AGENTS.md` comes first because it is **tracked** —
-it reaches a fresh clone and a `git worktree` checkout, which is exactly where the old gitignored
-copy left this skill falling back to defaults the repo had already overridden.
+**Resolving the default branch** — the lookup every other skill borrows: `## Git conventions`,
+else `git symbolic-ref --short refs/remotes/origin/HEAD`, else `main`.
 
-**Resolving the default branch** is the one lookup every other skill borrows from here: take it from
-`## Git conventions`, else `git symbolic-ref --short refs/remotes/origin/HEAD`, else `main`. Never
-assume `main` outright.
-
-**Which ref of it to diff against** is the second half of that lookup, and every skill that reviews a
-diff borrows it too. Fetch, then take whichever of the two already contains the other:
+**Which ref of it to diff against** — fetch, then take whichever of the two contains the other;
+local is the default, because a local branch that is _ahead_ (an unpushed shape commit) makes
+`origin/` pull commits the branch didn't write into the diff:
 
 ```bash
 git fetch origin --quiet 2>/dev/null || true
-base=<default-branch>                                        # the default — see below
+base=<default-branch>
 git rev-parse --verify --quiet origin/<default-branch> >/dev/null \
   && git merge-base --is-ancestor <default-branch> origin/<default-branch> \
-  && base=origin/<default-branch>                            # origin contains local, so it is ahead
+  && base=origin/<default-branch>
 ```
 
-**Never prefer `origin/` by reflex.** It is wrong exactly when the local branch is _ahead_ — the
-normal state while an unpushed `chore: shape …` commit sits on it: the merge-base reaches back past
-that commit, so the diff under review swallows work the branch didn't write. Only a local branch that
-has _fallen behind_ earns the remote ref, and that is the one thing the check settles. Local is the
-**default** because the two cases it can't settle have no better answer: **diverged**, where neither
-contains the other — say so, and use local, since the branch was cut from it — and **no `origin` at
-all**. Keep the `rev-parse` guard: `--is-ancestor` exits 128 on a ref that doesn't exist, not 1, so a
-chain that falls through to `origin/` on failure hands back a ref that won't resolve.
-
-dw-git writes **no `.ai/` artifact** — its durable output is the git history itself.
+Every branch read is `git rev-parse --abbrev-ref HEAD`, never `git branch --show-current` (empty
+on a detached HEAD). Modern verbs throughout: `git switch` / `git restore` over `git checkout`.
+This skill writes no `.ai/` artifact — its durable output is the git history itself.
 
 ## Operations
 
 ### commit
 
-**Defaults** (overridden by `## Git conventions`):
+Subject shape and trailer are **declared, not inferred**: the `- **Commit pattern**:` and
+`- **Commit trailer**:` bullets under `## Solo lane` are what `enforce-commit-hygiene.sh`
+enforces; with neither bullet, Conventional Commits and no trailer. Beyond the pattern: imperative
+mood, lowercase, ≤72 chars; a body saying what + why for non-trivial changes; **no** "Generated
+with Claude Code" footer; one logical change per commit.
 
-- Subject shape and trailer are **declared, not inferred**: read the `- **Commit pattern**:` and
-  `- **Commit trailer**:` bullets under `## Solo lane`. Those are what
-  `enforce-commit-hygiene.sh` enforces, so a message ignoring them is refused before it reaches git —
-  don't restate them here or guess at them from the log. With neither bullet the hook's own defaults
-  apply: [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) and no trailer.
-- What the pattern can't express, and you still owe: imperative mood, lowercase, no trailing period,
-  ≤72 chars — plus a `[TICKET-XXX] ` prefix when the branch matches `^[A-Z]+-\d+`.
-- Body: what + why for non-trivial changes; omit for trivial ones.
-- **NO** "Generated with Claude Code" footer.
-- One logical change per commit — split when session work spans concerns.
-
-**Workflow:**
-
-1. `git status --short` — see everything.
-2. Classify: session work (created/edited this conversation) vs pre-existing /
-   unrelated. **Stage session work by name** (`git add path1 path2`); never
-   `git add .` / `git add -A` — `enforce-commit-hygiene.sh` refuses both where installed, and where
-   it isn't the rule stands anyway. Only the user can run one.
-3. Exclude sensitive files (`.env`, credentials, keys) — warn, don't stage.
-4. `git diff --staged` — review what's actually staged.
-5. Ticket key from branch: `git rev-parse --abbrev-ref HEAD | grep -oE '^[A-Z]+-[0-9]+'`.
-   If found, prefix `[KEY] ` — but only if the declared `- **Commit pattern**:` admits it. A pattern
-   anchored at `^(feat|fix|…)` does not, and the hook will refuse every commit; that is a
-   contradiction in the repo's own declarations, so say so rather than fighting it.
-6. Commit — `-m` for the subject, repeat `-m` for the body (no heredoc needed for a
-   short body). Use plain `git commit` and follow the project's signing convention
-   from `## Git conventions`; don't add `-S` or run `git config` to change signing.
-   Surface an error only if the commit genuinely fails.
-   - **A backtick inside a double-quoted `-m` is command substitution, and it fails silently** —
-     the phrase commits **gone** and the commit still succeeds.
-     `enforce-commit-hygiene.sh` refuses it where installed; where it isn't, single-quote the
-     message, escape the backticks, or put the message in a file and use `-F`.
-   - Read the message back with `git cat-file -p HEAD` — **not `git log`**, whose output a
-     token-filtering proxy or a pager may shorten, which makes a real truncation and a trimmed
-     display indistinguishable in both directions.
-7. `git log --oneline -1` — confirm.
+1. `git status --short`, then **stage session work by name** — never `git add .` / `-A`, which the
+   hygiene hook refuses; exclude anything sensitive (`.env`, credentials, keys).
+2. `git diff --staged` — review what's actually staged.
+3. A `[TICKET-XXX] ` prefix only when the branch matches `^[A-Z]+-\d+` **and** the declared
+   pattern admits it — a contradiction between the two is reported, not fought.
+4. Commit with `-m` (repeat `-m` for the body), following the project's signing convention. A
+   backtick inside a double-quoted `-m` is command substitution and vanishes silently — the
+   hygiene hook refuses it; single-quote or use `-F` where it isn't installed.
+5. Read the message back with `git cat-file -p HEAD` (not `git log`, which pagers and proxies may
+   trim), then `git log --oneline -1` to confirm.
 
 ### push
 
-**Defaults:**
-
-- Plain `git push` for feature branches.
-- Force-push is blocked by `block-dangerous-commands.sh` when installed; otherwise
-  refuse it manually.
-- Pushing to `main` / `master` / `develop` needs explicit confirmation first.
-
-**Workflow:**
-
-1. `git rev-parse --abbrev-ref HEAD`. If it's a protected branch, confirm before pushing.
-2. Upstream check: `git rev-parse --abbrev-ref @{u} 2>/dev/null`.
-3. No upstream → `git push -u origin "$(git rev-parse --abbrev-ref HEAD)"`; else `git push`.
-4. Report the result.
+Plain `git push`; no upstream → `git push -u origin "$(git rev-parse --abbrev-ref HEAD)"`.
+Force-push is refused (hook-blocked where installed). Pushing to a protected branch
+(`main`/`master`/`develop`) needs explicit confirmation first.
 
 ### PR — "open PR", "create pull request"
 
-**Defaults:**
-
-- Title: same format as the commit subject.
-- Body: summary + test plan derived from the commits since the base branch; **no**
-  attribution footer.
-- Use `.github/PULL_REQUEST_TEMPLATE.md` as the body skeleton if it exists.
-- Create via `gh pr create` — never the web UI, and `gh` over a GitHub MCP server:
-  less context, same result.
-
-**Workflow:**
-
-1. Push the branch first if it isn't pushed (see **push**).
-2. Base branch: the default branch, resolved as above.
-3. Build the body (PR template if present, else `## Summary` bullets +
-   `## Test plan` checklist).
-4. `gh pr create --title "..." --body "..."`; print the PR URL.
+Push first if needed; base is the default branch. Title in the commit-subject format; body from
+`.github/PULL_REQUEST_TEMPLATE.md` where it exists, else `## Summary` + `## Test plan`; no
+attribution footer. `gh pr create --title … --body …`, then print the URL — `gh` over a GitHub
+MCP server: less context, same result.
 
 ### sync — "sync with main", "rebase"
 
-**Defaults:** rebase, not merge. Refuse on a dirty tree — ask the user to commit
-or stash first.
+Rebase, never merge: `git fetch origin && git rebase origin/<default-branch>`. Refuse on a dirty
+tree — commit or stash first. On conflicts, report and **stop**; never auto-resolve.
 
-```bash
-git fetch origin
-git rebase origin/<default-branch>
-```
+### branch
 
-On conflicts: report them and **stop** — do not auto-resolve.
+`git switch -c <kebab-slug>` — the same spelling the change docs under `.ai/work/` use; a ticket
+prefix only where the project's conventions carry one.
 
-### branch — "new branch", "switch branch"
+### stash
 
-Use `git switch -c` (not `git checkout -b`). Default name: the kebab slug of what the branch is
-for — the same spelling the change docs under `.ai/work/` use. Prefix a ticket key only when the
-project's conventions carry one.
-
-### stash — "stash my work"
-
-Always with a message: `git stash push -m "<what's being saved>"`. Never bare
-`git stash`.
-
-## Notes
-
-- Every branch read is `git rev-parse --abbrev-ref HEAD`, never `git branch --show-current` —
-  the latter prints an empty string on a detached HEAD, which silently turns a branch check
-  into a no-match.
-- Defaults assume `block-dangerous-commands.sh` is installed (via the scaffolder).
-  If it isn't, manually refuse the same patterns (force-push, hard-reset,
-  `clean -d`/`-f`).
-- Modern verbs throughout: `git switch` / `git restore` over `git checkout`.
+Always with a message: `git stash push -m "<what's being saved>"` — never bare `git stash`.
 
 **Next:** `dw-next` to get back to building.
 

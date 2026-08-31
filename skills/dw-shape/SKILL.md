@@ -9,161 +9,68 @@ argument-hint: "What change are we shaping?"
 
 # dw-shape — one file, then build
 
-**This skill synthesises; it does not interview.** If the idea is still fuzzy, run `dw-grill` first
-and come back — mixing the two produces a document arguing with itself.
+**This skill synthesises; it does not interview.** A still-fuzzy idea goes to `dw-grill` first.
 
-## Output location
+## Where it writes
 
-Write to `.ai/work/<YYYY-MM-DD>-<slug>/CHANGE.md` — tracked, so it survives a `/clear`, and **working scaffolding
-rather than a deliverable**: `dw-land` archives it at merge, after promoting anything durable out.
+`.ai/work/<YYYY-MM-DD>-<slug>/CHANGE.md` — tracked, and **on a feature branch only**. **Why:** a
+change doc committed to the default branch is what a post-squash rebase resurrects.
 
-1. **Resolve the branch first — it is the key every other solo skill uses.**
-   `git rev-parse --abbrev-ref HEAD`, resolving the default branch the way `dw-git` does.
-   - On the **default branch**: write `branch: unclaimed` — the literal sentinel. The change is
-     shaped but not yet owned; `dw-start` or `dw-next` claims it later by flipping this field.
-     Shaping several unclaimed changes in one sitting is the plan-session pattern.
-   - On any **other branch**: record the value **verbatim** — shaping on a feature branch is
-     shaping and claiming in one step. `dw-next` and `dw-land` find this file by grepping for it,
-     so a placeholder left in place orphans the change.
-   - **Detached HEAD** — it resolves to the literal `HEAD` (a `git worktree add` without `-b`, a
-     bisect, a tag checkout): **say so and ask which branch to record.** Never write `HEAD`.
-2. **Don't start a second change on the same claimed branch.** Look for an existing one first:
-   `grep -l "^branch: $(git rev-parse --abbrev-ref HEAD)\$" .ai/work/*/CHANGE.md 2>/dev/null`. If one
-   turns up, **continue that file** — only open a new change for genuinely separate work. Several
-   `unclaimed` changes side by side are normal: that's the queue, not a conflict. When unsure, ask.
-3. **Derive the name, don't invent it:**
-   `bash "${CLAUDE_PLUGIN_ROOT}/scripts/slugify.sh" dated "<short description>"` — a
-   `<YYYY-MM-DD>-<slug>` folder name, so neither casing nor date drifts. Each lane stamps its own
-   date, so the **bare slug** is the identity: compare through `slugify.sh undate <entry>`, never a
-   raw folder name. A bare slug already in `.ai/work/` **or `.ai/archive/`** is taken — `dw-ship`
-   pairs work to archive by it, and a duplicate makes that ambiguous — so sharpen the description and
-   re-derive. **Unless the archived doc reads `status: rejected`**: this idea was already tried and
-   dropped, so **stop**, report what its `## Why rejected` found and what would justify revisiting,
-   and shape only if the user says that has changed. Re-deriving a slug around a rejection is how the
-   work gets done twice. A split derives several at once — check those against each other as well as
-   against disk, since a sibling isn't written yet to be found.
+1. Resolve the branch: `git rev-parse --abbrev-ref HEAD`, default branch the way `dw-git` does.
+   - **On the default branch** — pick by intent: shaping one change to build now →
+     `git switch -c <slug>` and shape there; a planning sitting that queues several → one
+     `.ai/backlog/<date>-<slug>.md` entry per idea (frontmatter `created:`, an H1 with
+     what-and-why, ≤3 lines of context) and no folder in `work/`.
+   - **On a feature branch** — record it verbatim; if it already carries a change (the same grep
+     `dw-next` uses), continue that file rather than opening a second one.
+2. Derive the name, don't invent it:
+   `bash "${CLAUDE_PLUGIN_ROOT}/scripts/slugify.sh" dated "<short description>"`. Compare **bare
+   slugs** (`slugify.sh undate`) against `work/` and `archive/`; taken means sharpen the
+   description and re-derive. An archived twin reading `status: rejected` means **stop**: report
+   its `## Why rejected` and shape only if the user says that has changed.
 
 ## Workflow
 
 ### 1. Read the project, don't assume it
 
-- The request (it may arrive as `$ARGUMENTS`) plus anything settled in the conversation.
-- `CLAUDE.md` / `CLAUDE.local.md` / `AGENTS.md` for the test, lint and typecheck commands and the git
-  conventions. If none are declared, read the manifests (`package.json` scripts, `Makefile`,
-  `pyproject.toml`, …) — their presence is what detects the stack. Never name a command you haven't
-  seen.
-- `CONTEXT.md` and `docs/decisions/` if the project has them — a term already defined or a decision
-  already taken is not up for re-litigation, and reusing the established word is free.
-- `.ai/backlog/` if the project has one — `dw-land` and step 5 below park follow-ups there, one file
-  per idea. An entry that matches this request is **prior context, not a fresh idea**: read it before
-  shaping, and mention it if the request is narrower than what was parked. Neighbouring entries are
-  also candidates, but only offer them; never widen the change on your own.
-- The **real sibling patterns** this change should follow. Confirm each with Read or grep; these
-  become the anchors.
-- The **resources the conversation pointed at** — an inspiration folder, a URL, a design doc, a
-  sibling repo. Every one of them becomes a `## References` line (path or URL, plus why it matters);
-  a pointer that stays only in the conversation is gone by the first `dw-next`, and the build either
-  rediscovers it or runs without it. Nothing pointed at → no section.
+The request (it may arrive as `$ARGUMENTS`); `AGENTS.md` / `CLAUDE.local.md`, else the manifests,
+for the test and git conventions; `CONTEXT.md` and `docs/decisions/` where present — a settled
+term or decision is not re-litigated; a matching `.ai/backlog/` entry — prior context: create the
+folder, `git mv` the entry in as `CHANGE.md`, and expand it in place; the real sibling patterns,
+confirmed with Read or grep — these become the anchors. Every resource the conversation pointed
+at becomes a `## References` line.
 
-### 2. Size it, match the depth, then count the scopes
+### 2. Size it, then count the scopes
 
-Judge the change honestly, then write accordingly — this is the step that keeps the lane light:
+- **Small** — one obvious edit: a goal and one or two checkboxes, no other section.
+- **Normal** — a few files, one seam: goal, the decisions taken, 3–6 tasks, anchors.
+- **Large** — say so plainly and offer to cut it to the first genuinely shippable piece.
 
-- **Small** (one file, one obvious edit, no new concept): a goal and one or two checkboxes. Skip
-  Decisions and Anchors entirely. Do not manufacture ceremony for a rename.
-- **Normal** (a few files, one seam): a goal, the decisions actually taken, three to six tasks,
-  the anchors.
-- **Large** (touches several layers, or you can't see the end): say plainly that it's large, and
-  offer to cut it down to the first genuinely shippable piece. If the size comes from _more than one
-  scope_ rather than one deep one, that's the split test below, not a sizing call. A change you can't
-  finish is worse than a smaller one you can.
+Every size writes short — goal ≤5 lines, one line per decision, task, anchor and reference;
+the file is re-read on every resume.
 
-**Every size writes short.** Depth chooses which sections exist, never how much prose they get: a
-`## Goal` is **~5 lines at most**, a decision is **one line — the call, then why**, a task is one line,
-an anchor one line, a reference one line. This file is read on every `dw-next` invocation, so a paragraph where a line would
-do is a cost paid on every resume. Detail that argues for the shape belongs in the commit message; the
-diff holds what changed.
-
-**Then count the scopes** — and the answer is **one** unless something forces it higher. Sizing is
-depth; this is count, and one change is the default.
-
-- **The test is different goals** — do the pieces answer to separate goals, or is this one goal with
-  several parts? Only genuinely unrelated ideas split, and **how the request arrived decides nothing**:
-  one sentence, five sentences or a bulleted list, the question is the same.
-- **Not independent shippability.** That is a good _task_'s property, and it is the wrong test one
-  level up: nearly every pair of edits passes it, so it splits work that shares one goal, one version
-  bump and one gate run. **Not "do they touch different files"** either — nearly every change touches
-  the README and the manifest, so file overlap is an ordering fact, never a merging one.
-- **Both failures are real, and the goal is the only line between them.** One doc carrying two
-  unrelated goals is why splitting is a rule at all; one goal cut across two docs is the failure that
-  rule causes when it fires too easily. Counting files, tasks or shippable pieces catches neither.
-- **At N ≥ 2, name the slugs and the one scope each owns, then ask. HARD STOP** — splitting is the
-  user's call, made here and asked once; step 4's read-back confirms the result, not the decision.
-- **Then `references/splitting.md`** — what writing N changes involves, what a "no" still owes
-  `## Decisions`, and where a shared anchor goes. Nothing in it runs at N = 1.
+**Scopes:** one, unless the pieces answer to genuinely separate goals — neither file overlap nor
+independent shippability splits a change. At N ≥ 2 name the slugs and the one scope each owns, then
+ask — **HARD STOP**. On a split, this branch keeps one scope; each sibling becomes a backlog entry.
+On a no, the reason goes in `## Decisions` so the question isn't reopened.
 
 ### 3. Cut the tasks as thin vertical slices
 
-Each task is a **complete narrow path**, not a layer. "Add the column, the query and the read path
-for one field" is a task; "add all the migrations" is not. Each one should be independently
-committable, leave the project green, and be small enough that a fresh session could do it alone.
+Each task is a complete narrow path, not a layer — independently committable, leaving the project
+green, small enough for a fresh session. Order is a hint, never a gate.
 
-Order them so each builds on the last — but treat that order as a **hint, not a gate**. If task 3 is
-obviously doable before task 2, do it. Dependencies here are there to help you pick, never to refuse.
+### 4. Write, read back, commit
 
-### 4. Write the file and check it back
+Write `CHANGE.md` from the shape in `references/CHANGE.md`. Read back the goal, the task list, and
+the left-out list with a proposed fate per item (into the change / a one-line backlog entry /
+dropped) — **one stop**: granularity and fates are corrected in one reply. Then commit the way
+`dw-git` does, everything this shaping wrote staged by name.
 
-Write `CHANGE.md` from the shape in `references/CHANGE.md`. If this change takes an entry from
-`.ai/backlog/`, create the folder first (`mkdir -p .ai/work/<dated name>` — `git mv` won't), then
-**`git mv` the file** there and expand it in place: the entry is the seed, and live work must not also
-sit in the backlog, or the next `dw-shape` offers you what you're already building. Keep its bare slug
-unless the change outgrew it; the folder takes today's date, not the entry's. **A split still seeds one change from one entry**, not N — `git mv` it into
-whichever inherits its subject and write the siblings fresh.
-
-Then read the goal and the task list back in a few lines and ask whether the breakdown is right —
-wrong granularity is far cheaper to fix now than after two commits. **Wait for that confirmation**,
-reading all N back in one pass where there are several.
-
-### 5. Give the left-out list its choice, one item at a time
-
-Everything the shaping deliberately left out — a `dw-grill` playback's closing list, the scopes a split
-declined, anything you narrowed away in step 2 — gets an explicit **three-way choice, forced per item**:
-
-- **into this change — the default.** Nothing blocking it and cheaper to do than to describe means it
-  is a task in the checklist you just read back, now,
-- **into `.ai/backlog/`** — parked as a file, if it clears both bars in that folder's README: **will you
-  ever?** and **should it have been done now?** Read them there; they are not restated here,
-- **dropped** — said out loud and gone, which is a real answer and often the right one.
-
-**Never file the pile wholesale.** Shape time is when the left-out list is longest and least tested, so
-an automatic filer fills the folder with ideas that have survived exactly one conversation — and where
-the repo caps it, spends the whole cap on them. Forcing the choice is the point: it is the same move
-the land-side gate makes.
-
-**Only the parked ones become files**, one per entry at `.ai/backlog/<YYYY-MM-DD>-<slug>.md`, mirroring
-what `dw-land` writes rather than inventing a second shape: name from
-`bash "${CLAUDE_PLUGIN_ROOT}/scripts/slugify.sh" dated "<short description>"`, frontmatter `created:`
-plus `source:` naming this change, an H1 saying what-and-why in one line, at most ~3 lines of context.
-A bare slug already in the folder (`undate` each name) means bundling into that entry, not a
-near-duplicate beside it.
-
-### 6. Commit
-
-Once the breakdown is confirmed and the left-out list is resolved, **commit** the way `dw-git` does,
-staged by name, with the backlog-file move, any files step 5 parked — and all N files together, since
-shaping them was one act. This is load-bearing, not hygiene: a worktree checks out committed state
-only, so an uncommitted `CHANGE.md` — or park — never reaches the session that would build it.
-
-For anything beyond small, prefer a **fresh session per change** — the file you just committed is the
-handoff, and a build that starts clean reads it from disk instead of inheriting this conversation's
-assumptions.
+Beyond small, prefer a fresh session per change — the committed file is the handoff.
 
 ## References
 
-- `references/splitting.md` — what to write once the HARD STOP is answered, either way. Read it only
-  at N ≥ 2; the default count of one never reaches it.
-- `references/CHANGE.md` — the exact shape to copy: frontmatter (`change / branch / created / status`)
-  plus Goal · Decisions · Tasks · Anchors · References · Notes. Keep it a note to your future self, not
-  documentation; durable knowledge is what `dw-land` promotes to `docs/decisions/` and `CONTEXT.md`.
+- `references/CHANGE.md` — the exact shape to copy; the tick convention lives in the template.
 
-**Next:** `dw-start` to open the change in its own worktree, `dw-next` to build it right here, or `dw-grill` if the read-back exposed something still undecided.
+**Next:** `dw-next` to build it right here, `dw-start` for a worktree instead, or `dw-grill` if the
+read-back exposed something still undecided.

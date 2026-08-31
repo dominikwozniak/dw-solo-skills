@@ -146,6 +146,39 @@ allowed "empty-input" ""
 allowed "plain-ls" "ls -la"
 allowed "pnpm-test" "pnpm validate:artifacts"
 
+# A token is split on `/` to test each component. Split with an unquoted expansion
+# and it globs too, so in a directory holding .ssh the token `.*` expanded to it
+# and an innocent listing was refused. The hook runs with its cwd inside the
+# fixture; the assertions stay in this shell, or a failure would not be counted.
+GLOBDIR="$(mktemp -d)"
+mkdir -p "$GLOBDIR/.ssh" "$GLOBDIR/sub/.aws"
+glob_rc() {
+  printf '{"tool_input":{"command":%s}}' "$(printf '%s' "$1" | jq -Rs .)" |
+    (cd "$GLOBDIR" && bash "$HOOK") >/dev/null 2>&1
+  printf '%s' $?
+}
+
+echo "a glob in the command does not pick up a credential dir from the cwd:"
+for cmd in 'ls .*' 'echo *' 'cat *.md'; do
+  rc="$(glob_rc "$cmd")"
+  if [ "$rc" -eq 0 ]; then
+    note_pass "glob-not-a-credential [$cmd]"
+  else
+    note_fail "glob-not-a-credential [$cmd]" "want exit 0, got $rc"
+  fi
+done
+
+echo "and the same cwd does not stop a real credential path being refused:"
+for cmd in 'cat .ssh/config' 'cat sub/.aws/credentials'; do
+  rc="$(glob_rc "$cmd")"
+  if [ "$rc" -eq 2 ]; then
+    note_pass "real-credential-still-blocked [$cmd]"
+  else
+    note_fail "real-credential-still-blocked [$cmd]" "want exit 2, got $rc"
+  fi
+done
+rm -rf "$GLOBDIR"
+
 echo
 echo "credential-leak-guard self-test: $PASS passed, $FAIL failed"
 [ "$FAIL" -eq 0 ]

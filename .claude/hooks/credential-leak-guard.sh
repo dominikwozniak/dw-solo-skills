@@ -109,12 +109,14 @@ is_cred_path() {
       esac
       ;;
   esac
-  local IFS=/
-  for comp in $tok; do
+  # Split on `/` by newline substitution rather than `for comp in $tok`: unquoted,
+  # that also globs, so in a directory holding .ssh the token `.*` expanded to it
+  # and `ls .*` was refused.
+  while IFS= read -r comp; do
     case "$comp" in
       .ssh | .aws | .gnupg | .kube) return 0 ;;
     esac
-  done
+  done <<<"${tok//\//$'\n'}"
   return 1
 }
 

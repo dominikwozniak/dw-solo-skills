@@ -117,11 +117,13 @@ report_missing_env() {
   while IFS= read -r rel; do
     [ -n "$rel" ] || continue
     [ -e "$dst_root/$rel" ] && continue
-    missing="$missing $rel"
+    missing="$missing
+  - $rel"
   done < <(git -C "$src_root" -c core.quotePath=false ls-files -o -i --exclude-standard 2>/dev/null |
     grep -E '(^|/)\.env(\.[^/]+)?$|(^|/)\.envrc$' | grep -vE '\.(example|sample|template)$' || true)
   [ -n "$missing" ] || return 0
-  echo "worktree.sh: env file(s) in the main tree but not in this worktree:$missing — gitignored, so never checked out, and the env guard stops the agent from copying them: copy by hand or list them in .worktreeinclude" >&2
+  echo "worktree.sh: env file(s) in the main tree but not in this worktree:$missing
+  Gitignored, so never checked out, and the env guard stops the agent from copying them: copy by hand, or list them in .worktreeinclude." >&2
 }
 
 # THE LINK CLASS IS GONE, and this note is what is left of it. Personal agent memory used to be a
@@ -153,17 +155,24 @@ report_missing_env() {
 
 # The repo's own word for "make this checkout buildable": a declared
 # `- **Bootstrap command**: \`cmd\`` bullet, resolved AGENTS.md-first / CLAUDE.local.md-second like
-# the hooks' Lint and Typecheck bullets. A declared `none`, a template placeholder, or a blank
-# value resolve to nothing and the lockfile guess below takes over.
+# the hooks' Lint and Typecheck bullets. Prints `none` for a declared none — the caller then reports
+# nothing, since the repo has said the checkout needs no bootstrap. A template placeholder or a blank
+# value resolve to nothing at all, and the lockfile guess takes over.
+#
+# AGENTS.md is read in the new worktree (tracked, so it is checked out); CLAUDE.local.md in the main
+# tree, because it is gitignored and a fresh worktree never has one.
 resolve_bootstrap_cmd() {
-  local dst_root="$1" md line rest value
-  for md in "$dst_root/AGENTS.md" "$dst_root/CLAUDE.local.md"; do
+  local dst_root="$1" src_root="$2" md line rest value
+  for md in "$dst_root/AGENTS.md" "$src_root/CLAUDE.local.md"; do
     [ -f "$md" ] || continue
     line="$(grep -E '^[[:space:]]*[-*]?[[:space:]]*\*{0,2}Bootstrap command\*{0,2}:' "$md" | head -n1)" || true
     [ -n "$line" ] || continue
     rest="$(printf '%s\n' "$line" | sed -e 's/.*Bootstrap command[*]*://' -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
     case "$rest" in
-      none | None | NONE | none[!A-Za-z0-9]* | None[!A-Za-z0-9]* | NONE[!A-Za-z0-9]*) return 0 ;;
+      none | None | NONE | none[!A-Za-z0-9]* | None[!A-Za-z0-9]* | NONE[!A-Za-z0-9]*)
+        printf 'none\n'
+        return 0
+        ;;
     esac
     value="$(printf '%s\n' "$line" | sed -n 's/.*Bootstrap command[*]*:[^`]*`\([^`]*\)`.*/\1/p')"
     [ -z "$value" ] && value="$rest"
@@ -176,14 +185,17 @@ resolve_bootstrap_cmd() {
 }
 
 report_readiness() {
-  local dst_root="$1"
+  local dst_root="$1" src_root="$2"
   local missing=""
 
   # A declared bootstrap beats lockfile guessing: the repo names install + codegen + submodule
-  # init in one line, so the guess below stands down.
+  # init in one line, so the guess below stands down. A declared `none` stands it down too, and
+  # says nothing — that is the repo answering "this checkout needs no bootstrap".
   local bootstrap
-  bootstrap="$(resolve_bootstrap_cmd "$dst_root")" || true
-  if [ -n "$bootstrap" ]; then
+  bootstrap="$(resolve_bootstrap_cmd "$dst_root" "$src_root")" || true
+  if [ "$bootstrap" = none ]; then
+    :
+  elif [ -n "$bootstrap" ]; then
     missing="$missing  - bootstrap — run: $bootstrap
 "
   elif [ -f "$dst_root/package.json" ] && [ ! -d "$dst_root/node_modules" ]; then
@@ -334,7 +346,7 @@ case "$cmd" in
     # file is worth a warning, never a failure.
     copy_worktree_includes "$root" "$path" || true
     report_missing_env "$root" "$path" || true
-    report_readiness "$path" || true
+    report_readiness "$path" "$root" || true
     printf '%s\n' "$path"
     ;;
   remove)

@@ -133,7 +133,8 @@ light.
   as valid JSON.
 - `AGENTS.md` — if absent, render `${CLAUDE_PLUGIN_ROOT}/templates/AGENTS.md`, substituting
   `{{PROJECT_NAME}}` `{{DEFAULT_BRANCH}}` `{{STACK}}` `{{TEST_COMMAND}}` `{{LINT_COMMAND}}`
-  `{{TYPECHECK_COMMAND}}` `{{COMMIT_PATTERN}}` `{{COMMIT_TRAILER}}` `{{HOOKS_INSTALLED}}`
+  `{{TYPECHECK_COMMAND}}` `{{COMMIT_PATTERN}}` `{{COMMIT_TRAILER}}` `{{BOOTSTRAP_COMMAND}}`
+  `{{HOOKS_INSTALLED}}`
   `{{AGENTS_CHECK_COMMAND}}`. **Every placeholder gets
   a value or the line goes** — a `{{…}}` left in the file is read as content by the next session and
   `eval`ed as a command by the hooks, which is why they carry an explicit guard against exactly

@@ -409,7 +409,8 @@ printf 'SECRET=1\n' >"$REPO/.env.local"
 printf 'PLACEHOLDER=1\n' >"$REPO/.env.example"
 RLOG4="$TMP/mu.stderr"
 "$WORKTREE" create mu 2>"$RLOG4" >/dev/null
-if grep -q "env file(s) in the main tree but not in this worktree: .env.local —" "$RLOG4"; then
+# One path per line, so the allowlisted .env.example must not appear on any of them.
+if grep -qx "  - .env.local" "$RLOG4" && ! grep -q '\.env\.example' "$RLOG4"; then
   note_pass "env-probe-names-only-the-secret-file"
 else
   note_fail "env-probe-names-only-the-secret-file" "stderr: $(tr '\n' '|' <"$RLOG4")"

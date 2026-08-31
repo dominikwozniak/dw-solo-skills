@@ -42,8 +42,10 @@ you ship.
 | `lint-on-edit.sh`             | PostToolUse(Write/Edit/MultiEdit) — the root's Lint command                            |
 | `large-file-guard.sh`         | PostToolUse(Write) — an oversized write, after the fact                                |
 
-Every one opens with `command -v jq >/dev/null || exit 0` — **without `jq` on `PATH` they all silently
-no-op**, and nothing says so. `/dw-doctor` is the check. `templates/hooks/` ships a ninth,
+Every hook that parses a payload opens with `command -v jq >/dev/null || exit 0`, the dispatcher
+included — so **without `jq` on `PATH` they all silently no-op**, and nothing says so. (A Bash guard
+spawned with `--bash-command` takes the command off stdin and needs no `jq` of its own; the
+dispatcher above it is what bails.) `/dw-doctor` is the check. `templates/hooks/` ships a ninth,
 `typecheck-on-commit.sh`, deliberately unwired here because this repo has no typecheck.
 
 `hooks-in-sync.test.sh` pins the templates ≡ installed copies invariant **inside this repo only**;
@@ -58,20 +60,23 @@ executable bit.
 `scripts/lint.sh` lints the one path it is appended and only walks the tree when handed nothing.
 `.husky/pre-commit` is still the real gate.
 
-## The four declared bullets
+## The five declared bullets
 
-`- **Lint command**:`, `- **Typecheck command**:`, `- **Commit pattern**:` and
-`- **Commit trailer**:` under the root's `## Solo lane` are **grep-read** rather than inferred, which
-is why they live there and nowhere else. Four separate scripts share one extraction shape, so a bug
-there is fixed once. The chain:
+`- **Lint command**:`, `- **Typecheck command**:`, `- **Commit pattern**:`, `- **Commit trailer**:`
+and `- **Bootstrap command**:` under the root's `## Solo lane` are **grep-read** rather than
+inferred, which is why they live there and nowhere else. Five separate scripts share one extraction
+shape, so a bug there is fixed once. Four are read by hooks; the fifth is read by `worktree.sh
+create`, which prints it and never runs it — a worktree arrives with tracked files and no installed
+dependencies, and only the repo knows what makes it buildable. The chain:
 
 1. `AGENTS.md`, the tracked file the scaffold writes.
 2. `CLAUDE.local.md`, legacy only — a repo scaffolded before decision 0007 still keeps its own there.
    `CLAUDE.md` is absent on purpose: it is a symlink to `AGENTS.md`, so reading it is reading step 1
    twice.
 3. The script's own default — a probe (eslint / `tsc`) for lint and typecheck, Conventional Commits
-   for the pattern, and `none` for the trailer, because a requirement nobody declared must not start
-   failing commits.
+   for the pattern, `none` for the trailer, because a requirement nobody declared must not start
+   failing commits, and for bootstrap the lockfile guess (`pnpm install` and friends) that
+   `worktree.sh` falls back to.
 
 The value is **the first backticked span** on the line, and a standalone `none` **disables the check
 and stops the chain**. `none` is tested on the raw remainder _before_ any backtick extraction so it

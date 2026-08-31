@@ -70,6 +70,30 @@ rc="$(printf '{"tool_input":{"command":"git push --force"}}' | bash "$WORK/bash-
   printf '%s' $?)"
 expect_rc "kept-guard-still-blocks" 2 "$rc"
 
+# The command used to travel in the environment, which shares the exec size
+# limit: past it every spawn died with 126 and the dispatcher allowed the call.
+echo "a command too large for an argv/environ transport is still guarded:"
+big="$(awk 'BEGIN { s = ""; while (length(s) < 200000) s = s "x"; print s }')"
+expect_rc "huge-destructive-blocked" 2 "$(run "git push --force origin main # $big")"
+expect_rc "huge-safe-passes" 0 "$(run "echo ok # $big")"
+
+# A guard exiting non-2 is broken, not a verdict: it must not take the guards
+# below it down with it.
+echo "a broken guard does not disable the ones after it:"
+BROKEN="$(mktemp -d)"
+cp "$HOOKS/bash-guard.sh" "$HOOKS/block-dangerous-commands.sh" "$BROKEN/"
+printf '#!/bin/bash\nexit 126\n' >"$BROKEN/credential-leak-guard.sh"
+rc="$(printf '{"tool_input":{"command":"git push --force"}}' | bash "$BROKEN/bash-guard.sh" >/dev/null 2>&1
+  printf '%s' $?)"
+expect_rc "broken-guard-later-guard-still-blocks" 2 "$rc"
+printf '#!/bin/bash\nexit 126\n' >"$BROKEN/block-dangerous-commands.sh"
+err="$(printf '{"tool_input":{"command":"ls"}}' | bash "$BROKEN/bash-guard.sh" 2>&1 >/dev/null)"
+case "$err" in
+  *"exited 126"*) note_pass "broken-guard-reported-on-stderr" ;;
+  *) note_fail "broken-guard-reported-on-stderr" "stderr was: $(printf '%s' "$err" | tr '\n' '|')" ;;
+esac
+rm -rf "$BROKEN"
+
 echo
 echo "bash-guard self-test: $PASS passed, $FAIL failed"
 [ "$FAIL" -eq 0 ]

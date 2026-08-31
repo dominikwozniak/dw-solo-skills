@@ -4,7 +4,7 @@
 # excluded), the staged-TS gate comes before any resolution (`-a` widens it to
 # tracked modifications), the resolver chain (tracked AGENTS.md over the legacy
 # CLAUDE.local.md, placeholder and blank values fall through, `none` stops the
-# chain even trailed by explanatory backticks), the DW_GUARD_COMMAND fast path,
+# chain even trailed by explanatory backticks), the --bash-command fast path,
 # and a failing typecheck refusing the commit with exit 2 + stderr.
 #
 # Run standalone (`bash scripts/tests/typecheck-on-commit.test.sh`) or via
@@ -109,11 +109,11 @@ repo="$(fixture staged.ts)"
 expect_rc "chained-exit-0" 0 "$(run "$repo" 'git add -u && git commit -m "y"')"
 ran "chained-invoked" "$repo"
 
-echo "the DW_GUARD_COMMAND fast path skips stdin:"
+echo "the --bash-command fast path reads the command off stdin:"
 repo="$(fixture staged.ts)"
-(cd "$repo" && DW_GUARD_COMMAND='git commit -m "z"' bash "$HOOK" </dev/null >/dev/null 2>&1)
-expect_rc "env-path-exit-0" 0 "$?"
-ran "env-path-invoked" "$repo"
+(cd "$repo" && printf '%s' 'git commit -m "z"' | bash "$HOOK" --bash-command >/dev/null 2>&1)
+expect_rc "stdin-path-exit-0" 0 "$?"
+ran "stdin-path-invoked" "$repo"
 
 echo "the resolver chain — AGENTS.md wins, placeholder and blank fall through:"
 repo="$(fixture staged.ts)"
@@ -155,7 +155,7 @@ echo "a failing typecheck refuses the commit:"
 repo="$(fixture staged.ts)"
 printf '# Fixture\n\n## Solo lane\n\n- **Typecheck command**: `env FAKE_TC_RC=1 ./fake-tc.sh`\n' >"$repo/AGENTS.md"
 expect_rc "failing-exit-2" 2 "$(run "$repo" 'git commit -m "x"')"
-err="$(cd "$repo" && DW_GUARD_COMMAND='git commit -m "x"' bash "$HOOK" </dev/null 2>&1 >/dev/null)"
+err="$(cd "$repo" && printf '%s' 'git commit -m "x"' | bash "$HOOK" --bash-command 2>&1 >/dev/null)"
 case "$err" in
   *"Typecheck failed"*fake-tc.sh*"commit refused"*) note_pass "failure-message-on-stderr" ;;
   *) note_fail "failure-message-on-stderr" "stderr was: $(printf '%s' "$err" | tr '\n' '|')" ;;
@@ -163,7 +163,7 @@ esac
 
 echo "CLAUDE_SKIP_TYPECHECK short-circuits everything:"
 repo="$(fixture staged.ts)"
-(cd "$repo" && CLAUDE_SKIP_TYPECHECK=1 DW_GUARD_COMMAND='git commit -m "x"' bash "$HOOK" </dev/null >/dev/null 2>&1)
+(cd "$repo" && printf '%s' 'git commit -m "x"' | CLAUDE_SKIP_TYPECHECK=1 bash "$HOOK" --bash-command >/dev/null 2>&1)
 expect_rc "skip-env-exit-0" 0 "$?"
 never_ran "skip-env-nothing-run" "$repo"
 

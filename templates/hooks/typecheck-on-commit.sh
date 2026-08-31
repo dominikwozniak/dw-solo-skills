@@ -12,8 +12,8 @@ set -uo pipefail
 
 [[ -n "${CLAUDE_SKIP_TYPECHECK:-}" ]] && exit 0
 
-if [[ -n "${DW_GUARD_COMMAND:-}" ]]; then
-  COMMAND="$DW_GUARD_COMMAND"
+if [[ "${1:-}" == "--bash-command" ]]; then
+  COMMAND=$(cat)
 else
   command -v jq >/dev/null || exit 0
   INPUT=$(cat)
@@ -24,7 +24,7 @@ fi
 
 # Only a real `git … commit`, in any wrapper spelling (sudo, rtk, VAR=… prefix),
 # `git -C <path>` included — the same boundary shape the sibling guards use.
-printf '%s' "$COMMAND" | grep -qE '(^|[;&|][[:space:]]*)([A-Za-z_][A-Za-z0-9_]*=[^[:space:]]*[[:space:]]+|sudo[[:space:]]+|rtk[[:space:]]+([a-z-]+[[:space:]]+)?)*git([[:space:]]+-C[[:space:]]+("[^"]*"|'"'"'[^'"'"']*'"'"'|[^[:space:];&|]+))?[[:space:]]+commit\b' || exit 0
+printf '%s' "$COMMAND" | grep -qE '(^|[;&|][[:space:]]*)([A-Za-z_][A-Za-z0-9_]*=[^[:space:]]*[[:space:]]+|sudo[[:space:]]+|rtk[[:space:]]+([a-z-]+[[:space:]]+)?)*["'"'"']?git([[:space:]]+-C[[:space:]]+("[^"]*"|'"'"'[^'"'"']*'"'"'|[^[:space:];&|]+))?[[:space:]]+commit\b' || exit 0
 
 repo_root="$(git rev-parse --show-toplevel 2>/dev/null)" || exit 0
 cd "$repo_root" || exit 0

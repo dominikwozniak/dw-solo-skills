@@ -1,8 +1,8 @@
 #!/bin/bash
 # PreToolUse hook — blocks reading/editing/writing .env files (secrets).
 # Wire with matcher "Read|Edit|Write|MultiEdit|NotebookEdit|Grep" — Bash calls
-# arrive through the bash-guard.sh dispatcher (DW_GUARD_COMMAND); a direct
-# "…|Bash" wiring still works, stdin is parsed when the variable is absent.
+# arrive through the bash-guard.sh dispatcher (--bash-command); a direct
+# "…|Bash" wiring still works, stdin is parsed as JSON without that flag.
 # File tools are checked via tool_input.file_path/.notebook_path/.path,
 # Bash via tokens of tool_input.command (cat .env, source .env, cp x .env).
 # Allowed basenames: .env.example / .env.sample / .env.template (secret-free).
@@ -58,11 +58,12 @@ block() {
   exit 2
 }
 
-# Fast path: the bash-guard.sh dispatcher already parsed stdin — reuse it. The
-# variable only ever carries a Bash payload, so the file-tool checks are
-# skipped exactly when they cannot apply.
-if [[ -n "${DW_GUARD_COMMAND:-}" ]]; then
-  COMMAND="$DW_GUARD_COMMAND"
+# Fast path: --bash-command says the dispatcher already parsed the payload and
+# put the command on stdin, so the file-tool checks below are skipped exactly
+# when they cannot apply. Gated on argv: an environment variable would let a
+# stray value skip them on a real Read of a real .env.
+if [[ "${1:-}" == "--bash-command" ]]; then
+  COMMAND=$(cat)
 else
   command -v jq >/dev/null || exit 0
   INPUT=$(cat)

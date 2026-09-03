@@ -122,11 +122,12 @@ function stripQuotes(value: string): string {
 // --- tokenizing --------------------------------------------------------------
 
 // Ordinary English function words, kept as one whitespace-split string so the list stays legible.
-// Note what is NOT here: the "Use when someone says ..." phrasing every description shares. It needs
-// no list because `log(N/df)` prices it down on its own — `use` sits in 7 of 11 descriptions and
-// `say` in 5, so both are cheap rather than free. A term carried by *all* N would reach idf 0 and
-// drop out outright; nothing in this corpus actually does, so the mechanism is a gradient, not a
-// filter. Either way there is no hand-kept boilerplate list to rot.
+// Note what is NOT here: the loop's own shared vocabulary, the words every description reaches for
+// because every skill works on the same object. It needs no list because `log(N/df)` prices it down
+// on its own — `chang` sits in 7 of 14 descriptions and `one` in 6, so both are cheap rather than
+// free. A term carried by *all* N would reach idf 0 and drop out outright; nothing in this corpus
+// actually does, so the mechanism is a gradient, not a filter. Either way there is no hand-kept
+// boilerplate list to rot.
 const STOPWORDS = new Set(
   `a about after again against all also am an and any are as at be because been before being below
    between both but by can did do does doing down during each else few for from further had has have
@@ -373,6 +374,15 @@ function rank(index: Index, prompt: string): Ranked[] {
 
 // --- case files --------------------------------------------------------------
 
+/**
+ * The floor the add-a-skill checklist has always named. It lives here rather than in prose because
+ * a contract nothing runs is a contract that drifts: the count is the only thing standing between a
+ * case file and a single hand-picked prompt that proves whatever the author already believed.
+ * Negatives carry more weight than the number suggests — they are the gate that fires first.
+ */
+const MIN_POSITIVES = 3
+const MIN_NEGATIVES = 2
+
 function loadCases(filter: string[]): CaseFile[] {
   if (!existsSync(CASES_DIR)) fail(`no case directory at ${CASES_DIR}`)
 
@@ -395,13 +405,21 @@ function loadCases(filter: string[]): CaseFile[] {
     if (parsed.skill !== skill) {
       fail(`evals/cases/${file} declares skill "${parsed.skill}" — it must match the filename`)
     }
-    if (!Array.isArray(parsed.positives) || parsed.positives.length === 0) {
-      fail(`evals/cases/${file} has no positives`)
+    if (!Array.isArray(parsed.positives) || parsed.positives.length < MIN_POSITIVES) {
+      const held = Array.isArray(parsed.positives) ? parsed.positives.length : 0
+      fail(`evals/cases/${file} holds ${held} positive(s) — at least ${MIN_POSITIVES} are required`)
     }
-    for (const negative of parsed.negatives ?? []) {
+    if (!Array.isArray(parsed.negatives) || parsed.negatives.length < MIN_NEGATIVES) {
+      const held = Array.isArray(parsed.negatives) ? parsed.negatives.length : 0
+      fail(
+        `evals/cases/${file} holds ${held} negative(s) — at least ${MIN_NEGATIVES} are required, ` +
+          "each naming the owner it must yield to",
+      )
+    }
+    for (const negative of parsed.negatives) {
       if (!negative.owner) fail(`evals/cases/${file}: negative "${negative.prompt}" has no owner`)
     }
-    cases.push({ ...parsed, negatives: parsed.negatives ?? [] })
+    cases.push(parsed)
   }
 
   const missing = filter.filter((name) => !cases.some((entry) => entry.skill === name))
@@ -425,6 +443,12 @@ function others(ranked: Ranked[], skip: string, top: number): string {
 type Tally = {
   skill: string
   rank1: number
+  /**
+   * Positives that discriminate nothing — the skill scored zero, so the ranking below it is
+   * alphabetical noise. Still a miss against `positives`, but a different one from a loss: the fix
+   * is a description that carries the words, not a description that carries them harder.
+   */
+  blank: number
   positives: number
   negOk: number
   negatives: number
@@ -453,6 +477,7 @@ function report(cases: CaseFile[], index: Index, top: number): Tally[] {
     const tally: Tally = {
       skill: entry.skill,
       rank1: 0,
+      blank: 0,
       positives: entry.positives.length,
       negOk: 0,
       negatives: entry.negatives.length,
@@ -474,6 +499,10 @@ function report(cases: CaseFile[], index: Index, top: number): Tally[] {
       if (own.score === 0) {
         // Every ranking below is meaningless when the prompt shares no discriminating term with
         // any description, so say that instead of printing an alphabetical ordering as a result.
+        // Counted, because a prompt that asserts nothing is a different finding from a prompt that
+        // loses — the rank-1 column alone cannot tell them apart, and one of these is a vocabulary
+        // gap in a description while another is a trade already recorded in evals/README.md.
+        tally.blank++
         console.log(`  ✗ no signal    "${positive.prompt}"`)
         console.log("      └ no term in this prompt discriminates between descriptions")
         continue
@@ -538,6 +567,7 @@ function report(cases: CaseFile[], index: Index, top: number): Tally[] {
 
 type Totals = {
   rank1: number
+  blank: number
   positives: number
   negOk: number
   negatives: number
@@ -547,25 +577,42 @@ type Totals = {
 
 function summarise(tallies: Tally[], corpusSize: number, scored: number): Totals {
   const width = Math.max(...tallies.map((t) => t.skill.length), 5)
-  console.log(`\n${"skill".padEnd(width)}  rank-1   yields   shadowed`)
-  console.log(`${"-".repeat(width)}  -------  -------  --------`)
+  console.log(`\n${"skill".padEnd(width)}  rank-1   yields   blank  shadowed`)
+  console.log(`${"-".repeat(width)}  -------  -------  -----  --------`)
 
-  const totals: Totals = { rank1: 0, positives: 0, negOk: 0, negatives: 0, negBlank: 0, pct: 0 }
+  const totals: Totals = {
+    rank1: 0,
+    blank: 0,
+    positives: 0,
+    negOk: 0,
+    negatives: 0,
+    negBlank: 0,
+    pct: 0,
+  }
   for (const tally of tallies) {
     totals.rank1 += tally.rank1
+    totals.blank += tally.blank
     totals.positives += tally.positives
     totals.negOk += tally.negOk
     totals.negatives += tally.negatives
     totals.negBlank += tally.negBlank
     const a = `${tally.rank1}/${tally.positives}`
     const b = `${tally.negOk}/${tally.negatives}`
-    console.log(`${tally.skill.padEnd(width)}  ${a.padEnd(7)}  ${b.padEnd(7)}  ${tally.shadowed}`)
+    console.log(
+      `${tally.skill.padEnd(width)}  ${a.padEnd(7)}  ${b.padEnd(7)}  ` +
+        `${String(tally.blank).padEnd(5)}  ${tally.shadowed}`,
+    )
   }
 
+  // The denominator stays every positive, blanks included: a prompt that discriminates nothing is
+  // still a prompt this skill did not win. The column beside it is what says which kind of miss.
   totals.pct = totals.positives === 0 ? 0 : Math.round((totals.rank1 / totals.positives) * 100)
-  console.log(`${"-".repeat(width)}  -------  -------  --------`)
+  console.log(`${"-".repeat(width)}  -------  -------  -----  --------`)
   const head = `${totals.rank1}/${totals.positives}`
-  console.log(`${"TOTAL".padEnd(width)}  ${head.padEnd(7)}  ${totals.negOk}/${totals.negatives}`)
+  console.log(
+    `${"TOTAL".padEnd(width)}  ${head.padEnd(7)}  ` +
+      `${`${totals.negOk}/${totals.negatives}`.padEnd(7)}  ${totals.blank}`,
+  )
   console.log(`\nrank-1 ${totals.pct}% · ${scored} of ${corpusSize} skills have case files`)
   return totals
 }
@@ -708,11 +755,13 @@ function explain(index: Index, prompt: string, top: number): void {
 // --- entry point -------------------------------------------------------------
 
 const USAGE =
-  "usage: node evals/routing.ts [--top <n>] [--min-rank1 <percent>] [--explain <prompt>] [skill...]"
+  "usage: node evals/routing.ts [--top <n>] [--min-rank1 <percent>] [--max-blank <n>] " +
+  "[--explain <prompt>] [skill...]"
 
 function main(argv: string[]): void {
   let top = 3
   let minRank1: number | null = null
+  let maxBlank: number | null = null
   let explainPrompt: string | null = null
   const filter: string[] = []
 
@@ -728,6 +777,10 @@ function main(argv: string[]): void {
         fail("--min-rank1 needs a percentage between 0 and 100")
       }
       minRank1 = value
+    } else if (arg === "--max-blank") {
+      const value = Number(argv[++i])
+      if (!Number.isInteger(value) || value < 0) fail("--max-blank needs a non-negative integer")
+      maxBlank = value
     } else if (arg === "--explain") {
       const value = argv[++i]
       if (value === undefined || value.trim() === "") fail("--explain needs a prompt")
@@ -755,6 +808,22 @@ function main(argv: string[]): void {
   }
 
   const cases = loadCases(filter)
+  // The inbound direction — a case file naming a dead or explicit-invoke skill — is checked in
+  // `report`. This is the other half: a model-invocable skill with no case file is measured by
+  // nothing, and until now the only trace was the "N of M skills have case files" line, which
+  // nobody reads as a failure. Skipped under a filter, because a narrowed run is a debugging run
+  // and `loadCases` already rejects a filter naming a skill with no file.
+  if (filter.length === 0) {
+    const uncovered = docs
+      .filter((doc) => !doc.explicit && !cases.some((entry) => entry.skill === doc.name))
+      .map((doc) => doc.name)
+    if (uncovered.length > 0) {
+      fail(
+        `no evals/cases/<skill>.json for: ${uncovered.join(", ")} — every model-invocable skill ` +
+          "owns exactly one case file",
+      )
+    }
+  }
 
   const explicit = [...index.explicit]
   console.log(`corpus: ${docs.length} skills · ${explicit.length} explicit-invoke, in the`)
@@ -781,6 +850,15 @@ function main(argv: string[]): void {
   }
   if (minRank1 !== null && totals.pct < minRank1) {
     problems.push(`rank-1 ${totals.pct}% is below the --min-rank1 floor of ${minRank1}%`)
+  }
+  // A ratchet, not a bar. Some blanks are a description missing the words a real ask uses, and some
+  // are a trade this repo took on purpose — evals/README.md records one of each. Neither is a
+  // reason to fail the run today; both are a reason for the count never to climb unnoticed.
+  if (maxBlank !== null && totals.blank > maxBlank) {
+    problems.push(
+      `${totals.blank} positive prompt(s) score zero everywhere — above the --max-blank ` +
+        `ceiling of ${maxBlank}`,
+    )
   }
 
   console.log()

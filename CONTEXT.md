@@ -125,6 +125,9 @@ in [`AGENTS.md`](AGENTS.md) and the procedures in the skills themselves.
   One per model-invocable skill, none for an explicit-invoke one.
 - **Shadowed** — a positive prompt where an explicit-invoke skill scores higher than the skill under
   test. Reported as overlap, never counted as a routing failure: the model is never offered it.
+- **Blank** — a prompt no description discriminates on, so every skill scores zero. A blank negative
+  fails the run outright; a blank positive is counted in its own column under a `--max-blank` ratchet,
+  because one of them is a description missing words and another is a trade this repo took knowingly.
 - **HARD STOP** — a point in a skill where it must stop and wait for a human answer rather than
   proceed on an assumption.
 - **Fact-token diff** — the check that a doc rewrite kept its content: every backticked span, path,

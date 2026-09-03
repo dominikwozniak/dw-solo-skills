@@ -48,10 +48,11 @@ in `README.md`, kept in sync by `validate-docs.sh`.
    exist.
 6. **Exactly one `evals/cases/<name>.json` per model-invocable skill, and none for an explicit-invoke
    one** — at least 3 positives and 2 negatives, each negative naming the `owner` that should win
-   instead. Nothing validates that count any more, so it is yours to hold: a missing file is a skill
-   measured by nothing, an orphan file is a case file measuring nothing, and a file for a
-   `disable-model-invocation: true` skill reads as coverage while measuring a decision the model never
-   makes. Shape and conventions: [`evals/README.md`](../../evals/README.md).
+   instead. `eval:routing` holds all four of those now: a missing file is a skill measured by nothing,
+   an orphan file is a case file measuring nothing, a file for a `disable-model-invocation: true` skill
+   reads as coverage while measuring a decision the model never makes, and a file under the counts
+   proves whatever its author already believed. Shape and conventions:
+   [`evals/README.md`](../../evals/README.md).
 7. **Re-record the corpus baseline in the same commit**:
    `node scripts/check-skill-corpus.mjs --update-baseline`. A new skill is corpus growth, which pass 3 of
    `validate:artifacts` refuses until told — same when an existing `SKILL.md` legitimately gets longer,
@@ -61,9 +62,10 @@ in `README.md`, kept in sync by `validate-docs.sh`.
    shifts every term's idf, so adding a skill can knock an _existing_ one off rank-1 and fail CI's floor
    without your own case file scoring badly at all.
 
-Steps 2–5 and 7 are CI-enforced, bar the loop diagram; **step 6 is not** — `evals/routing.ts` skips a
-case file that is absent and demands one positive and no negatives at all, so its counts are yours to
-hold. `validate-manifests.sh` checks the two versions are _equal_ and `validate-versions.sh` checks the
+Steps 2–7 are CI-enforced, bar the loop diagram. What step 6 still leaves to you is the prompts
+themselves: the eval counts them and refuses a file below the floor, but only you can tell a positive
+that paraphrases a real ask from one copied out of the `description`, which scores the eval against
+itself. `validate-manifests.sh` checks the two versions are _equal_ and `validate-versions.sh` checks the
 number _grew_ — step 3 needs both to pass. The validators name the exact missing entry — run them rather
 than re-deriving this checklist by hand.
 

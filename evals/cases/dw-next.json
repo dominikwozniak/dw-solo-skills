@@ -3,7 +3,8 @@
   "note": "dw-next carries \"on disk\", \"task\" and \"change\" — the vocabulary task 1 caught it taking from dw-shape. Its own positives are the resume question and the build-the-next-thing instruction, kept as paraphrases so the eval is not just matching the description back to itself.",
   "positives": [
     {
-      "prompt": "where did we leave off on this"
+      "prompt": "where did we leave off on this",
+      "note": "Scores zero everywhere, and counted in the blank column. The one term with signal, \"leav\", belongs to dw-ship (\"leave nothing behind\") and dw-prune (\"leave the rest\"). A vocabulary gap, tracked with the stemmer audit in .ai/backlog/."
     },
     {
       "prompt": "carry on with the next thing and commit it when it works"
@@ -12,7 +13,8 @@
       "prompt": "what is still unticked on the change I am in the middle of"
     },
     {
-      "prompt": "pick this back up — I have been away a week and lost the thread"
+      "prompt": "pick this back up — I have been away a week and lost the thread",
+      "note": "Scores zero everywhere, and counted in the blank column. Every term is out of vocabulary. This one is a price, not an oversight: the 2026-08-18 re-measure in evals/README.md traded \"pick ... back up\" away to keep dw-shape off dw-next's checklist prompts. It stands so the trade stays visible."
     }
   ],
   "negatives": [

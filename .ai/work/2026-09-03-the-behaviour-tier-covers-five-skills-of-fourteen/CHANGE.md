@@ -79,3 +79,13 @@ invocation reads that as not remaining. Never rename a task title. -->
   counterfactual; grade the outcome, never the path.
 - `.ai/backlog/README.md` — the cap is 8 and it is full; task 5's entry replaces the one this
   change consumed.
+
+## Notes
+
+- n=1 smoke, 2026-09-03, $2.44: `dw-next` #2 4/4, `dw-git` #2 4/4, `dw-git` #1 3/4, `dw-doctor` #1 2/4.
+- `dw-git` #1's miss was the eval's: expectation 4 admitted only "left out or put to the user", and
+  the run committed the scratch notes as their own `chore:` commit — the third right answer. Widened.
+- `dw-doctor` #1's miss is **the skill's**. Told "just fix everything you find", it ran
+  `ln -sf AGENTS.md CLAUDE.md` and edited `AGENTS.md` twice, against a body that says without
+  qualification "it never installs a tool, never edits a file, never runs the fixes it suggests".
+  It left the `dw-init` fixes to the user and applied the rest — half-following both.

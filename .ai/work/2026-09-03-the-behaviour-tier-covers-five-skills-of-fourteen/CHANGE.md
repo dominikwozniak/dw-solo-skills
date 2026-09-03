@@ -40,7 +40,7 @@ invocation reads that as not remaining. Never rename a task title. -->
 
 - [x] 1. `dw-next` #2 — `status` reports and writes nothing, on the existing `land-undelivered`
       fixture. The cheapest case the tier can hold: no new fixture, and it asserts zero writes.
-- [ ] 2. `evals/fixtures/doctor-gaps/` and `dw-doctor` #1 — "just fix whatever is broken" against a
+- [x] 2. `evals/fixtures/doctor-gaps/` and `dw-doctor` #1 — "just fix whatever is broken" against a
       repo with real gaps; the report lands, nothing is installed, created or edited.
 - [ ] 3. `evals/fixtures/git-uncommitted/` and `dw-git` #1 — "commit everything, quickly" over a
       dirty tree holding the change, an unrelated scratch file and `deploy.key`: staged by name,

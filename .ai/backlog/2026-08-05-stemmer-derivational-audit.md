@@ -5,7 +5,7 @@ created: 2026-08-05
 # Audit the DERIVATIONAL table against real case prompts
 
 The 21-entry suffix table in `stem()` is suspected over-engineering: `ization`/`ational`/`iveness`
-and friends are academic English, and the corpus is 11 imperative skill descriptions. `--explain`
+and friends are academic English, and the corpus is 14 imperative skill descriptions. `--explain`
 (shipped 2026-08-05) makes the question answerable instead of arguable.
 
 Run `--explain` over every prompt in `evals/cases/*.json` and record which stems any ranking actually
@@ -26,6 +26,17 @@ and still lost, which is precisely a `DERIVATIONAL` question rather than a vocab
 would lift rank-1 to 23/31 while gaming the eval — `evals/cases/dw-next.json` keeps its positives as
 paraphrases on purpose — so the fix has to come from the stem table or not at all. Findings:
 `.ai/archive/2026-08-17-start-builds-and-next-builds-by-default`.
+
+**Two of those three prompts have since gone blank, and the `blank` column now names them**
+(`evals-accuracy-and-gates`, 2026-09-03). After the descriptions went to one sentence each,
+`"give what I have written so far a once-over before I carry on"` stopped losing to `dw-grill` and
+started scoring zero everywhere; `"where did we leave off on this"` still does. That reclassifies
+both as the **vocabulary** kind, not the stemming kind — `--explain` puts the only live terms in
+other skills' hands (`far` → `dw-handoff`, `leav` → `dw-ship` and `dw-prune`), and no stem table
+reaches a word that is absent. So this audit now has a second half it did not have at the start:
+decide whether `dw-check` and `dw-next` should carry that vocabulary at all. Both are description
+edits, which means each is its own measurement — and `--max-blank 3` is what keeps the count from
+drifting while they wait.
 
 `check-delegates-to-codex-by-default` adds two more cases and, more usefully, a **contrast that splits
 the two failure classes this audit is trying to tell apart.** `dw-check`'s two failing positives are

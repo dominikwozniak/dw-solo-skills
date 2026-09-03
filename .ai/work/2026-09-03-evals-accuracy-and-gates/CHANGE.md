@@ -44,7 +44,7 @@ is derived from a corpus of 11.
 - [x] 2. `evals/README.md` — a `Re-measured 2026-09-03` section, the `--explain` walkthrough
       recomputed at N=14, "five" → "seven", the dead idf example in Caveats, the checklist
       pointer, and the new gate/column documented in Case files and What gates.
-- [ ] 3. Backlog — fold the two vocabulary gaps into the existing stemmer audit entry; add the
+- [x] 3. Backlog — fold the two vocabulary gaps into the existing stemmer audit entry; add the
       Tier-3 behavioural runner entry.
 
 ## Anchors
@@ -69,3 +69,8 @@ is derived from a corpus of 11.
   noted as out of scope here.
 
 ## Notes
+
+- `shadowed` is 8, not 7 — the plan's number came from a summary that did not total the column.
+- Two of the three blank positives were on file as _stemming_ failures in the backlog's stemmer
+  audit; `--explain` reclassifies both as vocabulary gaps, so that entry gained a second half.
+- `dw-shape`'s description never contains "shape"; its whole claim on the term is its `name`.

@@ -12,8 +12,10 @@
 # way lint-on-edit.sh's does: AGENTS.md first, CLAUDE.local.md as the legacy
 # fallback, the first backticked span is the value, and a standalone `none`
 # disables the check. The PATTERN falls back to Conventional Commits when no
-# bullet exists; the TRAILER falls back to `none`, because a requirement nobody
-# declared must not start failing commits in a repo that never asked for it.
+# bullet exists — or to CLAUDE_COMMIT_PATTERN_DEFAULT when the caller set it,
+# which replaces that fallback and never a declared bullet; the TRAILER falls
+# back to `none`, because a requirement nobody declared must not start failing
+# commits in a repo that never asked for it.
 #
 # Exit 2 + stderr message causes Claude to see the block and self-correct.
 # Guardrail against agent sloppiness — NOT a security boundary. Check 4 in
@@ -63,7 +65,12 @@ repo_root="$(git rev-parse --show-toplevel 2>/dev/null)" || exit 0
 # --- the declared policies ---------------------------------------------------
 # Conventional Commits, the default when no bullet is declared. Kept as one
 # constant so the block message can quote the same string the check applied.
+# CLAUDE_COMMIT_PATTERN_DEFAULT replaces this fallback and nothing else — a
+# declared bullet still wins — so a copy wired from outside the repo
+# (~/.claude/hooks/) can pass `none` where the log was never Conventional Commits
+# and keep checks 3 and 4.
 DEFAULT_PATTERN='^(build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test)(\([^)]+\))?!?: .+'
+[[ -n "${CLAUDE_COMMIT_PATTERN_DEFAULT:-}" ]] && DEFAULT_PATTERN="$CLAUDE_COMMIT_PATTERN_DEFAULT"
 
 # resolve_declared <label> <default> — echoes the declared value, the literal
 # `none`, or <default>. POSIX classes, not `\s`: BSD sed does not implement it in

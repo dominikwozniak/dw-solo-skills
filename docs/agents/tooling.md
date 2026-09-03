@@ -73,7 +73,10 @@ dependencies, and only the repo knows what makes it buildable. The chain:
 2. `CLAUDE.local.md`, legacy only — a repo scaffolded before decision 0007 still keeps its own there.
    `CLAUDE.md` is absent on purpose: it is a symlink to `AGENTS.md`, so reading it is reading step 1
    twice.
-3. The script's own default — a probe (eslint / `tsc`) for lint and typecheck, Conventional Commits
+3. For the commit pattern only, `CLAUDE_COMMIT_PATTERN_DEFAULT` when the caller set it — the knob a
+   copy wired from outside the repo (`~/.claude/hooks/`) uses to pass `none` where the log was never
+   Conventional Commits. It replaces the fallback below, never a declared bullet.
+4. The script's own default — a probe (eslint / `tsc`) for lint and typecheck, Conventional Commits
    for the pattern, `none` for the trailer, because a requirement nobody declared must not start
    failing commits, and for bootstrap the lockfile guess (`pnpm install` and friends) that
    `worktree.sh` falls back to.

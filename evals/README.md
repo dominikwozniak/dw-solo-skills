@@ -19,15 +19,17 @@ and `.ai/archive/2026-08-02-skill-routing-evals/` keeps the rest.
 ## Running it
 
 ```bash
-pnpm eval:routing                           # what CI and the pre-push gate run (--min-rank1 67)
+pnpm eval:routing                           # what CI and the pre-push gate run (67 / max 3 blank)
 node evals/routing.ts                       # report only, no floor enforced
 node evals/routing.ts dw-shape dw-grill     # only these skills
 node evals/routing.ts --top 5               # show more of each ranking, and more collision pairs
+node evals/routing.ts --max-blank 0         # fail on any prompt that discriminates nothing
 node evals/routing.ts --explain "<prompt>"  # score one prompt out loud instead of running the eval
 ```
 
 No build step and no dependencies — Node strips the types natively. Exit codes: `0` pass, `1` a gate
-failed, `2` bad usage or a malformed case file.
+failed, `2` the run could not be scored — bad usage, or a case file that is malformed, misnamed,
+orphaned, missing or under its floor.
 
 It runs from `.github/workflows/evals-routing.yaml` and from the pre-push gate (the `scripts` block in
 `package.json`). The workflow installs nothing, because there is nothing to install.
@@ -51,42 +53,53 @@ any description at all:
 
 | term     | idf   | query weight | why                                     |
 | -------- | ----- | ------------ | --------------------------------------- |
-| `shap`   | 1.299 | 0.906        | in 3 of 11 descriptions — discriminates |
-| `chang`  | 0.606 | 0.423        | in 6 of 11 — common, so worth less      |
+| `shap`   | 1.540 | 0.912        | in 3 of 14 descriptions — discriminates |
+| `chang`  | 0.693 | 0.410        | in 7 of 14 — common, so worth less      |
 | `add`    | —     | —            | in no description                       |
 | `csv`    | —     | —            | in no description                       |
 | `export` | —     | —            | in no description                       |
 
 The domain nouns carry nothing: no skill description mentions CSVs, and it would be a bug if one did.
-The whole ranking turns on `shap` and `chang`. The shared boilerplate is priced down the same way, by
-document frequency: `use` is in 7 of 11 descriptions and `say` in 5, so both are cheap. Only a term in
-_all_ 11 would reach `log(11/11) = 0` and drop out outright, and none does — the filter is a gradient,
-not a cliff.
+The whole ranking turns on `shap` and `chang`. The loop's own shared vocabulary is priced down the
+same way, by document frequency — `chang` is the word half the corpus reaches for, because half the
+corpus works on a change, and that is exactly why it is worth a third of what `shap` is worth. Only a
+term in _all_ 14 would reach `log(14/14) = 0` and drop out outright, and none does — the filter is a
+gradient, not a cliff.
 
 **Stage 3, weights to a score.** Each skill's score is the dot product of the two normalised vectors,
 so it decomposes term by term:
 
 ```
-  1  dw-start  0.198  (explicit-invoke, never ranked)
-       shap    0.906 × 0.150 = 0.136
-       chang   0.423 × 0.147 = 0.062
+  1  dw-start  0.220  (explicit-invoke, never ranked)
+       shap    0.912 × 0.179 = 0.164
+       chang   0.410 × 0.137 = 0.056
 
-  2  dw-shape  0.188
-       shap    0.906 × 0.170 = 0.154
-       chang   0.423 × 0.079 = 0.034
+  2  dw-shape  0.144
+       shap    0.912 × 0.131 = 0.119
+       chang   0.410 × 0.059 = 0.024
 
-  3  dw-grill  0.083
-       shap    0.906 × 0.092 = 0.083
+  3  dw-grain  0.119  (explicit-invoke, never ranked)
+       shap    0.912 × 0.109 = 0.099
+       chang   0.410 × 0.049 = 0.020
 
-  4  dw-land  0.051
-       chang   0.423 × 0.121 = 0.051
+  4  dw-land  0.045
+       chang   0.410 × 0.109 = 0.045
 ```
 
-Read the two-horse race: `dw-shape` owns `shap` more strongly (0.170 against 0.150) and loses anyway,
-because `dw-start` also carries `chang` about twice as prominently (0.147 against 0.079). The margin
-is 0.010 — a hundredth of a point, decided by the one word neither skill is really about.
-`dw-start` is explicit-invoke, so this is the `shadowed` column rather than a failure — but the
-mechanism is what an actual theft looks like too.
+Read the race, and note that it is not the one this section used to describe. `dw-start` now wins on
+**both** terms — it owns `shap` outright (0.179 against 0.131) as well as carrying `chang` more than
+twice as prominently. When this was first written the margin was 0.010 and turned on `chang` alone,
+with `dw-shape` ahead on its own verb.
+
+Both carry `shap` exactly once, so the gap is not tf but the L2 norm underneath it: `dw-shape` spends
+its description on `durable`, `checklist`, `anchors`, `shippable`, `depth`, each a term almost nobody
+else holds, and every one of them enlarges the vector that `shap` is then divided by. **A description
+rich in distinctive terms dilutes its own strongest one.** The sharper half of the same finding is
+that `dw-shape`'s description never says "shape" at all — its entire claim on the term comes from its
+`name`, while "shaping" sits in `argument-hint`, which is not scored. `dw-start` is explicit-invoke,
+so this is the `shadowed` column rather than a failure, but the mechanism is what an actual theft
+looks like too, and a margin that moved from 0.010 to 0.076 with nobody aiming at it is the reason
+this file records numbers with dates on them.
 
 That is also the answer to a question the pass/fail report cannot settle: when a prompt scores zero
 everywhere, is the description too narrow or is the prompt full of words no description uses? For
@@ -113,13 +126,16 @@ Banner comments split the file, top to bottom. Each section depends only on the 
 
 ## Case files
 
-One `evals/cases/<skill>.json` per **model-invocable** skill. The five with
+One `evals/cases/<skill>.json` per **model-invocable** skill. The seven with
 `disable-model-invocation: true` get none: routing is never the model's decision there. Their
 descriptions stay in the corpus regardless, because they still compete for the same words.
 
-That contract used to have its own validator. It is now one line of the add-a-skill checklist in
-`AGENTS.md` — a missing case file means a skill measured by nothing, and an orphan one means a case
-file measuring nothing, both visible on the run's own summary table.
+The run holds that contract in both directions. A case file naming a skill that does not exist, or
+one naming an explicit-invoke skill, fails; so does a model-invocable skill with no case file at all,
+which used to show up only as a shortfall in the "N of M skills have case files" line that nobody
+reads as an error. A file must also carry at least **3 positives and 2 negatives** — below that a
+case file proves whatever its author already believed. Step 6 of
+[`docs/agents/skills-and-plugins.md`](../docs/agents/skills-and-plugins.md) is the checklist copy.
 
 ```json
 {
@@ -132,6 +148,10 @@ file measuring nothing, both visible on the run's own summary table.
 
 - **positives** — asks that should route here. **Paraphrase how you would really say it.** Copying
   the trigger phrases out of the `description` scores the eval against itself and proves nothing.
+  A positive that scores zero everywhere still costs its point — it lands in the `blank` column so
+  that the point stops being paid in silence, because the fix is a description that carries the words
+  at all rather than one that carries them harder. Give each blank a `note` saying which it is — a gap to close, or a price
+  already paid.
 - **negatives** — asks that should route elsewhere; `owner` names where. The assertion is only that
   this skill does not outrank the owner, never that the owner takes first place outright — that is
   the owner's own case file to make.
@@ -151,6 +171,15 @@ or at a diff. Distant pairs pass without telling anyone anything.
    full even when you narrow to one skill — a collision is a property of the descriptions, and
    scanning only the pairs you named would hide the one you did not.
 4. **`--min-rank1 <percent>`** — the ratchet. Absent, rank-1 is reported and never enforced.
+5. **`--max-blank <n>`** — the same shape for positives that assert nothing. A ratchet rather than a
+   bar, because the three that exist are not one problem: two are descriptions missing the words a
+   real ask uses, and one is a trade the 2026-08-18 re-measure took on purpose. Neither is worth
+   failing a run over today; both are worth never growing unnoticed.
+
+Ahead of all five sit the shape checks, which exit 2 rather than 1 because they mean the run could
+not be scored at all: a malformed or misnamed case file, a case file with no matching skill or one
+for an explicit-invoke skill, a model-invocable skill with no case file, and a case file below the
+3-positive / 2-negative floor.
 
 **Rank-1 is computed only among skills the model can actually be offered.** An explicit-invoke skill
 scoring higher is reported on its own `shadowed` column as overlap, not counted as a failure —
@@ -208,6 +237,38 @@ weakness is unchanged in kind: **`dw-shape`'s vocabulary is contested three ways
 The lesson the drop taught: a description is a routing surface, not prose, so **shortening one is a
 measurement, not an edit**. Run the eval after every batch.
 
+### Re-measured 2026-09-03, after two skills joined the corpus
+
+Corpus of 14 skills, 7 explicit-invoke. **rank-1 21/31 = 68%**, yields 21/21, **3 blank**, 8 shadowed.
+Closest pairs of 91: `dw-land ↔ dw-ship`, `dw-doctor ↔ dw-next` and `dw-init ↔ dw-land`, all 0.138.
+
+| skill       | rank-1 | yields | blank | shadowed |
+| ----------- | ------ | ------ | ----- | -------- |
+| `dw-git`    | 4/5    | 3/3    | 0     | 2        |
+| `dw-shape`  | 4/5    | 3/3    | 0     | 3        |
+| `dw-check`  | 3/5    | 3/3    | 1     | 1        |
+| `dw-doctor` | 3/4    | 3/3    | 0     | 1        |
+| `dw-grill`  | 3/4    | 3/3    | 0     | 1        |
+| `dw-land`   | 2/4    | 3/3    | 0     | 0        |
+| `dw-next`   | 2/4    | 3/3    | 2     | 0        |
+
+Every per-skill rank-1 is identical to 2026-08-18, and so is the total. **What moved is the two
+columns beside it**, which is the argument for having them. `shadowed` went 4 → 8, and three of the eight are
+one skill: `dw-grain`, added 2026-08-25, outscores `dw-check`, `dw-grill` and `dw-shape` on their own
+positives. It is explicit-invoke, so none of that is routable and none of it
+is a failure — but "audit code just written for excess" is written in the vocabulary the build-side
+skills already use, and if `dw-grain` were ever offered to the model this table is where the theft
+would have been visible first.
+
+The `blank` column is new here, not the blanks themselves; they were being paid for out of rank-1
+without appearing anywhere. Three of the ten misses in that 21/31 are prompts no description
+discriminates on at all: `dw-check`'s "give what I have written so far a once-over", where the only
+terms with signal are `written` and `far` and `far` belongs to `dw-handoff`; and two on `dw-next`,
+one whose single live term `leav` belongs to `dw-ship` and `dw-prune`, and one whose every term is
+out of vocabulary. The last is the trade 2026-08-18 recorded and is expected to stay. **Read 68% as
+21 wins, 7 losses and 3 prompts that asked nothing** — the three are worth roughly ten points of the
+number, and until now nothing said so.
+
 ### The threshold worth knowing about
 
 Broadening `dw-check` on purpose to eat `dw-land`'s vocabulary — verdict, diff, blast radius,
@@ -259,8 +320,8 @@ cache-installed copy of this marketplace loads alongside and every skill appears
 - The stemmer is a suffix stripper, not a linguist's. `shape`/`shaping`/`shaped` conflate;
   `decide`/`decision` never meet. Both the corpus and the query go through the same function, so
   relative ranking holds even where the stem is wrong.
-- `log(N/df)` is deliberate: the shared "Use when someone says" phrasing gets cheap on its own —
-  `use` in 7 of 11 descriptions, `say` in 5 — so there is no boilerplate list to maintain by hand.
+- `log(N/df)` is deliberate: the vocabulary every description shares gets cheap on its own —
+  `chang` in 7 of 14 descriptions, `one` in 6 — so there is no boilerplate list to maintain by hand.
   Cheap, not free: reaching idf 0 needs df = N, which nothing in this corpus does.
 - Only `name` and `description` are scored, because a listing of those two is the whole surface the
   routing decision is made from. Not `argument-hint`, not the body.

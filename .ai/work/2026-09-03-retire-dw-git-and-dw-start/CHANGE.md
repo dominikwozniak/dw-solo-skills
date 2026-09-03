@@ -38,7 +38,7 @@ invocation reads that as not remaining. Never rename a task title. -->
 
 - [x] 1. `scripts/runtime/base-ref.sh` + `scripts/tests/base-ref.test.sh`, symlinked into
       `dw-solo` and `dw-solo-extras`, named in `RUNTIME_SCRIPTS` — additive, green alone
-- [ ] 2. The conventions block absorbs `dw-git`'s judgment: `templates/AGENTS.md` grows the rules
+- [x] 2. The conventions block absorbs `dw-git`'s judgment: `templates/AGENTS.md` grows the rules
       no hook checks; root `AGENTS.md` keeps rules at ≤ 119 lines; `docs/agents/git-history.md`
       gains `## Procedures` and a wider router row; `doctor.sh` drops its two `dw-git` strings
 - [ ] 3. The retirement commit: delete both skills, their symlinks, `evals/cases/dw-git.json`,

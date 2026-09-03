@@ -68,18 +68,18 @@ CI runs the same set plus a `trufflehog` secrets scan, on every PR and push to `
 Match the task against this table **before** researching or coding. One task often matches several
 rows — read all of them. Explore on your own only what no row covers.
 
-| task                                                                     | read                                |
-| ------------------------------------------------------------------------ | ----------------------------------- |
-| adding/renaming a skill, the symlink canon, plugin versions, evals cases | `docs/agents/skills-and-plugins.md` |
-| a `dw-start` worktree behaving unlike the main tree                      | `docs/agents/worktrees.md`          |
-| a rebase, a stray commit, rewinding a branch, a squash-merged base       | `docs/agents/git-history.md`        |
-| lint/format, the hooks, self-tests, the pnpm/Node pins, CI, the reviewer | `docs/agents/tooling.md`            |
-| the loop, `.ai/work/`, what a `CHANGE.md` is and when it leaves          | `docs/agents/change-artifacts.md`   |
-| editing this file or `docs/agents/*` — what belongs where                | `docs/agents/README.md`             |
-| why the code is shaped this way; reopening a settled choice              | `docs/decisions/README.md`          |
-| a follow-up worth keeping but not worth doing now                        | `.ai/backlog/README.md`             |
-| a landed change's reasoning, after the fact                              | `.ai/archive/README.md`             |
-| a blocked command, a hook that fired, a guardrail that looks wrong       | `.claude/hooks/`                    |
+| task                                                                                     | read                                |
+| ---------------------------------------------------------------------------------------- | ----------------------------------- |
+| adding/renaming a skill, the symlink canon, plugin versions, evals cases                 | `docs/agents/skills-and-plugins.md` |
+| a `dw-start` worktree behaving unlike the main tree                                      | `docs/agents/worktrees.md`          |
+| commit, push, PR, sync, stash · a stray commit, rewinding a branch, a squash-merged base | `docs/agents/git-history.md`        |
+| lint/format, the hooks, self-tests, the pnpm/Node pins, CI, the reviewer                 | `docs/agents/tooling.md`            |
+| the loop, `.ai/work/`, what a `CHANGE.md` is and when it leaves                          | `docs/agents/change-artifacts.md`   |
+| editing this file or `docs/agents/*` — what belongs where                                | `docs/agents/README.md`             |
+| why the code is shaped this way; reopening a settled choice                              | `docs/decisions/README.md`          |
+| a follow-up worth keeping but not worth doing now                                        | `.ai/backlog/README.md`             |
+| a landed change's reasoning, after the fact                                              | `.ai/archive/README.md`             |
+| a blocked command, a hook that fired, a guardrail that looks wrong                       | `.claude/hooks/`                    |
 
 ## Solo lane
 
@@ -99,7 +99,8 @@ alone on the line.
 
 ## Git conventions
 
-Read by `dw-git` — these override its defaults and the global user memory's.
+Applied to every commit, push, PR and sync; they override the global user memory's. The declared
+bullets above are hook-enforced, the rest is on you; the procedures are `docs/agents/git-history.md`.
 
 - `type(scope): subject` — [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/),
   lowercase, imperative. Scope is the plugin or skill the change belongs to (`feat(dw-ship):`,
@@ -108,12 +109,11 @@ Read by `dw-git` — these override its defaults and the global user memory's.
 - **Body**: prose paragraphs explaining _why_, not a bullet list of files. Match the existing log.
 - **Trailer**: `Co-Authored-By: <the model that wrote it> <noreply@anthropic.com>`. No "Generated
   with Claude Code" footer.
-- **Default branch**: `main` — also the PR target. Branch off it with a kebab-case slug of the
-  change.
-- **Rebase, never merge**: `git pull --rebase`, `git fetch origin && git rebase origin/main`.
-- **Modern verbs** — `git switch` / `git restore` over `git checkout`.
-- **Branch reads** — `git rev-parse --abbrev-ref HEAD`, never `git branch --show-current`, which
-  returns empty on a detached HEAD.
+- **Default branch**: `main` — also the PR target. Branch off it with `git switch -c <kebab-slug>`.
+- **Rebase, never merge**: `git pull --rebase`, `git fetch origin && git rebase origin/main`; a
+  conflict is reported, never auto-resolved. Stash only with a message: `git stash push -m "<what>"`.
+- **Modern verbs and reads** — `git switch` / `git restore` over `git checkout`;
+  `git rev-parse --abbrev-ref HEAD`, never `git branch --show-current`, empty on a detached HEAD.
 - **One logical change per commit**, staged by name — never `git add -A`. Exception: a cycle of new
   skills whose `**Next:**` pointers are mutual lands as one commit, because `validate:docs` fails a
   pointer at a skill not yet on disk.

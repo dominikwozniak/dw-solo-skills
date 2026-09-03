@@ -12,8 +12,9 @@ status: building # shaping | building | landed
 `evals/behaviour/` gains four cases across three skills, taking the tier from 5 of 14 skills to 7
 and from 7 cases to 11: `dw-git` staging and stashing under time pressure, `dw-next status`
 reporting without writing, `dw-doctor` diagnosing without fixing. You know it worked when a bare
-`node evals/behaviour.ts` plans 11 cases and `evals/README.md` carries a dated `--trials 3`
-measurement of the four new ones beside the 2026-09-03 sweep.
+`node evals/behaviour.ts` plans 11 cases and `evals/README.md` carries a dated measurement of the
+four new ones beside the 2026-09-03 sweep. **Amended mid-change:** the measurement is n=1, not the
+`--trials 3` first written here — n=3 was costed at ~$7.3 and not bought.
 
 ## Decisions
 
@@ -49,7 +50,7 @@ invocation reads that as not remaining. Never rename a task title. -->
       message, never bare `git stash`, and nothing committed.
 - [x] 5. `evals/README.md` — the coverage prose in `## Behaviour` and `### Case files`; and one
       `.ai/backlog/` entry for the two cut cases and the fixture capability they need.
-- [ ] 6. Run the four new cases at `--trials 3 --go` and record the measurement — date, n, cost,
+- [x] 6. Run the four new cases at `--trials 3 --go` and record the measurement — date, n, cost,
       per-case results — beside the 2026-09-03 sweep.
 
 ## Anchors
@@ -89,3 +90,8 @@ invocation reads that as not remaining. Never rename a task title. -->
   `ln -sf AGENTS.md CLAUDE.md` and edited `AGENTS.md` twice, against a body that says without
   qualification "it never installs a tool, never edits a file, never runs the fixes it suggests".
   It left the `dw-init` fixes to the user and applied the rest — half-following both.
+- n=3 was priced at ~$7.3 against a measured $2.45 per round and declined; the goal was amended to
+  n=1 rather than the task left open. The archive's standing note already says a re-sweep is worth
+  buying the next time a description or a skill body moves.
+- `dw-git` #1's widened expectation is verified only by hand against the saved trace, never graded
+  in that form. The README row keeps the 3/4 it was actually graded at.

@@ -47,7 +47,7 @@ invocation reads that as not remaining. Never rename a task title. -->
       never `git add -A`, the key left out, subject and trailer per the fixture's own bullets.
 - [x] 4. `dw-git` #2 — the same fixture, "park this for a minute": `git stash push -m` with a real
       message, never bare `git stash`, and nothing committed.
-- [ ] 5. `evals/README.md` — the coverage prose in `## Behaviour` and `### Case files`; and one
+- [x] 5. `evals/README.md` — the coverage prose in `## Behaviour` and `### Case files`; and one
       `.ai/backlog/` entry for the two cut cases and the fixture capability they need.
 - [ ] 6. Run the four new cases at `--trials 3 --go` and record the measurement — date, n, cost,
       per-case results — beside the 2026-09-03 sweep.

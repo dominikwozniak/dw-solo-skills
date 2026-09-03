@@ -120,14 +120,20 @@ in [`AGENTS.md`](AGENTS.md) and the procedures in the skills themselves.
   rediscover it. Not the **reference file** above, and not a scaffolded project's own `references/`
   folder; the word keeps all three senses on purpose (`docs/decisions/0017`).
 - **Explicit-invoke** — a skill with `disable-model-invocation: true`; it fires only when named.
-- **Case file** — `evals/cases/<skill>.json`: prompts that should route to a skill (**positives**) and
-  near-miss prompts that should not (**negatives**, each naming the `owner` that should win instead).
-  One per model-invocable skill, none for an explicit-invoke one.
+- **Case file** — one per skill per tier, and the two tiers ask different things.
+  `evals/cases/<skill>.json` holds routing prompts: **positives** that should route here and
+  near-miss **negatives** that should not, each naming the `owner` that should win instead — one per
+  model-invocable skill, none for an explicit-invoke one. `evals/behaviour/<skill>.json` holds
+  **expectations**: what the skill must be seen to do once it is running, graded from a trace. An
+  explicit-invoke skill gets one of those, reached by slash.
 - **Shadowed** — a positive prompt where an explicit-invoke skill scores higher than the skill under
   test. Reported as overlap, never counted as a routing failure: the model is never offered it.
 - **Blank** — a prompt no description discriminates on, so every skill scores zero. A blank negative
   fails the run outright; a blank positive is counted in its own column under a `--max-blank` ratchet,
   because one of them is a description missing words and another is a trade this repo took knowingly.
+- **Fixture** — `evals/fixtures/<name>/`, a throwaway repo the behaviour eval builds and destroys per
+  run: `base/` committed on `main`, `branch/` committed on the feature branch so `main...HEAD` has a
+  diff, `dirty/` left uncommitted.
 - **HARD STOP** — a point in a skill where it must stop and wait for a human answer rather than
   proceed on an assumption.
 - **Fact-token diff** — the check that a doc rewrite kept its content: every backticked span, path,

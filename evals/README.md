@@ -40,7 +40,7 @@ It runs from `.github/workflows/evals-routing.yaml` and from the pre-push gate (
 
 `--explain` prints the arithmetic behind one prompt instead of a pass/fail line. Take
 `shape a change that adds a CSV export` — the prompt a real router was once caught answering
-`dw-grill` to, and the one this eval answers `dw-start` to:
+`dw-grill` to, and the one this eval now answers `dw-shape` to — after two re-measures in which it did not:
 
 ```bash
 node evals/routing.ts --explain "shape a change that adds a CSV export" --top 4
@@ -55,8 +55,8 @@ any description at all:
 
 | term     | idf   | query weight | why                                     |
 | -------- | ----- | ------------ | --------------------------------------- |
-| `shap`   | 1.540 | 0.912        | in 3 of 14 descriptions — discriminates |
-| `chang`  | 0.693 | 0.410        | in 7 of 14 — common, so worth less      |
+| `shap`   | 1.792 | 0.933        | in 2 of 12 descriptions — discriminates |
+| `chang`  | 0.693 | 0.361        | in 6 of 12 — common, so worth less      |
 | `add`    | —     | —            | in no description                       |
 | `csv`    | —     | —            | in no description                       |
 | `export` | —     | —            | in no description                       |
@@ -65,48 +65,51 @@ The domain nouns carry nothing: no skill description mentions CSVs, and it would
 The whole ranking turns on `shap` and `chang`. The loop's own shared vocabulary is priced down the
 same way, by document frequency — `chang` is the word half the corpus reaches for, because half the
 corpus works on a change, and that is exactly why it is worth a third of what `shap` is worth. Only a
-term in _all_ 14 would reach `log(14/14) = 0` and drop out outright, and none does — the filter is a
+term in _all_ 12 would reach `log(12/12) = 0` and drop out outright, and none does — the filter is a
 gradient, not a cliff.
 
 **Stage 3, weights to a score.** Each skill's score is the dot product of the two normalised vectors,
 so it decomposes term by term:
 
 ```
-  1  dw-start  0.220  (explicit-invoke, never ranked)
-       shap    0.912 × 0.179 = 0.164
-       chang   0.410 × 0.137 = 0.056
+  1  dw-shape  0.171
+       shap    0.933 × 0.147 = 0.137
+       chang   0.361 × 0.096 = 0.035
 
-  2  dw-shape  0.144
-       shap    0.912 × 0.131 = 0.119
-       chang   0.410 × 0.059 = 0.024
+  2  dw-grain  0.143  (explicit-invoke, never ranked)
+       shap    0.933 × 0.134 = 0.125
+       chang   0.361 × 0.052 = 0.019
 
-  3  dw-grain  0.119  (explicit-invoke, never ranked)
-       shap    0.912 × 0.109 = 0.099
-       chang   0.410 × 0.049 = 0.020
+  3  dw-land  0.041
+       chang   0.361 × 0.114 = 0.041
 
-  4  dw-land  0.045
-       chang   0.410 × 0.109 = 0.045
+  4  dw-ship  0.027  (explicit-invoke, never ranked)
+       chang   0.361 × 0.075 = 0.027
 ```
 
-Read the race, and note that it is not the one this section used to describe. `dw-start` now wins on
-**both** terms — it owns `shap` outright (0.179 against 0.131) as well as carrying `chang` more than
-twice as prominently. When this was first written the margin was 0.010 and turned on `chang` alone,
-with `dw-shape` ahead on its own verb.
+Read the race, and note that this section has described three different winners. First `dw-shape`
+by 0.010, on `chang` alone. Then `dw-start`, an explicit-invoke skill whose description said "Open a
+**shaped** change", by 0.076 on **both** terms. Now `dw-shape` again, by 0.028 over `dw-grain` — not
+because its description improved on this prompt but because `dw-start` left the corpus (`0021`) and
+took the strongest `shap` with it. Nobody aimed at any of the three moves, which is the reason this
+file records numbers with dates on them.
 
-Both carry `shap` exactly once, so the gap is not tf but the L2 norm underneath it: `dw-shape` spends
-its description on `durable`, `checklist`, `anchors`, `shippable`, `depth`, each a term almost nobody
-else holds, and every one of them enlarges the vector that `shap` is then divided by. **A description
-rich in distinctive terms dilutes its own strongest one.** The sharper half of the same finding is
-that `dw-shape`'s description never says "shape" at all — its entire claim on the term comes from its
-`name`, while "shaping" sits in `argument-hint`, which is not scored. `dw-start` is explicit-invoke,
-so this is the `shadowed` column rather than a failure, but the mechanism is what an actual theft
-looks like too, and a margin that moved from 0.010 to 0.076 with nobody aiming at it is the reason
-this file records numbers with dates on them.
+The two that remain carry `shap` exactly once each, so the gap is not tf but the L2 norm underneath
+it: `dw-shape` spends its description on `durable`, `checklist`, `anchors`, `shippable`, `depth`, each
+a term almost nobody else holds, and every one of them enlarges the vector that `shap` is then
+divided by. **A description rich in distinctive terms dilutes its own strongest one.** The sharper
+half of the same finding is that `dw-shape`'s description still never says "shape" — its entire claim
+on the term comes from its `name`, while "shaping" sits in `argument-hint`, which is not scored.
+`dw-grain` is explicit-invoke, so the 0.028 is the `shadowed` column rather than a failure, but the
+mechanism is what an actual theft looks like too.
 
 That is also the answer to a question the pass/fail report cannot settle: when a prompt scores zero
 everywhere, is the description too narrow or is the prompt full of words no description uses? For
-`save what I have with a sensible message`, `--explain` says `sav`, `sens` and `messag` are each in no
-description — so it is the first, and `dw-git` is the skill to widen.
+`give what I have written so far a once-over before I carry on`, `--explain` says `giv` and `carry`
+are in no description, and the two stems that survive, `written` and `far`, each sit in exactly one
+description and neither is `dw-check`'s — so it is both at once: the ask's real content is out of
+vocabulary, and the words that do land belong elsewhere. That is the shape of a blank, and it is why
+the `blank` column exists rather than a wider `dw-check`.
 
 ### Reading `routing.ts`
 
@@ -187,8 +190,8 @@ for an explicit-invoke skill, a model-invocable skill with no case file, and a c
 
 **Rank-1 is computed only among skills the model can actually be offered.** An explicit-invoke skill
 scoring higher is reported on its own `shadowed` column as overlap, not counted as a failure —
-failing a prompt over a loss that cannot happen would make the number meaningless. `dw-git` alone is
-shadowed on two of five prompts by `dw-ship` and `dw-start`, which own "PR" and "branch".
+failing a prompt over a loss that cannot happen would make the number meaningless. `dw-shape` is
+shadowed on one of six prompts by `dw-grain`, which outscores it on the rate-limiting ask.
 
 ## Measured baseline — 2026-08-17
 
@@ -273,6 +276,38 @@ out of vocabulary. The last is the trade 2026-08-18 recorded and is expected to 
 21 wins, 7 losses and 3 prompts that asked nothing** — the three are worth roughly ten points of the
 number, and until now nothing said so.
 
+### Re-measured 2026-09-03, after two skills left the corpus
+
+Corpus of 12 skills, 6 explicit-invoke. **rank-1 19/27 = 70%**, yields 18/18, 3 blank, 4 shadowed.
+Closest pairs of 66: `dw-land ↔ dw-ship` 0.154, `dw-doctor ↔ dw-next` 0.137, `dw-handoff ↔ dw-next`
+0.136.
+
+| skill       | rank-1 | yields | blank | shadowed |
+| ----------- | ------ | ------ | ----- | -------- |
+| `dw-shape`  | 6/6    | 3/3    | 0     | 1        |
+| `dw-check`  | 3/5    | 3/3    | 1     | 1        |
+| `dw-doctor` | 3/4    | 3/3    | 0     | 1        |
+| `dw-grill`  | 3/4    | 3/3    | 0     | 1        |
+| `dw-land`   | 2/4    | 3/3    | 0     | 0        |
+| `dw-next`   | 2/4    | 3/3    | 2     | 0        |
+
+`dw-git` left at 4/5 and `dw-start` with it (`0021`). Subtraction alone would have read 17/26 = 65%,
+under the floor, with no description touched — the floor is a ratio, and a strong scorer leaving
+moves it the way a weak one arriving does. What recovered it is one description: `dw-shape` gained
+the words its asks actually use, "write the change doc", and went 4/5 → 6/6. The pre-existing miss
+"write up … as a change doc with the decisions we settled on", lost to `dw-land` on `doc` and
+`decision`, now ranks 1, and so does the positive that carries `dw-start`'s old ask, "put the retry
+change in its own worktree and write the change doc there". A first draft dropped "turn" from the
+description to make room and lost "turn what we just decided into a task checklist" in the same run
+— `turn` sits in one description, so it had been carrying that prompt alone; restored. Every other
+skill's three columns are identical to the morning's table above.
+
+Four negatives had named `dw-git` as their owner and were re-owned rather than deleted: a plain-git
+ask now routes to no skill at all, which gate 2 reads as blank and fails, so each file's near-miss
+became the sibling that reads the same artifact — `dw-check` and `dw-shape` yield to `dw-land`,
+`dw-doctor` to `dw-next`, `dw-land` to `dw-check`. `shadowed` fell 8 → 4 with `dw-start` gone; three
+of the four that remain are still `dw-grain`.
+
 ### The threshold worth knowing about
 
 Broadening `dw-check` on purpose to eat `dw-land`'s vocabulary — verdict, diff, blast radius,
@@ -301,12 +336,13 @@ routing eval asks whether a description still owns its vocabulary, this asks whe
 its word once it is running: that `dw-land` refuses to round an undelivered goal up, that `dw-ship`
 refuses an unlanded change, that `dw-next` declines to invent a task list.
 
-Eleven cases across seven of the fourteen skills, and they come in two shapes. A **refusal** is a
-skill declining the thing the prompt is pushing for, the three above among them. An **absence** is
-a skill whose promise is that nothing happens: `dw-next status` and `dw-doctor` both report and
-stop, so every one of their expectations is a write that must not appear in the trace. `dw-git` is
-neither and is the cheapest of all to grade, because it promises literal commands — staged by name
-and never `git add -A`, `git stash push -m` and never bare — which a trace either holds or does not.
+Nine cases across six of the twelve skills, and they come in two shapes. A **refusal** is a skill
+declining the thing the prompt is pushing for, the three above among them. An **absence** is a
+skill whose promise is that nothing happens: `dw-next status` and `dw-doctor` both report and stop,
+so every one of their expectations is a write that must not appear in the trace. A third shape left
+with `dw-git` (`0021`): a skill promising literal commands — staged by name and never `git add -A`,
+`git stash push -m` and never bare — which a trace either holds or does not, the cheapest of all to
+grade and the one the tier no longer has.
 
 ```bash
 node evals/behaviour.ts                     # the plan and its estimated cost; spends nothing
@@ -371,10 +407,11 @@ correctly refused to close it — measuring the completion gate a second time in
 environment refusal it was written for.
 
 Those four lines are also the ceiling on what this tier can ask. A fixture has no remote and its
-`main` never moves after the branch is cut, so `dw-git`'s other two literal promises — force-push
-refused, and a rebase conflict reported rather than auto-resolved — have no state to be tempted by
-and are not covered. Reaching them is a change to `materialiseFixture`, not another case file, and
-it is parked in `.ai/backlog/`.
+`main` never moves after the branch is cut, so a promise about pushing or rebasing — a force-push
+refused, a conflict reported rather than auto-resolved — has no state to be tempted by. Nothing makes
+one today: the two that did left with `dw-git` (`0021`), and the backlog entry asking
+`materialiseFixture` for a remote went with them. Reaching such a promise again is a runner change,
+not another case file.
 
 ### What it costs, and what isolation it buys
 
@@ -477,7 +514,7 @@ cache-installed copy of this marketplace loads alongside and every skill appears
   `decide`/`decision` never meet. Both the corpus and the query go through the same function, so
   relative ranking holds even where the stem is wrong.
 - `log(N/df)` is deliberate: the vocabulary every description shares gets cheap on its own —
-  `chang` in 7 of 14 descriptions, `one` in 6 — so there is no boilerplate list to maintain by hand.
+  `chang` in 6 of 12 descriptions, `one` in 5 — so there is no boilerplate list to maintain by hand.
   Cheap, not free: reaching idf 0 needs df = N, which nothing in this corpus does.
 - Only `name` and `description` are scored, because a listing of those two is the whole surface the
   routing decision is made from. Not `argument-hint`, not the body.

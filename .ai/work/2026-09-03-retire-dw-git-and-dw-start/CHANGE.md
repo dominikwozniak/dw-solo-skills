@@ -47,7 +47,7 @@ invocation reads that as not remaining. Never rename a task title. -->
       does" and `dw-start` pointer across skills, README, AGENTS.md, templates, docs/agents,
       CONTEXT.md, the two tests and the loop SVG rewritten; `dw-shape` case file gains a worktree
       positive
-- [ ] 4. Re-measure routing: `pnpm eval:routing`, fix the live sentence at `evals/README.md:190`,
+- [x] 4. Re-measure routing: `pnpm eval:routing`, fix the live sentence at `evals/README.md:190`,
       append a dated section with the table
 - [ ] 5. Record and version: `docs/decisions/0021-…`, `dw-solo` 0.7.0 / `dw-solo-setup` 0.2.2 /
       `dw-solo-extras` 0.1.10 in both manifests, corpus baseline re-recorded

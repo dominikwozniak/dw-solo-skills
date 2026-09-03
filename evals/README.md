@@ -110,10 +110,12 @@ description — so it is the first, and `dw-git` is the skill to widen.
 
 Banner comments split the file, top to bottom. Each section depends only on the ones above it:
 
-- **frontmatter** — `parseFrontmatter`, four keys out of a `SKILL.md`. Deliberately not a YAML parser.
+- **the corpus** — `buildCorpus` is a thin wrapper over `readSkillCorpus` in `evals/skills.ts`,
+  which both tiers share; it reads `name` + `description` and nothing else. The frontmatter reader
+  lives there too, deliberately not a YAML parser.
 - **tokenizing** — `stem` is the suffix stripper; `classify` is the keep-or-drop rule for one word;
   `tokenize` is `classify` plus a filter. Changing any of them moves every number in this file.
-- **corpus and index** — `buildCorpus` reads `name` + `description` and nothing else; `weigh` does
+- **index** — `weigh` does
   sublinear tf × idf, L2-normalised; `buildIndex` turns the corpus into one vector per skill.
 - **scoring** — `cosine` is a dot product because both sides are already normalised; `rank` scores a
   prompt against every skill; `findCollisions` scores every description pair against every other.

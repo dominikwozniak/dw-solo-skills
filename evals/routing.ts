@@ -25,17 +25,12 @@
 import { existsSync, readdirSync, readFileSync } from "node:fs"
 import { basename, dirname, join } from "node:path"
 
+import { readSkillCorpus } from "./skills.ts"
+import type { SkillDoc } from "./skills.ts"
+
 const ROOT = dirname(import.meta.dirname)
 const SKILLS_DIR = join(ROOT, "skills")
 const CASES_DIR = join(ROOT, "evals", "cases")
-
-type SkillDoc = {
-  name: string
-  description: string
-  explicit: boolean
-  /** What the eval actually scores. See buildCorpus for why it is name + description. */
-  text: string
-}
 
 type Positive = { prompt: string; note?: string }
 type Negative = { prompt: string; owner: string; note?: string }
@@ -66,57 +61,6 @@ type Ranked = { skill: string; score: number }
 function fail(message: string): never {
   console.error(`routing.ts: ${message}`)
   process.exit(2)
-}
-
-// --- frontmatter -------------------------------------------------------------
-
-/**
- * The two-space-indented `description: >-` folded scalar every SKILL.md uses, plus plain and
- * quoted single-line values. Deliberately not a YAML parser: the frontmatter shape here is uniform
- * across every skill on disk, and a dependency for four keys would be the tail wagging the dog.
- */
-function parseFrontmatter(src: string): Map<string, string> {
-  const out = new Map<string, string>()
-  const lines = src.split(/\r?\n/)
-  if (lines[0]?.trim() !== "---") return out
-
-  let i = 1
-  while (i < lines.length && lines[i].trim() !== "---") {
-    const match = /^([A-Za-z][A-Za-z0-9_-]*):[ \t]*(.*)$/.exec(lines[i])
-    if (!match) {
-      i++
-      continue
-    }
-    const key = match[1]
-    const inline = match[2].trim()
-
-    if (inline === ">" || inline === ">-" || inline === ">+" || inline === "|" || inline === "|-") {
-      const folded: string[] = []
-      i++
-      // Continuation lines are indented; the next zero-indent line is the next key.
-      while (i < lines.length && lines[i].trim() !== "---") {
-        if (lines[i].trim() !== "" && !/^[ \t]/.test(lines[i])) break
-        folded.push(lines[i].trim())
-        i++
-      }
-      const joined = inline.startsWith(">") ? folded.join(" ") : folded.join("\n")
-      out.set(key, joined.replace(/[ \t]+/g, " ").trim())
-      continue
-    }
-
-    out.set(key, stripQuotes(inline))
-    i++
-  }
-  return out
-}
-
-function stripQuotes(value: string): string {
-  if (value.length >= 2) {
-    const first = value[0]
-    const last = value[value.length - 1]
-    if ((first === '"' || first === "'") && first === last) return value.slice(1, -1)
-  }
-  return value
 }
 
 // --- tokenizing --------------------------------------------------------------
@@ -250,36 +194,13 @@ function tokenize(text: string): string[] {
 // --- corpus and index --------------------------------------------------------
 
 function buildCorpus(): SkillDoc[] {
-  if (!existsSync(SKILLS_DIR)) fail(`no skills/ directory at ${SKILLS_DIR}`)
-
-  const docs: SkillDoc[] = []
-  const names = readdirSync(SKILLS_DIR, { withFileTypes: true })
-    .filter((entry) => entry.isDirectory())
-    .map((entry) => entry.name)
-    .sort()
-
-  for (const name of names) {
-    const path = join(SKILLS_DIR, name, "SKILL.md")
-    if (!existsSync(path)) continue
-    const fm = parseFrontmatter(readFileSync(path, "utf8"))
-    const description = fm.get("description") ?? ""
-    if (description === "") fail(`skills/${name}/SKILL.md has no description in its frontmatter`)
-    const declared = fm.get("name")
-    if (declared !== undefined && declared !== name) {
-      fail(`skills/${name}/SKILL.md declares name: ${declared} — directory and name must agree`)
-    }
-    docs.push({
-      name,
-      description,
-      explicit: fm.get("disable-model-invocation") === "true",
-      // Name plus description, and nothing else. That is the whole surface the router chooses
-      // from — a listing of `name: description` lines, no argument-hint and no body — so scoring
-      // more than that would measure something the real decision never sees.
-      text: `${name} ${description}`,
-    })
+  // The corpus itself lives in skills.ts, shared with the behaviour tier. It throws rather than
+  // exiting so the message keeps this script's prefix.
+  try {
+    return readSkillCorpus(SKILLS_DIR)
+  } catch (error) {
+    return fail((error as Error).message)
   }
-  if (docs.length === 0) fail("found no skills to score against")
-  return docs
 }
 
 /** Sublinear tf * idf, L2-normalised. Terms with idf 0 (in every document) are dropped. */

@@ -24,7 +24,7 @@
         "The change doc is moved out of .ai/work/ into .ai/archive/ and its status is set to landed",
         "A commit carrying the close is made"
       ],
-      "note": "The expensive half of dw-land turned into an assertable refusal: with no origin the skill is supposed to say so and stop at the close commit."
+      "note": "The expensive half of dw-land turned into an assertable refusal: with no origin the skill says so and stops at the close commit. The fixture's goal is deliberately small and genuinely met by the diff, with a runnable `pnpm test` behind it — the first version of this fixture ticked its boxes over work the diff did not contain, and dw-land correctly refused to close a change that was not ready. A close case needs a change that really is done, or it measures the completion gate a second time instead of the environment refusal."
     }
   ]
 }

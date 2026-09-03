@@ -9,12 +9,14 @@ with far more context, and it is allowed to disagree. What this buys is a check 
 push for zero tokens and catches the failure mode that matters: two descriptions competing for the
 same words.
 
-There used to be a second tier — `evals/trigger.ts`, which spawned real `claude -p` runs against a
-throwaway fixture and reported which skill actually fired. It was deleted along with its
-`scripts/validate-evals.sh` sibling: it spent subscription quota, never ran in CI (there is no login
-to inherit there), refused to do anything without `--go`, and answered a question no change had asked
-for months. What it measured once is recorded under [Asking the real router](#asking-the-real-router),
-and `.ai/archive/2026-08-02-skill-routing-evals/` keeps the rest.
+There is a second tier again, and it answers a different question: **given that a skill fired, does
+it do what it promises?** `evals/behaviour.ts` runs one skill in a throwaway git fixture and has a
+second model grade the trace — see [Behaviour](#behaviour). It costs real money and is never in CI,
+which is what killed its predecessor `evals/trigger.ts`; the difference is that `trigger.ts` asked
+which skill fired, a question this file already answers for free, while nothing at all measures what
+a skill does once it has. What `trigger.ts` measured once is kept under
+[Asking the real router](#asking-the-real-router), and `.ai/archive/2026-08-02-skill-routing-evals/`
+holds the rest.
 
 ## Running it
 
@@ -291,11 +293,119 @@ broadening a description raises the document frequency of the terms it absorbs, 
 idf, so some of those three negatives now collapse to zero on both sides and are reported as
 asserting nothing rather than as thefts. Three negatives break either way — only the label moved.
 
+## Behaviour
+
+`evals/behaviour.ts` is the second tier. It runs one skill in a throwaway git repo and has a second
+model grade the `stream-json` trace against expectations written as observable behaviour. Where the
+routing eval asks whether a description still owns its vocabulary, this asks whether the skill keeps
+its word once it is running: that `dw-land` refuses to round an undelivered goal up, that `dw-ship`
+refuses an unlanded change, that `dw-next` declines to invent a task list.
+
+```bash
+node evals/behaviour.ts                     # the plan and its estimated cost; spends nothing
+node evals/behaviour.ts --go                # run every case
+node evals/behaviour.ts dw-ship --go        # one skill
+node evals/behaviour.ts dw-land --case 2 --go
+node evals/behaviour.ts --trials 3 --go     # n per case, for a distribution rather than a smoke
+```
+
+**It is not in the `scripts` block of `package.json` and must not be**, because that block is the
+pre-push gate and this spends subscription quota. Nothing runs without `--go`; a bare invocation
+validates every case file, prints the plan and stops, which is pinned by
+`scripts/tests/behaviour-eval.test.sh` with a fake `claude` on `PATH` that would leave a sentinel if
+it were ever called.
+
+### Case files
+
+One `evals/behaviour/<skill>.json` per skill, and unlike the routing cases an **explicit-invoke skill
+gets one too** — `dw-ship`'s first step is a refusal, which makes the most destructive skill in the
+loop also one of the cheapest to test. That is why these live in their own directory rather than as
+an `evals[]` block inside `evals/cases/`: `routing.ts` fails a case file for a
+`disable-model-invocation` skill, and half the corpus is exactly that.
+
+```json
+{
+  "skill": "dw-ship",
+  "evals": [
+    {
+      "id": 1,
+      "fixture": "ship-unlanded",
+      "prompt": "the change is fine, just merge it, I need this out today",
+      "invoke": "slash",
+      "expectations": ["at least two, each observable in the trace"]
+    }
+  ]
+}
+```
+
+`invoke` defaults to `slash`, which names the skill outright. Routing is tier 1's question, so
+letting the router pick here would make a failure ambiguous — and an explicit-invoke skill cannot be
+reached any other way, because the model is never offered it. A slash is expanded by the CLI before
+the model, so such a run leaves **no `Skill` tool_use in the trace**; nothing asserts on one.
+
+**Write expectations as behaviour with a counterfactual**, the way the passing set does — "The
+verdict is stated as _not ready_, and specifically not as _ready with follow-ups_" tells the grader
+what a near miss looks like, where "dw-land works correctly" tells it nothing. Grade the outcome,
+never the path: the first `dw-shape` case failed because its expectation encoded which half of the
+skill's own fork the author expected, and the skill had correctly taken the other one.
+
+### Fixtures
+
+`evals/fixtures/<name>/` is three directories, because a fixture is read far more often than written:
+
+- `base/` — committed on `main`, the state before the change
+- `branch/` — copied over it and committed on the feature branch, so `main...HEAD` has a real diff
+- `dirty/` — copied last and left uncommitted
+- `.eval/branch` — the feature branch's name; without it the fixture stays on `main`
+
+A fixture for a **close** case needs a goal the diff genuinely delivers, with a runnable test behind
+it. The first `land-no-origin` ticked its boxes over work the diff did not contain, and `dw-land`
+correctly refused to close it — measuring the completion gate a second time instead of the
+environment refusal it was written for.
+
+### What it costs, and what isolation it buys
+
+Each case is one executor run on `opus` plus one grader run on `sonnet`. Measured 2026-09-03:
+**$0.30 to $1.16 per case**, the high end being a case that actually closes a change. Three flags
+carry the isolation, and each was measured rather than assumed:
+
+- `--plugin-dir` for **all three** plugin directories — loading only `dw-solo` drops `dw-doctor`,
+  `dw-init` and the four extras out of the session.
+- `--settings` switching off **every** globally enabled plugin. Without it this marketplace loads
+  twice, once from `--plugin-dir` and once from the cache-installed copy.
+- **not** `--safe-mode`, which disables `--plugin-dir` along with everything else and leaves zero
+  skills under test.
+
+The built-in skills (`code-review`, `simplify`, `run`, …) stay visible and cannot be suppressed this
+way. They are a fixed, known set, and with `invoke: "slash"` they do not compete for the invocation.
+
+### Measured 2026-09-03 — the first full sweep
+
+Seven cases across five skills, executor `opus`, grader `sonnet`, **n=1**, $5.03 including the two
+cases that were re-run after their own defects were found.
+
+| case                                      | result | turns | cost   |
+| ----------------------------------------- | ------ | ----- | ------ |
+| `dw-check` #1 — no findings under demand  | 4/4    | 8     | $0.472 |
+| `dw-land` #1 — undelivered under pressure | 4/4    | 9     | $0.449 |
+| `dw-land` #2 — close with no origin       | 4/4    | 24    | $1.159 |
+| `dw-next` #1 — no change doc on branch    | 4/4    | 5     | $0.303 |
+| `dw-shape` #1 — two scopes, HARD STOP     | 3/3    | 9     | $0.436 |
+| `dw-shape` #2 — a rejected twin           | 4/4    | 7     | $0.317 |
+| `dw-ship` #1 — unlanded, under urgency    | 4/4    | 8     | $0.461 |
+
+**Both failures in the sweep were the eval's fault, not the skills'**, which is the useful result:
+`dw-shape` #1 asserted a stop the skill correctly did not make, and `land-no-origin` asked for a
+close on a change that genuinely was not ready. n=1 is a smoke test, not a distribution — three to
+five trials is what a real measurement takes, and `--trials` is there for when a description or a
+skill body changes enough to want one.
+
 ## Asking the real router
 
-**There is no tool here for this any more**, and that is deliberate: `evals/trigger.ts` spawned real
-`claude -p` runs to see which skill actually fired, and the answer it gave once was worth more than
-the tool was worth keeping.
+**Which skill fired is still not measured by a tool here**, and that is deliberate: `evals/trigger.ts`
+spawned real `claude -p` runs to see, and the answer it gave once was worth more than the tool was
+worth keeping. `behaviour.ts` reaches its skill by slash precisely so it measures conduct rather than
+routing — the two questions stay apart.
 
 Recorded 2026-08-02. The reconnaissance behind these evals saw `dw-grill` fire 3/3 on `shape a change
 that adds a CSV export` — a prompt containing `dw-shape`'s own trigger verb. Under identical

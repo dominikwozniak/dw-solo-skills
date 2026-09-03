@@ -42,16 +42,16 @@ Edit` was right for observing a trigger and is wrong here — "the agent narrate
 
 - [x] 1. Prove the invocation is hermetic before building on it: one plugin copy each, no global
       plugins, and a way to reach an explicit-invoke skill. Findings in `## Notes`.
-- [ ] 2. `evals/skills.ts` — `parseFrontmatter`, `stripQuotes`, `buildCorpus`, `type SkillDoc` out
+- [x] 2. `evals/skills.ts` — `parseFrontmatter`, `stripQuotes`, `buildCorpus`, `type SkillDoc` out
       of `routing.ts`; `routing.ts` imports them. No behaviour change, proven by a byte-identical
       run.
-- [ ] 3. `evals/behaviour.ts` — the runner: case loading, fixture materialisation, executor,
+- [x] 3. `evals/behaviour.ts` — the runner: case loading, fixture materialisation, executor,
       grader, the `--go` cost gate, results under `evals/results/` (gitignored).
-- [ ] 4. Seven cases in `evals/behaviour/` plus their fixtures under `evals/fixtures/`.
-- [ ] 5. `scripts/tests/behaviour-eval.test.sh` over the free parts only — zero model calls.
-- [ ] 6. `evals/README.md` (both stale passages), `docs/decisions/0020-*.md`, `AGENTS.md`, and
+- [x] 4. Seven cases in `evals/behaviour/` plus their fixtures under `evals/fixtures/`.
+- [x] 5. `scripts/tests/behaviour-eval.test.sh` over the free parts only — zero model calls.
+- [x] 6. `evals/README.md` (both stale passages), `docs/decisions/0020-*.md`, `AGENTS.md`, and
       `git rm` the backlog entry this change completes.
-- [ ] 7. Run at least two cases for real and record the measurement with its date, n and cost.
+- [x] 7. Run at least two cases for real and record the measurement with its date, n and cost.
 
 ## Anchors
 
@@ -86,3 +86,10 @@ Edit` was right for observing a trigger and is wrong here — "the agent narrate
 - The repo's own bash-guard hook blocks `git add -A` and a trailerless commit even inside a
   throwaway fixture, because it fires on the session's tool calls. The runner's own `execFileSync`
   is not affected.
+- Both failures in the first sweep were the eval's fault, not the skills': dw-shape #1 asserted a
+  stop the skill correctly did not make (the prompt read as a planning sitting, the other half of
+  its default-branch fork), and land-no-origin asked for a close on a change the diff did not
+  deliver. Recorded in each case's own `note`.
+- dw-land's close case is the expensive one — 24 turns, $1.16 — because it does real work.
+- agnix lints a fixture's AGENTS.md as a real instruction file; `evals/fixtures/**` is excluded for
+  the same reason `templates/**` is.

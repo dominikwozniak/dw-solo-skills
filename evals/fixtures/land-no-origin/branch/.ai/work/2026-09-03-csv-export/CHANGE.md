@@ -5,14 +5,15 @@ created: 2026-09-03
 status: building
 ---
 
-# Change — the reports page exports CSV
+# Change — `toCsv` escapes the fields that need it
 
 ## Goal
 
-A user on the reports page clicks Export and gets a `.csv` of the rows currently shown. You know it
-worked when clicking Export downloads a file whose rows match the table on screen.
+`toCsv(rows)` returns CSV that a spreadsheet reads back unchanged: a field containing a comma, a
+double quote or a newline is wrapped in quotes, and an inner quote is doubled. You know it worked
+when `pnpm test` passes with a case for each of those three fields.
 
 ## Tasks
 
-- [x] 1. `formatRows` turns rows into CSV text.
-- [x] 2. The Export button, and the download it triggers.
+- [x] 1. Quote a field containing a comma, a quote or a newline; double the inner quotes.
+- [x] 2. A test for each of the three cases.

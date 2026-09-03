@@ -66,8 +66,7 @@ skill can delegate to one; another skill suggesting you run it is the route in.
 </p>
 
 Parallel changes: queue the ideas as `.ai/backlog/` entries, then one worktree + session each —
-`dw-shape` asked for a worktree, or `claude -w <slug>` — and `dw-shape` expands the entry on its own
-branch.
+`dw-shape` asked for a worktree, or `claude -w <slug>` — and the entry is expanded on its own branch.
 
 | Skill                                    | Task                                                                                | What you get                                                              |
 | ---------------------------------------- | ----------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |

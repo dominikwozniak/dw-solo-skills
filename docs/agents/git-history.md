@@ -25,6 +25,13 @@ imply, and the traps that have actually sprung around them.
 
 ## Gotchas
 
+- **`git add $paths` in zsh stages nothing, and the commit chained after it goes ahead anyway.** The
+  session shell is zsh, which does not word-split an unquoted variable, so a newline-separated list
+  of paths reached git as one pathspec, matched nothing, and `git add` said so — and the
+  `git commit` sequenced after a `;` ran regardless, taking whatever was already in the index: here
+  the `git rm` deletions alone, leaving 26 edits in the tree and a commit `validate:docs` would have
+  failed on its own. The tell was lint-staged reporting no staged files. Pipe the list
+  through `xargs git add`, and read `git show --stat HEAD` before trusting a many-file commit.
 - **Three ways a branch ends up holding work you didn't write.**
   - **`git commit` commits the index, not what you staged — and the main tree's index is shared with
     every other session in it.** `git add <my-folder>` then `git commit` swept a concurrent session's

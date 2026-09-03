@@ -25,11 +25,13 @@ change doc committed to the default branch is what a post-squash rebase resurrec
      `created:`, an H1 with what-and-why, ≤3 lines of context) and no folder in `work/`.
    - **Asked for a worktree** — the word has to be said; it is for changes built beside others, one
      session each. From the main tree on the default branch:
-     `bash "${CLAUDE_PLUGIN_ROOT}/scripts/worktree.sh" create <slug>` — a refusal means report and
-     stop, never retry; its stdout is the path, its stderr is for you to act on. Enter it
-     (EnterWorktree where the session offers it, else `cd`), **run the `Bootstrap command` before
-     anything else** — a fresh worktree has no installed deps and no git hooks — then shape there.
-     More queued entries → print `claude -w <slug>` per entry, a new terminal each.
+     `bash "${CLAUDE_PLUGIN_ROOT}/scripts/worktree.sh" create <slug>`, the **bare** slug step 2
+     derives — no date, only the lanes carry dates. A refusal means report and stop, never retry;
+     its stdout is the path, its stderr is for you to act on. Enter it (EnterWorktree where the
+     session offers it, else `cd`), then **before anything else run the repo's `Bootstrap command`,
+     or the install `worktree.sh` named on stderr** — a fresh worktree has no installed deps and no
+     git hooks — then shape there. More queued entries → print `claude -w <slug>` per entry, a new
+     terminal each.
    - **On a feature branch** — record it verbatim; if it already carries a change (the same grep
      `dw-next` uses), continue that file rather than opening a second one.
 2. Derive the name, don't invent it:

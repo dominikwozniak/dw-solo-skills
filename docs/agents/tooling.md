@@ -86,6 +86,12 @@ either, and each script names the tokens it rejects.
 
 ## Gotchas
 
+- **A Bash heredoc that writes a file runs the file's text past every PreToolUse guard.** The hooks
+  lex the whole command, and a `cat > x.test.sh <<'EOF'` body holding `git commit -qm "$3"` read to
+  `enforce-commit-hygiene.sh` as a commit whose subject was `$3)` — refused, the file never written.
+  Whatever the guards would refuse as a command they refuse as text on its way into a file. Write such
+  a file with the Write tool, or spell the trap in a form the lexer skips (`git commit -F -`, which is
+  what `base-ref.test.sh` does).
 - **`dw-check`'s delegated pass returns empty once Codex runs past 120 s, and recovering it is the
   parent's job.** `codex:codex-rescue` is allowed exactly one `task` forward — it is barred from
   `status`, `result` and from reading the repo, and it will say so if asked again. So when the Bash

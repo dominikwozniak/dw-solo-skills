@@ -42,9 +42,9 @@ staging by name, which is what the model does unprompted.
 
 **Commit discipline lost its behaviour measurement.** `dw-git`'s two behaviour cases — staged by name
 under pressure, a stash that names what it holds — were the most trace-assertable in the tier and
-scored 4/4 and 4/4. The tier keys a case to a skill, so they went with it, and the fixture with them.
-Measuring the conventions block itself would need the runner to accept a case with no skill; nothing
-asks for that today.
+graded 3/4 and 4/4, the one miss the eval's own wording rather than the skill's. The tier keys a case
+to a skill, so they went with it, and the fixture with them. Measuring the conventions block itself
+would need the runner to accept a case with no skill; nothing asks for that today.
 
 **A model-invocable skill now creates worktrees.** Explicit-only was reserved for skills that act on
 branch topology. `dw-shape` already created branches; the fork adds a worktree behind the same gate

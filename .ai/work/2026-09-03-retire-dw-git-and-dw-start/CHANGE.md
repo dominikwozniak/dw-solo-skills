@@ -2,7 +2,7 @@
 change: retire-dw-git-and-dw-start
 branch: retire-dw-git-and-dw-start
 created: 2026-09-03
-status: shaping # shaping | building | landed
+status: building # shaping | building | landed
 ---
 
 # Change — retire `dw-git` and `dw-start`; conventions live in `AGENTS.md`, worktrees in `dw-shape`
@@ -36,7 +36,7 @@ decide — and its one mechanism, the base-ref resolution, is a shipped script t
 A task that stopped being necessary keeps its box and gains `**skip:** <reason>`; every later
 invocation reads that as not remaining. Never rename a task title. -->
 
-- [ ] 1. `scripts/runtime/base-ref.sh` + `scripts/tests/base-ref.test.sh`, symlinked into
+- [x] 1. `scripts/runtime/base-ref.sh` + `scripts/tests/base-ref.test.sh`, symlinked into
       `dw-solo` and `dw-solo-extras`, named in `RUNTIME_SCRIPTS` — additive, green alone
 - [ ] 2. The conventions block absorbs `dw-git`'s judgment: `templates/AGENTS.md` grows the rules
       no hook checks; root `AGENTS.md` keeps rules at ≤ 119 lines; `docs/agents/git-history.md`

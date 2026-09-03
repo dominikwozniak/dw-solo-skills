@@ -44,7 +44,7 @@ echo "Checking shipped scripts (canon in scripts/runtime/, symlinked into the pl
 # path ${CLAUDE_PLUGIN_ROOT}/scripts/<s>.sh resolves. We assert (1) each canon exists and is
 # executable, and (2) each plugin entry is a symlink that resolves to it — never a real file
 # (a real file would reintroduce the duplication this layout removes).
-RUNTIME_SCRIPTS="slugify.sh worktree.sh"
+RUNTIME_SCRIPTS="base-ref.sh slugify.sh worktree.sh"
 for s in $RUNTIME_SCRIPTS; do
   c="scripts/runtime/$s"
   if [ ! -f "$c" ]; then

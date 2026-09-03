@@ -49,7 +49,7 @@ invocation reads that as not remaining. Never rename a task title. -->
       positive
 - [x] 4. Re-measure routing: `pnpm eval:routing`, fix the live sentence at `evals/README.md:190`,
       append a dated section with the table
-- [ ] 5. Record and version: `docs/decisions/0021-…`, `dw-solo` 0.7.0 / `dw-solo-setup` 0.2.2 /
+- [x] 5. Record and version: `docs/decisions/0021-…`, `dw-solo` 0.7.0 / `dw-solo-setup` 0.2.2 /
       `dw-solo-extras` 0.1.10 in both manifests, corpus baseline re-recorded
 
 ## Anchors
@@ -88,3 +88,6 @@ conventions`, a repo already running without a git skill
   routes to nothing, which the eval reads as blank, so each file's near-miss became the sibling
   that reads the same artifact. `dw-land`'s "push it and open the pull request" was load-bearing
   against `dw-git`; with no git skill the closing pass owning that ask is the intended answer.
+- Versions: `dw-solo` 0.6.0 → 0.7.0 (two skills gone, one script added), `dw-solo-setup` 0.2.1 →
+  0.2.2 (template block, doctor strings), `dw-solo-extras` 0.1.9 → 0.1.10 (four pointers, the
+  `base-ref.sh` symlink). Corpus baseline 12135 → 11211 words.

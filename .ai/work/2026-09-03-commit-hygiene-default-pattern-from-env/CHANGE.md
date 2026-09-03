@@ -28,7 +28,7 @@ A task that stopped being necessary keeps its box and gains `**skip:** <reason>`
 invocation reads that as not remaining. Never rename a task title. -->
 
 - [x] 1. The hook reads `CLAUDE_COMMIT_PATTERN_DEFAULT` as its fallback pattern, with test cases: unset = today's default; `none` skips the subject while `git add -A` and the backtick still refuse; a declared bullet wins over the variable.
-- [ ] 2. The hook header and `docs/agents/tooling.md`'s resolver chain name the env step between `CLAUDE.local.md` and the script's own default.
+- [x] 2. The hook header and `docs/agents/tooling.md`'s resolver chain name the env step between `CLAUDE.local.md` and the script's own default.
 
 ## Anchors
 

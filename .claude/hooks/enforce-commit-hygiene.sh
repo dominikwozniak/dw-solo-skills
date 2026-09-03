@@ -12,8 +12,10 @@
 # way lint-on-edit.sh's does: AGENTS.md first, CLAUDE.local.md as the legacy
 # fallback, the first backticked span is the value, and a standalone `none`
 # disables the check. The PATTERN falls back to Conventional Commits when no
-# bullet exists; the TRAILER falls back to `none`, because a requirement nobody
-# declared must not start failing commits in a repo that never asked for it.
+# bullet exists — or to CLAUDE_COMMIT_PATTERN_DEFAULT when the caller set it,
+# which replaces that fallback and never a declared bullet; the TRAILER falls
+# back to `none`, because a requirement nobody declared must not start failing
+# commits in a repo that never asked for it.
 #
 # Exit 2 + stderr message causes Claude to see the block and self-correct.
 # Guardrail against agent sloppiness — NOT a security boundary. Check 4 in

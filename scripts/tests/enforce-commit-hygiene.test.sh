@@ -9,12 +9,15 @@
 # pinning behaviour against whatever this repo happens to declare today would
 # make the test a mirror of the declaration rather than a check on the hook.
 # The `none` cases and the no-bullet default are the same fixture with a
-# different AGENTS.md.
+# different AGENTS.md; the CLAUDE_COMMIT_PATTERN_DEFAULT cases export the
+# variable around it, and it is unset up front so an inherited value cannot
+# turn the default cases into a mirror of the caller's shell.
 #
 # Run standalone (`bash scripts/tests/enforce-commit-hygiene.test.sh`) or via
 # scripts/validate-artifacts.sh. Exit 0 iff every case matches. bash 3.2 safe.
 set -uo pipefail
 export LC_ALL=C
+unset CLAUDE_COMMIT_PATTERN_DEFAULT
 
 command -v jq >/dev/null || {
   echo "SKIP: jq missing (hooks no-op without it)"
@@ -213,6 +216,20 @@ echo "an unrendered placeholder is not a declaration:"
 write_policy '{{COMMIT_PATTERN}}' '{{COMMIT_TRAILER}}'
 allowed "placeholder-falls-back-to-default" 'git commit -m "fix(hook): a thing"'
 blocked "placeholder-still-enforces-default" 'git commit -m "a thing with no type prefix"'
+
+echo "CLAUDE_COMMIT_PATTERN_DEFAULT replaces the fallback, never a declared bullet:"
+write_policy "" ""
+export CLAUDE_COMMIT_PATTERN_DEFAULT=none
+allowed "env-none-any-subject" 'git commit -m "[VER-2471] a thing with no type prefix"'
+blocked "env-none-still-catches-backtick" 'git commit -m "whatever `pwd` shape"'
+blocked "env-none-still-catches-add-A" "git add -A"
+write_policy "$CONV" ""
+blocked "env-none-loses-to-declared-bullet" 'git commit -m "a thing with no type prefix"'
+export CLAUDE_COMMIT_PATTERN_DEFAULT='^\[[A-Z]+-[0-9]+\] .+'
+write_policy "" ""
+allowed "env-pattern-match" 'git commit -m "[VER-2471] test: expect the payload again"'
+blocked "env-pattern-miss" 'git commit -m "fix(hook): conventional, but no ticket"'
+unset CLAUDE_COMMIT_PATTERN_DEFAULT
 
 echo "no AGENTS.md at all — defaults still apply:"
 rm -f "$FIXTURE/AGENTS.md"

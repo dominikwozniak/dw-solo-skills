@@ -2,7 +2,7 @@
 change: commit-hygiene-default-pattern-from-env
 branch: commit-hygiene-default-pattern-from-env
 created: 2026-09-03
-status: shaping
+status: building
 ---
 
 # Change — the commit-hygiene hook's default pattern can be set by the caller
@@ -27,7 +27,7 @@ lets a global `~/.claude/hooks/` copy run in repos whose log is not Conventional
 A task that stopped being necessary keeps its box and gains `**skip:** <reason>`; every later
 invocation reads that as not remaining. Never rename a task title. -->
 
-- [ ] 1. The hook reads `CLAUDE_COMMIT_PATTERN_DEFAULT` as its fallback pattern, with test cases: unset = today's default; `none` skips the subject while `git add -A` and the backtick still refuse; a declared bullet wins over the variable.
+- [x] 1. The hook reads `CLAUDE_COMMIT_PATTERN_DEFAULT` as its fallback pattern, with test cases: unset = today's default; `none` skips the subject while `git add -A` and the backtick still refuse; a declared bullet wins over the variable.
 - [ ] 2. The hook header and `docs/agents/tooling.md`'s resolver chain name the env step between `CLAUDE.local.md` and the script's own default.
 
 ## Anchors

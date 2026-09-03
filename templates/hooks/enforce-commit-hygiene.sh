@@ -63,7 +63,12 @@ repo_root="$(git rev-parse --show-toplevel 2>/dev/null)" || exit 0
 # --- the declared policies ---------------------------------------------------
 # Conventional Commits, the default when no bullet is declared. Kept as one
 # constant so the block message can quote the same string the check applied.
+# CLAUDE_COMMIT_PATTERN_DEFAULT replaces this fallback and nothing else — a
+# declared bullet still wins — so a copy wired from outside the repo
+# (~/.claude/hooks/) can pass `none` where the log was never Conventional Commits
+# and keep checks 3 and 4.
 DEFAULT_PATTERN='^(build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test)(\([^)]+\))?!?: .+'
+[[ -n "${CLAUDE_COMMIT_PATTERN_DEFAULT:-}" ]] && DEFAULT_PATTERN="$CLAUDE_COMMIT_PATTERN_DEFAULT"
 
 # resolve_declared <label> <default> — echoes the declared value, the literal
 # `none`, or <default>. POSIX classes, not `\s`: BSD sed does not implement it in

@@ -4,6 +4,7 @@ branch: retire-dw-git-and-dw-start
 created: 2026-09-03
 status: landed
 landed: 2026-09-03
+pr: "#54"
 ---
 
 # Change — retire `dw-git` and `dw-start`; conventions live in `AGENTS.md`, worktrees in `dw-shape`

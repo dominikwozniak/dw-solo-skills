@@ -51,9 +51,10 @@ in [`AGENTS.md`](AGENTS.md) and the procedures in the skills themselves.
 - **Base ref** — which ref of the default branch a diff is taken against, local or `origin/`. Never
   `origin/` by reflex: whichever of the two contains the other wins, and local is the default, because
   a local branch that is _ahead_ (an unpushed `chore: shape …` commit) makes `origin/` pull commits the
-  branch didn't write into the diff. Resolved once, in `dw-git`, for the review diffs `dw-check` and
-  `dw-land` take. `validate-versions.sh` is the other consumer and resolves its own: it needs **two**
-  refs, the merge base for which paths changed and the base _tip_ for whether the version grew.
+  branch didn't write into the diff. Resolved once, in `base-ref.sh`, for the review diffs
+  `dw-check`, `dw-land` and `dw-grain` take. `validate-versions.sh` is the other consumer and
+  resolves its own: it needs **two** refs, the merge base for which paths changed and the base _tip_
+  for whether the version grew.
 - **Triviality floor** — the diff size below which `dw-check` self-reviews instead of handing the diff
   to an outside reviewer. The `codex` argument overrides it, and overrides nothing else; a missing
   reviewer is not something it can override. The numbers live in the skill, not here. Set by

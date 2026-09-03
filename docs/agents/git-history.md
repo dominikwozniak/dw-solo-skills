@@ -1,10 +1,37 @@
-# Git history — commits, rebases, and getting a branch back
+# Git — the procedures behind `## Git conventions`, and what goes wrong around them
 
-The conventions themselves (commit format, trailer, branch naming) are in the root's
-`## Git conventions`, because `dw-git` greps them there. This file is what goes wrong _around_ them.
+The conventions themselves (commit format, trailer, branch naming, rebase over merge) are in the
+root's `## Git conventions`, loaded every session. This file carries the procedures those rules
+imply, and the traps that have actually sprung around them.
+
+## Procedures
+
+- **Commit** — `git status --porcelain` unscoped first (the index is shared, see below), stage by
+  name, `git diff --staged` to review what is actually staged, then commit with `-m` (repeat `-m` for
+  the body). A backtick inside a double-quoted `-m` is command substitution and vanishes silently;
+  the hygiene hook refuses it — single-quote, or `-F` where the hook isn't installed. Read the message
+  back with `git cat-file -p HEAD`, not `git log`, which pagers and proxies trim. `.env`, credentials
+  and keys stay out, and leaving one out is said aloud.
+- **Push** — plain `git push`; no upstream → `git push -u origin "$(git rev-parse --abbrev-ref HEAD)"`.
+  Force-push is hook-refused; a push to `main` needs an explicit yes first.
+- **PR** — push first if needed; `gh pr create` against `main`, title in the commit-subject shape,
+  body `## Summary` + `## Test plan` (this repo has no PR template), no attribution footer, then
+  print the URL. `gh` over a GitHub MCP server: less context, same result.
+- **Sync** — `git fetch origin && git rebase origin/main`. Refuse on a dirty tree — commit or stash
+  first. On a conflict report and **stop**; never auto-resolve.
+- **Branch** — `git switch -c <kebab-slug>`, the same spelling the change docs under `.ai/work/` use.
+- **Which ref to diff against** — `bash scripts/runtime/base-ref.sh` prints it: local `main` unless
+  `origin/main` strictly contains it. Why local is the default is `CONTEXT.md`'s **Base ref** entry.
 
 ## Gotchas
 
+- **`git add $paths` in zsh stages nothing, and the commit chained after it goes ahead anyway.** The
+  session shell is zsh, which does not word-split an unquoted variable, so a newline-separated list
+  of paths reached git as one pathspec, matched nothing, and `git add` said so — and the
+  `git commit` sequenced after a `;` ran regardless, taking whatever was already in the index: here
+  the `git rm` deletions alone, leaving 26 edits in the tree and a commit `validate:docs` would have
+  failed on its own. The tell was lint-staged reporting no staged files. Pipe the list
+  through `xargs git add`, and read `git show --stat HEAD` before trusting a many-file commit.
 - **Three ways a branch ends up holding work you didn't write.**
   - **`git commit` commits the index, not what you staged — and the main tree's index is shared with
     every other session in it.** `git add <my-folder>` then `git commit` swept a concurrent session's

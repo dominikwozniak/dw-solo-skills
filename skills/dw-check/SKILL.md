@@ -15,8 +15,8 @@ verdict stays a thin last look and never grows a reviewer of its own.
 
 ## What it reads
 
-The diff against the default branch — base and its ref resolved the way `dw-git` does — plus the
-branch's `CHANGE.md` goal, so findings are judged against what the change is trying to do, not
+The diff against the default branch — the ref `bash "${CLAUDE_PLUGIN_ROOT}/scripts/base-ref.sh"` prints — plus
+the branch's `CHANGE.md` goal, so findings are judged against what the change is trying to do, not
 against taste. `$ARGUMENTS` is read two ways: the single word `codex` forces the delegated pass
 past the triviality floor, and anything else narrows the focus to a path or a topic. It writes no
 `.ai/` artifact — approved fixes land as code commits.
@@ -60,7 +60,7 @@ name what you dismissed, one line each:
 ### 4. Present, wait, then fix
 
 List the findings with a severity-ordered recommendation and **stop — nothing is fixed without
-approval.** On approval, fix in-session and commit the way `dw-git` does — related fixes together,
+approval.** On approval, fix in-session and commit per `## Git conventions` — related fixes together,
 unrelated apart. Then offer to run again; the second look is the point of a gate this cheap.
 
 **Next:** `dw-next` for the next task, `dw-land` when nothing is pending, or `dw-grain` where

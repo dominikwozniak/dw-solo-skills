@@ -26,8 +26,9 @@
       "owner": "dw-next"
     },
     {
-      "prompt": "rebase me onto the default branch",
-      "owner": "dw-git"
+      "prompt": "pick the active change back up and build the next unticked task",
+      "owner": "dw-next",
+      "note": "Replaced a plain-git negative when dw-git left the corpus. dw-doctor ↔ dw-next is the closest description pair on record, which makes the resume ask the near-miss worth holding."
     }
   ]
 }

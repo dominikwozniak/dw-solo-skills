@@ -372,7 +372,7 @@ if [ "$SOLO" -eq 1 ]; then
 fi
 
 # --- the always-loaded file ----------------------------------------------------
-# AGENTS.md is the one file every session loads in full: the git conventions dw-git reads, and the two
+# AGENTS.md is the one file every session loads in full: the git conventions every commit follows, and the two
 # command bullets the lint and typecheck hooks grep. It is tracked, which is the whole point — a
 # gitignored CLAUDE.local.md reached neither a fresh clone nor a worktree, and every gap failed
 # silently. That file is still honoured as a fallback here, in the same order the hooks use it.
@@ -492,7 +492,7 @@ if [ "$MEMORY" -eq 1 ] && [ -f "$agents" ]; then
 elif [ "$MEMORY" -eq 1 ] && { [ -f "$ROOT/CLAUDE.md" ] || [ -f "$legacy" ]; }; then
   report warn "AGENTS.md" "absent, but CLAUDE.md/CLAUDE.local.md is here — a pre-migration layout; fix: dw-init moves it"
 elif [ "$MEMORY" -eq 1 ]; then
-  report warn "AGENTS.md" "absent — the one always-loaded file; dw-git and both command hooks read it; fix: dw-init"
+  report warn "AGENTS.md" "absent — the one always-loaded file; the git conventions and both command hooks live in it; fix: dw-init"
 fi
 
 # The two bullets the hooks grep, resolved in the hooks' own order. A value of `none` is a valid

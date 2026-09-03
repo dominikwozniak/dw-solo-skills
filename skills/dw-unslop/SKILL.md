@@ -85,4 +85,4 @@ will — apply them first, because both are deletions and a deleted sentence nee
   same thing in a review here and in the plugin it came from. Two rules are deliberately softened
   there, each with the reason on its own line.
 
-**Next:** `dw-land`, which owns the PR body, or `dw-git` for a commit body about to be written.
+**Next:** `dw-land`, which owns the PR body; a commit body about to be written follows `## Git conventions`.

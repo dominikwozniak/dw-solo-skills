@@ -52,7 +52,7 @@ Match a task against this table **before** researching or coding, and read every
 
 `.ai/work/<date>-<slug>/CHANGE.md` is the state of the change in progress — tracked, so it survives a
 `/clear`. Where each step promotes its durable output is the Task Router above. The loop, `?` opt-in:
-`/dw-grill? → /dw-shape → /dw-start? → /dw-next ↺ → /dw-check? → /dw-land → /dw-ship`. Closing takes
+`/dw-grill? → /dw-shape → /dw-next ↺ → /dw-check? → /dw-land → /dw-ship`; say worktree to `/dw-shape` for one. Closing takes
 the last two, one decision each: `/dw-land` ends with an open PR, `/dw-ship` merges it.
 
 The five below are **grep-read** — the first four by the hooks, the fifth by `worktree.sh` — so they
@@ -72,16 +72,29 @@ an honest gap.
 
 ## Git conventions
 
-Read by `dw-git` — these override its defaults and the global user memory's.
+Applied to every commit, push, PR and sync, and they override the global user memory's. The two
+declared bullets under `## Solo lane` are hook-enforced; the rest is on you.
 
 - **Subject**: `type(scope): subject`, lowercase, imperative
-  ([Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/)) _(ticket prefix, if any)_
+  ([Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/)) _(ticket prefix, if any —
+  it has to fit the declared **Commit pattern**, or the hook refuses the commit)_
+- **Body**: prose saying what and why for anything non-trivial, never a list of files.
 - **Trailer**: _(whether `Co-Authored-By` is wanted, and which footer, if any — state it outright)_
-- **Default branch**: `{{DEFAULT_BRANCH}}` — also the PR target; branch off it with a kebab-case slug
-- **Rebase, never merge** — `git pull --rebase`,
-  `git fetch origin && git rebase origin/{{DEFAULT_BRANCH}}`
+- **One logical change per commit**, staged by name — never `git add -A` / `git add .`; `.env`,
+  credentials and keys stay out, and leaving one out is said aloud. Read the message back with
+  `git cat-file -p HEAD` before moving on.
+- **Default branch**: `{{DEFAULT_BRANCH}}` — also the PR target; branch off it with
+  `git switch -c <kebab-slug>`.
+- **Push**: plain `git push`; no upstream → `git push -u origin "$(git rev-parse --abbrev-ref HEAD)"`.
+  Never force; a push to `{{DEFAULT_BRANCH}}` needs a yes first.
+- **PR**: `gh pr create` against the default branch — title in the commit-subject shape, body from
+  `.github/PULL_REQUEST_TEMPLATE.md` where it exists, else `## Summary` + `## Test plan`; no
+  attribution footer.
+- **Sync — rebase, never merge**: `git fetch origin && git rebase origin/{{DEFAULT_BRANCH}}`; refuse
+  on a dirty tree, and on a conflict report and **stop** — never auto-resolve.
+- **Stash** always with a message: `git stash push -m "<what is being saved>"`, never bare.
 - **Branch reads** — `git rev-parse --abbrev-ref HEAD`, never `git branch --show-current`, empty on a
-  detached HEAD. _(add the rest: `git switch`/`git restore`, staging by name over `git add -A`)_
+  detached HEAD; `git switch` / `git restore` over `git checkout`.
 
 ## Hooks installed
 

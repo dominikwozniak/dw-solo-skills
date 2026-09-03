@@ -14,8 +14,8 @@ move, and the PR. `dw-ship` merges it.
 
 ## What it reads and writes
 
-The diff against the default branch — base and its ref resolved the way `dw-git` does — plus the
-branch's `.ai/work/<date>-<slug>/CHANGE.md` (found by the same grep `dw-next` uses), `CONTEXT.md`
+The diff against the default branch — the ref `bash "${CLAUDE_PLUGIN_ROOT}/scripts/base-ref.sh"` prints — plus
+the branch's `.ai/work/<date>-<slug>/CHANGE.md` (found by the same grep `dw-next` uses), `CONTEXT.md`
 and `docs/decisions/`, so the verdict judges against this project's choices. Writes the closing
 checklist's targets, moves the change doc to `.ai/archive/`, then pushes and opens the PR.
 
@@ -71,7 +71,7 @@ One commit carries all of it.
 
 ### 3. Open the PR — under the same go
 
-`git push -u origin <branch>`, then `gh pr create`, both the way `dw-git` does; fill the archived
+`git push -u origin <branch>`, then `gh pr create`, both per `## Git conventions`; fill the archived
 doc's `pr:` as a one-line follow-up commit. Don't wait on CI — opening the PR is what starts it,
 and `dw-ship` reads the checks. On the default branch there is no PR — the close was the whole
 step. No `origin` at all — say so and stop at the close commit.

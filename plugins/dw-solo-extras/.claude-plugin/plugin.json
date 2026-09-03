@@ -1,6 +1,6 @@
 {
   "name": "dw-solo-extras",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "description": "Off-loop skills for the solo lane — reached for beside the loop, not on the way from shape to ship. Four today: compact the live session into a handoff the next context window resumes from, mid-task; walk the backlog entry by entry, dropping what is stale and doing what is cheap; cut the AI tells out of the text a human will read, a PR body or a commit body, without flattening it into something voiceless; and audit code just written for what did not need to be written — a helper reinvented beside its canonical home, a wrapper with one caller, config for a case that never occurs — as one table where every row is a deletion or a reuse. Install alongside dw-solo, whose .ai/ folder the first two read and write.",
   "author": {
     "name": "Dominik Wozniak"

@@ -1,10 +1,11 @@
 ---
 name: dw-shape
 description: >-
-  Turn a request or a finished `dw-grill` conversation into a durable `CHANGE.md` under
-  `.ai/work/` — goal, decisions taken, a task checklist, anchors in real files; one per goal,
-  never per shippable piece, and depth scales with size.
-argument-hint: "What change are we shaping?"
+  Turn a request, a backlog entry or a finished `dw-grill` conversation into the change doc: write
+  a durable `CHANGE.md` under `.ai/work/` with the goal, the decisions taken, a task checklist and
+  anchors in real files; one per goal, never per shippable piece, depth scales with size, and in
+  its own worktree when you ask for one.
+argument-hint: "What change are we shaping? bare on the default branch lists the backlog · say worktree to open one"
 ---
 
 # dw-shape — one file, then build
@@ -16,11 +17,21 @@ argument-hint: "What change are we shaping?"
 `.ai/work/<YYYY-MM-DD>-<slug>/CHANGE.md` — tracked, and **on a feature branch only**. **Why:** a
 change doc committed to the default branch is what a post-squash rebase resurrects.
 
-1. Resolve the branch: `git rev-parse --abbrev-ref HEAD`, default branch the way `dw-git` does.
-   - **On the default branch** — pick by intent: shaping one change to build now →
-     `git switch -c <slug>` and shape there; a planning sitting that queues several → one
-     `.ai/backlog/<date>-<slug>.md` entry per idea (frontmatter `created:`, an H1 with
-     what-and-why, ≤3 lines of context) and no folder in `work/`.
+1. Resolve the branch: `git rev-parse --abbrev-ref HEAD`; the default branch is the one
+   `## Git conventions` names, else `git symbolic-ref --short refs/remotes/origin/HEAD`, else `main`.
+   - **On the default branch** — bare, list `.ai/backlog/` newest-first and ask which. Then by
+     intent: one change to build now → `git switch -c <slug>` and shape there; a planning sitting
+     that queues several → one `.ai/backlog/<date>-<slug>.md` entry per idea (frontmatter
+     `created:`, an H1 with what-and-why, ≤3 lines of context) and no folder in `work/`.
+   - **Asked for a worktree** — the word has to be said; it is for changes built beside others, one
+     session each. From the main tree on the default branch:
+     `bash "${CLAUDE_PLUGIN_ROOT}/scripts/worktree.sh" create <slug>`, the **bare** slug step 2
+     derives — no date, only the lanes carry dates. A refusal means report and stop, never retry;
+     its stdout is the path, its stderr is for you to act on. Enter it (EnterWorktree where the
+     session offers it, else `cd`), then **before anything else run the repo's `Bootstrap command`,
+     or the install `worktree.sh` named on stderr** — a fresh worktree has no installed deps and no
+     git hooks — then shape there. More queued entries → print `claude -w <slug>` per entry, a new
+     terminal each.
    - **On a feature branch** — record it verbatim; if it already carries a change (the same grep
      `dw-next` uses), continue that file rather than opening a second one.
 2. Derive the name, don't invent it:
@@ -63,8 +74,8 @@ green, small enough for a fresh session. Order is a hint, never a gate.
 
 Write `CHANGE.md` from the shape in `references/CHANGE.md`. Read back the goal, the task list, and
 the left-out list with a proposed fate per item (into the change / a one-line backlog entry /
-dropped) — **one stop**: granularity and fates are corrected in one reply. Then commit the way
-`dw-git` does, everything this shaping wrote staged by name.
+dropped) — **one stop**: granularity and fates are corrected in one reply. Then commit per
+`## Git conventions`, everything this shaping wrote staged by name.
 
 Beyond small, prefer a fresh session per change — the committed file is the handoff.
 
@@ -72,5 +83,4 @@ Beyond small, prefer a fresh session per change — the committed file is the ha
 
 - `references/CHANGE.md` — the exact shape to copy; the tick convention lives in the template.
 
-**Next:** `dw-next` to build it right here, `dw-start` for a worktree instead, or `dw-grill` if the
-read-back exposed something still undecided.
+**Next:** `dw-next` to build it, or `dw-grill` if the read-back exposed something still undecided.

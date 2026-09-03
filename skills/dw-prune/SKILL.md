@@ -46,14 +46,14 @@ the failure this skill exists to reverse.
 
 ### 3. Commit, then report
 
-Commit the way `dw-git` does, staged by name, and let its one-logical-change rule cut the pass rather
+Commit per `## Git conventions`, staged by name, and let the one-logical-change rule cut the pass rather
 than forcing everything into one commit:
 
 - **The sweep is one commit** — every stale deletion and bundle rewrite together, since walking the
   folder was the single act that produced them.
 - **Each fix is its own**, carrying the entry it just closed. The work and the `git rm` that follows
-  from it are one change; a code fix riding along in a backlog sweep is the "spans concerns" case
-  `dw-git` names.
+  from it are one change; a code fix riding along in a backlog sweep is a second logical change, and
+  `## Git conventions` wants it apart.
 
 Then report the count each way and what is left.
 

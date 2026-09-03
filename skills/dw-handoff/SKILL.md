@@ -67,10 +67,10 @@ Write the file, read the four sections back in two or three lines, and **wait**.
 who knows whether it matches the session, and correcting it now is far cheaper than resuming from a
 wrong one.
 
-On confirmation, commit it the way `dw-git` does, staged by name. Committing is load-bearing, not
+On confirmation, commit it per `## Git conventions`, staged by name. Committing is load-bearing, not
 hygiene: `dw-land` clears a leftover `HANDOFF.md` with `git rm` before archiving the change — and
-`git rm` only sweeps tracked files — while a worktree opened by `dw-start` checks out committed
-state only.
+`git rm` only sweeps tracked files — while a fresh worktree checks out committed state
+only.
 
 ### 4. Hand over
 

@@ -122,14 +122,14 @@ real_case() {
   rc=$?
   if [ "$rc" -eq "$4" ]; then note_pass "$1"; else note_fail "$1" "want exit $4, got $rc"; fi
 }
-real_case "real-skill-symlink-blocked" Edit "$ROOT/plugins/dw-solo/skills/dw-git/SKILL.md" 2
+real_case "real-skill-symlink-blocked" Edit "$ROOT/plugins/dw-solo/skills/dw-next/SKILL.md" 2
 real_case "real-script-symlink-blocked" Edit "$ROOT/plugins/dw-solo/scripts/worktree.sh" 2
 real_case "real-plugin-json-allowed" Edit "$ROOT/plugins/dw-solo/.claude-plugin/plugin.json" 0
-real_case "real-canon-allowed" Edit "$ROOT/skills/dw-git/SKILL.md" 0
+real_case "real-canon-allowed" Edit "$ROOT/skills/dw-next/SKILL.md" 0
 real_case "real-marketplace-allowed" Edit "$ROOT/.claude-plugin/marketplace.json" 0
-out="$(stderr_of "$ROOT" Edit "$ROOT/plugins/dw-solo/skills/dw-git/SKILL.md")"
+out="$(stderr_of "$ROOT" Edit "$ROOT/plugins/dw-solo/skills/dw-next/SKILL.md")"
 case "$out" in
-  *"skills/dw-git/SKILL.md"*) note_pass "real-refusal-names-canon" ;;
+  *"skills/dw-next/SKILL.md"*) note_pass "real-refusal-names-canon" ;;
   *) note_fail "real-refusal-names-canon" "stderr did not name the canon: $out" ;;
 esac
 

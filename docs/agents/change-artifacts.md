@@ -15,8 +15,8 @@ Artifacts are real work documents, committed with the code — not scratch.
   to avoid.
 - **A change doc exists only on its feature branch** ([`0019`](../decisions/0019-a-change-doc-exists-only-on-its-feature-branch.md)).
   The unopened queue is `.ai/backlog/`, one entry per idea; `dw-shape` on the default branch writes
-  there or switches to a new branch first, and `dw-start` opens a worktree whose `dw-shape` expands
-  the entry. There is no `branch: unclaimed` sentinel and no claim step any more — the branch field
+  there or switches to a new branch first — or, asked for a worktree, opens one and expands the
+  entry there. There is no `branch: unclaimed` sentinel and no claim step any more — the branch field
   is written once, verbatim, at shape time.
 - **The promotion commit lands on the feature branch**, so a squash-merge carries it to the default
   branch — as it does the change folder's move to `.ai/archive/<date>-<slug>/`, which is the same commit. What

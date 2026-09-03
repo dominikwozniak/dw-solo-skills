@@ -1,4 +1,4 @@
-# Worktrees — what `dw-start` gives you, and what it doesn't
+# Worktrees — what `worktree.sh` gives you, and what it doesn't
 
 Worktrees live at `.claude/worktrees/<slug>` on branch `<slug>`; `scripts/runtime/worktree.sh` owns
 create and remove. A `claude -w <slug>` session spells the branch `worktree-<slug>` instead, which
@@ -16,7 +16,7 @@ is why `dw-next` strips that prefix before matching a change doc.
   worktree at the top of any skill that reads a diff or commits** — `pwd` plus the branch, then
   re-enter with the worktree path if it drifted. Nothing is lost when it happens: the worktree and
   every commit in it are untouched, only the session's working directory moved.
-- **A `dw-start` worktree is not the main tree, and every way it differs reads as something else.**
+- **A worktree is not the main tree, and every way it differs reads as something else.**
   Six traps, one root cause: the worktree gets tracked files and a branch, and nothing else.
   - **A legacy `CLAUDE.local.md` is simply absent from one.** It is gitignored, so no checkout
     delivers it, and nothing links it in any more — the link class retired with decision 0007, taking
@@ -43,8 +43,8 @@ is why `dw-next` strips that prefix before matching a change doc.
     against, say — points at nothing from here. Read it through the main tree's absolute path; the
     harness allows the read even though it refuses writes outside the worktree.
   - **That same absolute path silently reads `main`'s copy of anything _tracked_.** Both trees hold
-    identical relative paths, so `…/dw-solo-skills/skills/dw-git/SKILL.md` and
-    `…/worktrees/<slug>/skills/dw-git/SKILL.md` both exist and differ by every commit on the branch.
+    identical relative paths, so `…/dw-solo-skills/skills/dw-next/SKILL.md` and
+    `…/worktrees/<slug>/skills/dw-next/SKILL.md` both exist and differ by every commit on the branch.
     The asymmetry is the trap: `Edit` **refuses** the main-tree path, `Read` **succeeds silently** — so
     nothing is corrupted and you reason about the wrong text. The tell is line numbers disagreeing with
     a `grep` run in the worktree; the conclusion it invites is that a proxy is filtering the output.

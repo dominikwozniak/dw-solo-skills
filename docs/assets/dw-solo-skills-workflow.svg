@@ -8,9 +8,9 @@
 >
   <title id="workflow-title">The dw-solo-skills workflow</title>
   <desc id="workflow-desc">
-    A left-to-right workflow from optional dw-grill, through mandatory dw-shape, optional dw-start,
-    iterative dw-next, optional dw-check, mandatory dw-land, and mandatory dw-ship. Dw-next loops
-    until the work is ready to continue.
+    A left-to-right workflow from optional dw-grill, through mandatory dw-shape, iterative dw-next,
+    optional dw-check, mandatory dw-land, and mandatory dw-ship. Dw-next loops until the work is
+    ready to continue.
   </desc>
 
   <defs>
@@ -109,16 +109,15 @@
   </g>
 
   <g aria-hidden="true">
-    <path class="connector" d="M 210 180 H 230" />
-    <path class="connector" d="M 400 180 H 420" />
-    <path class="connector" d="M 590 180 H 610" />
-    <path class="connector" d="M 780 180 H 800" />
-    <path class="connector" d="M 970 180 H 990" />
-    <path class="connector" d="M 1160 180 H 1180" />
+    <path class="connector" d="M 210 180 H 268" />
+    <path class="connector" d="M 438 180 H 496" />
+    <path class="connector" d="M 666 180 H 724" />
+    <path class="connector" d="M 894 180 H 952" />
+    <path class="connector" d="M 1122 180 H 1180" />
 
-    <path class="connector" d="M 754 126 C 754 76, 646 76, 646 126" />
+    <path class="connector" d="M 640 126 C 640 76, 532 76, 532 126" />
     <text
-      x="700"
+      x="586"
       y="72"
       fill="#D78A32"
       font-family="Arial, Helvetica, sans-serif"
@@ -140,38 +139,31 @@
     </g>
 
     <g>
-      <rect class="mandatory" x="240" y="126" width="160" height="108" rx="12" />
-      <text class="label-light" x="258" y="151">MANDATORY</text>
-      <text class="skill-light mono" x="258" y="184">dw-shape</text>
-      <text class="caption-light" x="258" y="211">plan it</text>
+      <rect class="mandatory" x="278" y="126" width="160" height="108" rx="12" />
+      <text class="label-light" x="296" y="151">MANDATORY</text>
+      <text class="skill-light mono" x="296" y="184">dw-shape</text>
+      <text class="caption-light" x="296" y="211">plan it</text>
     </g>
 
     <g>
-      <rect class="optional" x="430" y="126" width="160" height="108" rx="12" />
-      <text class="label-dark" x="448" y="151">OPTIONAL</text>
-      <text class="skill-dark mono" x="448" y="184">dw-start</text>
-      <text class="caption-dark" x="448" y="211">worktree</text>
+      <rect class="mandatory" x="506" y="126" width="160" height="108" rx="12" />
+      <text class="label-light" x="524" y="151">MANDATORY</text>
+      <text class="skill-light mono" x="524" y="184">dw-next</text>
+      <text class="caption-light" x="524" y="211">build</text>
     </g>
 
     <g>
-      <rect class="mandatory" x="620" y="126" width="160" height="108" rx="12" />
-      <text class="label-light" x="638" y="151">MANDATORY</text>
-      <text class="skill-light mono" x="638" y="184">dw-next</text>
-      <text class="caption-light" x="638" y="211">build</text>
+      <rect class="optional" x="734" y="126" width="160" height="108" rx="12" />
+      <text class="label-dark" x="752" y="151">OPTIONAL</text>
+      <text class="skill-dark mono" x="752" y="184">dw-check</text>
+      <text class="caption-dark" x="752" y="211">gate</text>
     </g>
 
     <g>
-      <rect class="optional" x="810" y="126" width="160" height="108" rx="12" />
-      <text class="label-dark" x="828" y="151">OPTIONAL</text>
-      <text class="skill-dark mono" x="828" y="184">dw-check</text>
-      <text class="caption-dark" x="828" y="211">gate</text>
-    </g>
-
-    <g>
-      <rect class="mandatory" x="1000" y="126" width="160" height="108" rx="12" />
-      <text class="label-light" x="1018" y="151">MANDATORY</text>
-      <text class="skill-light mono" x="1018" y="184">dw-land</text>
-      <text class="caption-light" x="1018" y="211">close</text>
+      <rect class="mandatory" x="962" y="126" width="160" height="108" rx="12" />
+      <text class="label-light" x="980" y="151">MANDATORY</text>
+      <text class="skill-light mono" x="980" y="184">dw-land</text>
+      <text class="caption-light" x="980" y="211">close</text>
     </g>
 
     <g>

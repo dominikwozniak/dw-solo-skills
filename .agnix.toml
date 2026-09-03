@@ -21,6 +21,10 @@ exclude = [
     # out of what it hands over.
     "templates/**",
     "skills/*/references/templates/**",
+    # Behaviour-eval fixtures — throwaway repos the runner copies into a mkdtemp and hands to
+    # `claude -p`. Their AGENTS.md files are deliberately minimal props, sized to the one promise
+    # the case asserts; linting them as if they were real projects reports on a stage set.
+    "evals/fixtures/**",
     # Routed topic docs. agnix classifies anything under a directory named `agents`
     # as an agent DEFINITION and fails it for having no YAML frontmatter — but these
     # are prose, reached on demand through the root's Task Router, and frontmatter on

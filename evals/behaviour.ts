@@ -492,11 +492,17 @@ function report(outcomes: Outcome[]): number {
       continue
     }
     const { passed, total } = outcome.grading.summary
-    const mark = passed === total ? "✓" : "✗"
-    if (passed !== total) failures++
+    // A run that errored still has a trace, and a truncated trace can satisfy expectations the
+    // whole run would have failed — so a graded-but-errored run is never a pass, and says why.
+    const clean = passed === total && outcome.error === undefined
+    const mark = clean ? "✓" : "✗"
+    if (!clean) failures++
     console.log(
       `  ${mark} ${label}  ${passed}/${total}  ${outcome.turns} turns  ${fmtUsd(outcome.costUsd)}`,
     )
+    if (outcome.error !== undefined) {
+      console.log(`      └ graded anyway, but the run did not finish cleanly: ${outcome.error}`)
+    }
     for (const verdict of outcome.grading.expectations) {
       if (verdict.passed) continue
       console.log(`      └ unmet: ${verdict.text}`)

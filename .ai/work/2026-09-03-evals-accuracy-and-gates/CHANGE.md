@@ -41,7 +41,7 @@ is derived from a corpus of 11.
       says" example out of the `STOPWORDS` comment. `package.json` pins `--max-blank 3`.
       `evals/cases/dw-check.json` and `dw-next.json` gain a `note` on each blank positive.
       `docs/agents/skills-and-plugins.md` step 6 and `CONTEXT.md`'s glossary follow the code.
-- [ ] 2. `evals/README.md` — a `Re-measured 2026-09-03` section, the `--explain` walkthrough
+- [x] 2. `evals/README.md` — a `Re-measured 2026-09-03` section, the `--explain` walkthrough
       recomputed at N=14, "five" → "seven", the dead idf example in Caveats, the checklist
       pointer, and the new gate/column documented in Case files and What gates.
 - [ ] 3. Backlog — fold the two vocabulary gaps into the existing stemmer audit entry; add the

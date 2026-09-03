@@ -1,0 +1,9 @@
+{
+  "name": "demo-service",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test",
+    "lint": "echo no linter here"
+  }
+}

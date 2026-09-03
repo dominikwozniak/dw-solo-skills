@@ -124,7 +124,8 @@ in [`AGENTS.md`](AGENTS.md) and the procedures in the skills themselves.
   `evals/cases/<skill>.json` holds routing prompts: **positives** that should route here and
   near-miss **negatives** that should not, each naming the `owner` that should win instead — one per
   model-invocable skill, none for an explicit-invoke one. `evals/behaviour/<skill>.json` holds
-  **expectations**: what the skill must be seen to do once it is running, graded from a trace. An
+  **expectations**: what the skill must be seen to do once it is running — or, where the promise is
+  that nothing happens, what must never appear in the trace at all — graded from that trace. An
   explicit-invoke skill gets one of those, reached by slash.
 - **Shadowed** — a positive prompt where an explicit-invoke skill scores higher than the skill under
   test. Reported as overlap, never counted as a routing failure: the model is never offered it.

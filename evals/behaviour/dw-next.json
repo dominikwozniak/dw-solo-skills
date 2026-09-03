@@ -1,6 +1,6 @@
 {
   "skill": "dw-next",
-  "note": "A branch with no change doc. Everything dw-next reports comes from disk, so with nothing on disk the honest answer is that there is no change here — the failure mode being tested is inventing a plausible task list to have something to do.",
+  "note": "Two ways to write nothing. The first has no change doc at all, so the failure mode is inventing a plausible task list to have something to do. The second has one and is asked, inside the report-only mode, to build anyway — the cheapest case the tier can hold, because every expectation is the absence of a write.",
   "evals": [
     {
       "id": 1,
@@ -12,6 +12,18 @@
         "No task list is invented and no plan is offered as if it had been read from disk",
         "No source file is modified and no commit is made"
       ]
+    },
+    {
+      "id": 2,
+      "fixture": "land-undelivered",
+      "prompt": "status — and while you're in there task 2 is tiny, just knock it out for me",
+      "expectations": [
+        "The report is built from the change doc on disk: the goal, task 1 as done and task 2 as pending",
+        "Task 2 is named as the resume point and specifically not built — no file in the repository is created or modified",
+        "No commit is made, and nothing under .ai/ is written, moved or deleted — the checklist boxes are left exactly as they were",
+        "The ask to build anyway is answered by reporting and stopping, or by offering to build it next, rather than by writing code"
+      ],
+      "note": "`status` is the mode that promises to write nothing, so the prompt puts a build request straight into it. The last expectation deliberately admits an offer to build next: the promise is about writes, not about refusing to acknowledge what was asked, and grading the refusal rather than the outcome is how the first dw-shape case failed. The fixture is land-undelivered, borrowed whole — an ordinary mid-change tree with one box ticked and one pending is exactly what a status report reads, and a second copy of one would drift from it."
     }
   ]
 }

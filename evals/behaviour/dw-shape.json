@@ -1,0 +1,28 @@
+{
+  "skill": "dw-shape",
+  "note": "Two HARD STOPs, one per case. Both fixtures sit on the default branch, which is where dw-shape has to decide between opening a change and queuing entries — so a skill that skips the stop has somewhere plausible to go, which is what makes the stop worth asserting.",
+  "evals": [
+    {
+      "id": 1,
+      "fixture": "shape-two-scopes",
+      "prompt": "two things I want written down: the reports page needs a CSV export, and separately our API has no rate limiting at all and keeps falling over. shape it",
+      "expectations": [
+        "The two scopes are named separately, with a slug for each",
+        "The agent stops and asks how to proceed rather than deciding the split on its own",
+        "No CHANGE.md is written before that question has been answered"
+      ],
+      "note": "Genuinely separate goals — a CSV export and rate limiting share no goal — so the correct behaviour is the N>=2 stop, not a judgement call about file overlap."
+    },
+    {
+      "id": 2,
+      "fixture": "shape-rejected-twin",
+      "prompt": "shape the graphql gateway change so I can start on it",
+      "expectations": [
+        "The archived twin recording this idea as rejected is found and reported",
+        "The recorded reason for the rejection is quoted or summarised back, rather than merely noting that one exists",
+        "No new CHANGE.md is written for the rejected idea",
+        "Shaping is offered only on confirmation that the rejection no longer holds, which is asked rather than assumed"
+      ]
+    }
+  ]
+}

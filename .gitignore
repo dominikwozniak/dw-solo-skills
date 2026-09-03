@@ -31,3 +31,6 @@ node_modules/
 # purpose — dw-* treats agent infra (change docs, backlog, guardrails) as
 # committed work. Do NOT add them here.
 # <<< dw-init managed block <<<
+
+# Behaviour-eval output — traces and gradings, regenerated per run.
+/evals/results/

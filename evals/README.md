@@ -23,12 +23,13 @@ pnpm eval:routing                           # what CI and the pre-push gate run 
 node evals/routing.ts                       # report only, no floor enforced
 node evals/routing.ts dw-shape dw-grill     # only these skills
 node evals/routing.ts --top 5               # show more of each ranking, and more collision pairs
-node evals/routing.ts --max-blank 0          # fail on any prompt that discriminates nothing
+node evals/routing.ts --max-blank 0         # fail on any prompt that discriminates nothing
 node evals/routing.ts --explain "<prompt>"  # score one prompt out loud instead of running the eval
 ```
 
 No build step and no dependencies — Node strips the types natively. Exit codes: `0` pass, `1` a gate
-failed, `2` bad usage or a malformed case file.
+failed, `2` the run could not be scored — bad usage, or a case file that is malformed, misnamed,
+orphaned, missing or under its floor.
 
 It runs from `.github/workflows/evals-routing.yaml` and from the pre-push gate (the `scripts` block in
 `package.json`). The workflow installs nothing, because there is nothing to install.
@@ -147,9 +148,9 @@ case file proves whatever its author already believed. Step 6 of
 
 - **positives** — asks that should route here. **Paraphrase how you would really say it.** Copying
   the trigger phrases out of the `description` scores the eval against itself and proves nothing.
-  A positive that scores zero everywhere lands in the `blank` column rather than silently costing a
-  point: it is still a miss, but the fix is a description that carries the words at all, not one that
-  carries them harder. Give each blank a `note` saying which it is — a gap to close, or a price
+  A positive that scores zero everywhere still costs its point — it lands in the `blank` column so
+  that the point stops being paid in silence, because the fix is a description that carries the words
+  at all rather than one that carries them harder. Give each blank a `note` saying which it is — a gap to close, or a price
   already paid.
 - **negatives** — asks that should route elsewhere; `owner` names where. The assertion is only that
   this skill does not outrank the owner, never that the owner takes first place outright — that is
@@ -175,9 +176,10 @@ or at a diff. Distant pairs pass without telling anyone anything.
    real ask uses, and one is a trade the 2026-08-18 re-measure took on purpose. Neither is worth
    failing a run over today; both are worth never growing unnoticed.
 
-Ahead of all five, three shape checks exit 2 rather than 1, because they mean the run could not be
-scored at all: a malformed or misnamed case file, a case file with no matching skill or one for an
-explicit-invoke skill, and a model-invocable skill with no case file.
+Ahead of all five sit the shape checks, which exit 2 rather than 1 because they mean the run could
+not be scored at all: a malformed or misnamed case file, a case file with no matching skill or one
+for an explicit-invoke skill, a model-invocable skill with no case file, and a case file below the
+3-positive / 2-negative floor.
 
 **Rank-1 is computed only among skills the model can actually be offered.** An explicit-invoke skill
 scoring higher is reported on its own `shadowed` column as overlap, not counted as a failure —

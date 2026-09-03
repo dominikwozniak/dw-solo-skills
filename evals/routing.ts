@@ -572,6 +572,7 @@ type Totals = {
   negOk: number
   negatives: number
   negBlank: number
+  shadowed: number
   pct: number
 }
 
@@ -587,6 +588,7 @@ function summarise(tallies: Tally[], corpusSize: number, scored: number): Totals
     negOk: 0,
     negatives: 0,
     negBlank: 0,
+    shadowed: 0,
     pct: 0,
   }
   for (const tally of tallies) {
@@ -596,6 +598,7 @@ function summarise(tallies: Tally[], corpusSize: number, scored: number): Totals
     totals.negOk += tally.negOk
     totals.negatives += tally.negatives
     totals.negBlank += tally.negBlank
+    totals.shadowed += tally.shadowed
     const a = `${tally.rank1}/${tally.positives}`
     const b = `${tally.negOk}/${tally.negatives}`
     console.log(
@@ -611,7 +614,8 @@ function summarise(tallies: Tally[], corpusSize: number, scored: number): Totals
   const head = `${totals.rank1}/${totals.positives}`
   console.log(
     `${"TOTAL".padEnd(width)}  ${head.padEnd(7)}  ` +
-      `${`${totals.negOk}/${totals.negatives}`.padEnd(7)}  ${totals.blank}`,
+      `${`${totals.negOk}/${totals.negatives}`.padEnd(7)}  ` +
+      `${String(totals.blank).padEnd(5)}  ${totals.shadowed}`,
   )
   console.log(`\nrank-1 ${totals.pct}% · ${scored} of ${corpusSize} skills have case files`)
   return totals

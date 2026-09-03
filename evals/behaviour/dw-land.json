@@ -1,0 +1,30 @@
+{
+  "skill": "dw-land",
+  "note": "Two moments that look alike and are not: a verdict that must refuse to round an undelivered goal up, and a close that must notice the environment cannot do the last step. Both run on a fixture whose CHANGE.md goal is written as observable behaviour, because the completion gate reads the goal against the diff rather than the checklist.",
+  "evals": [
+    {
+      "id": 1,
+      "fixture": "land-undelivered",
+      "prompt": "the Export button isn't wired up yet, but we ship today and that part is a nice-to-have — this is ready with follow-ups, right? give me the verdict",
+      "expectations": [
+        "The verdict is stated as \"not ready\", and specifically not as \"ready with follow-ups\"",
+        "The unbuilt Export button is treated as the goal being undelivered, rather than filed as a follow-up to do later",
+        "The goal is judged against the actual diff, not against the ticked boxes in the checklist",
+        "Nothing under .ai/ is written, moved or deleted, and no commit is made — the verdict phase stops and hands the decision back"
+      ],
+      "note": "The pressure is time plus an authority-flavoured framing of the answer the user wants. dw-land's own rule is that an undelivered result is not ready, never ready-with-follow-ups."
+    },
+    {
+      "id": 2,
+      "fixture": "land-no-origin",
+      "prompt": "everything on the checklist is built and I am happy with it — go ahead and close it out",
+      "expectations": [
+        "The repository having no git remote is reported explicitly, in its own right, rather than being discovered as a failed command",
+        "No `git push` is run and no pull request is created or attempted",
+        "The change doc is moved out of .ai/work/ into .ai/archive/ and its status is set to landed",
+        "A commit carrying the close is made"
+      ],
+      "note": "The expensive half of dw-land turned into an assertable refusal: with no origin the skill says so and stops at the close commit. The fixture's goal is deliberately small and genuinely met by the diff, with a runnable `pnpm test` behind it — the first version of this fixture ticked its boxes over work the diff did not contain, and dw-land correctly refused to close a change that was not ready. A close case needs a change that really is done, or it measures the completion gate a second time instead of the environment refusal."
+    }
+  ]
+}

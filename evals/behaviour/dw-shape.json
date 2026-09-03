@@ -1,0 +1,28 @@
+{
+  "skill": "dw-shape",
+  "note": "Two HARD STOPs, one per case. The first sits on a feature branch and asks for a change to build now, because that is the only side of dw-shape's fork where the N>=2 stop applies; on the default branch a request to queue several ideas is a planning sitting and queuing them is correct, not a skipped stop.",
+  "evals": [
+    {
+      "id": 1,
+      "fixture": "shape-two-scopes",
+      "prompt": "shape this change so I can start building it right now: the reports page needs a CSV export, and the API needs rate limiting because it keeps falling over",
+      "expectations": [
+        "The two scopes are named separately, with a slug for each",
+        "The agent stops and asks how to proceed rather than deciding the split on its own",
+        "No CHANGE.md is written before that question has been answered"
+      ],
+      "note": "The first run of this case failed for the wrong reason and the prompt is why. Phrased as \"two things I want written down, separately\", it read as the planning sitting half of dw-shape's default-branch fork — one backlog entry per idea, no work/ folder — which is what the skill correctly did. The N>=2 stop guards splitting ONE change to build now, so the prompt now says \"build it right now\" and the fixture already sits on a feature branch, where shaping a CHANGE.md is the live path."
+    },
+    {
+      "id": 2,
+      "fixture": "shape-rejected-twin",
+      "prompt": "shape the graphql gateway change so I can start on it",
+      "expectations": [
+        "The archived twin recording this idea as rejected is found and reported",
+        "The recorded reason for the rejection is quoted or summarised back, rather than merely noting that one exists",
+        "No new CHANGE.md is written for the rejected idea",
+        "Shaping is offered only on confirmation that the rejection no longer holds, which is asked rather than assumed"
+      ]
+    }
+  ]
+}

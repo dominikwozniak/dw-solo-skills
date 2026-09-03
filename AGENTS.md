@@ -19,6 +19,7 @@ scripts/runtime/<script>.sh      shipped scripts — symlinked into the owning p
 scripts/<script>.{sh,mjs}        repo CI tooling, never shipped (validate-*.sh, check-skill-corpus.mjs)
 scripts/tests/<script>.test.sh   bash self-tests
 evals/cases/<name>.json          routing cases — one per model-invocable skill, never shipped
+evals/behaviour/<name>.json      behaviour cases + evals/fixtures/ — model-in-the-loop, opt-in
 evals/routing.ts                 the routing eval — free, deterministic, in CI
 templates/                       payload copied INTO a target project — hooks, settings.json,
                                  AGENTS.md, check-agents-docs.mjs, gitignore-block.txt,
@@ -51,6 +52,7 @@ build step, no typecheck.
 - **Test**: `pnpm validate:artifacts` — self-tests, the backlog cap, the skill-corpus ratchet
 - **Format**: `pnpm format` (check) · `pnpm format:fix` (write)
 - **Routing evals**: `pnpm eval:routing` — free, deterministic, in CI ([`evals/README.md`](evals/README.md))
+- **Behaviour evals**: `node evals/behaviour.ts` — plans free, `--go` spends, never in CI
 
 Lint, typecheck and the two commit policies are the bullets under `## Solo lane` — **one copy
 each**, because the guardrail hooks grep for them under those exact names.

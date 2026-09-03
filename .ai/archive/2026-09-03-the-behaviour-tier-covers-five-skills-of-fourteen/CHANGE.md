@@ -4,7 +4,7 @@ branch: the-behaviour-tier-covers-five-skills-of-fourteen
 created: 2026-09-03
 status: landed # shaping | building | landed
 landed: 2026-09-03
-pr: TBD
+pr: "#53"
 ---
 
 # Change — the behaviour tier reaches `dw-git` and the two read-only skills

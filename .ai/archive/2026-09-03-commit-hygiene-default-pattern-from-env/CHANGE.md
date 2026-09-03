@@ -4,6 +4,7 @@ branch: commit-hygiene-default-pattern-from-env
 created: 2026-09-03
 status: landed
 landed: 2026-09-03
+pr: "#55"
 ---
 
 # Change — the commit-hygiene hook's default pattern can be set by the caller

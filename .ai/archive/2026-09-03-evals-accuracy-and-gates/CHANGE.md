@@ -4,6 +4,7 @@ branch: evals-accuracy-and-gates
 created: 2026-09-03
 status: landed # shaping | building | landed
 landed: 2026-09-03
+pr: "#51"
 ---
 
 # Change — the routing eval names its blank prompts and holds its own case-file contract

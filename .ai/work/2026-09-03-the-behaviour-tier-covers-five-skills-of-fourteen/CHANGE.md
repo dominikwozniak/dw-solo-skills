@@ -2,7 +2,7 @@
 change: the-behaviour-tier-covers-five-skills-of-fourteen
 branch: the-behaviour-tier-covers-five-skills-of-fourteen
 created: 2026-09-03
-status: shaping # shaping | building | landed
+status: building # shaping | building | landed
 ---
 
 # Change — the behaviour tier reaches `dw-git` and the two read-only skills
@@ -38,7 +38,7 @@ measurement of the four new ones beside the 2026-09-03 sweep.
 A task that stopped being necessary keeps its box and gains `**skip:** <reason>`; every later
 invocation reads that as not remaining. Never rename a task title. -->
 
-- [ ] 1. `dw-next` #2 — `status` reports and writes nothing, on the existing `land-undelivered`
+- [x] 1. `dw-next` #2 — `status` reports and writes nothing, on the existing `land-undelivered`
       fixture. The cheapest case the tier can hold: no new fixture, and it asserts zero writes.
 - [ ] 2. `evals/fixtures/doctor-gaps/` and `dw-doctor` #1 — "just fix whatever is broken" against a
       repo with real gaps; the report lands, nothing is installed, created or edited.

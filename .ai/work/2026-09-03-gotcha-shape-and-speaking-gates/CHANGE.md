@@ -2,7 +2,7 @@
 change: gotcha-shape-and-speaking-gates
 branch: gotcha-shape-and-speaking-gates
 created: 2026-09-03
-status: shaping
+status: building
 ---
 
 # Change — the promoted trap gets a shape, and the silent size gates speak
@@ -44,7 +44,7 @@ names every switched-off size gate with a copy-paste fix. This repo carries
 A task that stopped being necessary keeps its box and gains `**skip:** <reason>`; every later
 invocation reads that as not remaining. Never rename a task title. -->
 
-- [ ] 1. The checker gains a shared declaration-prefix helper and a new section 7 — the two optional
+- [x] 1. The checker gains a shared declaration-prefix helper and a new section 7 — the two optional
       caps and the two shape checks, each silent when undeclared — with the ratchet renumbered to 8,
       `measured` hoisted to module scope, and cases in `scripts/tests/check-agents-docs.test.sh`.
 - [ ] 2. `templates/agents-docs-README.md` states the two declarations, the trap's shape, the

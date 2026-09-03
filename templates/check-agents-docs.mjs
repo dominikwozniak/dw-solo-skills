@@ -88,41 +88,61 @@ const read = (path) => readFileSync(abs(path), "utf8")
 // 0 and this says 2 and 1. Neither pathology can approach a ceiling, so the readable number wins.
 const lineCount = (text) => text.replace(/\n$/, "").split("\n").length
 
+// Every prose-declared limit here shares one grammar: the label on one line, the value after it,
+// `*` and backticks stripped. Only that prefix-finding half is shared. Each caller keeps its own
+// regex, because `Budget:` rejects an unrecognised unit where `Ceiling:` reads lines and ignores the
+// rest — one merged pattern would have to be the looser of the two, and the strictness is tested.
+const declaredAfter = (text, label) => {
+  const line = text.split("\n").find((l) => l.includes(label))
+  if (line === undefined) return undefined
+  return line
+    .slice(line.indexOf(label) + label.length)
+    .replaceAll("*", "")
+    .replaceAll("`", "")
+}
+
+// `<N> lines / <M>[ KB]`: bare number = bytes, `KB` = ×1024. Anything else is malformed and returns
+// null rather than being guessed at — a budget nobody can parse is a budget nobody enforces, and
+// silently reading `10 MB` as 10 bytes would be worse than either. The caller reports it, because
+// only the caller knows which file made the declaration.
+const parseLinesBytes = (declared) => {
+  const parsed = /^\s*(\d[\d_]*)\s*lines?\s*\/\s*(\d[\d_]*)\s*(kb|b)?\s*(?:[,.;].*)?$/i.exec(
+    declared,
+  )
+  if (parsed === null) return null
+  const num = (raw) => Number(raw.replaceAll("_", ""))
+  return {
+    maxLines: num(parsed[1]),
+    maxBytes: num(parsed[2]) * (parsed[3]?.toLowerCase() === "kb" ? 1024 : 1),
+  }
+}
+
 const root = read("AGENTS.md")
 
 // ---------------------------------------------------------------------------
 // 1. The budget, read from the file's own prose declaration.
 // ---------------------------------------------------------------------------
-// One line, one place: `Budget: **120 lines / 10 KB**`. Bare number = bytes, `KB` = ×1024. Anything
-// else is malformed and REJECTED rather than guessed at — a budget nobody can parse is a budget
-// nobody enforces, and silently reading `10 MB` as 10 bytes would be worse than either.
-// Grep-grade on purpose: the declaration has to sit on one line, because that is the only shape a
-// reader can check as fast as the script can.
+// One line, one place: `Budget: **120 lines / 10 KB**`. Unlike the two layer caps below, this one is
+// mandatory — AGENTS.md loads in full in every session, so an undeclared budget is a failure rather
+// than an opt-out. Grep-grade on purpose: the declaration has to sit on one line, because that is the
+// only shape a reader can check as fast as the script can.
 const budgetReport = (() => {
-  const line = root.split("\n").find((l) => l.includes("Budget:"))
-  if (line === undefined) {
+  const declared = declaredAfter(root, "Budget:")
+  if (declared === undefined) {
     fail(
       "AGENTS.md declares no budget. Add one to its header prose, e.g. `Budget: **120 lines / 10 KB**`.",
     )
     return null
   }
-  const declared = line
-    .slice(line.indexOf("Budget:") + "Budget:".length)
-    .replaceAll("*", "")
-    .replaceAll("`", "")
-  const parsed = /^\s*(\d[\d_]*)\s*lines?\s*\/\s*(\d[\d_]*)\s*(kb|b)?\s*(?:[,.;].*)?$/i.exec(
-    declared,
-  )
-  if (parsed === null) {
+  const limit = parseLinesBytes(declared)
+  if (limit === null) {
     fail(
       `AGENTS.md's budget declaration is malformed: "${declared.trim()}". ` +
         "It must read `<N> lines / <M>[ KB]` — a bare number is bytes, KB is ×1024.",
     )
     return null
   }
-  const num = (raw) => Number(raw.replaceAll("_", ""))
-  const maxLines = num(parsed[1])
-  const maxBytes = num(parsed[2]) * (parsed[3]?.toLowerCase() === "kb" ? 1024 : 1)
+  const { maxLines, maxBytes } = limit
   const lines = lineCount(root)
   const bytes = Buffer.byteLength(root, "utf8")
   if (lines > maxLines || bytes > maxBytes)
@@ -199,6 +219,11 @@ const topics = existsSync(abs(topicDir))
 for (const entry of topics)
   if (!routedPaths.has(`${topicDir}/${entry}`))
     fail(`${topicDir}/${entry} has no row in the AGENTS.md Task Router.`)
+
+// The corpus as the cap and the ratchet both measure it. README.md is excluded from both: it is the
+// contract, shipped rather than written here, so a payload refresh must not read as the corpus
+// growing — nor as a repo breaching a cap it never wrote a word of.
+const measured = topics.filter((entry) => entry !== "README.md")
 
 // ---------------------------------------------------------------------------
 // 4. Command sync: every documented `pnpm <script>` is a real script.
@@ -287,14 +312,8 @@ if (linkTarget === null) {
 const ceilingReport = (() => {
   const readme = "docs/decisions/README.md"
   if (!existsSync(abs(readme))) return null
-  const line = read(readme)
-    .split("\n")
-    .find((l) => l.includes("Ceiling:"))
-  if (line === undefined) return null
-  const declared = line
-    .slice(line.indexOf("Ceiling:") + "Ceiling:".length)
-    .replaceAll("*", "")
-    .replaceAll("`", "")
+  const declared = declaredAfter(read(readme), "Ceiling:")
+  if (declared === undefined) return null
   const parsed = /^\s*(\d[\d_]*)\s*lines?\b/i.exec(declared)
   if (parsed === null) {
     fail(
@@ -323,7 +342,97 @@ const ceilingReport = (() => {
 })()
 
 // ---------------------------------------------------------------------------
-// 7. The topic-file ratchet — the corpus may shrink freely, and grows on purpose.
+// 7. The layer caps, and the one shape rule each declaration switches on.
+// ---------------------------------------------------------------------------
+// Two optional declarations, the root budget's grammar, each in the file that owns its layer:
+// `Topic budget: **90 lines / 4.5 KB**` on one line of docs/agents/README.md, which governs many
+// files, and `Term budget: **90 lines / 7 KB**` in CONTEXT.md's own header, which governs one.
+// Declaring nothing is neither checked nor mentioned — the bargain the record ceiling already
+// strikes, and the reason a repo can adopt this script without a red build on install day.
+//
+// A declaration also opts that layer into ONE shape rule. Shape is otherwise none of this script's
+// business, and stays that way for a repo that declares nothing. But a repo that has chosen a size
+// for a layer has already accepted an editor's discipline over it, and the two failures below are
+// exactly the ones a size number cannot prevent: each arrives one bullet at a time, each is worth a
+// few dozen words on its own, and neither is ever removed by the hand that adds the next one.
+const capReport = (declared, where, files) => {
+  if (declared === undefined) return null
+  const limit = parseLinesBytes(declared)
+  if (limit === null) {
+    fail(
+      `${where} is malformed: "${declared.trim()}". ` +
+        "It must read `<N> lines / <M>[ KB]` — a bare number is bytes, KB is ×1024.",
+    )
+    return null
+  }
+  const { maxLines, maxBytes } = limit
+  let worst = 0
+  for (const { path, text } of files) {
+    const lines = lineCount(text)
+    const bytes = Buffer.byteLength(text, "utf8")
+    if (lines > worst) worst = lines
+    if (lines > maxLines || bytes > maxBytes)
+      fail(
+        `${path} is ${lines} lines / ${bytes} B — over the declared ${maxLines}-line / ${maxBytes}-B ` +
+          "budget. One rule per bullet; delete what a hook or check now refuses outright, and " +
+          "replace a settled argument with a pointer at its decision record.",
+      )
+  }
+  return `${files.length} file(s), longest ${worst}/${maxLines} lines`
+}
+
+const topicReport = (() => {
+  const readme = `${topicDir}/README.md`
+  if (!existsSync(abs(readme))) return null
+  const declared = declaredAfter(read(readme), "Topic budget:")
+  if (declared === undefined) return null
+  const files = measured.map((entry) => ({
+    path: `${topicDir}/${entry}`,
+    text: read(`${topicDir}/${entry}`),
+  }))
+  // A gotcha ordered newest-first invites a date prefix as the marker of that order. The order is
+  // positional — the top of the list IS the newest — so the date buys nothing and costs the shape:
+  // once an entry is stamped with the day it was learned it reads as a log, and a log is appended to
+  // rather than rewritten. That is the whole growth mechanism, in one character class.
+  for (const { path, text } of files)
+    for (const [, date] of text.matchAll(/^\s*- \*\*(\d{4}-\d{2}-\d{2})/gm))
+      fail(
+        `${path} has a bullet dated ${date} — a gotcha is an undated rule bullet of at most two ` +
+          "lines: do or never X, one clause of why, a pointer. What happened and when belongs in " +
+          "the commit and the archived change doc.",
+      )
+  return capReport(declared, `${readme}'s topic budget declaration`, files)
+})()
+
+const termReport = (() => {
+  const context = "CONTEXT.md"
+  if (!existsSync(abs(context))) return null
+  const text = read(context)
+  const declared = declaredAfter(text, "Term budget:")
+  if (declared === undefined) return null
+  // A term block runs from its `- **` to the next one or to a blank line, which is what a Markdown
+  // reader sees as one entry however the formatter wrapped it. Two physical lines is a definition;
+  // the third line is where the rationale starts, and rationale belongs in a decision record.
+  for (const block of text.split(/\n(?=- \*\*|\n)/)) {
+    // Trimmed at BOTH ends before counting. The split leaves the blank line that separated two terms
+    // at the head of the second block, so trimming only the tail measured every spaced-out entry one
+    // line long — which fails a two-line term for having a neighbour.
+    const body = block.trim()
+    if (!body.startsWith("- **")) continue
+    const lines = lineCount(body)
+    if (lines <= 2) continue
+    const term = /^- \*\*(.+?)\*\*/.exec(body)?.[1] ?? "a term"
+    fail(
+      `${context}: "${term}" is ${lines} lines — a term is one bullet of at most two lines saying ` +
+        "what the word means. Rewrite the line rather than adding a second definition beside it, " +
+        "and leave the reasoning to docs/decisions/.",
+    )
+  }
+  return capReport(declared, `${context}'s term budget declaration`, [{ path: context, text }])
+})()
+
+// ---------------------------------------------------------------------------
+// 8. The topic-file ratchet — the corpus may shrink freely, and grows on purpose.
 // ---------------------------------------------------------------------------
 // docs/agents/ has no honest per-file ceiling: a topic is as long as its subject, so any number would
 // be a guess. The baseline records what the corpus IS instead, and the check refuses a silent
@@ -331,14 +440,15 @@ const ceilingReport = (() => {
 // chosen, so no threshold can be set too high.
 //
 // Words, not lines or bytes: a formatter that reflows Markdown moves both of those on a pure reformat
-// and moves no words. README.md is excluded — it is the contract, shipped rather than written here, so
-// a payload refresh must not read as the corpus growing.
+// and moves no words.
 //
-// Opt-in like the ceiling: no baseline file means no check and no mention. Seed one with
-// `--update-baseline`, which is also how a repo adopts this after the fact.
+// Opt-OUT, unlike the caps above: dw-init seeds the baseline as the last action of the scaffold, so a
+// repo starts ratcheted and switches this off by deleting the file. A ratchet has nothing to opt out
+// of on install day — it records what the corpus already is, so it is green the moment it exists,
+// which is the whole reason it can be the default where a chosen number cannot. A repo adopting this
+// script after the fact seeds the same file the same way, with `--update-baseline`.
 const BASELINE = "docs/agents/corpus.baseline.json"
 const corpusReport = (() => {
-  const measured = topics.filter((entry) => entry !== "README.md")
   const perFile = {}
   let words = 0
   for (const entry of measured) {
@@ -347,7 +457,7 @@ const corpusReport = (() => {
     words += count
   }
   if (update) {
-    // A re-record is not a green light. Passes 1 to 6 have already run, and exiting 0 here would let
+    // A re-record is not a green light. Passes 1 to 7 have already run, and exiting 0 here would let
     // `--update-baseline` in a repo that is failing something else report success — the one thing this
     // flag must never do, since it is reached for precisely when the build is red.
     if (failures.length > 0) {
@@ -437,5 +547,7 @@ if (failures.length > 0) {
 console.log(
   `agents:check — ${repoRoot}: ${budgetReport}; ${topics.length} topic file(s), ${routedPaths.size} routed path(s)` +
     `${corpusReport === null ? "" : `; ${corpusReport}`}` +
+    `${topicReport === null ? "" : `; topics ${topicReport}`}` +
+    `${termReport === null ? "" : `; terms ${termReport}`}` +
     `${ceilingReport === null ? "" : `; ${ceilingReport}`}.`,
 )

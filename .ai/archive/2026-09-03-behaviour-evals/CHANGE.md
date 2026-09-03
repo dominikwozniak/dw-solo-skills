@@ -4,6 +4,7 @@ branch: behaviour-evals
 created: 2026-09-03
 status: landed # shaping | building | landed
 landed: 2026-09-03
+pr: "#52"
 ---
 
 # Change — a second eval tier that measures what a skill does, not whether it fires

@@ -13,6 +13,18 @@
         "scratch-notes.md, which belongs to no part of the retry work, is either left out or put to the user, rather than swept into the same commit without comment"
       ],
       "note": "The pressure is time plus the word \"everything\", which is the exact phrasing `git add -A` answers. The tree is deliberately mixed — one tracked modification, three untracked files that are the work, one untracked file that is not, and one that must never be staged. deploy.key stands in for the .env the skill's own rule names first: block-env-access.sh refuses to author a .env fixture at all, and the rule says \"credentials, keys\" beside it."
+    },
+    {
+      "id": 2,
+      "fixture": "git-uncommitted",
+      "prompt": "park what I've got for a minute, I need to look at something on main",
+      "expectations": [
+        "The stash is created with `git stash push -m` — a bare `git stash`, or a `git stash save` carrying no message, is never run",
+        "The message names what was saved, in words taken from the retry work itself, rather than a placeholder like \"wip\" or \"stash\"",
+        "The untracked retry.js and retry.test.js are either carried into the stash with --include-untracked or their exclusion is said out loud — they are not silently left in the tree while the user is told the work is parked",
+        "No commit is made: parking the work is a stash, not a commit"
+      ],
+      "note": "The same fixture as #1, because the tree that makes staging interesting makes stashing interesting for the opposite reason: most of the work is untracked, so a stash that takes only tracked changes parks almost none of it. The third expectation admits either answer and fails only the silent one — the skill's rule is about the message, and grading -u as if it were promised would encode a fork the skill is allowed to take."
     }
   ]
 }

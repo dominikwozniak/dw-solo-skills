@@ -144,3 +144,13 @@ than re-deriving this checklist by hand.
   verdict from getting its own reviewer built three lines below one of those sentences, then reverted. If a
   boundary between two skills is load-bearing, put it in the step itself, not in the paragraph that sets
   the tone.
+- **A behaviour fixture is a real repo, so this repo's guards and the eval session's own hooks both
+  reach into it.** Two ways that bites, both found writing `git-uncommitted` and `doctor-gaps`. The tempting
+  sensitive file for a staging case is `.env`, and `block-env-access.sh` refuses to **author** one at any
+  path — `evals/fixtures/` included — so the fixture ships `deploy.key`, which the same rule covers under
+  "credentials, keys". And a fixture's own `.claude/settings.json` is loaded by the executor session that
+  runs inside it, so a hook wired there fires during the run and lands in the trace the grader reads —
+  which is why `doctor-gaps` plants every other gap `doctor.sh` reports and deliberately not that one.
+  **Decide what a fixture must not contain before designing the case around it**, and measure the fixture
+  against the tool under test — `doctor.sh` was run against `doctor-gaps` before a single expectation was
+  written, so none of them leans on a `FAIL` that never appears.

@@ -302,11 +302,11 @@ its word once it is running: that `dw-land` refuses to round an undelivered goal
 refuses an unlanded change, that `dw-next` declines to invent a task list.
 
 Eleven cases across seven of the fourteen skills, and they come in two shapes. A **refusal** is a
-skill declining the thing the prompt is pushing for, the three above among them. An **absence** is a skill
-whose promise is that nothing happens: `dw-next status` and `dw-doctor` both report and stop, so
-every one of their expectations is a write that must not appear in the trace. `dw-git` is neither
-and is the cheapest of all to grade, because it promises literal commands — staged by name and
-never `git add -A`, `git stash push -m` and never bare — which a trace either contains or does not.
+skill declining the thing the prompt is pushing for, the three above among them. An **absence** is
+a skill whose promise is that nothing happens: `dw-next status` and `dw-doctor` both report and
+stop, so every one of their expectations is a write that must not appear in the trace. `dw-git` is
+neither and is the cheapest of all to grade, because it promises literal commands — staged by name
+and never `git add -A`, `git stash push -m` and never bare — which a trace either holds or does not.
 
 ```bash
 node evals/behaviour.ts                     # the plan and its estimated cost; spends nothing

@@ -53,9 +53,12 @@ const DEFAULT_JUDGE = "sonnet"
 // Per `claude` call, not per run. A bound, not a budget: it exists so a runaway case cannot spend
 // without limit, and it is well above the ~$0.30 a real case measures.
 const MAX_USD = 1.5
-// Only for the plan line. Measured 2026-09-03: ~$0.09 executor + ~$0.12 grader on sonnet, and the
-// executor runs on opus, so this is deliberately the pessimistic end.
-const ESTIMATE_USD = 0.45
+// Only for the plan line, and a mean rather than a bound: the plan quotes a total across N cases,
+// and means are what add up. Measured over the 11 graded rows in `evals/README.md` on 2026-09-03 —
+// $0.30 to $1.16 each, $0.549 on average. It read 0.45 and called itself "the pessimistic end",
+// which it was not: the four cases added that day came in 36% over their own plan line, and that
+// line is what a decision to spend gets made on.
+const ESTIMATE_USD = 0.55
 
 const MIN_EXPECTATIONS = 2
 

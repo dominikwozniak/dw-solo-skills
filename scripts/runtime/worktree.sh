@@ -15,7 +15,7 @@
 #   worktree.sh remove <slug>          remove the worktree, delete its branch, prune
 #
 # Everything create does past `git worktree add` is best-effort and speaks only on stderr, so
-# stdout stays the path and nothing else — dw-start parses it.
+# stdout stays the path and nothing else — dw-shape parses it.
 #
 # remove uses `git branch -D`: after a squash-merge the branch tip is never an ancestor of
 # the default branch, so `-d` would always refuse. On the worktree itself `--force` is reached for

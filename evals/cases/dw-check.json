@@ -26,8 +26,9 @@
       "note": "The timing boundary. Anything mentioning finishing or promoting belongs to dw-land."
     },
     {
-      "prompt": "save this with a sensible message and push it",
-      "owner": "dw-git"
+      "prompt": "this change is finished — give the verdict, promote what is worth keeping and open its PR",
+      "owner": "dw-land",
+      "note": "Replaced a plain-git negative when dw-git left the corpus: a bare commit-and-push now routes to no skill at all, which the eval reads as blank, so the near-miss is the closing verdict that also reads a diff."
     },
     {
       "prompt": "carry on and build the next item on the list",

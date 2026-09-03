@@ -31,7 +31,7 @@ only what the change wrote. Every row has to be fixable by changing the new code
 a wide read from becoming a tour of the repo's older sins.
 
 Scope comes from git, never from a change doc. Bare takes the merge-base against the default branch —
-both the branch and the ref of it resolved the way `dw-git` does — and reads the files
+the ref `bash "${CLAUDE_PLUGIN_ROOT}/scripts/base-ref.sh"` prints — and reads the files
 `git diff --name-only <base>...HEAD` names. `$ARGUMENTS` narrows or replaces that: a path takes that
 subtree, a ref range takes that range, a PR number takes that PR's files. It reads **no `.ai/`
 artifact at all** — no lane, no `CHANGE.md`, no goal — so it runs in a repo that has never seen this
@@ -125,7 +125,7 @@ plainly, because a pass that always finds something is a pass that invents somet
 ### 5. Fix the rows you were given, and only those
 
 The rows you were not given were declined, not deferred — do not carry them into the commit or
-re-raise them after. Commit the way `dw-git` does: independent deletions apart, related ones together.
+re-raise them after. Commit per `## Git conventions`: independent deletions apart, related ones together.
 Then run the project's tests, which matters more here than the edit size suggests — every remedy in
 this table is a deletion or a re-pointed call, the one shape of edit that compiles cleanly and fails
 at runtime. Offer to run the pass again afterwards, since a deletion often strands the next thing.

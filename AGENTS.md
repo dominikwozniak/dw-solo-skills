@@ -35,7 +35,7 @@ absolute. Why it works, and what a plugin must own for it to keep working:
 ## The loop
 
 ```
-dw-grill? → dw-shape → dw-start? → dw-next ↺ → dw-check? → dw-land → dw-ship
+dw-grill? → dw-shape → dw-next ↺ → dw-check? → dw-land → dw-ship
   fuzzy      plan it    worktree     build        gate      close+PR    merge
 ```
 
@@ -71,7 +71,7 @@ rows — read all of them. Explore on your own only what no row covers.
 | task                                                                                     | read                                |
 | ---------------------------------------------------------------------------------------- | ----------------------------------- |
 | adding/renaming a skill, the symlink canon, plugin versions, evals cases                 | `docs/agents/skills-and-plugins.md` |
-| a `dw-start` worktree behaving unlike the main tree                                      | `docs/agents/worktrees.md`          |
+| a worktree behaving unlike the main tree                                                 | `docs/agents/worktrees.md`          |
 | commit, push, PR, sync, stash · a stray commit, rewinding a branch, a squash-merged base | `docs/agents/git-history.md`        |
 | lint/format, the hooks, self-tests, the pnpm/Node pins, CI, the reviewer                 | `docs/agents/tooling.md`            |
 | the loop, `.ai/work/`, what a `CHANGE.md` is and when it leaves                          | `docs/agents/change-artifacts.md`   |

@@ -23,7 +23,7 @@ grep -l "^branch: $(git rev-parse --abbrev-ref HEAD)$" .ai/work/*/CHANGE.md 2>/d
 ```
 
 One match — that's it. Several — list them and ask. **None — there is no change on this branch:**
-point at `dw-shape` (or `dw-start` for a worktree) and stop; never invent a task list to have
+point at `dw-shape` and stop; never invent a task list to have
 something to do.
 
 ## Workflow
@@ -69,7 +69,7 @@ Flip the box — the tick and skip convention lives in the `CHANGE.md` template 
 `status: building` on the first tick. `**skip:**` is for a task that stopped being necessary,
 never for one that is merely hard. Append to Notes only what a future session needs, one line per
 finding — the diff holds the detail. `git rm` a consumed `HANDOFF.md` in the same commit. Commit
-the way `dw-git` does: one task, one commit, staged by name.
+per `## Git conventions`: one task, one commit, staged by name.
 
 ### 5. Next task, or stop
 

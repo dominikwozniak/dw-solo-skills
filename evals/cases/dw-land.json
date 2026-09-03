@@ -22,9 +22,9 @@
       "note": "The timing boundary from the other side. Mid-build is never dw-land."
     },
     {
-      "prompt": "push it and open the pull request",
-      "owner": "dw-git",
-      "note": "Load-bearing since dw-land started ending with an open PR: the closing pass owns the PR of a change it just graded, never a bare push-and-PR. Adding \"open\" to dw-land's description diluted the only term dw-git matched here and handed this prompt to dw-shape — fixed by dw-git's description naming \"pull request\" instead of \"PR\"."
+      "prompt": "hand my work-in-progress diff to an outside reviewer for a fast quality gate",
+      "owner": "dw-check",
+      "note": "Replaced \"push it and open the pull request\" when dw-git left the corpus. With no git skill a bare push-and-PR routes to nothing, and in this lane the closing pass owning that ask is the intended answer, not a steal — dw-ship refuses an unlanded change. The near-miss that still matters is the mid-build look, which must stay dw-check's."
     },
     {
       "prompt": "record the goal and the steps for a feature I have not started yet",

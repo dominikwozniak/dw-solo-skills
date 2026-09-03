@@ -13,21 +13,21 @@ everything after is teardown.
 
 ## What it reads
 
-The branch state, the PR's checks, and `## Git conventions` — every git mechanic here is done the
-way `dw-git` does it. It writes no `.ai/` artifact: its output is a merged PR and a clean tree.
+The branch state, the PR's checks, and `## Git conventions`, which every git mechanic here
+follows. It writes no `.ai/` artifact: its output is a merged PR and a clean tree.
 
 ## Workflow
 
 ### 1. Preconditions
 
-- Clean tree (`git status --porcelain`) — leftover work gets committed the way `dw-git` does, or
+- Clean tree (`git status --porcelain`) — leftover work gets committed per `## Git conventions`, or
   deliberately stashed; never shipped around.
 - **Landed first, and that is a refusal.** A `CHANGE.md` still matching this branch (the same grep
   `dw-next` uses) means the change isn't closed: say so, say `/dw-land`, and **stop**.
 
 ### 2. Pick the path
 
-- Already on the default branch (resolved the way `dw-git` does) and it isn't protected → **fast
+- Already on the default branch (the one `## Git conventions` names) and it isn't protected → **fast
   path**: plain `git push` is the whole ship — and this change's first CI, so watch any result
   `dw-land` left pending on the push.
 - Any other branch → the merge below.

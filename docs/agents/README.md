@@ -13,7 +13,7 @@ Three tiers, three owners:
 - **Root `AGENTS.md`**: only what applies to _every task regardless of what you touch_ — the layout
   rule, the loop, the Commands block, the Task Router,
   and the two blocks the tooling reads directly: `## Solo lane` (whose `- **Lint command**:` line the
-  `lint-on-edit` hook greps) and `## Git conventions` (which `dw-git` applies). A topic-scoped rule goes
+  `lint-on-edit` hook greps) and `## Git conventions` (which every commit, push and PR follows). A topic-scoped rule goes
   into a topic file and earns a router row instead. It declares its own hard budget in its header prose
   and `pnpm validate:docs` enforces exactly what that line says, so the number lives there and is not
   restated here. The budget caps only that one file; `docs/agents/*.md` are unbudgeted, which is where

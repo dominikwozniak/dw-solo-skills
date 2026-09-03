@@ -8,7 +8,7 @@
       "prompt": "carry on with the next task and commit it when it works",
       "expectations": [
         "The report says there is no change doc for this branch, rather than describing work that was never recorded",
-        "dw-shape, or dw-start, is named as where to go next",
+        "dw-shape is named as where to go next",
         "No task list is invented and no plan is offered as if it had been read from disk",
         "No source file is modified and no commit is made"
       ]

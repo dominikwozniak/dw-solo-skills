@@ -6,7 +6,7 @@
 
 <p align="center">
   <img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-111111?style=flat-square">
-  <img alt="14 skills" src="https://img.shields.io/badge/skills-14-111111?style=flat-square">
+  <img alt="12 skills" src="https://img.shields.io/badge/skills-12-111111?style=flat-square">
   <img alt="3 plugins" src="https://img.shields.io/badge/plugins-3-111111?style=flat-square">
   <img alt="Claude Code plugin" src="https://img.shields.io/badge/Claude_Code-plugin-111111?style=flat-square">
 </p>
@@ -30,8 +30,8 @@ smallest weight that still works:
   sweeps the rest at close — gotchas to the routed topic file, stale pointers rewritten, follow-ups
   to `.ai/backlog/` — before archiving the change doc (`.ai/archive/`). Without that you accumulate
   stale specs and lose the decisions worth keeping.
-- **Commits drift from your conventions** — the repo's own `## Git conventions` are applied instead
-  of generic defaults.
+- **Commits drift from your conventions** — the scaffold ships a `## Git conventions` block every
+  session loads in full, and the hooks refuse what a regex can decide; no git skill sits between.
 
 ## ▸ Quick start
 
@@ -50,8 +50,7 @@ A task may match several rows — read all that apply. `⭑` = explicit-invoke o
 never auto-fires). The phrases that trigger each skill live in its own `description`, and the
 arguments it takes in its own `argument-hint` — neither is copied here.
 
-**Explicit-only skills**: `dw-start`, `dw-ship`, `dw-init`, `dw-grain`, `dw-handoff`, `dw-prune` and
-`dw-unslop`.
+**Explicit-only skills**: `dw-ship`, `dw-init`, `dw-grain`, `dw-handoff`, `dw-prune` and `dw-unslop`.
 Marked `⭑` in the router; they never auto-fire — say the name. Being invisible to the model, no other
 skill can delegate to one; another skill suggesting you run it is the route in.
 
@@ -61,29 +60,23 @@ skill can delegate to one; another skill suggesting you run it is the route in.
 <p align="center">
   <img
     src="docs/assets/dw-solo-skills-workflow.svg"
-    alt="Workflow: optional dw-grill, dw-shape, optional dw-start, iterative dw-next, optional dw-check, dw-land, then dw-ship"
+    alt="Workflow: optional dw-grill, dw-shape, iterative dw-next, optional dw-check, dw-land, then dw-ship"
     width="100%"
   >
 </p>
 
-Parallel changes: queue the ideas as `.ai/backlog/` entries, then one worktree + session each via
-`dw-start` or `claude -w <slug>` — `dw-shape` expands the entry on its own branch.
+Parallel changes: queue the ideas as `.ai/backlog/` entries, then one worktree + session each —
+`dw-shape` asked for a worktree, or `claude -w <slug>` — and `dw-shape` expands the entry on its own
+branch.
 
-| Skill                                      | Task                                                           | What you get                                                             |
-| ------------------------------------------ | -------------------------------------------------------------- | ------------------------------------------------------------------------ |
-| [`dw-grill`](skills/dw-grill/SKILL.md)     | Interview a fuzzy idea into decisions — max five questions     | shared understanding (writes nothing)                                    |
-| [`dw-shape`](skills/dw-shape/SKILL.md)     | Synthesize it into one goal + decisions + task checklist       | `.ai/work/<date>-<slug>/CHANGE.md` · backlog                             |
-| [`dw-start`](skills/dw-start/SKILL.md) `⭑` | Open a queued change: worktree + branch, shape there, build    | `.claude/worktrees/<slug>` on branch `<slug>`                            |
-| [`dw-next`](skills/dw-next/SKILL.md)       | Build step _and_ resume point (`status` reports and stops)     | code + ticked box + commit                                               |
-| [`dw-check`](skills/dw-check/SKILL.md)     | Fast optional QA gate — delegates by default, else self-review | findings at `file:line`, fixed in-session                                |
-| [`dw-land`](skills/dw-land/SKILL.md)       | One thin verdict, then promote, archive and open the PR        | `docs/decisions/` · `CONTEXT.md` · backlog · `.ai/archive/` · an open PR |
-| [`dw-ship`](skills/dw-ship/SKILL.md) `⭑`   | Squash-merge that PR, tear the worktree down, sync             | merged default branch, clean tree                                        |
-
-**Anytime**
-
-| Skill                              | Task                                                     | What you get                 |
-| ---------------------------------- | -------------------------------------------------------- | ---------------------------- |
-| [`dw-git`](skills/dw-git/SKILL.md) | All git ops — commit / push / PR / sync / branch / stash | commits / PR per `AGENTS.md` |
+| Skill                                    | Task                                                                                | What you get                                                              |
+| ---------------------------------------- | ----------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| [`dw-grill`](skills/dw-grill/SKILL.md)   | Interview a fuzzy idea into decisions — max five questions                          | shared understanding (writes nothing)                                     |
+| [`dw-shape`](skills/dw-shape/SKILL.md)   | Synthesize it into one goal + decisions + task checklist — in a worktree when asked | `.ai/work/<date>-<slug>/CHANGE.md` · backlog · `.claude/worktrees/<slug>` |
+| [`dw-next`](skills/dw-next/SKILL.md)     | Build step _and_ resume point (`status` reports and stops)                          | code + ticked box + commit                                                |
+| [`dw-check`](skills/dw-check/SKILL.md)   | Fast optional QA gate — delegates by default, else self-review                      | findings at `file:line`, fixed in-session                                 |
+| [`dw-land`](skills/dw-land/SKILL.md)     | One thin verdict, then promote, archive and open the PR                             | `docs/decisions/` · `CONTEXT.md` · backlog · `.ai/archive/` · an open PR  |
+| [`dw-ship`](skills/dw-ship/SKILL.md) `⭑` | Squash-merge that PR, tear the worktree down, sync                                  | merged default branch, clean tree                                         |
 
 **Off-loop** — the `dw-solo-extras` plugin; reached for beside the loop, not on the way from shape to
 ship.

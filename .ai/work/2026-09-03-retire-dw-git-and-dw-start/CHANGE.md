@@ -41,7 +41,7 @@ invocation reads that as not remaining. Never rename a task title. -->
 - [x] 2. The conventions block absorbs `dw-git`'s judgment: `templates/AGENTS.md` grows the rules
       no hook checks; root `AGENTS.md` keeps rules at ≤ 119 lines; `docs/agents/git-history.md`
       gains `## Procedures` and a wider router row; `doctor.sh` drops its two `dw-git` strings
-- [ ] 3. The retirement commit: delete both skills, their symlinks, `evals/cases/dw-git.json`,
+- [x] 3. The retirement commit: delete both skills, their symlinks, `evals/cases/dw-git.json`,
       `evals/behaviour/dw-git.json`, `evals/fixtures/git-uncommitted/`, the dw-git backlog entry;
       `dw-shape` absorbs the worktree fork and the bare-lists-backlog step; every "the way `dw-git`
       does" and `dw-start` pointer across skills, README, AGENTS.md, templates, docs/agents,
@@ -78,3 +78,13 @@ invocation reads that as not remaining. Never rename a task title. -->
 conventions`, a repo already running without a git skill
 
 ## Notes
+
+- Routing after the retirement: 19/27 = 70% rank-1, up from 21/31 = 68%. Removing `dw-git` (4/5)
+  alone would have left 17/26 = 65%, under the floor; the recovery is `dw-shape`'s description
+  gaining the words its asks actually use — "write the change doc" — which also won back the
+  pre-existing miss "write up … as a change doc". Dropping "turn" from it cost a prompt at once;
+  restored. Every other skill's rank-1 is identical to 2026-09-03.
+- The four negatives that named `dw-git` as owner were re-owned, not deleted: a plain-git ask now
+  routes to nothing, which the eval reads as blank, so each file's near-miss became the sibling
+  that reads the same artifact. `dw-land`'s "push it and open the pull request" was load-bearing
+  against `dw-git`; with no git skill the closing pass owning that ask is the intended answer.

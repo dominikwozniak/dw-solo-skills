@@ -103,7 +103,7 @@ blocked "body-but-no-trailer" 'git commit -m "fix(hook): a thing" -m "why it was
 
 echo "declared pattern + declared trailer — allowed (exit 0):"
 allowed "single-m-with-trailer" "git commit -m \"$GOOD_MSG\""
-allowed "repeated-m-trailer-last" 'git commit -m "feat(dw-git): a thing" -m "why it was done" -m "Co-Authored-By: Someone <noreply@example.com>"'
+allowed "repeated-m-trailer-last" 'git commit -m "feat(dw-next): a thing" -m "why it was done" -m "Co-Authored-By: Someone <noreply@example.com>"'
 allowed "scopeless-type" "git commit -m \"docs: a thing
 
 Co-Authored-By: Someone <noreply@example.com>\""

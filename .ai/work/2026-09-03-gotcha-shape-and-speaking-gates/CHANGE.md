@@ -51,7 +51,7 @@ invocation reads that as not remaining. Never rename a task title. -->
       positional order, and the ratchet's same-commit bargain.
 - [x] 3. `skills/dw-land/SKILL.md` — three edits by replacement: the subtractive half of the lead-in,
       the `CONTEXT.md` bullet cap, and the gotcha's shape plus the baseline re-record.
-- [ ] 4. `dw-doctor` reports each switched-off size gate as `report info` with a copy-paste fix, plus
+- [x] 4. `dw-doctor` reports each switched-off size gate as `report info` with a copy-paste fix, plus
       one sentence in its `SKILL.md` and cases in `scripts/tests/doctor.test.sh`.
 - [ ] 5. `skills/dw-init/SKILL.md` — the `{"words": 0}` trap, the stale "empty `docs/agents/`" prose,
       the seed's position as the last action, and the forked-checker diff gate.

@@ -151,6 +151,17 @@ repo="$(scaffold '120 lines / 40')"
 expect_rc "over-byte-budget-exit-1" 1 "$(check "$repo")"
 expect_says "over-byte-budget-named" "40-B budget"
 
+# A fractional KB is the natural way to write a per-file cap, and the integer-only pattern used to
+# read `4.5 KB` as FOUR BYTES: it matched the 4, and the trailing-prose clause swallowed `.5 KB`.
+repo="$(scaffold '120 lines / 4.5 KB')"
+expect_rc "fractional-kb-exit-0" 0 "$(check "$repo")"
+expect_says "fractional-kb-multiplies" "/4608 B"
+
+# Half a line means nothing, so the line half stays integer-only and says so rather than truncating.
+repo="$(scaffold '120.5 lines / 10 KB')"
+expect_rc "fractional-lines-exit-1" 1 "$(check "$repo")"
+expect_says "fractional-lines-called-malformed" "malformed"
+
 # An unrecognised unit must be REJECTED, not read as bare bytes — `10 MB` silently meaning 10 bytes
 # is the failure mode this parser is strict to avoid.
 repo="$(scaffold '120 lines / 10 MB')"

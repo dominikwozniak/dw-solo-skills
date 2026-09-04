@@ -105,15 +105,19 @@ const declaredAfter = (text, label) => {
 // null rather than being guessed at — a budget nobody can parse is a budget nobody enforces, and
 // silently reading `10 MB` as 10 bytes would be worse than either. The caller reports it, because
 // only the caller knows which file made the declaration.
+//
+// The byte half takes a decimal, the line half does not. `4.5 KB` is the natural way to write a
+// per-file cap and used to parse as FOUR BYTES: the integer pattern matched the `4`, and the trailing
+// `[,.;].*` — there to allow prose after the declaration — swallowed `.5 KB` as that prose. Half a
+// line means nothing, so `120.5 lines` stays malformed and is told so.
 const parseLinesBytes = (declared) => {
-  const parsed = /^\s*(\d[\d_]*)\s*lines?\s*\/\s*(\d[\d_]*)\s*(kb|b)?\s*(?:[,.;].*)?$/i.exec(
-    declared,
-  )
+  const parsed =
+    /^\s*(\d[\d_]*)\s*lines?\s*\/\s*(\d[\d_]*(?:\.\d+)?)\s*(kb|b)?\s*(?:[,.;].*)?$/i.exec(declared)
   if (parsed === null) return null
   const num = (raw) => Number(raw.replaceAll("_", ""))
   return {
     maxLines: num(parsed[1]),
-    maxBytes: num(parsed[2]) * (parsed[3]?.toLowerCase() === "kb" ? 1024 : 1),
+    maxBytes: Math.round(num(parsed[2]) * (parsed[3]?.toLowerCase() === "kb" ? 1024 : 1)),
   }
 }
 

@@ -45,9 +45,10 @@ scaffolded repo carries the record. Personal, cross-project notes belong in `~/.
 `.gitignore` still names `CLAUDE.local.md` so a stray one is never committed, and the hooks still
 read it when they find one, so a repo scaffolded before this keeps working untouched.
 
-Also absent: an empty `docs/agents/`. The Task Router ships with rows for what the scaffold actually
-creates, and the topic layer grows only when `dw-land` promotes into it — a new topic file and its
-router row in the same commit.
+`docs/agents/` ships with its README — the layer's contract, and the file declaring its per-file
+budget — and no topic files. The Task Router ships with rows for what the scaffold actually creates,
+and the topic layer grows only when `dw-land` promotes into it: a new topic file and its router row in
+the same commit, with the corpus baseline re-recorded beside them.
 
 Templates come from `${CLAUDE_PLUGIN_ROOT}/templates/` — this lane's own payload.
 (`${CLAUDE_PLUGIN_ROOT}` is the env var Claude Code substitutes to this plugin's install dir.)
@@ -116,7 +117,8 @@ light.
   A legacy single-file `.ai/BACKLOG.md`, if present, is named at the gate: offer to split it into
   per-file entries, never clobber or silently keep it.
 - `CONTEXT.md` — if absent, create it with a one-line purpose statement (this project's glossary;
-  terms only, no implementation detail) and nothing else. If it exists, leave it alone.
+  terms only, no implementation detail) and a `Term budget: **90 lines / 7 KB**.` line, which caps the
+  file and holds each term to one bullet of two lines. Nothing else. If it exists, leave it alone.
 - `VERIFY.md` — if absent, create it the same way, and write exactly this much: a one-line purpose
   statement, the two invariants below, then the three headings with **one line under each naming what
   belongs there**. It holds what a green suite does not — **Launch** (the command that starts this
@@ -161,13 +163,23 @@ light.
 - `scripts/check-agents-docs.mjs` — copy `${CLAUDE_PLUGIN_ROOT}/templates/check-agents-docs.mjs`
   verbatim. Zero dependencies, Node built-ins only, and it finds the repo root by walking up from its
   own location to the nearest `AGENTS.md` — so `scripts/` is the conventional home, not a required
-  one. It checks seven things: the declared budget, that no `{{…}}` placeholder survived, Task Router
-  coverage and path sync, that every `pnpm <script>` named in `AGENTS.md` exists, that `CLAUDE.md` is a
-  symlink, and two size gates over the layers it routes to — a `Ceiling:` per decision record, and a
-  word ratchet over `docs/agents/`. Both are **size only and opt-in**: shape stays editorial, because a
-  commit blocked over a record's shape teaches you to stop writing them, and a missing declaration or
-  baseline is neither checked nor mentioned. **Run it once with `--update-baseline`** at the end of the
-  scaffold to seed `docs/agents/corpus.baseline.json`.
+  one. It checks the always-loaded contract — the declared budget, that no `{{…}}` placeholder
+  survived, Task Router coverage and path sync, that every `pnpm <script>` named in `AGENTS.md` exists,
+  that `CLAUDE.md` is a symlink — plus the size of the layers it routes to: a `Ceiling:` per decision
+  record, a `Topic budget:` per topic file, a `Term budget:` over `CONTEXT.md`, and a word ratchet over
+  `docs/agents/` as a whole. The three declared caps are **opt-in**, and each switches on the one
+  shape rule a number cannot express for its layer — no dated gotcha bullet, no term over two lines;
+  a missing declaration is neither checked nor mentioned, because a gate that lights an existing
+  folder red on install day is one you switch off rather than meet. The ratchet is the **opt-out** one:
+  it records what a corpus already is, so it is green the day it is seeded, and a repo switches it off
+  by deleting the file.
+  - **An existing `scripts/check-agents-docs.mjs` is left alone**, with its diff against the template
+    shown at the gate. A repo that patched the checker patched it for a reason, and the rule the
+    `AGENTS.md` bullet states holds here too: never overwrite a file someone edited.
+  - **Seed the baseline last.** `--update-baseline` refuses to write while any other check fails, so
+    `node scripts/check-agents-docs.mjs --update-baseline` runs once every path above exists. A fresh
+    scaffold records zero words, and the first topic file `dw-land` promotes pays one visible
+    re-record — the bargain, not a bug.
   - `{{AGENTS_CHECK_COMMAND}}` is how `AGENTS.md`'s own header names its enforcement. With a
     `package.json`, add `"agents:check": "node scripts/check-agents-docs.mjs"` to `scripts` and render
     `pnpm agents:check`; where the repo has an aggregate gate script (`check`, `verify`), add it to

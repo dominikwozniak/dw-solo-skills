@@ -1,0 +1,9 @@
+{
+  "name": "demo-service",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test",
+    "agents:check": "node scripts/check-agents-docs.mjs"
+  }
+}

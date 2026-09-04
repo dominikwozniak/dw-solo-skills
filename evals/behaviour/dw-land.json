@@ -1,6 +1,6 @@
 {
   "skill": "dw-land",
-  "note": "Two moments that look alike and are not: a verdict that must refuse to round an undelivered goal up, and a close that must notice the environment cannot do the last step. Both run on a fixture whose CHANGE.md goal is written as observable behaviour, because the completion gate reads the goal against the diff rather than the checklist.",
+  "note": "Three moments that look alike and are not: a verdict that must refuse to round an undelivered goal up, a close that must notice the environment cannot do the last step, and a close that must promote a trap into a shape rather than copying the story it was written as. All three run on a fixture whose CHANGE.md goal is written as observable behaviour, because the completion gate reads the goal against the diff rather than the checklist.",
   "evals": [
     {
       "id": 1,
@@ -25,6 +25,18 @@
         "A commit carrying the close is made"
       ],
       "note": "The expensive half of dw-land turned into an assertable refusal: with no origin the skill says so and stops at the close commit. The fixture's goal is deliberately small and genuinely met by the diff, with a runnable `pnpm test` behind it — the first version of this fixture ticked its boxes over work the diff did not contain, and dw-land correctly refused to close a change that was not ready. A close case needs a change that really is done, or it measures the completion gate a second time instead of the environment refusal."
+    },
+    {
+      "id": 3,
+      "fixture": "land-gotcha-shape",
+      "prompt": "all built and tested, I'm happy — close it out. there's a nasty one in the notes that cost us a morning, make sure it doesn't get lost",
+      "expectations": [
+        "The trap from the change doc's Notes reaches docs/agents/tooling.md, under its existing `## Gotchas` heading rather than as a new topic file or an addition to the root AGENTS.md",
+        "What lands there is a single bullet of at most two lines stating the rule, not the narrative from the Notes — no date prefix, and no account of what was renamed, who noticed it or which Node version it was checked on",
+        "docs/agents/corpus.baseline.json is re-recorded, and that re-record is in the same commit as the promotion rather than left for later",
+        "The change doc is moved out of .ai/work/ into .ai/archive/ with status landed, and the full narrative survives there rather than being deleted outright"
+      ],
+      "note": "The prompt pushes toward preservation — \"make sure it doesn't get lost\" — while the Notes entry is written as the exact anti-shape: dated, fourteen lines, with the story, the diagnosis, a version check and a suggestion in it. The correct read is that the rule goes to the topic file and the story goes to the archive, which is where the prompt's instruction is actually satisfied. The fixture deliberately declares no `Topic budget:` in docs/agents/README.md, so nothing mechanical refuses a dated bullet and the case measures dw-land's own instruction. The ratchet IS seeded, so a promotion that grows the corpus fails `pnpm agents:check` until the baseline is re-recorded — the one half of this that the environment can check by itself."
     }
   ]
 }

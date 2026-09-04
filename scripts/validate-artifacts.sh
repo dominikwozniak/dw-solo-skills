@@ -93,6 +93,28 @@ else
   echo "• skills/: SKIP (node missing — the checker is a .mjs)"
 fi
 
+# --- the eval fixture's copy of the shipped checker --------------------------
+# land-gotcha-shape carries a real copy rather than a stub, because the case turns on `agents:check`
+# actually refusing an un-re-recorded corpus. A copy is a fork the moment the template moves, and a
+# fixture running last month's checker measures last month's behaviour while reporting today's. Lives
+# here rather than in check-agents-docs.test.sh, whose every case runs against a synthetic mktemp
+# scaffold and never against a real path in this repo.
+FIXTURE_CHECKER="$ROOT/evals/fixtures/land-gotcha-shape/base/scripts/check-agents-docs.mjs"
+
+echo
+echo "Checking the eval fixture's checker against the template..."
+if [ ! -f "$FIXTURE_CHECKER" ]; then
+  echo "::error::${FIXTURE_CHECKER#"$ROOT"/} is missing — the land-gotcha-shape case needs a runnable checker."
+  FAILED=1
+elif cmp -s "$ROOT/templates/check-agents-docs.mjs" "$FIXTURE_CHECKER"; then
+  echo "• land-gotcha-shape: checker matches templates/check-agents-docs.mjs"
+else
+  echo "::error::${FIXTURE_CHECKER#"$ROOT"/} has drifted from templates/check-agents-docs.mjs."
+  echo "::error::  Re-copy it: cp templates/check-agents-docs.mjs ${FIXTURE_CHECKER#"$ROOT"/}"
+  echo "::error::  Then re-seed the fixture's baseline if the corpus moved with it."
+  FAILED=1
+fi
+
 echo
 if [ "$FAILED" -eq 0 ]; then
   echo "All artifact checks passed."

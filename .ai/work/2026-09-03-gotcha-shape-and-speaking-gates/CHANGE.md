@@ -57,7 +57,7 @@ invocation reads that as not remaining. Never rename a task title. -->
       the seed's position as the last action, and the forked-checker diff gate.
 - [x] 6. This repo seeds `docs/agents/corpus.baseline.json` and `docs/agents/README.md` gains one
       clause: unbudgeted but ratcheted.
-- [ ] 7. Behaviour fixture `evals/fixtures/land-gotcha-shape/` plus case 3 in
+- [x] 7. Behaviour fixture `evals/fixtures/land-gotcha-shape/` plus case 3 in
       `evals/behaviour/dw-land.json`, the drift guard in `scripts/validate-artifacts.sh`, and the
       re-counted sentence in `evals/README.md`.
 - [ ] 8. Record `0022`, flip `0015`'s two fields, patch-bump `dw-solo` and `dw-solo-setup` in both

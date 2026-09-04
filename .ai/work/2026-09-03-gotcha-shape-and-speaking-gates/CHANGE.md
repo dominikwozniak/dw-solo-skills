@@ -55,7 +55,7 @@ invocation reads that as not remaining. Never rename a task title. -->
       one sentence in its `SKILL.md` and cases in `scripts/tests/doctor.test.sh`.
 - [x] 5. `skills/dw-init/SKILL.md` — the `{"words": 0}` trap, the stale "empty `docs/agents/`" prose,
       the seed's position as the last action, and the forked-checker diff gate.
-- [ ] 6. This repo seeds `docs/agents/corpus.baseline.json` and `docs/agents/README.md` gains one
+- [x] 6. This repo seeds `docs/agents/corpus.baseline.json` and `docs/agents/README.md` gains one
       clause: unbudgeted but ratcheted.
 - [ ] 7. Behaviour fixture `evals/fixtures/land-gotcha-shape/` plus case 3 in
       `evals/behaviour/dw-land.json`, the drift guard in `scripts/validate-artifacts.sh`, and the

@@ -310,6 +310,59 @@ printf -- '- **Lint command**: {{LINT_COMMAND}}\n' >>"$repo/AGENTS.md"
 run "$repo" >/dev/null
 says "placeholder-value-warns" warn "Lint command" "unrendered"
 
+# silent_about <name> <label-substring> — the doctor said nothing at all about a gate. Reported only
+# where the layer it guards exists, so a repo that keeps no docs/agents/ must not hear about a ratchet.
+silent_about() {
+  if grep -qF -- "$2" "$OUT"; then
+    note_fail "$1" "mentioned '$2' when it should not: $(grep -F -- "$2" "$OUT" | head -n1)"
+  else
+    note_pass "$1"
+  fi
+}
+
+echo "the checker's opt-in size gates are reported, because a silent opt-in is invisible:"
+# The scaffold keeps docs/decisions/ and CONTEXT.md but no docs/agents/, so two gates report and the
+# two scoped to the topic layer say nothing.
+repo="$(scaffold '120 lines / 10 KB')"
+run "$repo" >/dev/null
+says "no-ceiling-declared-info" info "record ceiling" "none declared"
+says "no-ceiling-carries-the-fix" info "record ceiling" "fix: add"
+says "no-term-budget-info" info "term budget" "none declared"
+silent_about "no-topic-layer-no-ratchet-line" "agents ratchet"
+silent_about "no-topic-layer-no-topic-budget-line" "topic budget"
+
+# The case the consumer repo was in: a topic layer, a checker, and no baseline. Info rather than warn —
+# deleting the baseline is a legitimate opt-out, so this is a fact, not a fault.
+repo="$(scaffold '120 lines / 10 KB' '| a topic | `docs/agents/topic.md` |')"
+mkdir -p "$repo/docs/agents"
+printf '# agent docs\n' >"$repo/docs/agents/README.md"
+printf '# topic\n' >"$repo/docs/agents/topic.md"
+run "$repo" >/dev/null
+says "no-baseline-info" info "agents ratchet" "off"
+says "no-baseline-carries-the-fix" info "agents ratchet" "--update-baseline"
+says "no-topic-budget-info" info "topic budget" "none declared"
+
+repo="$(scaffold '120 lines / 10 KB' '| a topic | `docs/agents/topic.md` |')"
+mkdir -p "$repo/docs/agents"
+printf '# agent docs\n\nTopic budget: **90 lines / 4.5 KB**, per file.\n' >"$repo/docs/agents/README.md"
+printf '# topic\n' >"$repo/docs/agents/topic.md"
+printf '{ "words": 1, "perFile": { "topic.md": 1 } }\n' >"$repo/docs/agents/corpus.baseline.json"
+printf '# decisions\n\nCeiling: **80 lines** per record.\n' >"$repo/docs/decisions/README.md"
+printf 'glossary\n\nTerm budget: **90 lines / 7 KB**.\n' >"$repo/CONTEXT.md"
+run "$repo" >/dev/null
+says "baseline-present-ok" ok "agents ratchet" "present"
+says "topic-budget-declared-ok" ok "topic budget" "declared"
+says "ceiling-declared-ok" ok "record ceiling" "declared"
+says "term-budget-declared-ok" ok "term budget" "declared"
+
+# With no checker in the repo there is nothing for these gates to switch on, and the existing
+# agents:check warning is the one message worth printing.
+repo="$(scaffold '120 lines / 10 KB')"
+rm "$repo/scripts/check-agents-docs.mjs"
+run "$repo" >/dev/null
+silent_about "no-checker-no-ceiling-line" "record ceiling"
+silent_about "no-checker-no-term-line" "term budget"
+
 echo "a pre-migration layout is named as one, not reported as an empty repo:"
 repo="$(scaffold '120 lines / 10 KB')"
 rm "$repo/AGENTS.md" "$repo/CLAUDE.md"

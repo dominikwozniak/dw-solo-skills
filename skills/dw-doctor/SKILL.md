@@ -49,6 +49,10 @@ assumed:
   `## Task Router` with rows, and does every `docs/agents/*.md` have one? Did a `{{PLACEHOLDER}}`
   survive the render? Is `CLAUDE.md` the **symlink** to it rather than a second copy that will
   diverge? And is `scripts/check-agents-docs.mjs` there to enforce any of it.
+- **The checker's opt-in size gates — the corpus ratchet, the record ceiling, the topic and term
+  budgets.** Each says nothing when switched off, which is right for a gate and blinding for a
+  diagnostic, so each is reported here with the line or command that turns it on. `info`, not `warn`:
+  declining one is a choice, and only the layers a repo actually keeps are mentioned at all.
 - **The `- **Lint command**:` / `- **Typecheck command**:` bullets**, resolved in the hooks' own
   order — `AGENTS.md`, then a legacy `CLAUDE.local.md` — and **extracted the way the hooks extract
   them**, first backticked span else the rest of the line. Reporting a command the hook would not

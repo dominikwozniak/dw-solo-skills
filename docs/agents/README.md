@@ -17,7 +17,9 @@ Three tiers, three owners:
   into a topic file and earns a router row instead. It declares its own hard budget in its header prose
   and `pnpm validate:docs` enforces exactly what that line says, so the number lives there and is not
   restated here. The budget caps only that one file; `docs/agents/*.md` are unbudgeted, which is where
-  prose belongs.
+  prose belongs — unbudgeted but **ratcheted**: `corpus.baseline.json` records what the corpus is, so it
+  may shrink freely and grows only through a commit that re-records it with `--update-baseline`. No
+  number is chosen for a topic file, so none can be set too high, and no growth is silent.
 
   **What kind of number that is: chosen editorial discipline, not a harness ceiling.** Nothing truncates
   where it is set — the nearest real limit is Codex's `project_doc_max_bytes`, 32 KB, and the byte half is
@@ -40,9 +42,9 @@ Every topic file carries its own `## Gotchas`, newest first — a deliberate rev
 hard count cap, which kept forcing unrelated traps to be merged into one entry to stay under the number.
 Scoped to a topic file the pressure is gone, because only someone already working on that topic loads it.
 
-The cost the cap was paying for is real, so keep it without a validator: an entry that stopped being true
-is deleted, and two entries with one root cause are one entry with sub-bullets. Growth is fine; sprawl of
-stale traps is not.
+The cost the cap was paying for is real. Total growth is now the ratchet's job — it cannot be silent. What
+stays editorial is the part no counter can see: an entry that stopped being true is deleted, and two
+entries with one root cause are one entry with sub-bullets. Growth is fine; sprawl of stale traps is not.
 
 ## Gotchas
 

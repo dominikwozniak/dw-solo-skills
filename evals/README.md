@@ -336,10 +336,13 @@ routing eval asks whether a description still owns its vocabulary, this asks whe
 its word once it is running: that `dw-land` refuses to round an undelivered goal up, that `dw-ship`
 refuses an unlanded change, that `dw-next` declines to invent a task list.
 
-Nine cases across six of the twelve skills, and they come in two shapes. A **refusal** is a skill
-declining the thing the prompt is pushing for, the three above among them. An **absence** is a
-skill whose promise is that nothing happens: `dw-next status` and `dw-doctor` both report and stop,
-so every one of their expectations is a write that must not appear in the trace. A third shape left
+Ten cases across six of the twelve skills, and they come in three shapes. A **refusal** is a skill
+declining the thing the prompt is pushing for, the three above among them. A **shape** is a skill
+asked to write something durable, graded on the form it lands in rather than on whether it landed:
+`dw-land` promoting a trap as one undated rule bullet, where the prompt asks for the story to be
+kept and the story's home is the archive. An **absence** is a skill whose promise is that nothing
+happens: `dw-next status` and `dw-doctor` both report and stop,
+so every one of their expectations is a write that must not appear in the trace. A fourth shape left
 with `dw-git` (`0021`): a skill promising literal commands — staged by name and never `git add -A`,
 `git stash push -m` and never bare — which a trace either holds or does not, the cheapest of all to
 grade and the one the tier no longer has.
@@ -480,6 +483,32 @@ qualification that it "never installs a tool, never edits a file, never runs the
 It left the `dw-init` fixes to the user and applied the rest, so it half-followed both. The case is
 kept red rather than softened: `0020` makes this tier a measurement and not a gate, and a recorded
 red is what a later change picks up.
+
+### Measured 2026-09-04 — the shape case
+
+The one new case, executor `opus`, grader `sonnet`, **n=1**, $1.47. Estimated at $0.55 and it cost
+nearly three times that: the case makes the skill read a change doc, promote into a topic file, run
+`agents:check`, re-record a baseline and archive, so it is the longest close in the tier.
+
+| case                                   | result | turns | cost   |
+| -------------------------------------- | ------ | ----- | ------ |
+| `dw-land` #3 — a trap, told to keep it | 4/4    | 24    | $1.473 |
+
+**The first case in this tier graded on the form of what a skill wrote**, and it passed on the first
+run, which is worth stating precisely because it is the weaker of the two possible results — a pass
+at n=1 says the shape is reachable, not that it is reliable. What it produced, from a fourteen-line
+dated narrative in the change doc's Notes:
+
+```markdown
+- **Never read a green `node --test` without reading `pass N`** — discovering no test file is not an
+  error, so a renamed suite exits 0; see `.ai/archive/2026-09-04-slug-collisions/CHANGE.md`.
+```
+
+Two lines, undated, inserted above the file's existing gotcha rather than below it, with the story
+left in the archived doc and pointed at. The baseline re-record landed in the same commit as the
+promotion. The prompt had asked for the trap not to get lost, and the run treated the archive as
+where that is satisfied rather than the topic file — which is the whole distinction the case exists
+to measure.
 
 ## Asking the real router
 

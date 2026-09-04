@@ -25,6 +25,8 @@ imply, and the traps that have actually sprung around them.
 
 ## Gotchas
 
+- **Read git state with `rtk proxy git …`, never the filtered `git status`/`log`/`diff`** — the filter
+  served a landed, merged change as an uncommitted branch for an entire session.
 - **`git add $paths` in zsh stages nothing, and the commit chained after it goes ahead anyway.** The
   session shell is zsh, which does not word-split an unquoted variable, so a newline-separated list
   of paths reached git as one pathspec, matched nothing, and `git add` said so — and the

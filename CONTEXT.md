@@ -31,14 +31,17 @@ in [`AGENTS.md`](AGENTS.md) and the procedures in the skills themselves.
   size at all.
 - **Ceiling** — a declared per-file size over a durable folder, enforced by the shipped
   `check-agents-docs.mjs` where that folder's README declares one, and **opt-in**: no declaration means
-  no check and no mention. It gates size and never shape, the distinction
-  [`0015`](docs/decisions/0015-the-shipped-checker-gates-size-never-shape.md) rests on. A **Budget** is
+  no check and no mention. Three exist — `Ceiling:` over records, `Topic budget:` over topic files,
+  `Term budget:` over `CONTEXT.md` — and declaring one also switches on that layer's one shape rule,
+  which is how [`0022`](docs/decisions/0022-a-declared-budget-switches-on-its-layers-shape-rule.md)
+  narrowed [`0015`](docs/decisions/0015-the-shipped-checker-gates-size-never-shape.md). A **Budget** is
   the same kind of number over a single always-loaded file; a Ceiling applies per file across a folder.
 - **Ratchet** — a limit that chooses no number: a tracked baseline records what a corpus **is**, the
   corpus may shrink freely, and it grows only through a commit that re-records the baseline. Growth
   stays legal and stops being silent. Used over `skills/*/SKILL.md` here by
-  [`0009`](docs/decisions/0009-skill-corpus-ratchet.md), and over a consumer repo's `docs/agents/` by
-  the shipped checker. The right tool where the form is open and any ceiling would be a guess.
+  [`0009`](docs/decisions/0009-skill-corpus-ratchet.md), and over `docs/agents/` both here and in a
+  scaffolded repo by the shipped checker, where `dw-init` seeds it so the ratchet is the one gate a
+  repo opts **out** of. The right tool where the form is open and any ceiling would be a guess.
 - **Completion gate** — the closing verdict's rule that a `## Goal` result the diff doesn't deliver
   makes a change **not ready**, never _ready with follow-ups_. Ticked boxes don't satisfy it; only
   the diff does, or a `## Goal` the user amends. One carve-out: a result that is **pending on the

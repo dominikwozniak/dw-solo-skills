@@ -6,9 +6,11 @@
 #
 # What is pinned: the budget parser (the part with real logic — bare number = bytes, KB = ×1024,
 # malformed is REJECTED rather than guessed), placeholder detection, router coverage and path sync,
-# command sync, the CLAUDE.md symlink, and the record ceiling's parser. Plus two negatives that matter
-# as much as the positives: a record's SHAPE is never validated, and where no ceiling is declared the
-# records are neither checked nor mentioned.
+# command sync, the CLAUDE.md symlink, the record ceiling's parser, and the two optional layer caps
+# with the shape rule each of them switches on. Plus the negatives, which matter as much as the
+# positives: a record's SHAPE is never validated, and where a repo declares no ceiling, no topic budget
+# and no term budget, that layer is neither checked nor mentioned — including its shape, which is the
+# guarantee decision 0022 left standing when it narrowed 0015.
 #
 # Run standalone (`bash scripts/tests/check-agents-docs.test.sh`) or via scripts/validate-artifacts.sh.
 # Exit 0 iff every case matches. bash 3.2 safe.
@@ -148,6 +150,17 @@ expect_says "over-line-budget-named" "over its declared 3-line"
 repo="$(scaffold '120 lines / 40')"
 expect_rc "over-byte-budget-exit-1" 1 "$(check "$repo")"
 expect_says "over-byte-budget-named" "40-B budget"
+
+# A fractional KB is the natural way to write a per-file cap, and the integer-only pattern used to
+# read `4.5 KB` as FOUR BYTES: it matched the 4, and the trailing-prose clause swallowed `.5 KB`.
+repo="$(scaffold '120 lines / 4.5 KB')"
+expect_rc "fractional-kb-exit-0" 0 "$(check "$repo")"
+expect_says "fractional-kb-multiplies" "/4608 B"
+
+# Half a line means nothing, so the line half stays integer-only and says so rather than truncating.
+repo="$(scaffold '120.5 lines / 10 KB')"
+expect_rc "fractional-lines-exit-1" 1 "$(check "$repo")"
+expect_says "fractional-lines-called-malformed" "malformed"
 
 # An unrecognised unit must be REJECTED, not read as bare bytes — `10 MB` silently meaning 10 bytes
 # is the failure mode this parser is strict to avoid.
@@ -425,6 +438,146 @@ printf '{ "words": 1000, "perFile": { "topic.md": 10 } }\n' >"$repo/docs/agents/
 expect_rc "inconsistent-baseline-exit-1" 1 "$(check "$repo")"
 expect_says "inconsistent-baseline-names-both" "sums to 10"
 
+echo "the topic budget, and the shape rule declaring it switches on:"
+# capped_repo <topic-budget-tail|""> <lines-in-topic.md> — a scaffold whose docs/agents/README.md is
+# routed (the coverage check demands it) and declares the given topic budget. An empty first argument
+# declares nothing, which is the opt-out. Each line is 23 bytes, so the byte half is easy to aim at.
+capped_repo() {
+  local dir i
+  dir="$(scaffold '120 lines / 10 KB' '| a topic       | `docs/agents/topic.md`  |
+| the corpus    | `docs/agents/README.md` |')"
+  mkdir -p "$dir/docs/agents"
+  if [ -n "$1" ]; then
+    printf '# agent docs\n\nTopic budget: **%s**, per file.\n' "$1" >"$dir/docs/agents/README.md"
+  else
+    printf '# agent docs\n\nNo number is declared here.\n' >"$dir/docs/agents/README.md"
+  fi
+  : >"$dir/docs/agents/topic.md"
+  i=0
+  while [ "$i" -lt "$2" ]; do printf 'a line of a topic file\n' >>"$dir/docs/agents/topic.md"; i=$((i + 1)); done
+  printf '%s\n' "$dir"
+}
+
+# Declaring nothing is not merely passing — it is not mentioned either, or every repo that declined
+# the cap still pays a line of report for it.
+repo="$(capped_repo "" 20)"
+expect_rc "no-topic-budget-exit-0" 0 "$(check "$repo")"
+expect_silent_about "no-topic-budget-says-nothing" "topics "
+
+# The final newline terminates the last line, so a file of exactly the budget passes.
+repo="$(capped_repo "20 lines / 1 KB" 20)"
+expect_rc "at-topic-budget-exit-0" 0 "$(check "$repo")"
+expect_says "at-topic-budget-reports-the-longest" "longest 20/20 lines"
+
+repo="$(capped_repo "20 lines / 1 KB" 21)"
+expect_rc "over-topic-budget-exit-1" 1 "$(check "$repo")"
+expect_says "over-topic-budget-names-the-file" "docs/agents/topic.md is 21 lines"
+# The number alone tells you to cut; the hint tells you what to cut first, which is the whole point of
+# a cap that is meant to be met rather than raised.
+expect_says "over-topic-budget-hints-the-shape" "One rule per bullet"
+
+# The byte half binds on its own: 20 lines of 23 bytes is 460.
+repo="$(capped_repo "20 lines / 400 B" 20)"
+expect_rc "over-topic-bytes-exit-1" 1 "$(check "$repo")"
+expect_says "over-topic-bytes-named" "460 B"
+
+# README.md is the shipped contract, not a topic file — a payload refresh must not read as a breach.
+repo="$(capped_repo "20 lines / 1 KB" 20)"
+i=0
+while [ "$i" -lt 400 ]; do printf 'padding for the contract\n' >>"$repo/docs/agents/README.md"; i=$((i + 1)); done
+expect_rc "topic-readme-not-measured" 0 "$(check "$repo")"
+
+# Malformed is REJECTED, never guessed at — the same bargain the budget and the ceiling make.
+repo="$(capped_repo "as short as it needs to be" 20)"
+expect_rc "malformed-topic-budget-exit-1" 1 "$(check "$repo")"
+expect_says "malformed-topic-budget-called-malformed" "is malformed"
+# One failure, not a cascade: a declaration nobody can parse never switched the shape rule on, so it
+# must not be enforced. The dated bullet below would otherwise be reported too.
+printf -- '- **2026-09-04 — a trap** — the story.\n' >>"$repo/docs/agents/topic.md"
+expect_rc "malformed-topic-budget-still-exit-1" 1 "$(check "$repo")"
+expect_silent_about "malformed-topic-budget-skips-the-shape-rule" "has a bullet dated"
+
+# A BACKTICKED label names the gate; a bare one declares it. Prose explaining the mechanism must not
+# switch the mechanism on — this repo's own CONTEXT.md armed the term rule the moment its glossary
+# gained an entry saying what `Term budget:` is.
+repo="$(capped_repo "" 20)"
+printf 'Declare a `Topic budget:` here to cap each file, or leave it out.\n' >>"$repo/docs/agents/README.md"
+printf -- '- **2026-09-04 — a trap** — the story.\n' >>"$repo/docs/agents/topic.md"
+expect_rc "backticked-label-is-not-a-declaration" 0 "$(check "$repo")"
+expect_silent_about "backticked-label-says-nothing" "topics "
+
+# The shape rule rides on the declaration and nothing else. A repo that declared no budget keeps the
+# guarantee decision 0015 made: size may be checked where asked for, shape is not checked at all.
+repo="$(capped_repo "" 20)"
+printf -- '- **2026-09-03 — a trap that cost a day** — the story of it.\n' >>"$repo/docs/agents/topic.md"
+expect_rc "dated-bullet-unchecked-without-a-budget" 0 "$(check "$repo")"
+
+repo="$(capped_repo "90 lines / 4 KB" 20)"
+printf -- '- **2026-09-03 — a trap that cost a day** — the story of it.\n' >>"$repo/docs/agents/topic.md"
+expect_rc "dated-bullet-exit-1" 1 "$(check "$repo")"
+expect_says "dated-bullet-names-the-date" "has a bullet dated 2026-09-03"
+expect_says "dated-bullet-hints-the-shape" "undated rule bullet"
+
+repo="$(capped_repo "90 lines / 4 KB" 20)"
+printf -- '- **Never do X** — it silently does Y; see docs/decisions/0001.\n' >>"$repo/docs/agents/topic.md"
+expect_rc "undated-bullet-exit-0" 0 "$(check "$repo")"
+
+# The shipped contract declares a real budget, the way the shipped decisions README declares a real
+# ceiling. This is the case that tests the two payload halves against each other rather than against a
+# fixture: the README dw-init copies in must parse in the checker dw-init copies in.
+repo="$(capped_repo "" 20)"
+cp "$ROOT/templates/agents-docs-README.md" "$repo/docs/agents/README.md"
+expect_rc "shipped-contract-parses-exit-0" 0 "$(check "$repo")"
+expect_says "shipped-contract-declares-90-lines" "longest 20/90 lines"
+
+repo="$(capped_repo "" 91)"
+cp "$ROOT/templates/agents-docs-README.md" "$repo/docs/agents/README.md"
+expect_rc "shipped-contract-cap-binds-exit-1" 1 "$(check "$repo")"
+
+echo "the term budget over CONTEXT.md, and its shape rule:"
+# term_repo <term-budget-tail|""> <term-block> — CONTEXT.md carrying the declaration and one term.
+term_repo() {
+  local dir
+  dir="$(scaffold '120 lines / 10 KB')"
+  if [ -n "$1" ]; then
+    printf '# glossary\n\nTerm budget: **%s**.\n\n- **a settled word** — what it means.\n\n%s\n' "$1" "$2" >"$dir/CONTEXT.md"
+  else
+    printf '# glossary\n\n- **a settled word** — what it means.\n\n%s\n' "$2" >"$dir/CONTEXT.md"
+  fi
+  printf '%s\n' "$dir"
+}
+
+THREE_LINE='- **a sprawling word** — what it means,
+  and then the reason it was chosen,
+  and the alternative it beat.'
+TWO_LINE='- **a compact word** — what it means, at the length a
+  definition actually takes.'
+
+repo="$(term_repo "" "$THREE_LINE")"
+expect_rc "no-term-budget-exit-0" 0 "$(check "$repo")"
+expect_silent_about "no-term-budget-says-nothing" "terms "
+
+# The same backtick rule over CONTEXT.md, which is where it actually bit.
+repo="$(term_repo "" "$THREE_LINE")"
+printf 'A `Term budget:` line would cap this file.\n' >>"$repo/CONTEXT.md"
+expect_rc "backticked-term-label-is-not-a-declaration" 0 "$(check "$repo")"
+expect_silent_about "backticked-term-label-says-nothing" "terms "
+
+# Two physical lines is a definition. The blank line between terms must not be counted as a third —
+# the split leaves it at the head of the following block.
+repo="$(term_repo "90 lines / 7 KB" "$TWO_LINE")"
+expect_rc "two-line-term-exit-0" 0 "$(check "$repo")"
+
+repo="$(term_repo "90 lines / 7 KB" "$THREE_LINE")"
+expect_rc "three-line-term-exit-1" 1 "$(check "$repo")"
+expect_says "three-line-term-names-the-term" "a sprawling word"
+expect_says "three-line-term-hints-the-shape" "at most two lines"
+
+# The size half binds over CONTEXT.md too, the same way it does over a topic file.
+repo="$(term_repo "3 lines / 7 KB" "$TWO_LINE")"
+expect_rc "over-term-budget-exit-1" 1 "$(check "$repo")"
+expect_says "over-term-budget-names-the-file" "CONTEXT.md is"
+
 echo "--update-baseline is not a green light:"
 # Reached for precisely when the build is red, so it must never report success over another failure.
 repo="$(topic_repo 10)"
@@ -435,6 +588,17 @@ if [ -f "$repo/docs/agents/corpus.baseline.json" ]; then
   note_fail "update-with-failures-wrote-nothing" "it wrote a baseline anyway"
 else
   note_pass "update-with-failures-wrote-nothing"
+fi
+
+# And specifically over a cap breach, which is what pins the section ORDER. The ratchet exits 0 the
+# moment it has written, so a cap running after it would let a re-record bless an oversized file.
+repo="$(capped_repo "20 lines / 1 KB" 21)"
+expect_rc "update-over-a-cap-exit-1" 1 "$(update "$repo")"
+expect_says "update-over-a-cap-refuses" "refusing to re-record"
+if [ -f "$repo/docs/agents/corpus.baseline.json" ]; then
+  note_fail "update-over-a-cap-wrote-nothing" "it wrote a baseline anyway"
+else
+  note_pass "update-over-a-cap-wrote-nothing"
 fi
 
 # No docs/agents/ at all: an ENOENT stack trace is not an error message.

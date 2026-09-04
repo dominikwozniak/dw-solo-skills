@@ -38,8 +38,6 @@ legal and costs one `--update-baseline` in the same commit, so no threshold is c
 set too high. Delete the baseline file to switch the ratchet off. Delete the line below to switch the
 cap off — and with it the one shape rule a number cannot express, the ban on a dated bullet.
 
-Topic budget: **90 lines / 4.5 KB**, per file, this one excluded.
-
 **Not here.** What a word _means_ goes in `CONTEXT.md`, on the same terms: one bullet, at most two
 lines, no rationale. Why the code is shaped this way goes in `docs/decisions/`. A follow-up worth
 keeping but not worth doing now goes in `.ai/backlog/`.

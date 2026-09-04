@@ -537,6 +537,41 @@ elif [ "$MEMORY" -eq 1 ] && [ -f "$agents" ]; then
   report warn "agents:check" "no scripts/check-agents-docs.mjs — nothing enforces the budget or the router; fix: dw-init"
 fi
 
+# The size gates the checker offers are opt-in and, by design, say nothing at all when switched off:
+# a gate that lights an existing folder red on install day is one you switch off rather than meet.
+# That silence is right for a gate and wrong for a diagnostic — a repo with a forked checker never
+# learned it had no ratchet. This is a read-only report, not a gate, so it can say so. Each line is
+# reported only where the layer it guards exists, or a repo keeping no records is told about a
+# ceiling it has nothing to apply.
+if [ "$MEMORY" -eq 1 ] && [ -f "$ROOT/scripts/check-agents-docs.mjs" ]; then
+  if [ -d "$ROOT/docs/agents" ]; then
+    if [ -f "$ROOT/docs/agents/corpus.baseline.json" ]; then
+      report ok "agents ratchet" "docs/agents/corpus.baseline.json present — the corpus may only grow on purpose"
+    else
+      report info "agents ratchet" "off — no docs/agents/corpus.baseline.json; fix: node scripts/check-agents-docs.mjs --update-baseline"
+    fi
+    if [ -f "$ROOT/docs/agents/README.md" ] && grep -q 'Topic budget:' "$ROOT/docs/agents/README.md"; then
+      report ok "topic budget" "declared in docs/agents/README.md"
+    else
+      report info "topic budget" "none declared — no per-file cap and no shape rule; fix: add \`Topic budget: **90 lines / 4.5 KB**, per file.\` to docs/agents/README.md"
+    fi
+  fi
+  if [ -d "$ROOT/docs/decisions" ]; then
+    if [ -f "$ROOT/docs/decisions/README.md" ] && grep -q 'Ceiling:' "$ROOT/docs/decisions/README.md"; then
+      report ok "record ceiling" "declared in docs/decisions/README.md"
+    else
+      report info "record ceiling" "none declared — record length is unchecked; fix: add \`Ceiling: **80 lines** per record.\` to docs/decisions/README.md"
+    fi
+  fi
+  if [ -f "$ROOT/CONTEXT.md" ]; then
+    if grep -q 'Term budget:' "$ROOT/CONTEXT.md"; then
+      report ok "term budget" "declared in CONTEXT.md"
+    else
+      report info "term budget" "none declared — a glossary entry may run to any length; fix: add \`Term budget: **90 lines / 7 KB**.\` to CONTEXT.md"
+    fi
+  fi
+fi
+
 if [ "$MEMORY" -eq 1 ] && [ -f "$legacy" ]; then
   report info "CLAUDE.local.md" "present (legacy) — nothing writes it any more; AGENTS.md is read first"
 fi

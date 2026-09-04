@@ -1,7 +1,8 @@
 ---
 decision: 0015
-status: active # active | superseded
+status: superseded # active | superseded
 date: 2026-08-21
+superseded-by: 0022
 ---
 
 # 0015 — the shipped agent-docs checker gates size, never shape

@@ -60,7 +60,7 @@ invocation reads that as not remaining. Never rename a task title. -->
 - [x] 7. Behaviour fixture `evals/fixtures/land-gotcha-shape/` plus case 3 in
       `evals/behaviour/dw-land.json`, the drift guard in `scripts/validate-artifacts.sh`, and the
       re-counted sentence in `evals/README.md`.
-- [ ] 8. Record `0022`, flip `0015`'s two fields, patch-bump `dw-solo` and `dw-solo-setup` in both
+- [x] 8. Record `0022`, flip `0015`'s two fields, patch-bump `dw-solo` and `dw-solo-setup` in both
       manifests, and re-record `scripts/skill-corpus.baseline.json`.
 
 ## Anchors

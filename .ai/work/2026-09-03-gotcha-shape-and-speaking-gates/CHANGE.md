@@ -113,3 +113,9 @@ invocation reads that as not remaining. Never rename a task title. -->
   merged change still read as an uncommitted branch. Verify git state with `rtk proxy git …`.
 - Task 8's skill-corpus re-record already happened in task 3's commit: dw-land grew 82 words and
   the ratchet demands the re-record in the same commit. Task 8 only confirms it is still current.
+- Behaviour case 3 passed 4/4 on the first run at $1.47, nearly 3x the $0.55 estimate — a close that
+  promotes, re-records and archives is the longest run in the tier.
+- `cpSync` rewrote a relative fixture symlink to an absolute path into this repo; fixed with
+  `verbatimSymlinks`. No fixture had carried a symlink before, so it had never fired.
+- The consumer's forked checker needs `.gitmodules` and `skills-lock.json`, and the shipped one flags
+  its `pnpm only` mention and two `references/*` router rows — so the fork is not a copy with edits.

@@ -484,6 +484,32 @@ It left the `dw-init` fixes to the user and applied the rest, so it half-followe
 kept red rather than softened: `0020` makes this tier a measurement and not a gate, and a recorded
 red is what a later change picks up.
 
+### Measured 2026-09-04 — the shape case
+
+The one new case, executor `opus`, grader `sonnet`, **n=1**, $1.47. Estimated at $0.55 and it cost
+nearly three times that: the case makes the skill read a change doc, promote into a topic file, run
+`agents:check`, re-record a baseline and archive, so it is the longest close in the tier.
+
+| case                                   | result | turns | cost   |
+| -------------------------------------- | ------ | ----- | ------ |
+| `dw-land` #3 — a trap, told to keep it | 4/4    | 24    | $1.473 |
+
+**The first case in this tier graded on the form of what a skill wrote**, and it passed on the first
+run, which is worth stating precisely because it is the weaker of the two possible results — a pass
+at n=1 says the shape is reachable, not that it is reliable. What it produced, from a fourteen-line
+dated narrative in the change doc's Notes:
+
+```markdown
+- **Never read a green `node --test` without reading `pass N`** — discovering no test file is not an
+  error, so a renamed suite exits 0; see `.ai/archive/2026-09-04-slug-collisions/CHANGE.md`.
+```
+
+Two lines, undated, inserted above the file's existing gotcha rather than below it, with the story
+left in the archived doc and pointed at. The baseline re-record landed in the same commit as the
+promotion. The prompt had asked for the trap not to get lost, and the run treated the archive as
+where that is satisfied rather than the topic file — which is the whole distinction the case exists
+to measure.
+
 ## Asking the real router
 
 **Which skill fired is still not measured by a tool here**, and that is deliberate: `evals/trigger.ts`

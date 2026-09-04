@@ -49,7 +49,7 @@ invocation reads that as not remaining. Never rename a task title. -->
       `measured` hoisted to module scope, and cases in `scripts/tests/check-agents-docs.test.sh`.
 - [x] 2. `templates/agents-docs-README.md` states the two declarations, the trap's shape, the
       positional order, and the ratchet's same-commit bargain.
-- [ ] 3. `skills/dw-land/SKILL.md` — three edits by replacement: the subtractive half of the lead-in,
+- [x] 3. `skills/dw-land/SKILL.md` — three edits by replacement: the subtractive half of the lead-in,
       the `CONTEXT.md` bullet cap, and the gotcha's shape plus the baseline re-record.
 - [ ] 4. `dw-doctor` reports each switched-off size gate as `report info` with a copy-paste fix, plus
       one sentence in its `SKILL.md` and cases in `scripts/tests/doctor.test.sh`.
@@ -111,3 +111,5 @@ invocation reads that as not remaining. Never rename a task title. -->
   0.2.3), so this change is 0.7.1 and **0.2.4**. Re-derive at task 8 rather than trusting this line.
 - `rtk`'s git filter served stale `git status`, `git log` and `git diff` for this repo — a landed,
   merged change still read as an uncommitted branch. Verify git state with `rtk proxy git …`.
+- Task 8's skill-corpus re-record already happened in task 3's commit: dw-land grew 82 words and
+  the ratchet demands the re-record in the same commit. Task 8 only confirms it is still current.

@@ -47,15 +47,18 @@ decides what happens next.
 ### 2. Close — on an explicit go
 
 `dw-next` already promoted decisions and terms as they happened, so most closes only sweep. Each
-target is read first — **replace, don't append**, deleting what this change made untrue:
+target is read first — **replace, don't append**, deleting what this change made untrue or made
+mechanical:
 
 - **Decisions** — anything unpromoted that clears `references/decision-record.md`'s bar; most
   changes add zero records, and that is correct. Flip a superseded record in the same pass.
-- **Vocabulary** — new or sharpened terms into `CONTEXT.md`, one line each; rewrite a line, never
-  add a second definition beside it.
-- **Gotchas** — a trap that cost real time goes to the routed topic file covering it (the root
-  file only where it already keeps a `## Gotchas`) — and where a mechanism (hook, lint rule,
-  check) could refuse the trap outright, build or backlog that instead of writing prose.
+- **Vocabulary** — new or sharpened terms into `CONTEXT.md`, one bullet of at most two lines saying
+  what the word means and nothing about why; rewrite a line, never add a second definition beside it.
+- **Gotchas** — a trap that cost real time goes to the routed topic file covering it (the root file
+  only where it already keeps a `## Gotchas`) as **one undated bullet of at most two lines** — do or
+  never X, one clause of why, a pointer — with what happened and when left in the commit and the
+  archived doc. Where a mechanism (hook, lint rule, check) could refuse the trap outright, build or
+  backlog that instead of writing prose, and delete the prose it replaces, leaving its name.
 - **Stale references** — a `## References` entry the diff made untrue is rewritten where it lives;
   that edits a file the change never touched, so name the exact line and get a yes first.
 - **Follow-ups** — do the ones cheaper to do than to file; report-open is the default; a
@@ -67,7 +70,8 @@ target is read first — **replace, don't append**, deleting what this change ma
   Anchors and References — keep the frontmatter, the H1, the task list as `dw-next` left it, and
   the Notes no target took.
 
-One commit carries all of it.
+One commit carries all of it — including a `docs/agents/corpus.baseline.json` re-record where the
+repo keeps one, since a promotion that grows the corpus is what the ratchet asks to be shown.
 
 ### 3. Open the PR — under the same go
 

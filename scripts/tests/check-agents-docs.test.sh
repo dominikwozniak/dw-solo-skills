@@ -508,6 +508,18 @@ repo="$(capped_repo "90 lines / 4 KB" 20)"
 printf -- '- **Never do X** — it silently does Y; see docs/decisions/0001.\n' >>"$repo/docs/agents/topic.md"
 expect_rc "undated-bullet-exit-0" 0 "$(check "$repo")"
 
+# The shipped contract declares a real budget, the way the shipped decisions README declares a real
+# ceiling. This is the case that tests the two payload halves against each other rather than against a
+# fixture: the README dw-init copies in must parse in the checker dw-init copies in.
+repo="$(capped_repo "" 20)"
+cp "$ROOT/templates/agents-docs-README.md" "$repo/docs/agents/README.md"
+expect_rc "shipped-contract-parses-exit-0" 0 "$(check "$repo")"
+expect_says "shipped-contract-declares-90-lines" "longest 20/90 lines"
+
+repo="$(capped_repo "" 91)"
+cp "$ROOT/templates/agents-docs-README.md" "$repo/docs/agents/README.md"
+expect_rc "shipped-contract-cap-binds-exit-1" 1 "$(check "$repo")"
+
 echo "the term budget over CONTEXT.md, and its shape rule:"
 # term_repo <term-budget-tail|""> <term-block> — CONTEXT.md carrying the declaration and one term.
 term_repo() {

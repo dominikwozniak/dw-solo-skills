@@ -47,7 +47,7 @@ invocation reads that as not remaining. Never rename a task title. -->
 - [x] 1. The checker gains a shared declaration-prefix helper and a new section 7 — the two optional
       caps and the two shape checks, each silent when undeclared — with the ratchet renumbered to 8,
       `measured` hoisted to module scope, and cases in `scripts/tests/check-agents-docs.test.sh`.
-- [ ] 2. `templates/agents-docs-README.md` states the two declarations, the trap's shape, the
+- [x] 2. `templates/agents-docs-README.md` states the two declarations, the trap's shape, the
       positional order, and the ratchet's same-commit bargain.
 - [ ] 3. `skills/dw-land/SKILL.md` — three edits by replacement: the subtractive half of the lead-in,
       the `CONTEXT.md` bullet cap, and the gotcha's shape plus the baseline re-record.

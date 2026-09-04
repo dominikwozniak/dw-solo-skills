@@ -92,13 +92,20 @@ const lineCount = (text) => text.replace(/\n$/, "").split("\n").length
 // `*` and backticks stripped. Only that prefix-finding half is shared. Each caller keeps its own
 // regex, because `Budget:` rejects an unrecognised unit where `Ceiling:` reads lines and ignores the
 // rest — one merged pattern would have to be the looser of the two, and the strictness is tested.
+// A BACKTICKED occurrence is skipped: `Topic budget:` inside a sentence names the label, and a bare
+// one declares it. Without that distinction the prose documenting a gate switches the gate on, and
+// the value it reads is the rest of the sentence — which is not hypothetical, it happened to this
+// repo's own CONTEXT.md the moment a glossary entry explained what the label is.
 const declaredAfter = (text, label) => {
-  const line = text.split("\n").find((l) => l.includes(label))
-  if (line === undefined) return undefined
-  return line
-    .slice(line.indexOf(label) + label.length)
-    .replaceAll("*", "")
-    .replaceAll("`", "")
+  for (const line of text.split("\n"))
+    for (let at = line.indexOf(label); at !== -1; at = line.indexOf(label, at + 1)) {
+      if (line[at - 1] === "`") continue
+      return line
+        .slice(at + label.length)
+        .replaceAll("*", "")
+        .replaceAll("`", "")
+    }
+  return undefined
 }
 
 // `<N> lines / <M>[ KB]`: bare number = bytes, `KB` = ×1024. Anything else is malformed and returns
@@ -394,6 +401,10 @@ const topicReport = (() => {
     path: `${topicDir}/${entry}`,
     text: read(`${topicDir}/${entry}`),
   }))
+  // The size half runs FIRST, and a malformed declaration stops here. A declaration nobody can parse
+  // is one failure to fix, not a licence to also enforce the shape rule it never switched on.
+  const report = capReport(declared, `${readme}'s topic budget declaration`, files)
+  if (report === null) return null
   // A gotcha ordered newest-first invites a date prefix as the marker of that order. The order is
   // positional — the top of the list IS the newest — so the date buys nothing and costs the shape:
   // once an entry is stamped with the day it was learned it reads as a log, and a log is appended to
@@ -405,7 +416,7 @@ const topicReport = (() => {
           "lines: do or never X, one clause of why, a pointer. What happened and when belongs in " +
           "the commit and the archived change doc.",
       )
-  return capReport(declared, `${readme}'s topic budget declaration`, files)
+  return report
 })()
 
 const termReport = (() => {
@@ -414,6 +425,11 @@ const termReport = (() => {
   const text = read(context)
   const declared = declaredAfter(text, "Term budget:")
   if (declared === undefined) return null
+  // Size first here too, for the same reason: a malformed declaration is one failure, not a cascade.
+  const report = capReport(declared, `${context}'s term budget declaration`, [
+    { path: context, text },
+  ])
+  if (report === null) return null
   // A term block runs from its `- **` to the next one or to a blank line, which is what a Markdown
   // reader sees as one entry however the formatter wrapped it. Two physical lines is a definition;
   // the third line is where the rationale starts, and rationale belongs in a decision record.
@@ -432,7 +448,7 @@ const termReport = (() => {
         "and leave the reasoning to docs/decisions/.",
     )
   }
-  return capReport(declared, `${context}'s term budget declaration`, [{ path: context, text }])
+  return report
 })()
 
 // ---------------------------------------------------------------------------

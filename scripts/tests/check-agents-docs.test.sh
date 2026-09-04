@@ -491,6 +491,20 @@ expect_rc "topic-readme-not-measured" 0 "$(check "$repo")"
 repo="$(capped_repo "as short as it needs to be" 20)"
 expect_rc "malformed-topic-budget-exit-1" 1 "$(check "$repo")"
 expect_says "malformed-topic-budget-called-malformed" "is malformed"
+# One failure, not a cascade: a declaration nobody can parse never switched the shape rule on, so it
+# must not be enforced. The dated bullet below would otherwise be reported too.
+printf -- '- **2026-09-04 — a trap** — the story.\n' >>"$repo/docs/agents/topic.md"
+expect_rc "malformed-topic-budget-still-exit-1" 1 "$(check "$repo")"
+expect_silent_about "malformed-topic-budget-skips-the-shape-rule" "has a bullet dated"
+
+# A BACKTICKED label names the gate; a bare one declares it. Prose explaining the mechanism must not
+# switch the mechanism on — this repo's own CONTEXT.md armed the term rule the moment its glossary
+# gained an entry saying what `Term budget:` is.
+repo="$(capped_repo "" 20)"
+printf 'Declare a `Topic budget:` here to cap each file, or leave it out.\n' >>"$repo/docs/agents/README.md"
+printf -- '- **2026-09-04 — a trap** — the story.\n' >>"$repo/docs/agents/topic.md"
+expect_rc "backticked-label-is-not-a-declaration" 0 "$(check "$repo")"
+expect_silent_about "backticked-label-says-nothing" "topics "
 
 # The shape rule rides on the declaration and nothing else. A repo that declared no budget keeps the
 # guarantee decision 0015 made: size may be checked where asked for, shape is not checked at all.
@@ -542,6 +556,12 @@ TWO_LINE='- **a compact word** — what it means, at the length a
 repo="$(term_repo "" "$THREE_LINE")"
 expect_rc "no-term-budget-exit-0" 0 "$(check "$repo")"
 expect_silent_about "no-term-budget-says-nothing" "terms "
+
+# The same backtick rule over CONTEXT.md, which is where it actually bit.
+repo="$(term_repo "" "$THREE_LINE")"
+printf 'A `Term budget:` line would cap this file.\n' >>"$repo/CONTEXT.md"
+expect_rc "backticked-term-label-is-not-a-declaration" 0 "$(check "$repo")"
+expect_silent_about "backticked-term-label-says-nothing" "terms "
 
 # Two physical lines is a definition. The blank line between terms must not be counted as a third —
 # the split leaves it at the head of the following block.

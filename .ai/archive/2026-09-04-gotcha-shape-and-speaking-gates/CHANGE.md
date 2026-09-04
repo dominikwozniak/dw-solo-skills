@@ -4,6 +4,7 @@ branch: gotcha-shape-and-speaking-gates
 created: 2026-09-03
 status: landed
 landed: 2026-09-04
+pr: https://github.com/dominikwozniak/dw-solo-skills/pull/56
 ---
 
 # Change — the promoted trap gets a shape, and the silent size gates speak

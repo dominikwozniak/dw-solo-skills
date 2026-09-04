@@ -262,7 +262,10 @@ export function materialiseFixture(name: string, fixturesDir: string): string {
     git("config", "user.email", "behaviour-eval@example.invalid")
     git("config", "commit.gpgsign", "false")
 
-    cpSync(join(source, "base"), workspace, { recursive: true })
+    // verbatimSymlinks, or a relative symlink is rewritten to an ABSOLUTE path as it is copied — so a
+    // fixture shipping `CLAUDE.md -> AGENTS.md` would hand the workspace a link pointing back into
+    // this repo's own fixture directory, and every check that resolves it would read the wrong file.
+    cpSync(join(source, "base"), workspace, { recursive: true, verbatimSymlinks: true })
     git("add", "--all")
     git("commit", "--quiet", "-m", "chore: fixture baseline")
 
@@ -273,13 +276,13 @@ export function materialiseFixture(name: string, fixturesDir: string): string {
     const onBranch = join(source, "branch")
     if (existsSync(onBranch)) {
       if (branch === "") throw new Error(`fixture ${name} has branch/ but no .eval/branch`)
-      cpSync(onBranch, workspace, { recursive: true })
+      cpSync(onBranch, workspace, { recursive: true, verbatimSymlinks: true })
       git("add", "--all")
       git("commit", "--quiet", "-m", "feat: the change under test")
     }
 
     const dirty = join(source, "dirty")
-    if (existsSync(dirty)) cpSync(dirty, workspace, { recursive: true })
+    if (existsSync(dirty)) cpSync(dirty, workspace, { recursive: true, verbatimSymlinks: true })
 
     return workspace
   } catch (error) {

@@ -5,7 +5,7 @@ description: >-
   a durable `CHANGE.md` under `.ai/work/` with the goal, the decisions taken, a task checklist and
   anchors in real files; one per goal, never per shippable piece, depth scales with size, and in
   its own worktree when you ask for one.
-argument-hint: "What change are we shaping? bare on the default branch lists the backlog · say worktree to open one"
+argument-hint: "bare on the default branch lists the backlog · a description shapes it · worktree opens one"
 ---
 
 # dw-shape — one file, then build

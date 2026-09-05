@@ -141,6 +141,10 @@ else
     # downloads a runtime to satisfy it and answers as THAT version — so the check would compare the
     # declaration against itself, and a declaration nothing can satisfy makes it answer nothing at all.
     # Measured: `node -v` in a fixture declaring `>=99.0.0` prints a resolve failure and exits 1.
+    # From `/`, never from the repo. `node -v` and `pnpm -v` inside a repo declaring devEngines
+    # resolve that declaration, download a runtime to satisfy it and rewrite pnpm-lock.yaml — and
+    # then answer with the pinned version, so the check would be comparing the pin against itself.
+    # From outside, the answer is the tool on PATH, which is what "is the pin in effect?" asks.
     cur="$( (cd / && node -v) 2>/dev/null | sed 's/^v//')"
     if [ -z "$cur" ]; then
       report warn "node" "on PATH but does not run — check: cd / && node -v"

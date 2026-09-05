@@ -42,7 +42,7 @@ invocation reads that as not remaining. Never rename a task title. -->
 - [x] 1. `scripts/validate-manifests.sh` validates a `cp -RL` dereferenced copy of every plugin and
       fails on warnings, not just on exit code. `scripts/tests/validate-manifests.test.sh` pins both
       halves: a broken `SKILL.md` behind a symlink fails, a clean tree passes.
-- [ ] 2. `skills/dw-next/SKILL.md` description — drop the meta opener that collides with `dw-doctor`,
+- [x] 2. `skills/dw-next/SKILL.md` description — drop the meta opener that collides with `dw-doctor`,
       add `continue` / `catch up` / `left to do`, strip the literal path. Re-measure; leave
       "pick … back up" out, traded away on 2026-08-18.
 - [ ] 3. `skills/dw-check/SKILL.md` description — the corpus has zero occurrences of `bug`,

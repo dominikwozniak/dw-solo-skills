@@ -2,7 +2,7 @@
 change: the-audit-closes-the-blind-gate-and-the-mute-router
 branch: skills-audit
 created: 2026-09-05
-status: shaping # shaping | building | landed
+status: building # shaping | building | landed
 ---
 
 # Change — the manifest gate reads what it ships, and the router learns the words users type
@@ -39,7 +39,7 @@ Two audit findings, both measured, both closed in this branch.
 A task that stopped being necessary keeps its box and gains `**skip:** <reason>`; every later
 invocation reads that as not remaining. Never rename a task title. -->
 
-- [ ] 1. `scripts/validate-manifests.sh` validates a `cp -RL` dereferenced copy of every plugin and
+- [x] 1. `scripts/validate-manifests.sh` validates a `cp -RL` dereferenced copy of every plugin and
       fails on warnings, not just on exit code. `scripts/tests/validate-manifests.test.sh` pins both
       halves: a broken `SKILL.md` behind a symlink fails, a clean tree passes.
 - [ ] 2. `skills/dw-next/SKILL.md` description — drop the meta opener that collides with `dw-doctor`,

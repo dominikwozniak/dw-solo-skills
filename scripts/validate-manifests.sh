@@ -7,12 +7,48 @@ set -uo pipefail
 FOUND=0
 FAILED=0
 
+# A plugin.json is validated through a dereferenced copy, never in place. `claude plugin validate`
+# reads components without following symlinks, and every component this repo ships is one — so in
+# place it says "N entries here are symlinks and were not read", validates no SKILL.md at all, and
+# still exits 0. A session loading the plugin does follow them, which is why the validator's own
+# message ends "validate the real paths separately". `cp -RL` is that separate path: the copy holds
+# the real files, so the same command that saw nothing now reads all twelve skills.
+#
+# Warnings fail here too. The validator exits 0 on a warning, and its warnings are the whole point
+# of running it — a skill with no description, a misspelled manifest field — so gating on the exit
+# code alone is a gate that cannot report what it found. Nothing warns today; the first thing that
+# does is a defect, not noise.
 while IFS= read -r file; do
   FOUND=1
   echo "Validating $file..."
-  if ! claude plugin validate "$file"; then
+  tmp=""
+  target="$file"
+  case "$file" in
+    */.claude-plugin/plugin.json)
+      root="$(dirname "$(dirname "$file")")"
+      tmp="$(mktemp -d)"
+      # -L dereferences; the trailing name keeps the copy's layout identical to the original.
+      if ! cp -RL "$root" "$tmp/plugin" 2>/dev/null; then
+        echo "::error::$file: could not dereference $root for validation"
+        FAILED=1
+        rm -rf "$tmp"
+        continue
+      fi
+      target="$tmp/plugin/.claude-plugin/plugin.json"
+      ;;
+  esac
+
+  # Report against the real path, not the throwaway one the validator was handed.
+  out="$(claude plugin validate "$target" 2>&1)"
+  rc=$?
+  [ -n "$tmp" ] && out="${out//$tmp\/plugin/$root}"
+  echo "$out"
+  [ "$rc" -eq 0 ] || FAILED=1
+  if printf '%s' "$out" | grep -qE 'Found [0-9]+ warning'; then
+    echo "::error::$file: validation warnings are failures here — see above"
     FAILED=1
   fi
+  [ -n "$tmp" ] && rm -rf "$tmp"
 done < <(find . -type f \( -name 'marketplace.json' -o -name 'plugin.json' \) -not -path './node_modules/*' -not -path './.inspirations/*' | sort)
 
 if [ "$FOUND" -eq 0 ]; then

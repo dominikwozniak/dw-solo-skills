@@ -2,9 +2,10 @@
 # Self-test for validate-versions.sh: pins the two failures it exists for, plus the four passes that
 # must not become false alarms.
 #
-# This repo does not otherwise test its own CI validators — validate-docs.sh and validate-manifests.sh
-# have no self-test on purpose, being disk checks a reader can verify by looking. This one is
-# different in kind: it is git plumbing over two refs, where the interesting case (a version that
+# This repo tests a CI validator only where looking at it cannot settle the question. validate-docs.sh
+# still has no self-test on purpose, being a disk check a reader can verify by looking;
+# validate-manifests.sh gained one for its manifest-validation pass alone, for the reason that file's
+# header gives. This one is different in the same way: it is git plumbing over two refs, where the interesting case (a version that
 # didn't grow) needs a base tip that has moved since the branch forked. Nothing about that shape can
 # be checked by looking, and `717f1e5` is the standing proof a validator passes silently while broken.
 #

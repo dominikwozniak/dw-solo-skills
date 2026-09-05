@@ -115,6 +115,28 @@ else
   FAILED=1
 fi
 
+# --- the declared bullets exist ----------------------------------------------
+# Four hooks and worktree.sh resolve their command by grepping AGENTS.md for one of these labels, and
+# every one of them falls back rather than failing when the label is absent — the design that keeps an
+# undeclared requirement from breaking commits, and the reason a missing bullet is silent. Bootstrap
+# went missing exactly that way: the template shipped it, `worktree.sh create` read for it, and this
+# repo answered with a lockfile guess for months while the prose above the list said "four".
+#
+# Repo-only on purpose. The shipped checker grades consumers too, and a repo scaffolded before a label
+# existed is entitled to not declare it — `dw-doctor` warns there, which is the right severity away
+# from home. Here the list is a contract with our own hooks, so it fails.
+echo
+echo "Checking AGENTS.md declares every grep-read bullet..."
+for label in "Lint command" "Typecheck command" "Commit pattern" "Commit trailer" "Bootstrap command"; do
+  if grep -qE "^[[:space:]]*[-*][[:space:]]*\*{0,2}${label}\*{0,2}:" "$ROOT/AGENTS.md"; then
+    echo "• declared: $label"
+  else
+    echo "::error::AGENTS.md declares no **$label** under ## Solo lane."
+    echo "::error::  Add it, or the reader silently falls back to its own default."
+    FAILED=1
+  fi
+done
+
 echo
 if [ "$FAILED" -eq 0 ]; then
   echo "All artifact checks passed."

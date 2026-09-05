@@ -32,7 +32,7 @@ a wide read from becoming a tour of the repo's older sins.
 
 Scope comes from git, never from a change doc. Bare takes the merge-base against the default branch —
 the ref `bash "${CLAUDE_PLUGIN_ROOT}/scripts/base-ref.sh"` prints — and reads the files
-`git diff --name-only <base>...HEAD` names. `$ARGUMENTS` narrows or replaces that: a path takes that
+`git diff --name-only <base>...HEAD` names. The argument narrows or replaces that: a path takes that
 subtree, a ref range takes that range, a PR number takes that PR's files. It reads **no `.ai/`
 artifact at all** — no lane, no `CHANGE.md`, no goal — so it runs in a repo that has never seen this
 loop, over a directory, or over a branch that merged months ago.
@@ -132,3 +132,5 @@ at runtime. Offer to run the pass again afterwards, since a deletion often stran
 
 **Next:** `dw-check` if something looked wrong rather than merely surplus, or `dw-land` once the diff
 is what you mean to ship.
+
+$ARGUMENTS

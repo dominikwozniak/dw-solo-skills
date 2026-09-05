@@ -134,8 +134,9 @@ in [`AGENTS.md`](AGENTS.md) and the procedures in the skills themselves.
 - **Shadowed** — a positive prompt where an explicit-invoke skill scores higher than the skill under
   test. Reported as overlap, never counted as a routing failure: the model is never offered it.
 - **Blank** — a prompt no description discriminates on, so every skill scores zero. A blank negative
-  fails the run outright; a blank positive is counted in its own column under a `--max-blank` ratchet,
-  because one of them is a description missing words and another is a trade this repo took knowingly.
+  fails the run outright; a blank positive is counted in its own column under `--max-blank`, at 0
+  since 2026-09-05, when the last three were closed by giving the descriptions the words their asks
+  actually use.
 - **Fixture** — `evals/fixtures/<name>/`, a throwaway repo the behaviour eval builds and destroys per
   run: `base/` committed on `main`, `branch/` committed on the feature branch so `main...HEAD` has a
   diff, `dirty/` left uncommitted.

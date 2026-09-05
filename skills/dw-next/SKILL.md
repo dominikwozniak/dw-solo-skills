@@ -1,9 +1,9 @@
 ---
 name: dw-next
 description: >-
-  The solo lane's build step and its resume point in one skill: report where the active
-  `.ai/work/<slug>/CHANGE.md` stands — read from disk, so it survives a `/clear` — then build
-  every remaining unticked task, one commit each.
+  Continue the change you are in the middle of, from where the last session had to leave it: catch
+  up on where it stands and what is left, then build every unticked task, one commit each. Its
+  state is read back from the doc, never from the conversation, so it survives a `/clear`.
 argument-hint: "bare builds every remaining task · status reports and stops · go builds one"
 ---
 
@@ -77,9 +77,6 @@ In `go`, stop after one slice. Bare keeps going until the list is done or a huma
 genuinely needed — ask at an irreversible step (migration, data deletion, force-push, deploy) or
 real ambiguity, and never for confirmations like "ready to commit?".
 
-## Modes
-
-Bare builds every remaining task. `status` reports and writes nothing. `go` builds exactly one.
-
 **Next:** `dw-check` for a fast look mid-way, or `dw-land` once nothing is pending.
+
 $ARGUMENTS

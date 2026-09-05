@@ -2,8 +2,8 @@
 name: dw-doctor
 description: >-
   Read-only environment diagnostic for a solo-lane repo: whether the tools the hooks and skills
-  assume are installed and whether the repo's guardrails will really fire, each gap reported with
-  a copy-paste fix.
+  assume are installed, and whether the guardrails and the pre-commit really fire here or are
+  silently skipping, each gap reported with a copy-paste fix.
 ---
 
 # dw-doctor — read-only environment diagnostic
@@ -17,13 +17,9 @@ dangerous-command block, `.env` protection, pnpm enforcement, and lint-on-edit/t
 `settings.json` pointing at a hook that isn't executable, or a typecheck hook with no `tsc` to
 call.
 
-**Read-only:** it probes (`command -v`, `--version`) and reads files, then reports. It never
-installs a tool, never edits a file, never runs the fixes it suggests — applying them is your call.
-The version probes deliberately run from `/`, not from the repo: `pnpm -v` and `node -v` inside a
-repo declaring `devEngines` resolve that declaration, download a runtime to satisfy it and rewrite
-`pnpm-lock.yaml` — and then answer with the pinned version, so the check would compare the pin
-against itself. From outside, the answer is the tool on PATH, which is what "is the pin in effect?"
-is asking about.
+**Read-only, and it takes no arguments:** it probes (`command -v`, `--version`) and reads files,
+then reports. It never installs a tool, never edits a file, never runs the fixes it suggests —
+applying them is your call.
 
 ## What it reads
 

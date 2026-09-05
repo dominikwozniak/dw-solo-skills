@@ -10,7 +10,7 @@
   "plugins": [
     {
       "name": "dw-solo",
-      "version": "0.7.1",
+      "version": "0.8.0",
       "source": "./plugins/dw-solo",
       "keywords": ["solo", "personal", "lightweight", "workflow"],
       "category": "workflow",
@@ -18,7 +18,7 @@
     },
     {
       "name": "dw-solo-setup",
-      "version": "0.3.0",
+      "version": "0.3.1",
       "source": "./plugins/dw-solo-setup",
       "keywords": ["solo", "setup", "scaffold", "hooks"],
       "category": "utilities",
@@ -26,7 +26,7 @@
     },
     {
       "name": "dw-solo-extras",
-      "version": "0.1.10",
+      "version": "0.2.0",
       "source": "./plugins/dw-solo-extras",
       "keywords": [
         "solo",

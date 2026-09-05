@@ -92,9 +92,9 @@ than re-deriving this checklist by hand.
   one shifts every term's idf and can knock an unrelated skill off rank-1 (step 8), and that risk once
   kept a **known-false** sentence in place: `dw-shape` advertised "one per independently shippable scope"
   after its body had stopped meaning it, in the one field the model routes on, until a second rewrite made
-  the contradiction open. Measured since, across two `description` edits and a whole new skill, rank-1
-  went 67% → 68% and never fell. Run `pnpm eval:routing` and read the number; it is the cheapest check in
-  the repo.
+  the contradiction open. Measured across every `description` edit since, and two skills in
+  and two out, rank-1 went 67% → 100%, never falling. Run `pnpm eval:routing`; `--explain "<prompt>"`
+  names the stem that decided it before you rewrite.
 - **A skill body is read in two repos, and only one of them has this repo's tooling.** The canon is
   authored here, where `validate-artifacts.sh` caps `.ai/backlog/` and a full gate runs in CI — none of
   which ships, and `templates/backlog-README.md` omits the cap paragraph on purpose so a consumer sets its

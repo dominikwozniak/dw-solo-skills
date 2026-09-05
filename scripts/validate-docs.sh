@@ -12,6 +12,8 @@
 #      file routed to, every routed path real, every documented `pnpm <script>` a real script, and
 #      CLAUDE.md still a symlink
 #   6. no dangling references/ pointer — every `references/<file>.md` a SKILL.md cites is on disk
+#   7. no backticked `$ARGUMENTS` — the token is substituted before the model reads the file, so a
+#      sentence that mentions it is replaced by the value at the moment it would have applied
 #
 # Check 5 is not implemented here. It runs `templates/check-agents-docs.mjs` — the very checker this
 # repo SHIPS into repos that dw-init scaffolds — against this repo's own root. Reimplementing two of
@@ -19,6 +21,16 @@
 # implementation to keep in step, and a payload whose only proof it works is that it works somewhere
 # else. This is the same bargain scripts/tests/hooks-in-sync.test.sh strikes for the hooks, and it
 # means a bug in the shipped checker fails this repo's own gate before a consumer ever sees it.
+#
+# Check 7 targets one defect and no more, after a first version overreached. `$ARGUMENTS` is an
+# interpolation point — the documented use puts it where the value belongs in the sentence ("Fix
+# issue #$ARGUMENTS") — so requiring it as a trailer, as this check first did, would have rejected
+# the documented pattern. Nothing is ever lost either way: with no placeholder at all the harness
+# appends `ARGUMENTS: <input>` itself, verified 2026-09-05 against a skill that has none.
+#
+# What stays wrong is writing *about* the token where it interpolates. `$ARGUMENTS` in backticks is
+# always that, and the value lands inside them — observed when dw-shape's "the request (it may
+# arrive as `$ARGUMENTS`)" reached the model as two thousand characters of request, mid-sentence.
 #
 # There used to be two more, and their deletion is the point rather than a regression: one compared
 # each README Arguments cell to the skill's own `argument-hint`, the other compared the "Before you
@@ -191,6 +203,24 @@ for d in skills/*/; do
       FAILED=1
     fi
   done
+done
+
+echo
+echo "Checking no SKILL.md writes about \$ARGUMENTS where it interpolates..."
+for d in skills/*/; do
+  f="$d/SKILL.md"
+  [ -f "$f" ] || continue
+  name="$(basename "$d")"
+  # A backticked `$ARGUMENTS` is always a mention of the token — and the token is substituted
+  # before the model reads the file, so the sentence doing the mentioning is replaced by the value
+  # at the moment it would have applied. A bare one is an interpolation and is fine anywhere.
+  if grep -q '`\$ARGUMENTS`' "$f"; then
+    echo "::error::$name writes about \`\$ARGUMENTS\` in prose; the value replaces that mention —"
+    echo "::error::  say \"the argument\" instead, and interpolate a bare \$ARGUMENTS where the value belongs"
+    FAILED=1
+  else
+    echo "OK  $name"
+  fi
 done
 
 echo

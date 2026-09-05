@@ -56,7 +56,7 @@ you saw:
   the file: it is the work the next session would otherwise repeat.
 - **The single next concrete move.**
 
-`$ARGUMENTS`, when given, is what the next session should focus on — let it shape that last one.
+The argument, when given, is what the next session should focus on — let it shape that last one.
 
 The goal, the decisions and the task list already live in `CHANGE.md`, so point at them rather than
 restating them. Redact any secret that surfaced along the way.
@@ -97,3 +97,5 @@ _Task in flight: <the task, verbatim from CHANGE.md>_
 ```
 
 **Next:** `dw-next status` in the next session — it reads this file first.
+
+$ARGUMENTS

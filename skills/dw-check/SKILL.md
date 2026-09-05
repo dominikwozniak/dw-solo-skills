@@ -1,23 +1,22 @@
 ---
 name: dw-check
 description: >-
-  A fast, optional quality gate over the change in progress: the diff goes to an outside reviewer,
-  or to a quick two-axis self-review — correct? fits this repo? — when the diff is trivial or no
-  reviewer is installed, with findings at real file:line, verified, then fixed in-session after
-  approval.
+  A second opinion on the diff so far, mid-build: what is wrong with it, and does it fit this
+  repo? The pass goes to an outside reviewer — codex — or to a quick self-review when the diff is
+  trivial or none is installed, and every mistake it names is verified at a real file:line before
+  it counts, then fixed in-session on your approval.
 argument-hint: "bare delegates the pass · codex forces it on a trivial diff · a path or topic narrows the focus"
 ---
 
 # dw-check — a fast look, then fixes
 
-**The review step, repeatable mid-build.** Run it while the diff is small; `dw-land`'s closing
-verdict stays a thin last look and never grows a reviewer of its own.
+**The review step, repeatable mid-build.** Run it while the diff is small.
 
 ## What it reads
 
 The diff against the default branch — the ref `bash "${CLAUDE_PLUGIN_ROOT}/scripts/base-ref.sh"` prints — plus
 the branch's `CHANGE.md` goal, so findings are judged against what the change is trying to do, not
-against taste. `$ARGUMENTS` is read two ways: the single word `codex` forces the delegated pass
+against taste. The argument is read two ways: the single word `codex` forces the delegated pass
 past the triviality floor, and anything else narrows the focus to a path or a topic. It writes no
 `.ai/` artifact — approved fixes land as code commits.
 
@@ -39,9 +38,9 @@ line saying so, never a silent skip:
   `/plugin marketplace add openai/codex-plugin-cc`, then `/plugin install codex@openai-codex` —
   or `/codex:setup` when it's installed but not ready.
 
-`/codex:review --wait` is the richer, user-typed pass — name it when the diff deserves the better
-tool, ideally once `dw-land` has opened the PR. Either way, quote delegated findings verbatim,
-then **verify each against the file before it counts** — line numbers are the first thing to check.
+`/codex:review --wait` is the richer, user-typed pass — name it when the diff deserves it. Either
+way, quote delegated findings verbatim, then **verify each against the file before it counts** —
+line numbers are the first thing to check.
 
 ### 3. Two axes, judged separately — never merged into one score
 

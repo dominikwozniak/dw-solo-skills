@@ -13,7 +13,8 @@ outlives what it described and the folder becomes a list you skim. This walks it
 
 ## What it reads and writes
 
-Every `.ai/backlog/*.md` except `README.md`, the folder's own contract rather than a queued idea. It
+Every `.ai/backlog/*.md` except `README.md`, the folder's own contract rather than a queued idea —
+the whole folder every time, so it takes no arguments. It
 writes deletions, a rewrite of any entry it bundles into, and the fix itself where one is cheap enough
 to close here. `.ai/` is tracked in git. It **shapes nothing**: an entry that is real work stays for
 `dw-shape`.

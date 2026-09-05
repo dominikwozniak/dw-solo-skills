@@ -1,16 +1,16 @@
 ---
 name: dw-land
 description: >-
-  Close out a finished change and decide whether it is ready to merge: one thin verdict over the
-  diff, then on your go promote the durable residue to `docs/decisions/`, `CONTEXT.md`, `##
-  Gotchas` and the backlog, archive the change doc, and push the branch and open its PR.
+  You are done with a change: wrap it up and decide whether it is ready to merge. One last thin
+  verdict over the whole finished branch, then on your go promote what is worth keeping — the
+  decision records, the glossary, the gotchas — file the leftovers, archive the change doc, push
+  the branch and open its pull request.
 argument-hint: "bare for the verdict — your go closes it and opens the PR · close to trust the diff and close at once · reject to archive a turned-down idea with its reason"
 ---
 
 # dw-land — one thin verdict, then keep what's worth keeping
 
-Two phases with an explicit gate: a verdict, then — on your word — the closing sweep, the archive
-move, and the PR. `dw-ship` merges it.
+Two phases, and the gate between them is your word.
 
 ## What it reads and writes
 

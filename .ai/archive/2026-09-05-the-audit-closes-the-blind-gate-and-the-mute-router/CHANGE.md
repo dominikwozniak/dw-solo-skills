@@ -48,5 +48,8 @@ invocation reads that as not remaining. Never rename a task title. -->
 - `claude plugin eval` is gated behind early access, so the first-party harness that would measure
   these skills against a no-plugin baseline was unavailable; the routing eval carried the whole
   measurement, which it could because this change moved only descriptions.
+- Task 7's premise was half wrong and was corrected before merge: arguments are never lost, because
+  the harness appends `ARGUMENTS: <input>` where no placeholder takes them (verified against a skill
+  that has none). The defect is only ever writing _about_ the token where it interpolates.
 - `enforce-commit-hygiene.sh` falsely blocks a heredoc whose body mentions `git add -A`, including
   a `git commit -F -` writing a message about that very rule. Found here, not fixed here.

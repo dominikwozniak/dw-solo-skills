@@ -12,8 +12,8 @@
 #      file routed to, every routed path real, every documented `pnpm <script>` a real script, and
 #      CLAUDE.md still a symlink
 #   6. no dangling references/ pointer — every `references/<file>.md` a SKILL.md cites is on disk
-#   7. argument-hint <=> a bare `$ARGUMENTS` trailer — a skill that declares it takes arguments has
-#      the one line that delivers them, and a skill that declares none carries no such line
+#   7. no backticked `$ARGUMENTS` — the token is substituted before the model reads the file, so a
+#      sentence that mentions it is replaced by the value at the moment it would have applied
 #
 # Check 5 is not implemented here. It runs `templates/check-agents-docs.mjs` — the very checker this
 # repo SHIPS into repos that dw-init scaffolds — against this repo's own root. Reimplementing two of
@@ -22,12 +22,15 @@
 # else. This is the same bargain scripts/tests/hooks-in-sync.test.sh strikes for the hooks, and it
 # means a bug in the shipped checker fails this repo's own gate before a consumer ever sees it.
 #
-# Check 7 is not the deleted Arguments-cell check returning. That one compared two prose copies of
-# the same list; this one pairs a frontmatter declaration with the token that makes it true. The
-# token is substituted before the model reads the file, so a skill explaining `$ARGUMENTS` mid-
-# sentence has its explanation replaced by the argument at the moment it applies — and four skills
-# had no trailer at all, leaving that clobbered sentence as the only delivery. Neither half is
-# visible by reading one file.
+# Check 7 targets one defect and no more, after a first version overreached. `$ARGUMENTS` is an
+# interpolation point — the documented use puts it where the value belongs in the sentence ("Fix
+# issue #$ARGUMENTS") — so requiring it as a trailer, as this check first did, would have rejected
+# the documented pattern. Nothing is ever lost either way: with no placeholder at all the harness
+# appends `ARGUMENTS: <input>` itself, verified 2026-09-05 against a skill that has none.
+#
+# What stays wrong is writing *about* the token where it interpolates. `$ARGUMENTS` in backticks is
+# always that, and the value lands inside them — observed when dw-shape's "the request (it may
+# arrive as `$ARGUMENTS`)" reached the model as two thousand characters of request, mid-sentence.
 #
 # There used to be two more, and their deletion is the point rather than a regression: one compared
 # each README Arguments cell to the skill's own `argument-hint`, the other compared the "Before you
@@ -203,26 +206,20 @@ for d in skills/*/; do
 done
 
 echo
-echo "Checking argument-hint pairs with an \$ARGUMENTS trailer..."
+echo "Checking no SKILL.md writes about \$ARGUMENTS where it interpolates..."
 for d in skills/*/; do
   f="$d/SKILL.md"
   [ -f "$f" ] || continue
   name="$(basename "$d")"
-  hint=0
-  grep -q '^argument-hint:' "$f" && hint=1
-  # The trailer is a line of its own: an inline mention neither delivers reliably nor survives.
-  trailer="$(grep -c '^\$ARGUMENTS$' "$f")"
-  if [ "$hint" -eq 1 ] && [ "$trailer" -eq 0 ]; then
-    echo "::error::$name declares argument-hint but has no bare \$ARGUMENTS trailer to deliver it"
-    FAILED=1
-  elif [ "$hint" -eq 0 ] && [ "$trailer" -gt 0 ]; then
-    echo "::error::$name has a \$ARGUMENTS trailer but declares no argument-hint"
-    FAILED=1
-  elif [ "$trailer" -gt 1 ]; then
-    echo "::error::$name has $trailer \$ARGUMENTS trailers — one delivers, the rest are noise"
+  # A backticked `$ARGUMENTS` is always a mention of the token — and the token is substituted
+  # before the model reads the file, so the sentence doing the mentioning is replaced by the value
+  # at the moment it would have applied. A bare one is an interpolation and is fine anywhere.
+  if grep -q '`\$ARGUMENTS`' "$f"; then
+    echo "::error::$name writes about \`\$ARGUMENTS\` in prose; the value replaces that mention —"
+    echo "::error::  say \"the argument\" instead, and interpolate a bare \$ARGUMENTS where the value belongs"
     FAILED=1
   else
-    echo "OK  $name (hint=$hint, trailer=$trailer)"
+    echo "OK  $name"
   fi
 done
 

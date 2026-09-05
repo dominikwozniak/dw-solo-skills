@@ -60,7 +60,7 @@ invocation reads that as not remaining. Never rename a task title. -->
       to name "the argument" in prose and keep one bare trailer.
 - [x] 8. `license` in all three `plugin.json` and their marketplace entries. The root MIT `LICENSE`
       never ships: `source` is `./plugins/<p>`, so the install cache carries no license at all.
-- [ ] 9. Version bumps for every plugin whose shipped payload moved, synced into
+- [x] 9. Version bumps for every plugin whose shipped payload moved, synced into
       `.claude-plugin/marketplace.json`; corpus baseline updated in this diff if the corpus grew.
 - [ ] 10. Fold the parked follow-ups into `2026-08-30-slim-the-off-loop-skills`: the `dw-init`
       268-line split, the `dw-grain` opener, the `dw-doctor` check enumeration.

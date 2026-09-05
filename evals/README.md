@@ -178,10 +178,10 @@ or at a diff. Distant pairs pass without telling anyone anything.
    full even when you narrow to one skill — a collision is a property of the descriptions, and
    scanning only the pairs you named would hide the one you did not.
 4. **`--min-rank1 <percent>`** — the ratchet. Absent, rank-1 is reported and never enforced.
-5. **`--max-blank <n>`** — the same shape for positives that assert nothing. A ratchet rather than a
-   bar, because the three that exist are not one problem: two are descriptions missing the words a
-   real ask uses, and one is a trade the 2026-08-18 re-measure took on purpose. Neither is worth
-   failing a run over today; both are worth never growing unnoticed.
+5. **`--max-blank <n>`** — the same shape for positives that assert nothing. It sits at 0 since
+   2026-09-05, when the last three were closed by giving the descriptions the words their asks
+   actually use. At 0 it stops being a ratchet and becomes a bar: a new case with a blank positive
+   fails the run, which is the right answer now that no description is known to be missing a word.
 
 Ahead of all five sit the shape checks, which exit 2 rather than 1 because they mean the run could
 not be scored at all: a malformed or misnamed case file, a case file with no matching skill or one
@@ -327,6 +327,44 @@ The row says "failing" rather than "stolen" because gate 2 was added after this 
 broadening a description raises the document frequency of the terms it absorbs, which lowers their
 idf, so some of those three negatives now collapse to zero on both sides and are reported as
 asserting nothing rather than as thefts. Three negatives break either way — only the label moved.
+
+### Re-measured 2026-09-05, after the plugin-dev audit
+
+Corpus of 12 skills, 6 explicit-invoke. **rank-1 27/27 = 100%**, yields 18/18, 0 blank, 6 shadowed.
+Closest pairs of 66: `dw-land ↔ dw-ship` 0.211, `dw-doctor ↔ dw-init` 0.148, `dw-init ↔ dw-shape`
+0.114. The gate moves to `--min-rank1 96 --max-blank 0`.
+
+| skill       | rank-1 | yields | blank | shadowed |
+| ----------- | ------ | ------ | ----- | -------- |
+| `dw-shape`  | 6/6    | 3/3    | 0     | 1        |
+| `dw-check`  | 5/5    | 3/3    | 0     | 1        |
+| `dw-doctor` | 4/4    | 3/3    | 0     | 1        |
+| `dw-grill`  | 4/4    | 3/3    | 0     | 1        |
+| `dw-land`   | 4/4    | 3/3    | 0     | 0        |
+| `dw-next`   | 4/4    | 3/3    | 0     | 2        |
+
+Eight misses closed and not one description added on instinct. Every edit came from `--explain`
+naming the stem that decided the prompt, which is the only reason a batch this size did not knock a
+strong scorer off its perch — `dw-shape` stayed 6/6 throughout, and the one time a draft moved it to
+5/6 the culprit was visible in a single line: `dw-next` had picked up `disk`, which no other
+description held, and that idf was enough to take `dw-shape`'s checklist prompt on the way past.
+
+Three findings generalise past this run:
+
+- **A description written in catalog nouns routes nothing.** `dw-next` opened on "the solo lane's
+  build step and its resume point in one skill" — five words no user types, and the source of the
+  second-closest pair in the corpus, because `dw-doctor` reaches for the same nouns. Both of its
+  misses were blanks rather than losses: nothing to beat, only vocabulary to acquire.
+- **A corpus-wide vocabulary hole is invisible from any single description.** "Bug", "mistake",
+  "wrong" and "broken" appeared in none of the twelve, sitting directly on the commonest way to ask
+  for a review. Grepping the corpus for a word is cheaper than reasoning about one description.
+- **A contested term belongs to one skill.** `diff` was held by three, so every prompt containing it
+  was decided by whatever else the vector carried. Giving it to `dw-check` — the mid-build owner —
+  and leaving `dw-land` the finished branch settled two misses at once.
+
+Also unpicked here: literal paths in a description tokenize to `ai`, `work`, `slug`, `md`, dead
+stems that enlarge the norm and divide down every real term beside them. Four descriptions carried
+them; all four now name the English noun instead.
 
 ## Behaviour
 

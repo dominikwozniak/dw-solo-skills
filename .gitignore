@@ -14,7 +14,7 @@ node_modules/
 
 # Codex's own hook wiring — machine-local copies of the guards, not the canon.
 # Deliberately NOT tracked: they are a snapshot that predates bash-guard.sh, and
-# nothing measures their drift. docs/agents/tooling.md carries what that costs.
+# nothing measures their drift.
 /.codex/
 
 # hookify rules — untracked by the plugin's own convention. The `/*.local.md`

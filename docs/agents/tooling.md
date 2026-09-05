@@ -259,3 +259,11 @@ either, and each script names the tokens it rejects.
     asserted that explanatory backticks beat the `none` sentinel, pinning the defect as intended
     behaviour. When a test passes first try, prove it can fail — break the code, or move the fixture
     line, and watch it go red.
+- **The guardrails cover Claude Code only; a second agent in the same tree runs on its own copies.**
+  `.codex/hooks.json` wires eight guards directly, with no `bash-guard.sh` above them, from
+  `.codex/hooks/` — copies taken before the dispatcher existed, so each one parses the payload itself
+  and neither `typecheck-on-commit.sh` nor any later fix reaches them. The directory is gitignored
+  rather than repaired, so the drift is permanent and deliberate: `hooks-in-sync.test.sh` compares
+  `templates/hooks/` against `.claude/hooks/` and nothing else, and `dw-doctor` reads
+  `.claude/settings.json` and nothing else. Fix a guard here and Codex keeps the old behaviour —
+  including everything the pnpm guard learns to refuse.

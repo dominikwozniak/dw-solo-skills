@@ -167,6 +167,45 @@ repo="$(fixture staged.ts)"
 expect_rc "skip-env-exit-0" 0 "$?"
 never_ran "skip-env-nothing-run" "$repo"
 
+echo "last-resort probe — the installed compiler, never a package manager:"
+# undeclared_fixture — like fixture(), but with NO declared bullet, so resolution falls all the way
+# through to the probe. Stages a .ts so the hook has a reason to run at all.
+undeclared_fixture() {
+  local dir
+  dir="$WORK/probe.$RANDOM$RANDOM"
+  mkdir -p "$dir"
+  git -C "$dir" init --quiet
+  printf 'export const x = 1\n' >"$dir/a.ts"
+  git -C "$dir" add a.ts
+  printf '%s\n' "$dir"
+}
+
+# The branch read `npx tsc` and had no case, so nothing noticed it reached for a package manager to
+# run a binary sitting in node_modules. It must use what is installed, and tsconfig.json alone is no
+# longer enough — that file says the repo is TypeScript, not that the compiler is present.
+repo="$(undeclared_fixture)"
+printf '{}\n' >"$repo/tsconfig.json"
+mkdir -p "$repo/node_modules/.bin"
+printf '#!/bin/sh\n: >"$(dirname "$0")/../../tc-ran"\nexit 0\n' >"$repo/node_modules/.bin/tsc"
+chmod +x "$repo/node_modules/.bin/tsc"
+expect_rc "probe-local-tsc-exit-0" 0 "$(run "$repo" 'git commit -m "x"')"
+ran "probe-local-tsc-invoked" "$repo"
+
+# tsconfig.json but nothing installed: stay quiet rather than fetch a compiler mid-commit.
+repo="$(undeclared_fixture)"
+printf '{}\n' >"$repo/tsconfig.json"
+expect_rc "probe-no-compiler-exit-0" 0 "$(run "$repo" 'git commit -m "x"')"
+never_ran "probe-no-compiler-nothing-run" "$repo"
+
+# A failing local compiler still refuses the commit — the whole point of the gate.
+repo="$(undeclared_fixture)"
+printf '{}\n' >"$repo/tsconfig.json"
+mkdir -p "$repo/node_modules/.bin"
+printf '#!/bin/sh\n: >"$(dirname "$0")/../../tc-ran"\nexit 1\n' >"$repo/node_modules/.bin/tsc"
+chmod +x "$repo/node_modules/.bin/tsc"
+expect_rc "probe-local-tsc-failure-blocks" 2 "$(run "$repo" 'git commit -m "x"')"
+ran "probe-local-tsc-failure-invoked" "$repo"
+
 echo
 echo "typecheck-on-commit self-test: $PASS passed, $FAIL failed"
 [ "$FAIL" -eq 0 ]

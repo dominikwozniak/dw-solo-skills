@@ -46,6 +46,12 @@ echo "each guard still blocks through the dispatcher:"
 expect_rc "dangerous-force-push" 2 "$(run 'git push --force origin main')"
 expect_rc "dangerous-rtk-wrapped" 2 "$(run 'rtk git push --force origin main')"
 expect_rc "non-pnpm-npm-install" 2 "$(run 'npm install lodash')"
+# Routing, not matching. block-non-pnpm.test.sh calls the guard directly and so proves only that its
+# patterns are right; whether the dispatcher ever spawns it for a given command is decided here and
+# nowhere else. `npx` shares no substring with `npm`, and the trigger list once said only the latter,
+# so every npx command sailed through while the guard's own suite reported it refused.
+expect_rc "non-pnpm-npx-routed" 2 "$(run 'npx tsc --noEmit')"
+expect_rc "non-pnpm-npx-wrapped" 2 "$(run 'rtk npx tsc')"
 expect_rc "hygiene-add-A" 2 "$(run 'git add -A')"
 expect_rc "credential-ssh-read" 2 "$(run 'cat ~/.ssh/id_rsa')"
 expect_rc "env-cat-env" 2 "$(run 'cat .env')"

@@ -44,8 +44,12 @@ guard block-env-access.sh
 
 # Trigger-scoped guards — the substring tests over-approximate on purpose; the
 # guard itself does the exact matching, this only skips spawns that cannot fire.
+# `npx` needs its own arm: it shares no substring with `npm`, so a trigger list
+# without it means the guard is never spawned and the refusal never happens, no
+# matter what the guard's own patterns say. A guard's self-test calls it directly
+# and cannot see that — this list is the only thing that decides it runs at all.
 case "$COMMAND" in
-  *npm* | *yarn* | *bun*) guard block-non-pnpm.sh ;;
+  *npm* | *npx* | *yarn* | *bun*) guard block-non-pnpm.sh ;;
 esac
 case "$COMMAND" in
   *git*commit* | *git*add*) guard enforce-commit-hygiene.sh ;;

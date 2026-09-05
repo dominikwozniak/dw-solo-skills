@@ -34,7 +34,7 @@ you ship.
 | ----------------------------- | -------------------------------------------------------------------------------------- |
 | `bash-guard.sh`               | PreToolUse(Bash) — the dispatcher: one stdin parse, spawns the Bash guards below       |
 | `block-dangerous-commands.sh` | PreToolUse(Bash) — destructive shell                                                   |
-| `block-non-pnpm.sh`           | PreToolUse(Bash) — npm/yarn/bun invocations                                            |
+| `block-non-pnpm.sh`           | PreToolUse(Bash) — npm/npx/yarn/bun invocations                                        |
 | `enforce-commit-hygiene.sh`   | PreToolUse(Bash) — commit subject, trailer, backtick, `git add -A`                     |
 | `credential-leak-guard.sh`    | PreToolUse(Bash) — credential stores, env hunting, exfil                               |
 | `block-env-access.sh`         | PreToolUse(Read/Edit/Write/MultiEdit/NotebookEdit/Grep) — `.env`; Bash via bash-guard  |

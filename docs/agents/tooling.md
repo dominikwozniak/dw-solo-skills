@@ -64,8 +64,9 @@ executable bit.
 
 `- **Lint command**:`, `- **Typecheck command**:`, `- **Commit pattern**:`, `- **Commit trailer**:`
 and `- **Bootstrap command**:` under the root's `## Solo lane` are **grep-read** rather than
-inferred, which is why they live there and nowhere else. Five separate scripts share one extraction
-shape, so a bug there is fixed once. Four are read by hooks; the fifth is read by `worktree.sh
+inferred, which is why they live there and nowhere else. Five separate scripts repeat one extraction
+shape — four independent copies of it, not a shared one, so a bug there is fixed four times or not at
+all. Four are read by hooks; the fifth is read by `worktree.sh
 create`, which prints it and never runs it — a worktree arrives with tracked files and no installed
 dependencies, and only the repo knows what makes it buildable. The chain:
 
@@ -267,3 +268,10 @@ either, and each script names the tokens it rejects.
   `templates/hooks/` against `.claude/hooks/` and nothing else, and `dw-doctor` reads
   `.claude/settings.json` and nothing else. Fix a guard here and Codex keeps the old behaviour —
   including everything the pnpm guard learns to refuse.
+- **Every guard is self-contained, which means the shared parts are copies and nothing measures their
+  drift.** `strip_heredocs` and its `HEREDOC_OPEN` are byte-identical in `block-env-access.sh` and
+  `credential-leak-guard.sh`, and the declared-bullet extractor exists four times over. That is not an
+  oversight to refactor away: `bash-guard.sh` spawns each guard on its own and skips any that is
+  missing, so a guard that sourced a helper would be a guard that stops working the moment the helper
+  is pruned. The cost is that fixing one copy fixes one copy. When you touch either shape, grep for its
+  twin in the same commit — `grep -rln strip_heredocs templates/hooks/` — because no test compares them.

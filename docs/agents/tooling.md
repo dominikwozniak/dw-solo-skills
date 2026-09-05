@@ -34,7 +34,7 @@ you ship.
 | ----------------------------- | -------------------------------------------------------------------------------------- |
 | `bash-guard.sh`               | PreToolUse(Bash) — the dispatcher: one stdin parse, spawns the Bash guards below       |
 | `block-dangerous-commands.sh` | PreToolUse(Bash) — destructive shell                                                   |
-| `block-non-pnpm.sh`           | PreToolUse(Bash) — npm/yarn/bun invocations                                            |
+| `block-non-pnpm.sh`           | PreToolUse(Bash) — npm/npx/yarn/bun invocations                                        |
 | `enforce-commit-hygiene.sh`   | PreToolUse(Bash) — commit subject, trailer, backtick, `git add -A`                     |
 | `credential-leak-guard.sh`    | PreToolUse(Bash) — credential stores, env hunting, exfil                               |
 | `block-env-access.sh`         | PreToolUse(Read/Edit/Write/MultiEdit/NotebookEdit/Grep) — `.env`; Bash via bash-guard  |
@@ -64,8 +64,9 @@ executable bit.
 
 `- **Lint command**:`, `- **Typecheck command**:`, `- **Commit pattern**:`, `- **Commit trailer**:`
 and `- **Bootstrap command**:` under the root's `## Solo lane` are **grep-read** rather than
-inferred, which is why they live there and nowhere else. Five separate scripts share one extraction
-shape, so a bug there is fixed once. Four are read by hooks; the fifth is read by `worktree.sh
+inferred, which is why they live there and nowhere else. Five separate scripts repeat one extraction
+shape — four independent copies of it, not a shared one, so a bug there is fixed four times or not at
+all. Four are read by hooks; the fifth is read by `worktree.sh
 create`, which prints it and never runs it — a worktree arrives with tracked files and no installed
 dependencies, and only the repo knows what makes it buildable. The chain:
 
@@ -259,3 +260,10 @@ either, and each script names the tokens it rejects.
     asserted that explanatory backticks beat the `none` sentinel, pinning the defect as intended
     behaviour. When a test passes first try, prove it can fail — break the code, or move the fixture
     line, and watch it go red.
+- **Every guard is self-contained, which means the shared parts are copies and nothing measures their
+  drift.** `strip_heredocs` and its `HEREDOC_OPEN` are byte-identical in `block-env-access.sh` and
+  `credential-leak-guard.sh`, and the declared-bullet extractor exists four times over. That is not an
+  oversight to refactor away: `bash-guard.sh` spawns each guard on its own and skips any that is
+  missing, so a guard that sourced a helper would be a guard that stops working the moment the helper
+  is pruned. The cost is that fixing one copy fixes one copy. When you touch either shape, grep for its
+  twin in the same commit — `grep -rln strip_heredocs templates/hooks/` — because no test compares them.

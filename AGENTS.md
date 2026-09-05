@@ -86,16 +86,17 @@ rows — read all of them. Explore on your own only what no row covers.
 `.ai/work/<date>-<slug>/CHANGE.md` is the state of the change in progress — tracked, so it survives a
 `/clear`. Where each step promotes its durable output is the Task Router above.
 
-The four below are **grep-read by the hooks**, so they live here and nowhere else: `lint-on-edit`
-appends one file path to the first, so it must accept one; `typecheck-on-commit` runs the second
-before a `git commit` that stages TS; `enforce-commit-hygiene` matches the third as an ERE against
-a `-m` subject and requires the fourth as a trailer line. `none` disables any of them, standing
-alone on the line.
+The five below are **grep-read**, so they live here and nowhere else: `lint-on-edit` appends one file
+path to the first, so it must accept one; `typecheck-on-commit` runs the second before a `git commit`
+that stages TS; `enforce-commit-hygiene` matches the third as an ERE against a `-m` subject and
+requires the fourth as a trailer line; `worktree.sh create` prints the fifth and never runs it.
+`none` disables any of them, standing alone on the line.
 
 - **Lint command**: `pnpm lint`
 - **Typecheck command**: none
 - **Commit pattern**: `^(build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test)(\([a-z0-9-]+\))?!?: .+`
 - **Commit trailer**: `Co-Authored-By:`
+- **Bootstrap command**: `pnpm install`
 
 ## Git conventions
 

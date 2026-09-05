@@ -28,9 +28,13 @@ fi
 # and the subcommands that execute an arbitrary command themselves (`rtk run` is
 # a raw `sh -c`; `err`, `summary`, `test` run it and filter the output). One
 # optional word after `rtk` covers every form, present and future.
+# A leading `VAR=value` assignment is a wrapper too: the shell strips it and runs
+# what follows, so the blast radius is unchanged. It was missing here while
+# `block-non-pnpm.sh` had it, which let an assignment prefix carry any destructive
+# command past the boundary below.
 # Consume zero or more wrappers right after a boundary so `rtk git push --force`
 # matches the same as `git push --force`.
-WRAPPER='(sudo[[:space:]]+|rtk[[:space:]]+([a-z-]+[[:space:]]+)?)*'
+WRAPPER='(sudo[[:space:]]+|rtk[[:space:]]+([a-z-]+[[:space:]]+)?|[A-Za-z_][A-Za-z0-9_]*=[^[:space:]]*[[:space:]]+)*'
 
 # Start-of-command boundary: line start, or right after ; & | (chain/pipe), then
 # any wrapper prefixes, then an optional quote (`rtk run "git push --force"`).

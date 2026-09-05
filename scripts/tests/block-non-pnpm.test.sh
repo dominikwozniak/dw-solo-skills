@@ -7,9 +7,10 @@
 # The wrapper group below is that fix, and it is the reason a guardrail without a
 # self-test is a guardrail nobody has checked.
 #
-# `npx` must stay allowed — it is not `npm install`, and blocking it would break
-# every one-off tool invocation. The near-miss group is what keeps the wrapper
-# prefix from reaching into a commit message.
+# `npx` is refused alongside the rest: `pnpm dlx` runs a one-off tool without it,
+# and the old carve-out left the rule split between this hook and the root memory.
+# The near-miss group is what keeps the wrapper prefix from reaching into a commit
+# message, and what proves `pnpm dlx` never reads as `npx`.
 #
 # Run standalone (`bash scripts/tests/block-non-pnpm.test.sh`) or via
 # scripts/validate-artifacts.sh. Exit 0 iff every case matches. bash 3.2 safe.
@@ -77,14 +78,26 @@ blocked "bun-run" "bun run build"
 blocked "bun-x" "bun x tsc"
 blocked "sudo-yarn" "sudo yarn add lodash"
 
-echo "pnpm, npx and the near-misses — allowed (exit 0):"
+blocked "npx-tsc" "npx tsc --noEmit"
+blocked "npx-scoped" "npx @scope/tool"
+blocked "npx-bare" "npx"
+blocked "sudo-npx" "sudo npx eslint ."
+blocked "rtk-npx" "rtk npx tsc"
+blocked "assign-npx" "NODE_ENV=test npx jest"
+blocked "npx-chained" "cd sub && npx tsc --noEmit"
+
+echo "pnpm and the near-misses — allowed (exit 0):"
 allowed "pnpm-install" "pnpm install"
 allowed "pnpm-add" "pnpm add -D prettier"
 allowed "pnpm-dlx" "pnpm dlx ctx7 library React"
 allowed "pnpm-run-script" "pnpm validate:artifacts"
-# npx is not npm install, and blocking it would break every one-off tool run.
-allowed "npx-tsc" "npx tsc --noEmit"
-allowed "npx-scoped" "npx @scope/tool"
+# `pnpm dlx` is the replacement npx callers get pointed at, so it has to survive
+# the new pattern — `dlx` is a different word, and the boundary only matches one.
+allowed "pnpm-dlx-again" "pnpm dlx tsc --noEmit"
+# `npx` inside a longer word or a package name is not the command.
+allowed "npx-substring" "npxfoo --help"
+allowed "npx-in-a-name" "pnpm add -D npx-import"
+allowed "npx-in-prose" 'git commit -m "docs: why npx is banned"'
 # `npm` inside a longer word or a path is not the command.
 allowed "npm-substring" "npmsinstall"
 allowed "npm-in-a-path" "cat node_modules/.bin/npm-run-all"

@@ -5,7 +5,7 @@
 #   1. AGENTS.md "Lint command:" value — tracked, the one the scaffold writes
 #   2. CLAUDE.local.md "Lint command:" value — legacy; repos scaffolded before
 #      agent memory moved into AGENTS.md still keep theirs there
-#   3. pnpm exec eslint --fix / npx eslint --fix — ONLY if eslint is a dependency
+#   3. node_modules/.bin/eslint --fix — ONLY if eslint is really installed there
 # CLAUDE.md is deliberately absent from that list: it is a symlink to AGENTS.md,
 # so reading it would be reading step 1 twice.
 #
@@ -77,12 +77,14 @@ resolve_lint_cmd() {
       return
     fi
   done
-  if command -v pnpm >/dev/null && [[ -f "package.json" ]] && jq -e '.devDependencies.eslint // .dependencies.eslint' package.json >/dev/null 2>&1; then
-    echo "pnpm exec eslint --fix --max-warnings 0"
-    return
-  fi
-  if command -v npx >/dev/null && [[ -f "package.json" ]] && jq -e '.devDependencies.eslint // .dependencies.eslint' package.json >/dev/null 2>&1; then
-    echo "npx eslint --fix --max-warnings 0"
+  # One probe, not two. `pnpm exec eslint` and `npx eslint` both resolved node_modules/.bin/eslint
+  # and ran it, so this reaches it directly and needs no package manager — which is also the only way
+  # the npx arm was ever reachable, since it sat behind a pnpm arm that fires on every machine that
+  # has pnpm. The executable bit replaces the package.json lookup on purpose: that file says what the
+  # repo INTENDS to have installed, and a declared-but-absent eslint used to send npx to the registry
+  # mid-edit. Downloading a linter to lint one file is worse than not linting it.
+  if [[ -x "node_modules/.bin/eslint" ]]; then
+    echo "node_modules/.bin/eslint --fix --max-warnings 0"
     return
   fi
   echo ""

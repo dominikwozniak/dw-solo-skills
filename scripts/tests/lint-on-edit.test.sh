@@ -232,6 +232,33 @@ for shape in './fake-lint.sh && true' './fake-lint.sh;' './fake-lint.sh 2>/dev/n
   never_executed "shell-shape-no-exec: $shape" "$repo"
 done
 
+echo "last-resort probe — the installed binary, never a package manager:"
+# This branch had no case at all while it read `npx eslint`, which is how it kept a package manager
+# the repo refuses. What it must do now is run what install actually put in node_modules/.bin, and
+# stay silent when nothing is there rather than reaching a registry.
+repo="$(fixture '' '')"
+mkdir -p "$repo/node_modules/.bin"
+printf '#!/bin/sh\nprintf "%%s\\n" "$@" >>"$(dirname "$0")/../../lint-args"\nexit 0\n' \
+  >"$repo/node_modules/.bin/eslint"
+chmod +x "$repo/node_modules/.bin/eslint"
+expect_rc "probe-local-eslint-exit-0" 0 "$(run "$repo")"
+ran_linter "probe-local-eslint-invoked" "$repo"
+never_executed "probe-local-eslint-no-exec" "$repo"
+
+# Declared nowhere and installed nowhere: no linter is the answer, not a download.
+repo="$(fixture '' '')"
+expect_rc "probe-absent-exit-0" 0 "$(run "$repo")"
+never_ran_linter "probe-absent-nothing-ran" "$repo"
+
+# Present but not executable is not installed. The old probe asked package.json, which says what the
+# repo INTENDS; the executable bit says what is actually there.
+repo="$(fixture '' '')"
+mkdir -p "$repo/node_modules/.bin"
+printf '#!/bin/sh\nexit 0\n' >"$repo/node_modules/.bin/eslint"
+chmod -x "$repo/node_modules/.bin/eslint"
+expect_rc "probe-not-executable-exit-0" 0 "$(run "$repo")"
+never_ran_linter "probe-not-executable-nothing-ran" "$repo"
+
 echo
 echo "lint-on-edit self-test: $PASS passed, $FAIL failed"
 [ "$FAIL" -eq 0 ]

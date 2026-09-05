@@ -66,15 +66,24 @@ resolve_typecheck_cmd() {
       echo "pnpm run typecheck"
       return
     fi
+    # Deliberately still npm, and the one place in this payload that stays so. The two probes below
+    # were npx and are not any more, because npx was this repo choosing a package manager to run a
+    # binary it could reach directly. This line is different: the repo being checked declared a
+    # `typecheck` script and shipped no pnpm lockfile, so running it means using ITS package manager,
+    # not ours. Refusing here would not enforce pnpm anywhere — it would only turn the commit gate
+    # off in every repo that does not use pnpm, which is the silent-guardrail failure this file
+    # exists to avoid.
     echo "npm run typecheck"
     return
   fi
-  if command -v pnpm >/dev/null && [[ -f "tsconfig.json" ]]; then
-    echo "pnpm exec tsc --noEmit"
-    return
-  fi
-  if command -v npx >/dev/null && [[ -f "tsconfig.json" ]]; then
-    echo "npx tsc --noEmit"
+  # One probe, not two. `pnpm exec tsc` and `npx tsc` both resolved node_modules/.bin/tsc and then
+  # ran it, so this reaches it directly and needs no package manager at all. Collapsing them also
+  # fixes what the pair got wrong: the pnpm arm asked only whether pnpm and tsconfig.json existed,
+  # never whether the compiler did, so a TypeScript repo with nothing installed failed `pnpm exec`
+  # and had every commit refused with an error about the wrong thing. tsconfig.json says the repo is
+  # TypeScript; the executable bit says the compiler is really there.
+  if [[ -f "tsconfig.json" && -x "node_modules/.bin/tsc" ]]; then
+    echo "node_modules/.bin/tsc --noEmit"
     return
   fi
   echo ""

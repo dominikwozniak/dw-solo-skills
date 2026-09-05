@@ -12,6 +12,15 @@ node_modules/
 /TASK.md
 /.inspirations/
 
+# Codex's own hook wiring — machine-local copies of the guards, not the canon.
+# Deliberately NOT tracked: they are a snapshot that predates bash-guard.sh, and
+# nothing measures their drift.
+/.codex/
+
+# hookify rules — untracked by the plugin's own convention. The `/*.local.md`
+# rule above is root-anchored and does not reach into .claude/.
+/.claude/hookify.*.local.md
+
 # >>> dw-init managed block >>>
 # Personal agent memory & local overrides — never committed.
 /CLAUDE.local.md

@@ -2,7 +2,9 @@
 # PreToolUse Bash hook — enforces pnpm over npm/yarn/bun in Node projects.
 # Reads tool_input.command from stdin (Claude Code hook protocol).
 # Exit 2 + stderr message causes Claude to see the block and self-correct.
-# Allows: pnpm, pnpm dlx, npx (npx ≠ npm install).
+# Allows: pnpm and pnpm dlx, and nothing else. npx is refused too — it reaches
+# the npm registry with npm's resolution, and `pnpm dlx` is the one-for-one
+# replacement, so the older "npx ≠ npm install" carve-out only split the rule.
 # JS/TS projects only — skip this hook when bootstrapping a non-Node stack.
 
 set -uo pipefail
@@ -46,12 +48,16 @@ BOUNDARY="(^|[;&|][[:space:]]*)${WRAPPER}[\"']?"
 BLOCKED_PATTERNS=(
   'npm[[:space:]]+(install|i|add|ci|update|upgrade|exec|run)\b'
   'yarn([[:space:]]|$)'
+  # Bare `npx`, like bare `yarn`: no subcommand list, because every form of it
+  # is the wrong package manager. `pnpm dlx` does not match — the boundary only
+  # fires on a whole word, and `dlx` is not `npx`.
+  'npx([[:space:]]|$)'
   'bun[[:space:]]+(install|i|add|remove|update|run|x)\b'
 )
 
 for pattern in "${BLOCKED_PATTERNS[@]}"; do
   if echo "$COMMAND" | grep -qE "${BOUNDARY}${pattern}"; then
-    echo "BLOCKED: '$COMMAND' uses npm/yarn/bun. This repo enforces pnpm. Use 'pnpm install', 'pnpm add <pkg>', 'pnpm dlx <cmd>', or 'npx <cmd>' (npx is fine — it's not npm install)." >&2
+    echo "BLOCKED: '$COMMAND' uses npm/npx/yarn/bun. This repo enforces pnpm. Use 'pnpm install', 'pnpm add <pkg>', or 'pnpm dlx <cmd>' to run a package without installing it." >&2
     exit 2
   fi
 done

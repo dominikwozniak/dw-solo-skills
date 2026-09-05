@@ -4,6 +4,7 @@ branch: skills-audit
 created: 2026-09-05
 status: landed # shaping | building | landed
 landed: 2026-09-05
+pr: "#58"
 ---
 
 # Change — the manifest gate reads what it ships, and the router learns the words users type

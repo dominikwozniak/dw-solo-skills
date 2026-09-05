@@ -110,11 +110,28 @@ blocked "rtk-err-push"        "rtk err git push --force"
 blocked "rtk-summary-push"    "rtk summary git push --force"
 blocked "sudo-rtk-run-push"   "sudo rtk run git push --force"
 blocked "rtk-run-rm-home"     "rtk run rm -rf ~"
+# A leading `VAR=value` assignment is stripped by the shell, so it wrapped any
+# destructive command past the boundary. `block-non-pnpm.sh` carried the
+# alternative and this hook did not — the loosest of the three, and invisible
+# until a case existed for it. WRAPPER repeats, so a run of assignments composes,
+# and it composes with sudo/rtk too.
+blocked "assign-push-force"   "FOO=1 git push --force"
+blocked "assign-reset-hard"   "GIT_DIR=x git reset --hard"
+blocked "assign-empty-value"  "FOO= git push --force"
+blocked "assign-multi"        "A=1 B=2 git clean -fd"
+blocked "assign-rtk-push"     "NODE_ENV=x rtk git push --force"
+blocked "assign-sudo-rm-root" "FOO=1 sudo rm -rf /"
+blocked "assign-chained"      "cd sub && FOO=1 git clean -fd"
 
 echo "allowed (exit 0):"
 allowed "plain-push"          "git push"
 allowed "push-branch"         "git push origin main"
 allowed "prose-in-quotes"     'git commit -m "docs: never git push --force"'
+# The assignment alternative must not turn a mention into a refusal: it fires
+# only at a real start-of-command boundary, and a safe verb after it stays safe.
+allowed "assign-plain-push"   "A=1 git push"
+allowed "assign-status"       "FOO=bar git status --short"
+allowed "assign-pnpm"         "NODE_ENV=test pnpm test"
 allowed "clean-dry-run"       "git clean -n"
 allowed "clean-dry-run-long"  "git clean --dry-run"
 allowed "branch-d-merged"     "git branch -d merged"

@@ -48,7 +48,7 @@ invocation reads that as not remaining. Never rename a task title. -->
 - [x] 3. `skills/dw-check/SKILL.md` description — the corpus has zero occurrences of `bug`,
       `mistake`, `wrong`, `broken`; add that vocabulary plus `so far` and `second opinion`, and move
       `codex` out of the unscored `argument-hint`. Re-measure.
-- [ ] 4. `skills/dw-land/SKILL.md` description — add `pull request`, `done`, `leftovers`; release
+- [x] 4. `skills/dw-land/SKILL.md` description — add `pull request`, `done`, `leftovers`; release
       `diff` to `dw-check`; strip the literal paths. Re-measure alone, `dw-shape` is at risk here.
 - [ ] 5. `skills/dw-doctor/SKILL.md` and `skills/dw-grill/SKILL.md` descriptions — `pre-commit` and
       `silently skipping`; `ambiguous` and `requirements`. Uncontested vocabulary. Re-measure.

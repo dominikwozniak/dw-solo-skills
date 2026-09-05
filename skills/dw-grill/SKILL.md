@@ -1,9 +1,9 @@
 ---
 name: dw-grill
 description: >-
-  Interview the user to sharpen a vague, half-formed idea into decisions before any of it gets
-  built — one question at a time, at most five, hardest-first, each with a recommended answer, so
-  the thinking is finished first.
+  Interview the user to sharpen a vague, half-formed or ambiguous idea into decided requirements
+  before any of it gets built — one question at a time, at most five, hardest-first, each with a
+  recommended answer, so the thinking is finished first.
 argument-hint: "What should I grill you about?"
 ---
 

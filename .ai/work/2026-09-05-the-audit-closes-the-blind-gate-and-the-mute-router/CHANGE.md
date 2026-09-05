@@ -50,7 +50,7 @@ invocation reads that as not remaining. Never rename a task title. -->
       `codex` out of the unscored `argument-hint`. Re-measure.
 - [x] 4. `skills/dw-land/SKILL.md` description — add `pull request`, `done`, `leftovers`; release
       `diff` to `dw-check`; strip the literal paths. Re-measure alone, `dw-shape` is at risk here.
-- [ ] 5. `skills/dw-doctor/SKILL.md` and `skills/dw-grill/SKILL.md` descriptions — `pre-commit` and
+- [x] 5. `skills/dw-doctor/SKILL.md` and `skills/dw-grill/SKILL.md` descriptions — `pre-commit` and
       `silently skipping`; `ambiguous` and `requirements`. Uncontested vocabulary. Re-measure.
 - [ ] 6. `argument-hint` is one style everywhere: the middot argument list. `dw-grill` and
       `dw-shape` stop asking a question in a slot that describes arguments; `dw-doctor` and

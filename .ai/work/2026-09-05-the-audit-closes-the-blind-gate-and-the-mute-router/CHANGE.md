@@ -45,7 +45,7 @@ invocation reads that as not remaining. Never rename a task title. -->
 - [x] 2. `skills/dw-next/SKILL.md` description — drop the meta opener that collides with `dw-doctor`,
       add `continue` / `catch up` / `left to do`, strip the literal path. Re-measure; leave
       "pick … back up" out, traded away on 2026-08-18.
-- [ ] 3. `skills/dw-check/SKILL.md` description — the corpus has zero occurrences of `bug`,
+- [x] 3. `skills/dw-check/SKILL.md` description — the corpus has zero occurrences of `bug`,
       `mistake`, `wrong`, `broken`; add that vocabulary plus `so far` and `second opinion`, and move
       `codex` out of the unscored `argument-hint`. Re-measure.
 - [ ] 4. `skills/dw-land/SKILL.md` description — add `pull request`, `done`, `leftovers`; release

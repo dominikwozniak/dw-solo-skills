@@ -16,7 +16,7 @@ argument-hint: "bare delegates the pass · codex forces it on a trivial diff · 
 
 The diff against the default branch — the ref `bash "${CLAUDE_PLUGIN_ROOT}/scripts/base-ref.sh"` prints — plus
 the branch's `CHANGE.md` goal, so findings are judged against what the change is trying to do, not
-against taste. `$ARGUMENTS` is read two ways: the single word `codex` forces the delegated pass
+against taste. The argument is read two ways: the single word `codex` forces the delegated pass
 past the triviality floor, and anything else narrows the focus to a path or a topic. It writes no
 `.ai/` artifact — approved fixes land as code commits.
 

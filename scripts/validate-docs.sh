@@ -12,6 +12,8 @@
 #      file routed to, every routed path real, every documented `pnpm <script>` a real script, and
 #      CLAUDE.md still a symlink
 #   6. no dangling references/ pointer — every `references/<file>.md` a SKILL.md cites is on disk
+#   7. argument-hint <=> a bare `$ARGUMENTS` trailer — a skill that declares it takes arguments has
+#      the one line that delivers them, and a skill that declares none carries no such line
 #
 # Check 5 is not implemented here. It runs `templates/check-agents-docs.mjs` — the very checker this
 # repo SHIPS into repos that dw-init scaffolds — against this repo's own root. Reimplementing two of
@@ -19,6 +21,13 @@
 # implementation to keep in step, and a payload whose only proof it works is that it works somewhere
 # else. This is the same bargain scripts/tests/hooks-in-sync.test.sh strikes for the hooks, and it
 # means a bug in the shipped checker fails this repo's own gate before a consumer ever sees it.
+#
+# Check 7 is not the deleted Arguments-cell check returning. That one compared two prose copies of
+# the same list; this one pairs a frontmatter declaration with the token that makes it true. The
+# token is substituted before the model reads the file, so a skill explaining `$ARGUMENTS` mid-
+# sentence has its explanation replaced by the argument at the moment it applies — and four skills
+# had no trailer at all, leaving that clobbered sentence as the only delivery. Neither half is
+# visible by reading one file.
 #
 # There used to be two more, and their deletion is the point rather than a regression: one compared
 # each README Arguments cell to the skill's own `argument-hint`, the other compared the "Before you
@@ -191,6 +200,30 @@ for d in skills/*/; do
       FAILED=1
     fi
   done
+done
+
+echo
+echo "Checking argument-hint pairs with an \$ARGUMENTS trailer..."
+for d in skills/*/; do
+  f="$d/SKILL.md"
+  [ -f "$f" ] || continue
+  name="$(basename "$d")"
+  hint=0
+  grep -q '^argument-hint:' "$f" && hint=1
+  # The trailer is a line of its own: an inline mention neither delivers reliably nor survives.
+  trailer="$(grep -c '^\$ARGUMENTS$' "$f")"
+  if [ "$hint" -eq 1 ] && [ "$trailer" -eq 0 ]; then
+    echo "::error::$name declares argument-hint but has no bare \$ARGUMENTS trailer to deliver it"
+    FAILED=1
+  elif [ "$hint" -eq 0 ] && [ "$trailer" -gt 0 ]; then
+    echo "::error::$name has a \$ARGUMENTS trailer but declares no argument-hint"
+    FAILED=1
+  elif [ "$trailer" -gt 1 ]; then
+    echo "::error::$name has $trailer \$ARGUMENTS trailers — one delivers, the rest are noise"
+    FAILED=1
+  else
+    echo "OK  $name (hint=$hint, trailer=$trailer)"
+  fi
 done
 
 echo

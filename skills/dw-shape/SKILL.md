@@ -44,7 +44,7 @@ change doc committed to the default branch is what a post-squash rebase resurrec
 
 ### 1. Read the project, don't assume it
 
-The request (it may arrive as `$ARGUMENTS`); `AGENTS.md` / `CLAUDE.local.md`, else the manifests,
+The request (it may arrive as the argument below); `AGENTS.md` / `CLAUDE.local.md`, else the manifests,
 for the test and git conventions; `CONTEXT.md` and `docs/decisions/` where present — a settled
 term or decision is not re-litigated; a matching `.ai/backlog/` entry — prior context: create the
 folder, `git mv` the entry in as `CHANGE.md`, and expand it in place; the real sibling patterns,
@@ -84,3 +84,5 @@ Beyond small, prefer a fresh session per change — the committed file is the ha
 - `references/CHANGE.md` — the exact shape to copy; the tick convention lives in the template.
 
 **Next:** `dw-next` to build it, or `dw-grill` if the read-back exposed something still undecided.
+
+$ARGUMENTS

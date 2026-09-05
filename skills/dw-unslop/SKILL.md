@@ -19,7 +19,7 @@ as fast. Step 3 is there for the second one.
 
 ## What it reads and writes
 
-Reads whatever `$ARGUMENTS` names: empty takes the open change's PR body and the commit bodies on its
+Reads whatever the argument names: empty takes the open change's PR body and the commit bodies on its
 branch, a path takes that file, pasted text takes itself. Writes the rewritten text — into a tracked
 file only after you have seen the diff — and **no `.ai/` artifact of its own**.
 
@@ -86,3 +86,5 @@ will — apply them first, because both are deletions and a deleted sentence nee
   there, each with the reason on its own line.
 
 **Next:** `dw-land`, which owns the PR body; a commit body about to be written follows `## Git conventions`.
+
+$ARGUMENTS

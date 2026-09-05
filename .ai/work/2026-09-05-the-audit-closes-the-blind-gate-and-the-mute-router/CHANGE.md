@@ -55,7 +55,7 @@ invocation reads that as not remaining. Never rename a task title. -->
 - [x] 6. `argument-hint` is one style everywhere: the middot argument list. `dw-grill` and
       `dw-shape` stop asking a question in a slot that describes arguments; `dw-doctor` and
       `dw-prune` say in the body that they take none, the way `dw-ship` already does.
-- [ ] 7. Verify what the harness does with `$ARGUMENTS` mid-prose. If it substitutes, the four
+- [x] 7. Verify what the harness does with `$ARGUMENTS` mid-prose. If it substitutes, the four
       skills that explain the token inline lose the explanation at the moment it applies — fix them
       to name "the argument" in prose and keep one bare trailer.
 - [ ] 8. `license` in all three `plugin.json` and their marketplace entries. The root MIT `LICENSE`

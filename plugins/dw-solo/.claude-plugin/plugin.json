@@ -5,5 +5,8 @@
   "author": {
     "name": "Dominik Wozniak"
   },
-  "skills": "./skills"
+  "skills": "./skills",
+  "license": "MIT",
+  "homepage": "https://github.com/dominikwozniak/dw-solo-skills",
+  "repository": "https://github.com/dominikwozniak/dw-solo-skills"
 }

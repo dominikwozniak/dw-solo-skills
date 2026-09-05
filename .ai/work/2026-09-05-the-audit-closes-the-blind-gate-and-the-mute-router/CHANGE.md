@@ -58,7 +58,7 @@ invocation reads that as not remaining. Never rename a task title. -->
 - [x] 7. Verify what the harness does with `$ARGUMENTS` mid-prose. If it substitutes, the four
       skills that explain the token inline lose the explanation at the moment it applies — fix them
       to name "the argument" in prose and keep one bare trailer.
-- [ ] 8. `license` in all three `plugin.json` and their marketplace entries. The root MIT `LICENSE`
+- [x] 8. `license` in all three `plugin.json` and their marketplace entries. The root MIT `LICENSE`
       never ships: `source` is `./plugins/<p>`, so the install cache carries no license at all.
 - [ ] 9. Version bumps for every plugin whose shipped payload moved, synced into
       `.claude-plugin/marketplace.json`; corpus baseline updated in this diff if the corpus grew.

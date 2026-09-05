@@ -55,8 +55,70 @@ BLOCKED_PATTERNS=(
   'bun[[:space:]]+(install|i|add|remove|update|run|x)\b'
 )
 
+# Every pattern above fires only at a command boundary, and BOUNDARY is `^` or one
+# of `;` `&` `|`. Inside a quoted span those characters are TEXT, not separators —
+# so `grep -rn "npm install\|yarn add" .` and `git commit -m "ci: replace | yarn
+# with pnpm"` were refused for containing the string they name, which is a refusal
+# nobody can act on. Neutralising them where they cannot be separators fixes the
+# whole class without touching a single pattern.
+#
+# The quotes themselves are KEPT, deliberately: BOUNDARY ends in an optional quote
+# so that `rtk run "npm install"` — where the quoted text really is the command —
+# still matches. Stripping the spans instead, as block-env-access.sh does, would
+# lose exactly that case.
+#
+# A state machine rather than sed, because the states are what make it correct: an
+# apostrophe inside double quotes is a literal, and so is a double quote inside
+# single quotes. Same three states as the lexer in enforce-commit-hygiene.sh.
+mask_quoted_separators() {
+  local s="$1"
+  local n=${#s}
+  local i=0 ch out="" state=plain
+  while ((i < n)); do
+    ch=${s:i:1}
+    # An escaped character is a literal, never a separator, in any state.
+    if [[ "$ch" == '\' ]]; then
+      out+=$ch
+      i=$((i + 1))
+      if ((i < n)); then
+        ch=${s:i:1}
+        case "$ch" in ';' | '&' | '|') ch=$'\002' ;; esac
+        out+=$ch
+      fi
+      i=$((i + 1))
+      continue
+    fi
+    case "$state" in
+      plain)
+        case "$ch" in
+          "'") state=sq ;;
+          '"') state=dq ;;
+        esac
+        ;;
+      sq) [[ "$ch" == "'" ]] && state=plain ;;
+      dq) [[ "$ch" == '"' ]] && state=plain ;;
+    esac
+    if [[ "$state" != plain ]]; then
+      case "$ch" in ';' | '&' | '|') ch=$'\002' ;; esac
+    fi
+    out+=$ch
+    i=$((i + 1))
+  done
+  # Unterminated quote: everything after the opener was read as quoted, so a real
+  # separator may have been masked and a real invocation would slip through. Fail
+  # closed — hand back the original and let the patterns judge it unchanged.
+  if [[ "$state" != plain ]]; then
+    printf '%s' "$s"
+  else
+    printf '%s' "$out"
+  fi
+}
+
+SCAN=$(mask_quoted_separators "$COMMAND")
+
 for pattern in "${BLOCKED_PATTERNS[@]}"; do
-  if echo "$COMMAND" | grep -qE "${BOUNDARY}${pattern}"; then
+  # Matched against SCAN, reported as COMMAND: the user has to see what they typed.
+  if printf '%s\n' "$SCAN" | grep -qE "${BOUNDARY}${pattern}"; then
     echo "BLOCKED: '$COMMAND' uses npm/npx/yarn/bun. This repo enforces pnpm. Use 'pnpm install', 'pnpm add <pkg>', or 'pnpm dlx <cmd>' to run a package without installing it." >&2
     exit 2
   fi

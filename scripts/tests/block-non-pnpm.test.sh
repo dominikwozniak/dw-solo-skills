@@ -127,6 +127,30 @@ blocked "two-env-prefixes" "CI=1 NODE_ENV=production npm ci"
 blocked "env-prefix-after-chain" "cd app; NODE_ENV=test npm run seed"
 blocked "sudo-after-chain" "cd app && sudo npm install"
 
+echo "a separator inside quotes is text, not a command boundary (exit 0):"
+# Every one of these was refused for containing the string it names — a refusal
+# nobody can act on, and the class that made grepping for these patterns, or
+# writing a commit message about them, impossible. The boundary is `^` or one of
+# `; & |`; inside a quoted span those characters cannot be any of the three.
+allowed "grep-alternation" 'grep -rn "npm install\|yarn add" .'
+allowed "grep-leading-separator" 'git grep "; npm install"'
+allowed "commit-msg-with-pipe" 'git commit -m "ci: replace | yarn with pnpm"'
+allowed "commit-msg-with-semicolon" 'git commit -m "docs: run x; npm install is banned"'
+allowed "single-quoted-prose" "echo 'first x; npm install then y'"
+# An apostrophe inside double quotes is a literal, not a quote opener — get that
+# wrong and the rest of the command reads as quoted.
+allowed "apostrophe-in-double-quotes" 'echo "don'"'"'t | yarn add x"'
+
+echo "…but a separator outside quotes still is one (exit 2):"
+allowed "pnpm-unaffected" 'echo "x | y"; pnpm install'
+blocked "real-pipe-still-blocks" "echo x | npm run seed"
+blocked "real-semicolon-still-blocks" "cd app; NODE_ENV=test npm ci"
+blocked "quoted-then-real" 'echo "a | b"; npm install'
+blocked "quoted-then-real-wrapped" 'echo "a ; b" && sudo npm ci'
+# Unterminated quote: the scan cannot know where the quoted span ends, so masking
+# could hide a real separator. It hands back the original rather than guess.
+blocked "unterminated-quote-fails-closed" "echo don't; npm install"
+
 echo "the wrapper prefix must not reach into prose or a longer word (exit 0):"
 # A wrapper chain only counts at a command boundary. Without that, an `=` anywhere
 # in a commit message would turn the rest of the line into a command.

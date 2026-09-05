@@ -100,6 +100,31 @@ case "$err" in
 esac
 rm -rf "$BROKEN"
 
+echo "a heredoc body is text being written, not commands being run:"
+# The guards match line by line, so a body line sits at a start-of-line anchor and
+# reads as an invocation. Writing a test fixture for these very guards was refused
+# because of it — the largest false-refusal class these guardrails produced.
+expect_rc "heredoc-body-npm" 0 "$(run "$(printf 'cat > t.sh <<EOF\nnpm install\nEOF')")"
+expect_rc "heredoc-body-force-push" 0 "$(run "$(printf 'cat > t.sh <<EOF\ngit push --force\nEOF')")"
+expect_rc "heredoc-body-add-all" 0 "$(run "$(printf 'cat > t.sh <<EOF\ngit add -A\nEOF')")"
+expect_rc "heredoc-quoted-delimiter" 0 "$(run "$(printf "cat > t.sh <<'EOF'\nyarn add x\nEOF")")"
+
+# The opener line is kept, so a redirect target on it is still a real path.
+expect_rc "heredoc-opener-dotenv" 2 "$(run "$(printf 'cat > .env <<EOF\nSECRET=1\nEOF')")"
+
+# The swallow regression: strip the body, keep the opener, and a downstream guard
+# running its own heredoc pass finds no terminator — so it would treat every line
+# after the opener as body and scan none of them. The command below is exactly
+# that shape, and it must still be refused.
+expect_rc "command-after-heredoc-still-blocks" 2 \
+  "$(run "$(printf 'cat > t.txt <<EOF\nhello\nEOF\ngit push --force')")"
+expect_rc "dotenv-after-heredoc-still-blocks" 2 \
+  "$(run "$(printf 'cat > t.txt <<EOF\nhello\nEOF\ncat .env')")"
+
+# A here-string is not a heredoc opener, and must not be rewritten into one.
+expect_rc "here-string-untouched" 0 "$(run 'cat <<< hello')"
+expect_rc "here-string-then-block" 2 "$(run "$(printf 'cat <<< hello\ngit push --force')")"
+
 echo
 echo "bash-guard self-test: $PASS passed, $FAIL failed"
 [ "$FAIL" -eq 0 ]

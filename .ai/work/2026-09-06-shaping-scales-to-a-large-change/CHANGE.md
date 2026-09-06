@@ -81,7 +81,7 @@ invocation reads that as not remaining. Never rename a task title. -->
 - [x] 3. **The template.** `skills/dw-shape/references/CHANGE.md`: `## Out of scope` after
       `## Decisions` with a row that carries its own why; the `(assumed)` hint under Decisions; the
       sibling hint under References; Goal's "~5 lines at most" becomes one line per observable result.
-- [ ] 4. **The readers, the payload and the glossary.** `skills/dw-next/SKILL.md:17` names sibling files
+- [x] 4. **The readers, the payload and the glossary.** `skills/dw-next/SKILL.md:17` names sibling files
       among what it reads; `skills/dw-land/SKILL.md:68-71` `git rm`s every sibling at archive
       (`HANDOFF.md` included — closing the drift where `templates/work-README.md:38-39` credits `dw-land`
       with a removal its body never had); `templates/work-README.md` layout and lifetimes gain the

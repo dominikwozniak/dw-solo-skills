@@ -6,6 +6,9 @@ Artifacts are real work documents, committed with the code — not scratch.
   is by directory name + per-file frontmatter instead: the resume step globs the work dirs and matches
   the current branch, so two branches never fight over one file.
 - **One folder per change** (`.ai/work/<date>-<slug>/`) — parallel branches and worktrees don't collide.
+  The folder holds `CHANGE.md` and, rarely, a sibling the doc names in `## References` — a shape-time
+  detail file, or a `HANDOFF.md` mid-task. Siblings leave at archive; the archived entry is the receipt
+  alone.
 - **One change is one goal**, and the count is one unless the pieces answer to **different** goals —
   asked at **shape time** rather than discovered mid-build. Not independent shippability, which is a
   good _task_'s property and splits work sharing a goal when borrowed one level up; `dw-shape` carries

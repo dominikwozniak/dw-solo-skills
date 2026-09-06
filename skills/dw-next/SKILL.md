@@ -15,7 +15,8 @@ laptop or a week away must change nothing about the answer.
 ## What it reads and writes
 
 Reads `.ai/work/<date>-<slug>/CHANGE.md` (written by `dw-shape`), a `HANDOFF.md` beside it when a
-session left one, and `CONTEXT.md` for the project's terms. Writes code, ticks the checklist,
+session left one, any sibling file its `## References` names, and `CONTEXT.md` for the project's
+terms. Writes code, ticks the checklist,
 appends to Notes, and commits. Find the active change by branch, never by guessing:
 
 ```

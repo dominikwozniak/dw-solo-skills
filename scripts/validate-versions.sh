@@ -120,6 +120,10 @@ for p in $PLUGIN_DIRS; do
     { [ -e "$entry" ] || [ -L "$entry" ]; } || continue
     SURFACE="$SURFACE skills/$(basename "$entry")/"
   done
+  for entry in "$p"/agents/*.md; do
+    { [ -e "$entry" ] || [ -L "$entry" ]; } || continue
+    SURFACE="$SURFACE agents/$(basename "$entry")"
+  done
   for link in "$p"/scripts/*.sh; do
     { [ -e "$link" ] || [ -L "$link" ]; } || continue
     SURFACE="$SURFACE scripts/runtime/$(basename "$link")"

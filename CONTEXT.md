@@ -5,8 +5,9 @@ in [`AGENTS.md`](AGENTS.md) and the procedures in the skills themselves.
 
 - **Lane** — how much process a change gets. This repo is the **thin lane**: one reader, and only the
   ceremony a solo change pays for.
-- **Canon** — the single real copy of a file. `skills/<name>/` and `scripts/runtime/<s>.sh` are canon;
-  everything under `plugins/` is a git-tracked symlink back to it. Never edit through `plugins/…`.
+- **Canon** — the single real copy of a file. `skills/<name>/`, `agents/<name>.md` and
+  `scripts/runtime/<s>.sh` are canon; everything under `plugins/` is a git-tracked symlink back to
+  it. Never edit through `plugins/…`.
 - **Change** — one unit of work, held in `.ai/work/<date>-<slug>/CHANGE.md`. Persistent (tracked,
   survives a `/clear`), archived at merge (`.ai/archive/<date>-<slug>/`, `status: landed`).
 - **Sibling file** — a file beside a `CHANGE.md` in its change folder: a shape-time detail file the

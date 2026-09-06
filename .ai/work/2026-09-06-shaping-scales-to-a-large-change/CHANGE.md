@@ -2,7 +2,7 @@
 change: shaping-scales-to-a-large-change
 branch: shaping-scales-to-a-large-change
 created: 2026-09-06
-status: shaping # shaping | building | landed
+status: building # shaping | building | landed
 ---
 
 # Change — dw-grill asks in rounds, and dw-shape carries a large change in one doc
@@ -64,7 +64,7 @@ pass. You know it worked when:
 A task that stopped being necessary keeps its box and gains `**skip:** <reason>`; every later
 invocation reads that as not remaining. Never rename a task title. -->
 
-- [ ] 1. **`dw-grill` asks in rounds.** `skills/dw-grill/SKILL.md`: a scope check before question one
+- [x] 1. **`dw-grill` asks in rounds.** `skills/dw-grill/SKILL.md`: a scope check before question one
       (several independent goals → name the pieces, grill the first); step 2's "at most five" becomes
       "five a round", and the assume-and-say-so rule extends from repo facts to decisions below the
       cut; a new **Pause at five** step before any sixth question — playback, open items each with a
@@ -96,7 +96,7 @@ invocation reads that as not remaining. Never rename a task title. -->
       change written rather than a cut offered. `node evals/behaviour.ts` lists all three.
 - [ ] 6. **Bumps, baseline, gate.** `dw-solo` 0.8.0 → 0.8.1 and `dw-solo-setup` 0.4.0 → 0.4.1 in
       `.claude-plugin/marketplace.json` and each `plugin.json`; `node scripts/check-skill-corpus.mjs
-    --update-baseline`; every command in `package.json`'s `scripts` block green.
+  --update-baseline`; every command in `package.json`'s `scripts` block green.
 
 ## Anchors
 

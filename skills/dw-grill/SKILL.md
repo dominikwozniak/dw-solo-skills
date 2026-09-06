@@ -2,8 +2,9 @@
 name: dw-grill
 description: >-
   Interview the user to sharpen a vague, half-formed or ambiguous idea into decided requirements
-  before any of it gets built — one question at a time, at most five, hardest-first, each with a
-  recommended answer, so the thinking is finished first.
+  before any of it gets built — one question at a time, in rounds of five, hardest-first, each with a
+  recommended answer, and a playback between rounds of what is decided and what is still open, so
+  the thinking is finished first.
 argument-hint: "bare grills the idea already in the conversation · a topic or question narrows it"
 ---
 
@@ -15,22 +16,35 @@ ask in its terms.
 
 ## Workflow
 
-1. **Separate facts from decisions.** Facts — anything discoverable in the repo or environment —
+1. **Size the idea before question one.** An idea spanning several independent goals — separate
+   consumers, separate data, one piece could ship without the others — is too big to grill as one:
+   name the pieces, propose which to grill first, and **wait**. Grilling the whole yields a long
+   session and a plan for none of it.
+2. **Separate facts from decisions.** Facts — anything discoverable in the repo or environment —
    are looked up, never asked. Only decisions (trade-offs, scope boundaries, product choices, which
    of two shapes) become questions.
-2. **Spend the budget well — at most five questions**, hardest-first by what a wrong answer would
+3. **Spend the round well — five questions a round**, hardest-first by what a wrong answer would
    cost: scope → security/privacy → UX → technical detail. Four good questions beat five with a
    filler. Don't ask what the repo already answers (style, test framework, layout, naming, which
-   installed library) — assume the sensible default and say which one you assumed.
-3. **One question per message**, answerable as two to five mutually exclusive options or in five
+   installed library), and don't spend a slot on a decision with one sensible default: assume it and
+   say so in the same message — "assuming X unless you say otherwise" — so a wrong default costs one
+   correction, not a question.
+4. **One question per message**, answerable as two to five mutually exclusive options or in five
    words, always with the option you'd pick and why. Short active sentences, one word with one
-   meaning. Then **wait** — never answer your own question and move on.
-4. **Resolve the tree, not the list.** After each answer, re-derive what is still genuinely open:
+   meaning. Then **wait** — never answer your own question and move on. A disambiguation of the
+   question just asked belongs to that question and takes no slot.
+5. **Resolve the tree, not the list.** After each answer, re-derive what is still genuinely open:
    an answer often closes two later questions, or opens one that matters more than anything left.
-5. **Close explicitly** when the remaining unknowns wouldn't change what gets built. Play back in a
+6. **Pause at five.** Before a sixth question, play back in a few lines: what is decided, and what is
+   still open — each with the default you would assume and what a wrong default costs. Offer three
+   ways forward: another round · shape now with those defaults · the idea is too big to grill as
+   one, here are the pieces. Then **wait**; a hedged reply is not a choice.
+7. **Close explicitly** when the remaining unknowns wouldn't change what gets built. Play back in a
    few lines: what we're building, what we decided, every resource the conversation pointed at, and
-   — explicit and separate — what we deliberately left out. `dw-shape` gives each named left-out
-   item its fate, and an item you don't name never gets one.
+   — each explicit and separate — what we **assumed** without asking, what we **deferred** and why,
+   and what we deliberately **left out**. `dw-shape` gives each named item its fate — an assumed
+   default becomes a decision marked as such, a deferred or left-out item goes under
+   `## Out of scope` or into the change — and an item you don't name never gets one.
 
 **Do not start implementing, and write nothing** — agreement is the whole job here.
 

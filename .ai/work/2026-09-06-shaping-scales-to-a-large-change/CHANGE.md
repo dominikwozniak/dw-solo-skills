@@ -94,7 +94,7 @@ invocation reads that as not remaining. Never rename a task title. -->
       on a feature branch, planting a count a naive read gets wrong — expects `## Out of scope`,
       numbers matching disk, a sibling (if any) named in References and repeating nothing, and one
       change written rather than a cut offered. `node evals/behaviour.ts` lists all three.
-- [ ] 6. **Bumps, baseline, gate.** `dw-solo` 0.8.0 → 0.8.1 and `dw-solo-setup` 0.4.0 → 0.4.1 in
+- [x] 6. **Bumps, baseline, gate.** `dw-solo` 0.8.0 → 0.8.1 and `dw-solo-setup` 0.4.0 → 0.4.1 in
       `.claude-plugin/marketplace.json` and each `plugin.json`; `node scripts/check-skill-corpus.mjs
 --update-baseline`; every command in `package.json`'s `scripts` block green.
 
@@ -138,3 +138,10 @@ invocation reads that as not remaining. Never rename a task title. -->
 
 - Written in the new template shape on purpose: this doc carries `## Out of scope` before task 3 adds it.
 - Unexercised until reinstall — the session serves the cached plugin, so verify the canon text by hand.
+- The skill-corpus baseline was re-recorded in each commit that grew a body (tasks 1, 2, 4), not once
+  in task 6 — `skills-and-plugins.md` step 7 asks for the same commit, and it keeps every commit green.
+- Task 2 also re-aligned `dw-grill`'s closing sentence: a deferred item is an `(assumed)` decision, not
+  an out-of-scope line — the first wording from task 1 put it in both places.
+- Task 4's `dw-land` clause closes a drift older than this change: `work-README.md` and `dw-handoff` said
+  `dw-land` removes a leftover `HANDOFF.md`, and its body never did.
+- `node evals/behaviour.ts --go` was not run — the three cases are listed by the free plan and unmeasured.

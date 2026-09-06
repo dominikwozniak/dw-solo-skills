@@ -16,10 +16,11 @@ ask in its terms.
 
 ## Workflow
 
-1. **Size the idea before question one.** An idea spanning several independent goals — separate
-   consumers, separate data, one piece could ship without the others — is too big to grill as one:
-   name the pieces, propose which to grill first, and **wait**. Grilling the whole yields a long
-   session and a plan for none of it.
+1. **Size the idea before question one.** An idea answering to several **separate goals** — different
+   consumers, different data, one piece could be dropped without rewriting the others — is too big to
+   grill as one: name the pieces, propose which to grill first, and **wait**. Grilling the whole
+   yields a long session and a plan for none of it. Independent shippability is **not** the test —
+   `dw-shape` settled that, and a grill that splits on it hands over a split that skill will refuse.
 2. **Separate facts from decisions.** Facts — anything discoverable in the repo or environment —
    are looked up, never asked. Only decisions (trade-offs, scope boundaries, product choices, which
    of two shapes) become questions.

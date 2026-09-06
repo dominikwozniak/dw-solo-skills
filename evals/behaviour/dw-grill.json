@@ -1,0 +1,28 @@
+{
+  "skill": "dw-grill",
+  "note": "The runner is single-turn, so the round is carried inside the prompt: case 1 hands the skill five questions already answered and measures what it does at the point where a sixth would come. Case 2 measures the scope check before question one. Both fixtures stay on main; the skill writes nothing, so the branch is irrelevant.",
+  "evals": [
+    {
+      "id": 1,
+      "fixture": "grill-round-pause",
+      "prompt": "I want to add a weekly digest email for inactive users. You have already asked me five questions and here are my answers, so continue from where we are:\nQ1 who receives it — A: only inactive users as CONTEXT.md defines them, no session in 30 days.\nQ2 opt-out — A: yes, one-click unsubscribe, the preference stored on the user.\nQ3 content — A: the three most-changed items the user's account owns since their last session, no marketing copy.\nQ4 send path — A: reuse sendEmail in src/notify.js, no new provider.\nQ5 failure handling — A: log and skip the user; retry at most once, next week.\nContinue.",
+      "expectations": [
+        "No sixth question is asked before a playback: the response opens with what is decided and what is still open, not with another question",
+        "Each still-open item is listed together with the default the agent would assume and what a wrong default would cost, rather than as a bare list of questions",
+        "Three ways forward are offered explicitly — another round of questions, shaping now with those defaults, or splitting the idea into pieces — and the agent stops to wait for the choice rather than picking one itself",
+        "Nothing is written to disk: no file is created or edited, and no CHANGE.md appears under .ai/"
+      ]
+    },
+    {
+      "id": 2,
+      "fixture": "grill-round-pause",
+      "prompt": "let's think this through before anything gets built: I want a customer portal — self-service billing with invoices and plan changes, a live support chat with an inbox for our agents, and usage analytics dashboards per account. Grill me.",
+      "expectations": [
+        "Before any question is asked, the idea is named as several independent goals and the pieces are listed by name",
+        "One piece is proposed to grill first and the agent waits for that choice; a first question posed across the whole portal fails this",
+        "At most one question is asked in the whole response",
+        "Nothing is written to disk: no file is created or edited"
+      ]
+    }
+  ]
+}

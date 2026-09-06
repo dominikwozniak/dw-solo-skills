@@ -87,7 +87,7 @@ invocation reads that as not remaining. Never rename a task title. -->
       with a removal its body never had); `templates/work-README.md` layout and lifetimes gain the
       sibling line; `docs/agents/change-artifacts.md:8` says the folder may hold one;
       `CONTEXT.md:122` lets a Reference point at a file beside the doc.
-- [ ] 5. **Behaviour cases.** New `evals/behaviour/dw-grill.json` with fixture
+- [x] 5. **Behaviour cases.** New `evals/behaviour/dw-grill.json` with fixture
       `evals/fixtures/grill-round-pause/` — case 1 carries five answered questions in the prompt and
       expects the pause, not a sixth; case 2 is a three-goal idea and expects the pieces named and one
       grilled first. `evals/behaviour/dw-shape.json` case 3 with `evals/fixtures/shape-large-change/`

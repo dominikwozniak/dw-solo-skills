@@ -71,7 +71,7 @@ invocation reads that as not remaining. Never rename a task title. -->
       default and the cost of a wrong one, three ways forward, wait; a retry of a question takes no
       slot; the close playback gains **assumed** and **deferred** lists. `description` says rounds.
       `README.md:73` drops "max five questions". `pnpm eval:routing` after — the description shifts idf.
-- [ ] 2. **`dw-shape` sizes by content and carries Large.** `skills/dw-shape/SKILL.md`: step 1 gains
+- [x] 2. **`dw-shape` sizes by content and carries Large.** `skills/dw-shape/SKILL.md`: step 1 gains
       the grep-confirm rule for counts and consumers; step 2 replaces "Every size writes short …" with
       the content rule and rewrites **Large** (say so, run the count test, one doc with
       `## Out of scope`, sibling files for detail); a **Sibling files** paragraph — what they hold, where,
@@ -96,7 +96,7 @@ invocation reads that as not remaining. Never rename a task title. -->
       change written rather than a cut offered. `node evals/behaviour.ts` lists all three.
 - [ ] 6. **Bumps, baseline, gate.** `dw-solo` 0.8.0 → 0.8.1 and `dw-solo-setup` 0.4.0 → 0.4.1 in
       `.claude-plugin/marketplace.json` and each `plugin.json`; `node scripts/check-skill-corpus.mjs
-  --update-baseline`; every command in `package.json`'s `scripts` block green.
+--update-baseline`; every command in `package.json`'s `scripts` block green.
 
 ## Anchors
 

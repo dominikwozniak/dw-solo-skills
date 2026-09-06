@@ -42,9 +42,9 @@ ask in its terms.
 7. **Close explicitly** when the remaining unknowns wouldn't change what gets built. Play back in a
    few lines: what we're building, what we decided, every resource the conversation pointed at, and
    — each explicit and separate — what we **assumed** without asking, what we **deferred** and why,
-   and what we deliberately **left out**. `dw-shape` gives each named item its fate — an assumed
-   default becomes a decision marked as such, a deferred or left-out item goes under
-   `## Out of scope` or into the change — and an item you don't name never gets one.
+   and what we deliberately **left out**. `dw-shape` gives each named item its fate — an assumed or
+   deferred item becomes a decision marked as such, a left-out item goes under `## Out of scope` or
+   into the change — and an item you don't name never gets one.
 
 **Do not start implementing, and write nothing** — agreement is the whole job here.
 

@@ -106,6 +106,12 @@ is not in the skill corpus and `eval:routing` does not score it — which is als
 
 ## Gotchas
 
+- **An agent `description` written as a plain YAML scalar breaks on the first `: ` inside it.** Claude
+  Code loaded the file and ran the agent, and `claude plugin validate` passed it; only `agnix` refused
+  it as unparseable frontmatter. Use a `>-` block, as every `SKILL.md` here does.
+- **`agnix` asks for `./agents` in the manifest array and Claude's own validator refuses it.** Both the
+  bare directory string and a directory inside the array return `agents: Invalid input`, so the standing
+  warning is satisfiable only by breaking the plugin. Leave it; list agents by file path.
 - **A fenced template outranks the prose rule above it.** `dw-grain` step 3 demanded `file:line` plus the
   verbatim text, and two quotes wherever the remedy is a reuse — then the example table below it carried a
   paraphrase and a single location, demonstrating the exact shortcut the rule forbids. The template is the

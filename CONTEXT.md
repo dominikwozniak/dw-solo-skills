@@ -9,6 +9,8 @@ in [`AGENTS.md`](AGENTS.md) and the procedures in the skills themselves.
   everything under `plugins/` is a git-tracked symlink back to it. Never edit through `plugins/…`.
 - **Change** — one unit of work, held in `.ai/work/<date>-<slug>/CHANGE.md`. Persistent (tracked,
   survives a `/clear`), archived at merge (`.ai/archive/<date>-<slug>/`, `status: landed`).
+- **Sibling file** — a file beside a `CHANGE.md` in its change folder: a shape-time detail file the
+  doc names in `## References`, or a `HANDOFF.md`. Removed at archive; the receipt is the doc alone.
 - **Entry name** — `<YYYY-MM-DD>-<slug>`, from `slugify.sh dated`, for every entry in the three `.ai/`
   lanes. Each lane stamps **its own** date (noted, shaped, landed), so only the **bare slug** is
   comparable across them — `slugify.sh undate` strips a prefix, and `docs/decisions/` is exempt because

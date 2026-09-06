@@ -59,10 +59,13 @@ invocation reads that as not remaining. Never rename a task title. -->
 - [ ] 4. Document it: a README row, the `agents/` line in the root `AGENTS.md` layout block, and an
       `## Adding an agent` section in `docs/agents/skills-and-plugins.md` naming what no validator
       covers.
-- [ ] 5. One backlog entry for the surviving follow-ups: a declared doc contract in
+- [x] 5. One backlog entry for the surviving follow-ups: a declared doc contract in
       `templates/AGENTS.md`, CI coverage for `agents/`, and the recommender's two unbuilt hooks.
 - [ ] 6. Run the full `scripts` block of `package.json` — `eval:routing` included, since nothing
       here adds a skill but the docs checks read README and `AGENTS.md`.
+- [ ] 7. Teach `validate-manifests.sh` the `agents/` canon: every `plugins/<p>/agents/<name>.md` is
+      a symlink resolving to `agents/<name>.md`, and every canon agent is shipped by exactly one
+      plugin — the same two directions it already enforces for `skills/`. Runs after task 3.
 
 ## Anchors
 
@@ -97,6 +100,9 @@ invocation reads that as not remaining. Never rename a task title. -->
   for another repo, not a claim about this tree. The bar names that class explicitly.
 - A project agent registers only when a session **starts** — task 2 needs a restart before the
   first run, and that cost is the reason the prototype is local.
+- Task 5 shipped two items, not three. `.ai/backlog/README.md` sends work that nothing blocks and
+  that costs less than its own description into the open change instead — the `agents/` validator
+  is both, so it became task 7. The bundle is tighter for it: two `templates/` items, one bump.
 - The worktree git guard refuses `git add`, `git commit`, `git log` and `git status` here (rtk
   rewrites them and the guard cannot then prove the target). Every commit in this change needs a
   `!` line from the user.

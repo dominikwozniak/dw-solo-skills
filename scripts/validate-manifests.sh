@@ -186,6 +186,56 @@ for d in skills/*/; do
   fi
 done
 
+echo
+echo "Checking every plugin agent entry is a symlink into the canon..."
+# The skills rule, one file deep instead of one directory: agents/<name>.md is the canon and
+# plugins/<p>/agents/<name>.md is a git-tracked symlink back to it. The manifest check has no
+# skills counterpart and is the one worth the most — a plugin's `agents` key takes an ARRAY of
+# file paths, so an agent nobody lists ships as a file the runtime never registers, and the
+# directory string that works for `skills` is `agents: Invalid input`, which stops the whole
+# plugin loading.
+for p in $PLUGIN_DIRS; do
+  [ -d "$p/agents" ] || continue
+  for entry in "$p"/agents/*.md; do
+    # An empty agents/ leaves the glob unexpanded; a dangling symlink still passes -L.
+    { [ -e "$entry" ] || [ -L "$entry" ]; } || continue
+    name="$(basename "$entry")"
+    if [ ! -L "$entry" ]; then
+      echo "::error::$entry must be a symlink to ../../../agents/$name (real entry or missing)"
+      FAILED=1
+    elif [ ! -f "$entry" ]; then
+      echo "::error::$entry is a dangling symlink (target '$(readlink "$entry")' missing)"
+      FAILED=1
+    elif [ "$(readlink "$entry")" != "../../../agents/$name" ]; then
+      echo "::error::$entry must point at ../../../agents/$name (points at '$(readlink "$entry")')"
+      FAILED=1
+    elif ! grep -q "\"\./agents/$name\"" "$p/.claude-plugin/plugin.json"; then
+      echo "::error::$p/.claude-plugin/plugin.json omits \"./agents/$name\" from its \`agents\` array"
+      FAILED=1
+    else
+      echo "OK  $entry -> $(readlink "$entry")"
+    fi
+  done
+done
+
+# Reverse: every canon agent is shipped by exactly one plugin, for the reasons the skills loop gives.
+for f in agents/*.md; do
+  # An empty agents/ leaves the glob unexpanded, and basename would yield a literal `*`.
+  [ -f "$f" ] || continue
+  name="$(basename "$f")"
+  owners=0
+  for p in $PLUGIN_DIRS; do
+    [ -L "$p/agents/$name" ] && owners=$((owners + 1))
+  done
+  if [ "$owners" -eq 0 ]; then
+    echo "::error::agents/$name is shipped by no plugin (add a plugins/<p>/agents/$name symlink)"
+    FAILED=1
+  elif [ "$owners" -gt 1 ]; then
+    echo "::error::agents/$name is shipped by $owners plugins — a canon agent has exactly one owner"
+    FAILED=1
+  fi
+done
+
 # The template payloads (settings.json, hooks/, AGENTS.md, work-README.md, …) live once at
 # the repo root in templates/ and are exposed by a git-tracked symlink
 # plugins/dw-solo-setup/templates -> ../../templates, so ${CLAUDE_PLUGIN_ROOT}/templates/ resolves

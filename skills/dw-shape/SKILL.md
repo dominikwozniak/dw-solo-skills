@@ -48,17 +48,31 @@ The request (it may arrive as the argument below); `AGENTS.md` / `CLAUDE.local.m
 for the test and git conventions; `CONTEXT.md` and `docs/decisions/` where present — a settled
 term or decision is not re-litigated; a matching `.ai/backlog/` entry — prior context: create the
 folder, `git mv` the entry in as `CHANGE.md`, and expand it in place; the real sibling patterns,
-confirmed with Read or grep — these become the anchors. Every resource the conversation pointed
-at becomes a `## References` line.
+confirmed with Read or grep — these become the anchors. Every number, caller and consumer a task
+will name is counted **against the thing itself** — the directory, the file, the call sites — before
+the task is written. Never from memory, and never from another doc's count of it: a stale figure in
+prose is exactly how a task inherits a wrong one. Every resource the conversation pointed at becomes
+a `## References` line.
 
 ### 2. Size it, then count the scopes
 
 - **Small** — one obvious edit: a goal and one or two checkboxes, no other section.
-- **Normal** — a few files, one seam: goal, the decisions taken, 3–6 tasks, anchors.
-- **Large** — say so plainly and offer to cut it to the first genuinely shippable piece.
+- **Normal** — a few files, one seam: goal, the decisions taken, 3–6 tasks, anchors, out of scope.
+- **Large** — several layers, or you can't see the end: say so plainly. It takes the count test
+  below like every size, and when it stays one goal it stays one `CHANGE.md` — `## Out of scope` is
+  mandatory, and detail no line can hold goes to a sibling file.
 
-Every size writes short — goal ≤5 lines, one line per decision, task, anchor and reference;
-the file is re-read on every resume.
+Depth is by content, not by line count: tasks, anchors and references are one line each at every
+size; the goal and each decision take the lines the reasoning needs and none for template
+completeness — the file is re-read on every resume, so length is bought by a genuine decision or an
+open risk, never by boilerplate.
+
+**Sibling files:** `.ai/work/<date>-<slug>/<what-it-holds>.md` — `research.md`, `design.md` — beside
+`CHANGE.md`, where `HANDOFF.md` already sits. One holds only what no line in the doc can: verified
+findings, a comparison of shapes, a consumer map. Name it in `## References` with one line saying
+what it holds and which task leans on it, so `dw-next` reads it first. Most changes have none; a
+sibling that restates a section of the doc is a second copy, and `dw-land` removes every sibling at
+archive — the receipt is `CHANGE.md` alone.
 
 **Scopes:** one, unless the pieces answer to genuinely separate goals — neither file overlap nor
 independent shippability splits a change. At N ≥ 2 name the slugs and the one scope each owns, then
@@ -72,10 +86,12 @@ green, small enough for a fresh session. Order is a hint, never a gate.
 
 ### 4. Write, read back, commit
 
-Write `CHANGE.md` from the shape in `references/CHANGE.md`. Read back the goal, the task list, and
-the left-out list with a proposed fate per item (into the change / a one-line backlog entry /
-dropped) — **one stop**: granularity and fates are corrected in one reply. Then commit per
-`## Git conventions`, everything this shaping wrote staged by name.
+Write `CHANGE.md` from the shape in `references/CHANGE.md`. From a `dw-grill` close, an assumed or
+deferred item becomes a `## Decisions` line marked `(assumed)` with its default — `dw-next` builds
+on it and asks only when the build proves it wrong. Read back the goal, the task list, and the
+left-out list with a proposed fate per item (into the change / a one-line backlog entry /
+`## Out of scope` with why) — **one stop**: granularity and fates are corrected in one reply. Then
+commit per `## Git conventions`, everything this shaping wrote staged by name.
 
 Beyond small, prefer a fresh session per change — the committed file is the handoff.
 

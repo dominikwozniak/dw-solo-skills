@@ -374,8 +374,8 @@ routing eval asks whether a description still owns its vocabulary, this asks whe
 its word once it is running: that `dw-land` refuses to round an undelivered goal up, that `dw-ship`
 refuses an unlanded change, that `dw-next` declines to invent a task list.
 
-Ten cases across six of the twelve skills, and they come in three shapes. A **refusal** is a skill
-declining the thing the prompt is pushing for, the three above among them. A **shape** is a skill
+The cases come in three shapes. A **refusal** is a skill declining the thing the prompt is pushing
+for, the three above among them. A **shape** is a skill
 asked to write something durable, graded on the form it lands in rather than on whether it landed:
 `dw-land` promoting a trap as one undated rule bullet, where the prompt asks for the story to be
 kept and the story's home is the archive. An **absence** is a skill whose promise is that nothing

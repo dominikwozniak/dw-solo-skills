@@ -65,10 +65,12 @@ mechanical:
   `.ai/backlog/<date>-<slug>.md` file (frontmatter `created:`, `source:`, `why-not-now:`,
   `effort:`) only for work that genuinely exceeds the session. `git rm` any entry the diff
   completed.
-- **Archive** — `git mv .ai/work/<shaped date>-<slug>/ .ai/archive/<today>-<slug>/`; flip to
-  `status: landed` with `landed: YYYY-MM-DD`. Trim the doc to a receipt: delete Goal, Decisions,
-  Anchors and References — keep the frontmatter, the H1, the task list as `dw-next` left it, and
-  the Notes no target took.
+- **Archive** — `git rm` every sibling still beside the doc — a leftover `HANDOFF.md`, a shape-time
+  `research.md` — once anything durable in it has been promoted; the receipt is `CHANGE.md` alone.
+  Then `git mv .ai/work/<shaped date>-<slug>/ .ai/archive/<today>-<slug>/`; flip to
+  `status: landed` with `landed: YYYY-MM-DD`. Trim the doc to a receipt: delete Goal, Decisions, Out
+  of scope, Anchors and References — keep the frontmatter, the H1, the task list as `dw-next` left
+  it, and the Notes no target took.
 
 One commit carries all of it — including a `docs/agents/corpus.baseline.json` re-record where the
 repo keeps one, since a promotion that grows the corpus is what the ratchet asks to be shown.

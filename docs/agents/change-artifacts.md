@@ -6,6 +6,9 @@ Artifacts are real work documents, committed with the code — not scratch.
   is by directory name + per-file frontmatter instead: the resume step globs the work dirs and matches
   the current branch, so two branches never fight over one file.
 - **One folder per change** (`.ai/work/<date>-<slug>/`) — parallel branches and worktrees don't collide.
+  The folder holds `CHANGE.md` and, rarely, a sibling: a shape-time detail file the doc names in
+  `## References`, or a `HANDOFF.md` that `dw-next` finds by position. Both leave at archive; the
+  archived entry is the receipt alone.
 - **One change is one goal**, and the count is one unless the pieces answer to **different** goals —
   asked at **shape time** rather than discovered mid-build. Not independent shippability, which is a
   good _task_'s property and splits work sharing a goal when borrowed one level up; `dw-shape` carries
@@ -30,13 +33,15 @@ Artifacts are real work documents, committed with the code — not scratch.
 
 ## Gotchas
 
-- **`templates/*-README.md` and the live `.ai/*/README.md` are edited in parallel by hand, and nothing
-  pins them.** They are not byte-identical twins: each live one is the template plus a paragraph only
-  this repo needs (the cap, `rejected` covers cancelled), so `cmp` can't gate them and a template-only
-  edit leaves the live file — the one a reader of the folder actually opens, and the one `dw-land` is
-  pointed at for the backlog's two bars — describing the old behaviour. Landed that way twice in one
-  change here. Edit both halves in the same commit, then `diff` them and confirm the only difference is
-  the repo-specific paragraph.
+- **`templates/*-README.md` and their live twins are edited in parallel by hand, and nothing pins
+  them.** Three pairs, and only two of them live at `.ai/<lane>/README.md` — the third twin is
+  `.ai/README.md` at the top of the folder, which a `.ai/*/README.md` glob silently skips, and it is
+  the one that drifted when this entry named that glob. Some pairs are byte-identical and some are the
+  template plus a paragraph only this repo needs (the cap, `rejected` covers cancelled), so `cmp` gates
+  none of them, and a template-only edit leaves the live file — the one a reader of the folder actually
+  opens — describing the old behaviour. Landed that way twice in one change here, and once more since.
+  Edit both halves in the same commit, then `diff` them and confirm the only difference is the
+  repo-specific paragraph. The mechanism that would end this is backlogged.
 
 - **What one file says about another's contents goes stale silently.** Adding a sixth promote target
   left the count wrong in `dw-land`'s body, in its `## References` row and in both `*-README.md`

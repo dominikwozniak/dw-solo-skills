@@ -9,15 +9,26 @@ status: shaping # shaping | building | landed
 
 ## Goal
 
-~5 lines at most: what changes, and how you'd know it worked. Observable, not aspirational — "the
-settings screen persists the toggle across a restart", not "improve settings".
+What changes, and how you'd know it worked — one line per observable result, no line for anything
+else. Observable, not aspirational — "the settings screen persists the toggle across a restart", not
+"improve settings".
 
 ## Decisions
 
-Only decisions actually taken, one line each — the call, then why. Delete the section if none were
-needed.
+Only decisions actually taken — the call, then why, in the lines the reasoning needs and none for
+template completeness. A decision taken from a default rather than an answer (what `dw-grill` assumed
+or deferred) is marked `(assumed)`: `dw-next` builds on it and asks only when the build proves it
+wrong. Delete the section if none were needed.
 
 - [decision] — [why]
+- [decision] (assumed) — [the default, and why it is the sensible one]
+
+## Out of scope
+
+What this change deliberately does not do, one line each with why — the left-out list's dropped
+items, and the neighbouring work a reader would otherwise expect here. Delete only for a small change.
+
+- [what stays out] — [why: a separate goal, a later change, not worth its cost]
 
 ## Tasks
 
@@ -37,10 +48,12 @@ small change.
 
 ## References
 
-Resources the conversation pointed at — a URL, a doc, a sibling repo — one line each. `dw-next`
-reads these before building. Delete the section when nothing was pointed at.
+Resources the conversation pointed at — a URL, a doc, a sibling repo — one line each, and a sibling
+file beside this doc where a finding outgrew a line: say what it holds and which task leans on it.
+`dw-next` reads these before building. Delete the section when nothing was pointed at.
 
 - `path-or-url` — [why it matters to this change]
+- `research.md` — [what it holds, and the task that needs it]
 
 ## Notes
 

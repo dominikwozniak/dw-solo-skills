@@ -9,6 +9,8 @@ in [`AGENTS.md`](AGENTS.md) and the procedures in the skills themselves.
   everything under `plugins/` is a git-tracked symlink back to it. Never edit through `plugins/…`.
 - **Change** — one unit of work, held in `.ai/work/<date>-<slug>/CHANGE.md`. Persistent (tracked,
   survives a `/clear`), archived at merge (`.ai/archive/<date>-<slug>/`, `status: landed`).
+- **Sibling file** — a file beside a `CHANGE.md` in its change folder: a shape-time detail file the
+  doc names in `## References`, or a `HANDOFF.md`. Removed at archive; the receipt is the doc alone.
 - **Entry name** — `<YYYY-MM-DD>-<slug>`, from `slugify.sh dated`, for every entry in the three `.ai/`
   lanes. Each lane stamps **its own** date (noted, shaped, landed), so only the **bare slug** is
   comparable across them — `slugify.sh undate` strips a prefix, and `docs/decisions/` is exempt because
@@ -119,9 +121,9 @@ in [`AGENTS.md`](AGENTS.md) and the procedures in the skills themselves.
   because it runs on only some invocations, reached by a pointer the body keeps. The skill-level twin
   of a routed topic file, and what a hot skill sheds instead of being trimmed; `validate-docs.sh`
   check 6 refuses a pointer with no file behind it.
-- **Reference** — a `## References` line in a `CHANGE.md`: a pointer at something outside the change
-  — a URL, a design doc, a sibling repo — carried from grill or shape time so the build does not
-  rediscover it. Not the **reference file** above, and not a scaffolded project's own `references/`
+- **Reference** — a `## References` line in a `CHANGE.md`: a pointer at something outside the doc
+  — a URL, a design doc, a sibling repo, a detail file beside it — carried from grill or shape time
+  so the build does not rediscover it. Not the **reference file** above, and not a scaffolded project's own `references/`
   folder; the word keeps all three senses on purpose (`docs/decisions/0017`).
 - **Explicit-invoke** — a skill with `disable-model-invocation: true`; it fires only when named.
 - **Case file** — one per skill per tier, and the two tiers ask different things.

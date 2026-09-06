@@ -10,10 +10,12 @@ active change is and where it stands.
 backlog/<date>-<slug>.md      follow-ups not being done now   (dw-land + dw-shape park, dw-shape takes)
                               entry shape and the two bars: backlog/README.md
 work/<date>-<slug>/CHANGE.md  the live state of ONE change    (dw-shape writes, dw-next ticks)
-                              goal · decisions taken · task checklist · anchors · references
+                              goal · decisions · out of scope · tasks · anchors · references
                               exists only on its feature branch; branch: is the key
 work/<date>-<slug>/HANDOFF.md the middle of a task, saved     (dw-handoff writes, dw-next clears)
                               optional — only with the dw-solo-extras plugin installed
+work/<date>-<slug>/<topic>.md detail no line in CHANGE.md holds (dw-shape writes, dw-land removes)
+                              rare — named for what it holds, listed in CHANGE.md's References
 archive/<date>-<slug>/        landed changes, kept as history (dw-land moves the doc at close)
 ```
 
@@ -38,6 +40,10 @@ prefix with `slugify.sh undate` rather than comparing folder names.
   `dw-next` deletes it as soon as that task is ticked — and `dw-land` removes a
   leftover one before archiving. Only ever one at a time; a new handoff overwrites
   the old.
+- **A sibling detail file is short-lived too.** `dw-shape` writes one only where a finding outgrew
+  a line, names it in `CHANGE.md`'s `## References`, `dw-next` reads it before the task that leans
+  on it, and `dw-land` removes it at close once anything durable was promoted — the archive
+  keeps the receipt alone.
 - **`archive/` is history, not guidance.** Nothing reads it to decide anything; the
   durable layer lives in `docs/decisions/`, `CONTEXT.md` and wherever this repo keeps
   its `## Gotchas`.

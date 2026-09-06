@@ -1,6 +1,6 @@
 {
   "skill": "dw-shape",
-  "note": "Two HARD STOPs, one per case. The first sits on a feature branch and asks for a change to build now, because that is the only side of dw-shape's fork where the N>=2 stop applies; on the default branch a request to queue several ideas is a planning sitting and queuing them is correct, not a skipped stop.",
+  "note": "Two HARD STOPs, one per case. The first sits on a feature branch and asks for a change to build now, because that is the only side of dw-shape's fork where the N>=2 stop applies; on the default branch a request to queue several ideas is a planning sitting and queuing them is correct, not a skipped stop. The third case is the Large branch on a single goal: the user has already refused a split, so what is measured is the doc that gets written.",
   "evals": [
     {
       "id": 1,
@@ -23,6 +23,18 @@
         "No new CHANGE.md is written for the rejected idea",
         "Shaping is offered only on confirmation that the rejection no longer holds, which is asked rather than assumed"
       ]
+    },
+    {
+      "id": 3,
+      "fixture": "shape-large-change",
+      "prompt": "shape this so I can start building it: every guardrail hook in hooks/ gets a self-test under tests/, README.md lists each hook with what it refuses, and pnpm test runs the hook tests too. It is one goal and I know it is large — do not split it.",
+      "expectations": [
+        "A CHANGE.md is written under .ai/work/ and it carries an ## Out of scope section in which every line states a reason, not only what stays out",
+        "The doc states how many guardrail hooks there are, and the number is eight, which is what hooks/ holds on disk — a doc that copies the six from AGENTS.md or README.md fails this, and so does one that names no count at all",
+        "The change is shaped as one CHANGE.md: it is neither split into several nor reduced to an offer to cut it down; a response that only proposes a smaller scope without writing the doc fails",
+        "If any file besides CHANGE.md is written into the change folder, the doc names it under ## References and it holds something no section of the doc holds; a sibling that repeats the goal, the decisions or the task list fails, and writing no sibling passes"
+      ],
+      "note": "The Large branch: the fixture plants the count the archived doc-layer change got wrong at shape time (the docs say six, the folder holds eight), so the grep-confirm rule is observable in the doc's numbers rather than in the path taken."
     }
   ]
 }

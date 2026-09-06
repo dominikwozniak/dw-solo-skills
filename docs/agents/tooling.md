@@ -195,22 +195,27 @@ either, and each script names the tokens it rejects.
   - **`evals/*.ts` must never get the executable bit.** `lint-on-edit.sh` `eval`s its resolved lint
     command against the file path, and the pre-fix version resolved to a bare space and executed the
     target. Pinned by `scripts/tests/lint-on-edit.test.sh`.
-- **Three hooks cannot tell a mention of a command from an invocation of it, so a probe cannot be
-  typed literally.**
-  - **`block-env-access.sh` stops reading at a `<<`.** Heredoc bodies are dropped before tokenizing,
-    which is why `git commit -F - <<'MSG'` no longer blocks — but the drop is unconditional, so a
-    literal `<<` anywhere starts body mode and **nothing below it is scanned**. A bare `.env` token
-    still blocks anywhere, so build the string (`D=$(printf ".%s" env)`) or your own test call never
-    runs.
-  - **`block-non-pnpm.sh` has the same blindness**, but only when the quoted text carries a command
-    separator, since the patterns anchor after `;`, `&` and `|`. `git grep "npm install"` is fine;
-    `git grep "; npm install"`, `grep -rn "npm install\|yarn add" .` and
-    `git commit -m "ci: replace | yarn with pnpm"` are all refused for containing the string they name.
-    Grep the shorter token, or build it.
-  - **`block-dangerous-commands.sh` is the worst to probe by hand**: its patterns anchor after the same
-    separators, so a one-liner looping over test cases contains `; git restore .` by construction and
-    blocks itself. Put the cases in a file under the scratchpad and run that — which is what
-    `scripts/tests/` already does, and the reason to reach for it first.
+- **A mention of a command is no longer read as an invocation — with two exceptions left.** The
+  guards mask `;`, `&` and `|` inside a quoted span before matching, so the boundary those patterns
+  anchor on cannot open inside quoted text. `grep -rn "npm install\|yarn add" .`,
+  `git grep "; npm install"` and `git commit -m "docs: never | git push --force"` all pass now; they
+  did not before, and the three of them are cases in the suites. `bash-guard.sh` drops heredoc BODIES
+  once for every guard it dispatches to, so a test fixture written through one is no longer refused
+  either.
+  - **The masking cuts the other way in `block-dangerous-commands.sh`.** Its patterns bound an
+    argument run with `[^;&|]*`, so a quoted separator used to end that run before the flag after it
+    was reached: `git push origin "feat|x" --force` went through. It blocks now.
+  - **A guard wired directly, not through the dispatcher, still sees heredoc bodies.** The strip
+    lives in `bash-guard.sh` alone. `bash-guard.sh` has always allowed direct wiring, so this is a
+    degradation rather than a break — but a probe run against a guard on its own behaves like the
+    old version.
+  - **`block-env-access.sh` still stops reading at a `<<`.** Its own heredoc drop is unconditional, so
+    a literal `<<` anywhere starts body mode and **nothing below it is scanned**. A bare `.env` token
+    also still blocks anywhere, so build the string (`D=$(printf ".%s" env)`) or your own test call
+    never runs.
+  - **An unterminated quote fails closed.** `echo don't; npm install` cannot be masked safely — the
+    scan never leaves quoted state — so the guards judge the original string instead. That is a
+    refusal, not a pass, and it is a case in both suites.
 - **When you change one of these patterns, diff the old hook against the new one instead of reading the
   regex.** `git show origin/main:templates/hooks/<hook>.sh > /tmp/old.sh`, run the same probe through
   both and compare exit codes: the answer you need is _which commands changed verdict_. That comparison
@@ -261,9 +266,10 @@ either, and each script names the tokens it rejects.
     behaviour. When a test passes first try, prove it can fail — break the code, or move the fixture
     line, and watch it go red.
 - **Every guard is self-contained, which means the shared parts are copies and nothing measures their
-  drift.** `strip_heredocs` and its `HEREDOC_OPEN` are byte-identical in `block-env-access.sh` and
-  `credential-leak-guard.sh`, and the declared-bullet extractor exists four times over. That is not an
+  drift.** `strip_heredocs` and its `HEREDOC_OPEN` are byte-identical in `block-env-access.sh`,
+  `credential-leak-guard.sh` and `bash-guard.sh`; `mask_quoted_separators` in `block-non-pnpm.sh` and
+  `block-dangerous-commands.sh`; and the declared-bullet extractor exists four times over. That is not an
   oversight to refactor away: `bash-guard.sh` spawns each guard on its own and skips any that is
   missing, so a guard that sourced a helper would be a guard that stops working the moment the helper
-  is pruned. The cost is that fixing one copy fixes one copy. When you touch either shape, grep for its
-  twin in the same commit — `grep -rln strip_heredocs templates/hooks/` — because no test compares them.
+  is pruned. The cost is that fixing one copy fixes one copy. When you touch any of the three shapes, grep for its
+  twins in the same commit — `grep -rln strip_heredocs templates/hooks/` — because no test compares them.

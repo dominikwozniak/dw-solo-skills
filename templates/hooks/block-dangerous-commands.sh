@@ -79,8 +79,67 @@ DANGEROUS_PATTERNS=(
   'shred\b'                                               # irrecoverable file destruction
 )
 
+# Inside a quoted span, `;` `&` and `|` are text rather than separators, so they
+# must not open a command boundary. Without this, `git commit -m "docs: never |
+# git push --force"` was refused for naming the thing it forbids, and a heredoc or
+# a grep pattern carrying one was unwritable.
+#
+# It cuts the other way too, which is the part worth knowing: the patterns bound an
+# argument run with `[^;&|]*`, and a quoted separator used to END that run — so
+# `git push origin "feat|x" --force` never reached its own `--force` and went
+# through. Masking makes the run span the quoted text, which is what a shell does.
+#
+# Twin of the function in block-non-pnpm.sh. Each guard has to work alone when the
+# dispatcher prunes or skips it, so this is a copy, and nothing measures the drift
+# between them — `grep -rln mask_quoted_separators templates/hooks/` finds both.
+mask_quoted_separators() {
+  local s="$1"
+  local n=${#s}
+  local i=0 ch out="" state=plain
+  while ((i < n)); do
+    ch=${s:i:1}
+    # An escaped character is a literal, never a separator, in any state.
+    if [[ "$ch" == '\' ]]; then
+      out+=$ch
+      i=$((i + 1))
+      if ((i < n)); then
+        ch=${s:i:1}
+        case "$ch" in ';' | '&' | '|') ch=$'\002' ;; esac
+        out+=$ch
+      fi
+      i=$((i + 1))
+      continue
+    fi
+    case "$state" in
+      plain)
+        case "$ch" in
+          "'") state=sq ;;
+          '"') state=dq ;;
+        esac
+        ;;
+      sq) [[ "$ch" == "'" ]] && state=plain ;;
+      dq) [[ "$ch" == '"' ]] && state=plain ;;
+    esac
+    if [[ "$state" != plain ]]; then
+      case "$ch" in ';' | '&' | '|') ch=$'\002' ;; esac
+    fi
+    out+=$ch
+    i=$((i + 1))
+  done
+  # Unterminated quote: everything after the opener was read as quoted, so a real
+  # separator may have been masked. Fail closed — judge the original instead.
+  if [[ "$state" != plain ]]; then
+    printf '%s' "$s"
+  else
+    printf '%s' "$out"
+  fi
+}
+
+SCAN=$(mask_quoted_separators "$COMMAND")
+
 for pattern in "${DANGEROUS_PATTERNS[@]}"; do
-  if echo "$COMMAND" | grep -qE "${BOUNDARY}${pattern}"; then
+  # Matched against SCAN, reported as COMMAND: the user has to see what they typed.
+  if printf '%s\n' "$SCAN" | grep -qE "${BOUNDARY}${pattern}"; then
     echo "BLOCKED: '$COMMAND' matches dangerous pattern '$pattern'. Refused by a dw-* guardrail hook. If you genuinely need this, the user must run it manually." >&2
     exit 2
   fi

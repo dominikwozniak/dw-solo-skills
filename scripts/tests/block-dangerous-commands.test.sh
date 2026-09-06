@@ -123,6 +123,22 @@ blocked "assign-rtk-push"     "NODE_ENV=x rtk git push --force"
 blocked "assign-sudo-rm-root" "FOO=1 sudo rm -rf /"
 blocked "assign-chained"      "cd sub && FOO=1 git clean -fd"
 
+echo "a quoted separator is text — and cuts both ways:"
+# Mentions that used to be refused for naming what they forbid. The boundary is
+# `^` or one of `; & |`; inside quotes those characters are none of the three.
+allowed "prose-with-pipe"     'git commit -m "docs: never | git push --force"'
+allowed "prose-with-semi"     'git commit -m "docs: never ; git reset --hard"'
+allowed "grep-for-a-restore"  'grep -rn "; git restore ." .'
+allowed "echo-with-pipe"      'echo "a | git clean -fd"'
+# The same masking closes a hole in the other direction: an argument run is bounded
+# by `[^;&|]*`, so a quoted separator used to END it and the flag after it was
+# never reached. This one went straight through before.
+blocked "quoted-arg-then-force" 'git push origin "feat|x" --force'
+blocked "quoted-arg-then-hard"  'git reset "ref|x" --hard'
+# Real separators outside quotes are untouched.
+blocked "quoted-then-real"      'echo "a | b"; git push --force'
+blocked "unterminated-closes"   "echo don't; git push --force"
+
 echo "allowed (exit 0):"
 allowed "plain-push"          "git push"
 allowed "push-branch"         "git push origin main"

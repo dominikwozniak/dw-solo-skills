@@ -50,20 +50,20 @@ invocation reads that as not remaining. Never rename a task title. -->
       "docs drift / stale docs / are the docs still true", discovery via the Task Router with
       `dw-doctor`-style degradation, the three-state bar, a report table of `file:line` · referent ·
       state · evidence, and an explicit never-edit clause.
-- [ ] 2. Run it against this repo, iterate the prompt until every finding survives being opened by
+- [x] 2. Run it against this repo, iterate the prompt until every finding survives being opened by
       hand; record what it found and what it wrongly flagged in `## Notes`.
-- [ ] 3. Promote to the canon: `agents/dw-docs-drift.md`, the symlink
+- [x] 3. Promote to the canon: `agents/dw-docs-drift.md`, the symlink
       `plugins/dw-solo-extras/agents/dw-docs-drift.md`, an `"agents": "./agents"` key in that
       plugin's `plugin.json`, and `0.2.0 → 0.3.0` in both `plugin.json` and
       `.claude-plugin/marketplace.json`. Delete the local prototype.
-- [ ] 4. Document it: a README row, the `agents/` line in the root `AGENTS.md` layout block, and an
+- [x] 4. Document it: a README row, the `agents/` line in the root `AGENTS.md` layout block, and an
       `## Adding an agent` section in `docs/agents/skills-and-plugins.md` naming what no validator
       covers.
 - [x] 5. One backlog entry for the surviving follow-ups: a declared doc contract in
       `templates/AGENTS.md`, CI coverage for `agents/`, and the recommender's two unbuilt hooks.
-- [ ] 6. Run the full `scripts` block of `package.json` — `eval:routing` included, since nothing
+- [x] 6. Run the full `scripts` block of `package.json` — `eval:routing` included, since nothing
       here adds a skill but the docs checks read README and `AGENTS.md`.
-- [ ] 7. Teach `validate-manifests.sh` the `agents/` canon: every `plugins/<p>/agents/<name>.md` is
+- [x] 7. Teach `validate-manifests.sh` the `agents/` canon: every `plugins/<p>/agents/<name>.md` is
       a symlink resolving to `agents/<name>.md`, and every canon agent is shipped by exactly one
       plugin — the same two directions it already enforces for `skills/`. Runs after task 3.
 
@@ -100,6 +100,29 @@ invocation reads that as not remaining. Never rename a task title. -->
   for another repo, not a claim about this tree. The bar names that class explicitly.
 - A project agent registers only when a session **starts** — task 2 needs a restart before the
   first run, and that cost is the reason the prototype is local.
+- **`agents` takes an array of file paths, never the `skills` key's directory string.** Probed
+  against `claude plugin validate --strict`: the array passes, `"agents": "./agents"` returns
+  `agents: Invalid input` and a type error on a recognised field stops the plugin loading. So each
+  new agent is listed by name — unlike a skill, which the directory string covers for free.
+- `claude plugin validate <plugin>` reads components without following symlinks, so it never sees
+  this repo's canon. Validate the real path too: `claude plugin validate agents --strict` passes.
+- A plugin subagent registers under a **scoped** name — `dw-solo-extras:dw-docs-drift` in a
+  consumer repo, not the bare name. Task 4's docs say the scoped form.
+- Plugin subagents ignore `hooks`, `mcpServers` and `permissionMode` in frontmatter. This one uses
+  none of them, so promotion changes nothing about how it behaves.
+- First run: one true finding (`git-uncommitted`, a fixture retired with `dw-git`, still named at
+  `docs/agents/skills-and-plugins.md:148`), zero false positives. The bar held.
+- The bar also correctly refused a real drift of another class: `docs/agents/tooling.md` says three
+  `validate-*` workflows where `.github/workflows/` has four. A count is not a named referent, and
+  widening the bar to catch it is what invents forty findings. Left for a human.
+- **An agent `description` written as a plain YAML scalar breaks on a colon.** Claude Code loaded
+  the file and ran it; `agnix` refused it as unparseable frontmatter, and `claude plugin validate`
+  passed it too. Use a `>-` block, as every skill here does. Only the repo's own linter saw it.
+- `validate-versions.sh` built a plugin's shipped surface from `skills/*` alone, so an edited agent
+  would reach consumers with no version bump and nothing would fail. Closed alongside task 7.
+- Absorbed, all three found by the agent's own first run: the retired `git-uncommitted` fixture,
+  nine hooks called "a ninth" where `templates/hooks/` ships ten, and three path-filtered
+  `validate-*` workflows where `.github/workflows/` has four.
 - Task 5 shipped two items, not three. `.ai/backlog/README.md` sends work that nothing blocks and
   that costs less than its own description into the open change instead — the `agents/` validator
   is both, so it became task 7. The bundle is tighter for it: two `templates/` items, one bump.

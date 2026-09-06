@@ -45,7 +45,7 @@ you ship.
 Every hook that parses a payload opens with `command -v jq >/dev/null || exit 0`, the dispatcher
 included — so **without `jq` on `PATH` they all silently no-op**, and nothing says so. (A Bash guard
 spawned with `--bash-command` takes the command off stdin and needs no `jq` of its own; the
-dispatcher above it is what bails.) `/dw-doctor` is the check. `templates/hooks/` ships a ninth,
+dispatcher above it is what bails.) `/dw-doctor` is the check. `templates/hooks/` ships a tenth,
 `typecheck-on-commit.sh`, deliberately unwired here because this repo has no typecheck.
 
 `hooks-in-sync.test.sh` pins the templates ≡ installed copies invariant **inside this repo only**;
@@ -124,9 +124,9 @@ either, and each script names the tokens it rejects.
     parity, its placeholder read as bare prose and erroring. Keep such a span short enough that it
     never needs wrapping.
 - **A new check needs its `paths:` entry in both the `pull_request` and `push` lists**, or it never
-  runs on the commit shape it exists to catch. Only the three `validate-*` workflows are
+  runs on the commit shape it exists to catch. Only the four `validate-*` workflows are
   path-filtered — `agnix-lint`, `evals-routing`, `format-check` and `secrets-scan` run on everything —
-  so a check added to one of those three scripts inherits that script's old triggers. Add every path the
+  so a check added to one of those four scripts inherits that script's old triggers. Add every path the
   check _reads_, not just the script you edited; those workflows carry the reasoning inline beside the
   entries that were missing. It hides because an unfiltered workflow matches anyway, so the commit still
   shows a green tick from a run that never performed the check: a green tick on a skill edit does not

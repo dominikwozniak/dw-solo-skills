@@ -49,9 +49,10 @@ for the test and git conventions; `CONTEXT.md` and `docs/decisions/` where prese
 term or decision is not re-litigated; a matching `.ai/backlog/` entry — prior context: create the
 folder, `git mv` the entry in as `CHANGE.md`, and expand it in place; the real sibling patterns,
 confirmed with Read or grep — these become the anchors. Every number, caller and consumer a task
-will name is grep- or Read-confirmed before the task is written, never counted from memory — the
-archive holds three shape-time counts that were wrong and cost a task each. Every resource the
-conversation pointed at becomes a `## References` line.
+will name is counted **against the thing itself** — the directory, the file, the call sites — before
+the task is written. Never from memory, and never from another doc's count of it: a stale figure in
+prose is exactly how a task inherits a wrong one. Every resource the conversation pointed at becomes
+a `## References` line.
 
 ### 2. Size it, then count the scopes
 

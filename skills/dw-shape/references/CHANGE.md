@@ -15,9 +15,10 @@ else. Observable, not aspirational — "the settings screen persists the toggle 
 
 ## Decisions
 
-Only decisions actually taken, one line each — the call, then why. A decision taken from a default
-rather than an answer (what `dw-grill` assumed or deferred) is marked `(assumed)`: `dw-next` builds on
-it and asks only when the build proves it wrong. Delete the section if none were needed.
+Only decisions actually taken — the call, then why, in the lines the reasoning needs and none for
+template completeness. A decision taken from a default rather than an answer (what `dw-grill` assumed
+or deferred) is marked `(assumed)`: `dw-next` builds on it and asks only when the build proves it
+wrong. Delete the section if none were needed.
 
 - [decision] — [why]
 - [decision] (assumed) — [the default, and why it is the sensible one]

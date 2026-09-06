@@ -78,7 +78,7 @@ invocation reads that as not remaining. Never rename a task title. -->
       named in `## References`, most changes have none, `dw-land` removes them; step 4's fates become
       into the change · backlog · out of scope, and the grill's assumed/deferred lists land as
       `(assumed)` decisions and out-of-scope lines.
-- [ ] 3. **The template.** `skills/dw-shape/references/CHANGE.md`: `## Out of scope` after
+- [x] 3. **The template.** `skills/dw-shape/references/CHANGE.md`: `## Out of scope` after
       `## Decisions` with a row that carries its own why; the `(assumed)` hint under Decisions; the
       sibling hint under References; Goal's "~5 lines at most" becomes one line per observable result.
 - [ ] 4. **The readers, the payload and the glossary.** `skills/dw-next/SKILL.md:17` names sibling files

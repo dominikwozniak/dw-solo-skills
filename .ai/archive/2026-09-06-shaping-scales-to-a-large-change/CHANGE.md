@@ -4,6 +4,7 @@ branch: shaping-scales-to-a-large-change
 created: 2026-09-06
 status: landed # shaping | building | landed
 landed: 2026-09-06
+pr: https://github.com/dominikwozniak/dw-solo-skills/pull/60
 ---
 
 # Change — dw-grill asks in rounds, and dw-shape carries a large change in one doc

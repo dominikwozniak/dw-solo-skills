@@ -4,6 +4,7 @@ branch: worktree-majestic-conjuring-scott
 created: 2026-09-06
 landed: 2026-09-06
 status: landed
+pr: https://github.com/dominikwozniak/dw-solo-skills/pull/61
 ---
 
 # Change — a `dw-docs-drift` subagent reads the doc layer and reports what no longer exists

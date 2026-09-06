@@ -11,10 +11,10 @@ A skills catalog, not a code project. Keep it thin: every skill here assumes **o
 ## Layout — and the one rule
 
 ```
-skills/<name>/SKILL.md           the canon for every skill. EDIT HERE.
+skills/<name>/SKILL.md           the canon for every skill — agents/<name>.md for every agent. EDIT HERE.
 plugins/dw-solo/                 the loop plugin — plugin.json + symlinks (mode 120000) → the canon
 plugins/dw-solo-setup/           the setup plugin — dw-init, dw-doctor, the templates symlink
-plugins/dw-solo-extras/          the off-loop plugin — dw-grain, dw-handoff, dw-prune, dw-unslop
+plugins/dw-solo-extras/          the off-loop plugin — dw-grain, dw-handoff, dw-prune, dw-unslop, dw-docs-drift
 scripts/runtime/<script>.sh      shipped scripts — symlinked into the owning plugin
 scripts/<script>.{sh,mjs}        repo CI tooling, never shipped (validate-*.sh, check-skill-corpus.mjs)
 scripts/tests/<script>.test.sh   bash self-tests

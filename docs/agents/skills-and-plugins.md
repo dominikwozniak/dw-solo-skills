@@ -69,6 +69,32 @@ itself. `validate-manifests.sh` checks the two versions are _equal_ and `validat
 number _grew_ — step 3 needs both to pass. The validators name the exact missing entry — run them rather
 than re-deriving this checklist by hand.
 
+## Adding an agent
+
+A subagent is not a skill: it runs in its own context window, returns one report, and has no `/`
+form — a caller reaches it as `@<plugin>:<name>` or by describing the task its `description` names.
+There is no `disable-model-invocation` for an agent, so the `description` is the only control over
+when it fires.
+
+1. `agents/<name>.md` — the canon, one file, kebab-case `name` matching the basename. Frontmatter
+   takes `name`, `description`, `model`, `effort`, `maxTurns`, `tools`, `disallowedTools`, `skills`,
+   `memory`, `background` and `isolation`; a plugin-shipped agent **ignores** `hooks`, `mcpServers`
+   and `permissionMode`, so never rely on them. Enforce a read-only agent through `tools`, not
+   through a sentence in the body.
+2. `ln -s ../../../agents/<name>.md plugins/<plugin>/agents/<name>.md` and `git add` the symlink.
+3. **List the file in the owning `plugin.json`'s `agents` array** — `["./agents/<name>.md"]`. The
+   key takes an array of file paths, and the directory string that works for `skills` is
+   `agents: Invalid input`, a type error on a recognised field that stops the whole plugin loading.
+4. Bump the owning plugin's version in `plugin.json` and `marketplace.json`, kept identical.
+5. Name it in the README and in the root `AGENTS.md` layout block.
+6. Validate both halves — `claude plugin validate plugins/<plugin> --strict` reads components
+   **without following symlinks**, so it never sees this repo's canon; run
+   `claude plugin validate agents --strict` as well.
+
+Steps 2–4 are enforced by `validate-manifests.sh`. No routing eval and no corpus baseline: an agent
+is not in the skill corpus and `eval:routing` does not score it — which is also why an agent's
+`description` cannot be measured here the way a skill's can.
+
 ## Adding a shipped (plugin-level) script
 
 1. Put the real file once at `scripts/runtime/<script>.sh` and `chmod +x` it.
@@ -145,7 +171,7 @@ than re-deriving this checklist by hand.
   boundary between two skills is load-bearing, put it in the step itself, not in the paragraph that sets
   the tone.
 - **A behaviour fixture is a real repo, so this repo's guards and the eval session's own hooks both
-  reach into it.** Two ways that bites, both found writing `git-uncommitted` and `doctor-gaps`. The tempting
+  reach into it.** Two ways that bites, both found writing `doctor-gaps`. The tempting
   sensitive file for a staging case is `.env`, and `block-env-access.sh` refuses to **author** one at any
   path — `evals/fixtures/` included — so the fixture ships `deploy.key`, which the same rule covers under
   "credentials, keys". And a fixture's own `.claude/settings.json` is loaded by the executor session that

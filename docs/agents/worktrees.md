@@ -17,7 +17,7 @@ is why `dw-next` strips that prefix before matching a change doc.
   re-enter with the worktree path if it drifted. Nothing is lost when it happens: the worktree and
   every commit in it are untouched, only the session's working directory moved.
 - **A worktree is not the main tree, and every way it differs reads as something else.**
-  Six traps, one root cause: the worktree gets tracked files and a branch, and nothing else.
+  Seven traps, one root cause: the worktree gets tracked files and a branch, and nothing else.
   - **A legacy `CLAUDE.local.md` is simply absent from one.** It is gitignored, so no checkout
     delivers it, and nothing links it in any more — the link class retired with decision 0007, taking
     the `SessionStart` hook and `worktree.sh`'s link step with it. A repo still keeping its lint or
@@ -34,10 +34,21 @@ is why `dw-next` strips that prefix before matching a change doc.
     branch merges. Fixing `lint-on-edit.sh` and watching it fail identically is a different file
     running, not the fix failing. Verify by invoking the worktree copy directly with a synthetic
     payload.
-  - **The session refuses compound shell, and it reads as a permission problem.** The harness rejects
-    any Bash call it cannot statically prove stays inside the worktree — `cmd; cmd` chains with a
-    redirect, a `../../..` path, a heredoc. Issue plain separate commands. This is not the
-    dangerous-command hook; the message names the worktree, not a blocked pattern.
+  - **The session refuses shell it cannot read, and it reads as a permission problem.** Where the
+    harness isolated the session itself — `claude -w`, a subagent worktree, the desktop app — every
+    Bash call must be statically provable to leave the tree outside the worktree alone, and what
+    defeats the proof is unreadability, not length: a `for` loop, a heredoc feeding an interpreter, a
+    computed or globbed program name, a `../../..` path. A chain of plain git commands passes.
+    Reach for plain separate commands on a refusal. This is not the dangerous-command hook; the
+    message names the worktree, not a blocked pattern.
+  - **A `PreToolUse` hook that rewrites commands makes plain git unrunnable there, invisibly.** That
+    same guard refuses a git command carried by a wrapper it cannot read through, and the session
+    never sees the wrapper: `rtk hook claude` returns `git status --short` as
+    `rtk git status --short` in `updatedInput`, and the refusal reads "runs rtk with a git command
+    among its operands". So a bare `git status` is refused while `git rev-parse` and `git switch`
+    work — the two verbs rtk leaves alone. The guard has no off switch, so the rewrite stands down
+    instead: `~/.claude/hooks/rtk-hook-guard.sh` passes a git-naming command through unrewritten
+    whenever the cwd is a linked worktree.
   - **Gitignored material a change doc anchors at is simply absent.** `/.inspirations/` and `/TASK.md`
     are gitignored, so a `CHANGE.md` whose `## Anchors` cites one — the standard a task is measured
     against, say — points at nothing from here. Read it through the main tree's absolute path; the

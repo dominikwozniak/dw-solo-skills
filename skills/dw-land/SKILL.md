@@ -95,9 +95,13 @@ repo keeps one, since a promotion that grows the corpus is what the ratchet asks
 ### 3. Open the PR — under the same go
 
 `git push -u origin <branch>`, then `gh pr create`, both per `## Git conventions`; fill the archived
-doc's `pr:` as a one-line follow-up commit. Don't wait on CI — opening the PR is what starts it,
-and `dw-ship` reads the checks. On the default branch there is no PR — the close was the whole
-step. No `origin` at all — say so and stop at the close commit.
+doc's `pr:` as a one-line follow-up commit. Don't wait on CI — opening the PR is what starts it, and
+`dw-ship` reads the checks. On the default branch there is no PR — the close was the whole step. No
+`origin` at all — say so and stop at the close commit.
+
+The body is `.github/PULL_REQUEST_TEMPLATE.md`, read and filled — `--body` bypasses it, so a body
+composed without opening the file is the one that drifts. Its guidance comments come out; phase 1's
+report-open follow-ups go under `## What changes`, what phase 1 ran under `## Test plan`.
 
 ### 4. Report
 

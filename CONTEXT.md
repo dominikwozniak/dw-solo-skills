@@ -72,7 +72,8 @@ in [`AGENTS.md`](AGENTS.md) and the procedures in the skills themselves.
   queueing at all. `dw-prune` applies it late, to a queue that grew anyway.
 - **Archive** — `.ai/archive/<date>-<slug>/`: landed change docs kept as history, not guidance. Nothing
   reads them to decide anything. An entry is a **receipt** rather than the working doc — frontmatter,
-  the H1, the task list as it was left, and only the notes no durable target took. Two statuses end
+  the H1, the task list as it was left, the notes no durable target took, and any decision the close
+  turned down. Two statuses end
   up here and there is no third: `landed`, and **`rejected` ≡ cancelled** — one status for an idea
   turned down and for work abandoned mid-build, since both leave the same thing behind (a
   `## Why rejected`) and nothing downstream tells them apart.

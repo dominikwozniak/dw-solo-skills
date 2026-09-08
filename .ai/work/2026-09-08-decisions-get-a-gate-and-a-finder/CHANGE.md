@@ -2,7 +2,7 @@
 change: decisions-get-a-gate-and-a-finder
 branch: decisions-get-a-gate-and-a-finder
 created: 2026-09-08
-status: shaping # shaping | building | landed
+status: building # shaping | building | landed
 ---
 
 # Change — a decision record is written only where the bar is read, and found without scanning the folder
@@ -57,6 +57,11 @@ status: shaping # shaping | building | landed
 - **`dw-next` greps `touches:` directly rather than asking the agent** — a subagent paraphrases,
   and a paraphrased prohibition is worse than none. The agent's `ask` mode answers open questions;
   the verbatim norm comes from the file.
+- **The agent carries the method, never the bar** (nominated) — `dw-decisions` ships in
+  `dw-solo-extras` while the bar lives in `dw-solo`'s `references/decision-record.md`, so it
+  cannot read the contract at runtime and a copy in its prompt is the copy that goes stale. A
+  caller hands the legs over verbatim; invoked directly the agent looks for them and, finding
+  none, says where it looked and stops. This constrains task 6.
 - **A nomination is a marked line in `## Decisions`, not a new section** (assumed) — `dw-shape`
   already marks a line `(assumed)` in that section, so the shape exists and `dw-next` already
   re-reads the section on every resume.
@@ -89,7 +94,7 @@ status: shaping # shaping | building | landed
 A task that stopped being necessary keeps its box and gains `**skip:** <reason>`; every later
 invocation reads that as not remaining. Never rename a task title. -->
 
-- [ ] 1. `agents/dw-decisions.md` — the contract for three modes (`ask`, `judge`, `audit`),
+- [x] 1. `agents/dw-decisions.md` — the contract for three modes (`ask`, `judge`, `audit`),
       `tools: Read, Grep, Glob`, `model: sonnet`; symlink at `plugins/dw-solo-extras/agents/`,
       listed by path in the `agents` array, extras version bumped.
 - [ ] 2. Sharpen both agent descriptions so `dw-docs-drift` keeps referent-existence prompts and
@@ -144,3 +149,6 @@ invocation reads that as not remaining. Never rename a task title. -->
   surface once it exists.
 
 ## Notes
+
+- Built by the rule this change introduces: the bar-carrying call is nominated in `## Decisions`, not promoted mid-build. Cheapest way to test the mechanism is to use it.
+- `validate-manifests.sh` needs three things per agent, not one: the symlink, the exact `../../../agents/<name>` target, and the `"./agents/<name>"` string in the `agents` array.

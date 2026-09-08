@@ -100,9 +100,9 @@ invocation reads that as not remaining. Never rename a task title. -->
 - [x] 2. Sharpen both agent descriptions so `dw-docs-drift` keeps referent-existence prompts and
       `dw-decisions` keeps decision prompts — `0025`'s revisit trigger fires the moment a second
       agent lands.
-- [ ] 3. `skills/dw-land/references/decision-record.md` — `touches:` and `rule:` in the frontmatter
+- [x] 3. `skills/dw-land/references/decision-record.md` — `touches:` and `rule:` in the frontmatter
       shape, with what each is for and the note that neither is machine-checked.
-- [ ] 4. `templates/decisions-README.md` — the two fields for a consumer repo, still no index and
+- [x] 4. `templates/decisions-README.md` — the two fields for a consumer repo, still no index and
       still no second copy of the bar.
 - [ ] 5. `skills/dw-next/SKILL.md` — the promote bullet becomes a nominate bullet, plus the narrow
       `touches:` grep for a file the change doc did not anchor.
@@ -154,3 +154,4 @@ invocation reads that as not remaining. Never rename a task title. -->
 - `validate-manifests.sh` needs three things per agent, not one: the symlink, the exact `../../../agents/<name>` target, and the `"./agents/<name>"` string in the `agents` array.
 - Splitting the two descriptions found a duplicated finding: `audit` reported dead `touches:` paths, which `dw-docs-drift` already walks the same folder for. Dropped from `dw-decisions`.
 - The boundary is NAMES vs MEANING: drift asks whether what a doc cites exists, `dw-decisions` asks what the records decide. Both descriptions now say it, since a description is the only routing control an agent has (`0025`).
+- Task 4 shrank on contact: `templates/decisions-README.md:15` already refuses to restate the frontmatter shape, so the two fields must NOT be described there. What was untrue is the no-index rationale, which rested on the slug alone — rewritten in both READMEs.

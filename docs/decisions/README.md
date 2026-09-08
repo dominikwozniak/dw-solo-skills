@@ -4,7 +4,9 @@ One record per decision, `<NNNN>-<kebab-slug>.md`, append-only. `dw-land` writes
 `dw-shape` reads them before the next change. **[`0011`](0011-bare-dw-next-builds-rather-than-reports.md) is the
 worked example — copy its shape.**
 
-No index here on purpose: `ls` sorts them and every slug states its decision.
+No index here on purpose: `ls` sorts them, every slug states its decision, and a record's
+`rule:` and `touches:` are reachable in one grep over frontmatter. An index would be a second
+copy of all three.
 
 Ceiling: **80 lines** per record, enforced by `pnpm validate:docs`. Eighty is what this folder already
 supports — the longest record is 72 — not a claim that eighty is the right number. The payload seeds a

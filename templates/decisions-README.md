@@ -4,7 +4,9 @@ One record per decision, `<NNNN>-<kebab-slug>.md`, append-only. `dw-land` writes
 `dw-shape` reads them before the next change. **Once `0001` exists it is the worked example — copy its
 shape.**
 
-No index here on purpose: `ls` sorts them and every slug states its decision.
+No index here on purpose: `ls` sorts them, every slug states its decision, and a record's
+`rule:` and `touches:` are reachable in one grep over frontmatter. An index would be a second
+copy of all three.
 
 Ceiling: **40 lines** per record, enforced by the same checker as `AGENTS.md`'s budget. Size only —
 the bar and the shape stay editorial. Delete the line to switch it off; raise the number and you have

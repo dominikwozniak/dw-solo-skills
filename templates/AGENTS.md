@@ -37,16 +37,16 @@ because the guardrail hooks grep for them under those exact names.
 
 Match a task against this table **before** researching or coding, and read every row that applies.
 
-| task                                                               | read                       |
-| ------------------------------------------------------------------ | -------------------------- |
-| editing this file or `docs/agents/*` — what belongs where          | `docs/agents/README.md`    |
-| the loop, `.ai/work/`, what a `CHANGE.md` is and when it leaves    | `.ai/README.md`            |
-| why the code is shaped this way; reopening a settled choice        | `docs/decisions/README.md` |
-| what something is called here — any domain term                    | `CONTEXT.md`               |
-| starting this project and driving a feature by hand to see it work | `VERIFY.md`                |
-| a follow-up worth keeping but not worth doing now                  | `.ai/backlog/README.md`    |
-| a landed change's reasoning, after the fact                        | `.ai/archive/README.md`    |
-| a blocked command, a hook that fired, a guardrail that looks wrong | `.claude/hooks/`           |
+| task                                                               | read / delegate to                                                                                                                  |
+| ------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------- |
+| editing this file or `docs/agents/*` — what belongs where          | `docs/agents/README.md`                                                                                                             |
+| the loop, `.ai/work/`, what a `CHANGE.md` is and when it leaves    | `.ai/README.md`                                                                                                                     |
+| why the code is shaped this way; reopening a settled choice        | `docs/decisions/README.md` — what a record DECIDES, and whether one is owed, goes to `@dw-solo-extras:dw-decisions` where installed |
+| what something is called here — any domain term                    | `CONTEXT.md`                                                                                                                        |
+| starting this project and driving a feature by hand to see it work | `VERIFY.md`                                                                                                                         |
+| a follow-up worth keeping but not worth doing now                  | `.ai/backlog/README.md`                                                                                                             |
+| a landed change's reasoning, after the fact                        | `.ai/archive/README.md`                                                                                                             |
+| a blocked command, a hook that fired, a guardrail that looks wrong | `.claude/hooks/`                                                                                                                    |
 
 ## Solo lane
 

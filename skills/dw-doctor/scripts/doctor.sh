@@ -101,6 +101,23 @@ else
   report warn "codex" "absent — dw-check's outside reviewer and dw-land's review offer on the PR need it; fix: /codex:setup"
 fi
 
+# dw-solo-extras ships the two read-only agents three loop skills branch on — dw-land hands a decision
+# candidate to dw-decisions for a verdict, dw-grill and dw-shape ask it what docs/decisions/ already
+# settled. Each call site is written as "where installed" and none of them can actually look, which is
+# what makes this worth a line. WARN tier and never FAIL, like codex: the loop closes without it, those
+# three routes just judge alone. The marketplace segment is a wildcard so a source installed under
+# another name still matches, and depth stops at "installed" — reading enabledPlugins out of the user's
+# global settings would take a read-only repo diagnostic somewhere it has no business being.
+extras_plugin=""
+for d in "${HOME:-/nonexistent}"/.claude/plugins/cache/*/dw-solo-extras; do
+  [ -d "$d" ] && extras_plugin="$d" && break
+done
+if [ -n "$extras_plugin" ]; then
+  report ok "dw-solo-extras" "plugin at ${extras_plugin#"$HOME"/} — dw-decisions and dw-docs-drift are reachable"
+else
+  report warn "dw-solo-extras" "absent — dw-land judges a decision candidate alone, dw-grill and dw-shape lose the docs/decisions/ lookup, and dw-docs-drift has no caller; fix: enable dw-solo-extras from the dw-solo-skills marketplace"
+fi
+
 # --- JavaScript / TypeScript (only if package.json) ---------------------------
 pkg="$ROOT/package.json"
 group "JavaScript / TypeScript"

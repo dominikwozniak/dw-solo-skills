@@ -18,6 +18,12 @@ nothing reads, and `agents:check` fails both halves: a topic file with no row, a
 path that does not exist. Over budget is never a licence to trim a rule — move the topic out and route
 it.
 
+**An agent is a legitimate destination in the router's `read / delegate to` column**, not only a
+file. A plugin-shipped one is named inline in the row it serves. A repo-local one (`.claude/agents/`)
+is named where it does its work instead: as a rule in the doc that owns the territory it reads, with
+the router pointing at that doc. The root stays a table of destinations, and the delegation rule sits
+beside the other rules for that subject, where it is read in context rather than in a catalogue.
+
 **A trap that cost real time goes in the `## Gotchas` of the topic file whose subject covers it, as
 one undated bullet of at most two lines** — do or never X, one clause of why, a pointer. Newest
 first, by position: the top of the list _is_ the newest, so a date buys nothing and costs the shape.

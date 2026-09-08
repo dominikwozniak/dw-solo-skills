@@ -23,9 +23,10 @@ ask in its terms.
    `dw-shape` settled that, and a grill that splits on it hands over a split that skill will refuse.
 2. **Separate facts from decisions.** Facts — anything discoverable in the repo or environment —
    are looked up, never asked. **A choice this project already settled is a fact** — asking it back
-   spends a slot and invites reversing it by accident, so ask `dw-decisions` what is settled and
-   quote it. Only genuinely undecided things (trade-offs, scope boundaries, product choices, which
-   of two shapes) become questions.
+   spends a slot and invites reversing it by accident. Where `docs/decisions/` exists, read what it
+   settled about the subject before question one, delegating to `dw-decisions` where that agent is
+   installed; quote it rather than reopening it. Only genuinely undecided things (trade-offs, scope
+   boundaries, product choices, which of two shapes) become questions.
 3. **Spend the round well — five questions a round**, hardest-first by what a wrong answer would
    cost: scope → security/privacy → UX → technical detail. Four good questions beat five with a
    filler. Don't ask what the repo already answers (style, test framework, layout, naming, which

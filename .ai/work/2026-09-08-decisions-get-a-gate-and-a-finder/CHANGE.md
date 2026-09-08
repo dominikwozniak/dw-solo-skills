@@ -115,7 +115,7 @@ invocation reads that as not remaining. Never rename a task title. -->
       one and it is installed, and stop claiming the promotion already happened at `:49`.
 - [x] 7. `skills/dw-land/SKILL.md` — the receipt keeps a rejected nomination with its failing leg;
       `:71` currently deletes the section it lives in.
-- [ ] 8. `skills/dw-shape/SKILL.md` (and `dw-grill`'s read step) — grep `touches:` over the anchors'
+- [x] 8. `skills/dw-shape/SKILL.md` (and `dw-grill`'s read step) — grep `touches:` over the anchors'
       paths and carry the matching `rule:` into `## Decisions`; the agent's `ask` mode for an open
       question.
 - [ ] 9. Green: `pnpm validate:manifests`, `validate:docs`, `validate:artifacts`,
@@ -160,3 +160,5 @@ invocation reads that as not remaining. Never rename a task title. -->
 - Splitting the two descriptions found a duplicated finding: `audit` reported dead `touches:` paths, which `dw-docs-drift` already walks the same folder for. Dropped from `dw-decisions`.
 - The boundary is NAMES vs MEANING: drift asks whether what a doc cites exists, `dw-decisions` asks what the records decide. Both descriptions now say it, since a description is the only routing control an agent has (`0025`).
 - Task 4 shrank on contact: `templates/decisions-README.md:15` already refuses to restate the frontmatter shape, so the two fields must NOT be described there. What was untrue is the no-index rationale, which rested on the slug alone — rewritten in both READMEs.
+- `main` moved during this session (another session pushed dw-solo-setup 0.4.2). The branch was rebased onto origin/main before the bumps, or the merge would have reverted that number.
+- `templates/` ships in dw-solo-setup, so touching `templates/decisions-README.md` obliges a setup bump too — three plugins move in this change, not two.

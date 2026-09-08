@@ -46,12 +46,23 @@ decides what happens next.
 
 ### 2. Close — on an explicit go
 
-`dw-next` already promoted decisions and terms as they happened, so most closes only sweep. Each
-target is read first — **replace, don't append**, deleting what this change made untrue or made
-mechanical:
+`dw-next` promoted terms and gotchas as they happened; **decisions it only nominated**, and this is
+the one step that judges them. Each target is read first — **replace, don't append**, deleting what
+this change made untrue or made mechanical:
 
-- **Decisions** — anything unpromoted that clears `references/decision-record.md`'s bar; most
-  changes add zero records, and that is correct. Flip a superseded record in the same pass.
+- **Decisions** — this is the gate, and it is the only one. Take every `(nominated)` line in
+  `## Decisions`, plus anything the diff decided that nobody nominated, and judge each against
+  `references/decision-record.md`'s three legs **out loud, one candidate at a time** — the whole
+  diff is in front of you, which is why the judgement lives here and not in the build.
+  - Where `dw-decisions` is installed and there is at least one candidate, hand it the candidate
+    **and the three legs verbatim** and take its verdict as the second opinion; it also says whether
+    an active record already covers the subject. Zero candidates: do not call it. Not installed:
+    judge alone and say so in the report.
+  - A candidate that clears the bar becomes a record with `rule:` and `touches:`. Most changes add
+    zero records, and that is correct. Flip a superseded record in the same pass.
+  - **A candidate that fails keeps one line in the doc** — the call and the leg that failed, rewritten
+    from `(nominated)` to `(rejected: <leg>)`. It travels into the archive with the receipt, so the
+    same idea arriving a third time is visible as a pattern rather than judged from scratch.
 - **Vocabulary** — new or sharpened terms into `CONTEXT.md`, one bullet of at most two lines saying
   what the word means and nothing about why; rewrite a line, never add a second definition beside it.
 - **Gotchas** — a trap that cost real time goes to the routed topic file covering it (the root file
@@ -68,9 +79,11 @@ mechanical:
 - **Archive** — `git rm` every sibling still beside the doc — a leftover `HANDOFF.md`, a shape-time
   `research.md` — once anything durable in it has been promoted; the receipt is `CHANGE.md` alone.
   Then `git mv .ai/work/<shaped date>-<slug>/ .ai/archive/<today>-<slug>/`; flip to
-  `status: landed` with `landed: YYYY-MM-DD`. Trim the doc to a receipt: delete Goal, Decisions, Out
-  of scope, Anchors and References — keep the frontmatter, the H1, the task list as `dw-next` left
-  it, and the Notes no target took.
+  `status: landed` with `landed: YYYY-MM-DD`. Trim the doc to a receipt: delete Goal, Out of scope,
+  Anchors and References, and Decisions **except its `(rejected: <leg>)` lines** — keep the
+  frontmatter, the H1, the task list as `dw-next` left it, the Notes no target took, and those
+  rejections. A rejection is residue no durable target would take, which is the same reason Notes
+  survive the trim.
 
 One commit carries all of it — including a `docs/agents/corpus.baseline.json` re-record where the
 repo keeps one, since a promotion that grows the corpus is what the ratchet asks to be shown.

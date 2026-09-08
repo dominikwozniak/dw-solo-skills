@@ -62,6 +62,11 @@ status: building # shaping | building | landed
   cannot read the contract at runtime and a copy in its prompt is the copy that goes stale. A
   caller hands the legs over verbatim; invoked directly the agent looks for them and, finding
   none, says where it looked and stops. This constrains task 6.
+- **The archive receipt keeps a rejected nomination** (nominated) — this narrows `0018`, which
+  deletes `## Decisions` wholesale. Its own reasoning grants the exception: it deletes what the
+  promotion step already harvested and keeps what found no durable home, and a rejection is the
+  second kind. `0018`'s revisit trigger is a session reaching for a deleted section, so this is a
+  supersession candidate rather than an edit to it.
 - **A nomination is a marked line in `## Decisions`, not a new section** (assumed) — `dw-shape`
   already marks a line `(assumed)` in that section, so the shape exists and `dw-next` already
   re-reads the section on every resume.
@@ -106,9 +111,9 @@ invocation reads that as not remaining. Never rename a task title. -->
       still no second copy of the bar.
 - [x] 5. `skills/dw-next/SKILL.md` — the promote bullet becomes a nominate bullet, plus the narrow
       `touches:` grep for a file the change doc did not anchor.
-- [ ] 6. `skills/dw-land/SKILL.md` — the gate: judge every nomination, call the agent when there is
+- [x] 6. `skills/dw-land/SKILL.md` — the gate: judge every nomination, call the agent when there is
       one and it is installed, and stop claiming the promotion already happened at `:49`.
-- [ ] 7. `skills/dw-land/SKILL.md` — the receipt keeps a rejected nomination with its failing leg;
+- [x] 7. `skills/dw-land/SKILL.md` — the receipt keeps a rejected nomination with its failing leg;
       `:71` currently deletes the section it lives in.
 - [ ] 8. `skills/dw-shape/SKILL.md` (and `dw-grill`'s read step) — grep `touches:` over the anchors'
       paths and carry the matching `rule:` into `## Decisions`; the agent's `ask` mode for an open

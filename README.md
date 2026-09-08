@@ -87,11 +87,18 @@ ship.
 | [`dw-prune`](skills/dw-prune/SKILL.md) `⭑`     | Walk the backlog — drop, do, bundle, or leave each entry                        | a shorter queue, one commit                     |
 | [`dw-unslop`](skills/dw-unslop/SKILL.md) `⭑`   | Cut the AI tells from a PR or commit body, keep the voice                       | the rewritten text, rules named                 |
 
-The same plugin ships one **subagent**, which is not a skill and has no `/` form:
-[`dw-docs-drift`](agents/dw-docs-drift.md) reads a repo's doc layer — `AGENTS.md` and its Task
-Router, `docs/agents/`, `CONTEXT.md`, `docs/decisions/` — and reports every named referent that is
-absent or dead at a real `file:line`. It never edits: its tool list is `Read, Grep, Glob`. Call it
-as `@dw-solo-extras:dw-docs-drift`, or just ask whether the docs are still true.
+The same plugin ships two **subagents**, which are not skills and have no `/` form. Both are
+read-only — the tool list is `Read, Grep, Glob` — and the split between them is names against
+meaning:
+
+- [`dw-docs-drift`](agents/dw-docs-drift.md) reads a repo's doc layer — `AGENTS.md` and its Task
+  Router, `docs/agents/`, `CONTEXT.md`, `docs/decisions/` — and reports every named referent that is
+  absent or dead at a real `file:line`. Call it as `@dw-solo-extras:dw-docs-drift`, or just ask
+  whether the docs are still true.
+- [`dw-decisions`](agents/dw-decisions.md) reads what `docs/decisions/` **decides**: which records
+  govern a path, whether a nomination clears the bar it is handed, and which active records no
+  longer hold or collide. Call it as `@dw-solo-extras:dw-decisions`, or ask what the project already
+  settled.
 
 **Setup** — the `dw-solo-setup` plugin; run once per repo.
 

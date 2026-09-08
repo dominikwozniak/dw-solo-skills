@@ -18,7 +18,12 @@
 # the second would put worktrees inside a worktree.
 #
 # Uncomment what your project actually has. Nothing is copied while every line is a comment.
+#
+# `.claude/settings.local.json` earns its place below: it is gitignored, it holds the permission
+# allow-list this project accumulated, and a worktree without it re-prompts for every command you
+# already approved in the main tree.
 
 # .env
 # .env.local
+# .claude/settings.local.json
 # config/secrets.json

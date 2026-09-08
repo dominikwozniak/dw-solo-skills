@@ -32,6 +32,7 @@ allow-list is **derived from the project rather than guessed**.
 | `.claude/settings.json`             | **tracked**       | permissions (ask + deny + derived allow) and hook wiring |
 | `.claude/hooks/*.sh`                | **tracked**       | the guardrail scripts those settings reference           |
 | `.worktreeinclude`                  | **tracked**       | gitignored files a fresh worktree should carry in        |
+| `.github/PULL_REQUEST_TEMPLATE.md`  | **tracked**       | the PR body shape `dw-land` fills and GitHub prefills    |
 | `.gitignore`                        | tracked           | a managed marker block for the personal files            |
 | `.husky/` + `.lintstagedrc.json`    | tracked, optional | the pre-commit twin of the hooks — only when opted in    |
 
@@ -197,6 +198,9 @@ light.
   nobody asked for. Tracked, and it earns its keep twice: Claude Code reads it for `claude -w`
   worktrees, `worktree.sh create` reads it for the loop's own. Say at the gate that it starts empty
   and the user should add their `.env` line.
+- `.github/PULL_REQUEST_TEMPLATE.md` — if absent, `mkdir -p .github` and copy
+  `${CLAUDE_PLUGIN_ROOT}/templates/PULL_REQUEST_TEMPLATE.md` verbatim. **If it exists, leave it
+  alone.** It ships as guidance comments only, so it renders empty until someone writes a body.
 - Append `${CLAUDE_PLUGIN_ROOT}/templates/gitignore-block.txt` to `.gitignore` between its markers.
   **Idempotent**: if the markers are already there, replace the block in place, never duplicate it.
 

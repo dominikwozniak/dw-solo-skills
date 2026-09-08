@@ -15,8 +15,8 @@ imply, and the traps that have actually sprung around them.
 - **Push** — plain `git push`; no upstream → `git push -u origin "$(git rev-parse --abbrev-ref HEAD)"`.
   Force-push is hook-refused; a push to `main` needs an explicit yes first.
 - **PR** — push first if needed; `gh pr create` against `main`, title in the commit-subject shape,
-  body `## Summary` + `## Test plan` (this repo has no PR template), no attribution footer, then
-  print the URL. `gh` over a GitHub MCP server: less context, same result.
+  body read and filled from `.github/PULL_REQUEST_TEMPLATE.md` (`--body` bypasses it), no attribution
+  footer, then print the URL. `gh` over a GitHub MCP server: less context, same result.
 - **Sync** — `git fetch origin && git rebase origin/main`. Refuse on a dirty tree — commit or stash
   first. On a conflict report and **stop**; never auto-resolve.
 - **Branch** — `git switch -c <kebab-slug>`, the same spelling the change docs under `.ai/work/` use.

@@ -4,6 +4,7 @@ branch: decisions-get-a-gate-and-a-finder
 created: 2026-09-08
 status: landed # shaping | building | landed
 landed: 2026-09-08
+pr: https://github.com/dominikwozniak/dw-solo-skills/pull/63
 ---
 
 # Change — a decision record is written only where the bar is read, and found without scanning the folder

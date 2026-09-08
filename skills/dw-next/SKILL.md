@@ -65,11 +65,12 @@ stale task. Order is a hint — take a later task when this one is blocked, and 
   leg one — hard to reverse — is unanswerable from inside task two of six. A term is different:
   `CONTEXT.md` has no bar to clear, so write it now.
 - **Read the decisions binding the file you are about to edit** — where `## Decisions` doesn't
-  already carry them, read the records' **frontmatter only**, never the folder: `status: active`
-  plus a `touches:` matching the path, then act on that record's `rule:` **verbatim**. A record
-  with no `touches:` predates the field — fall back to its slug. A norm you would have to soften to
-  proceed is a reason to stop, not to proceed carefully. **No `docs/decisions/` is no layer, not an
-  empty answer**: say which it was.
+  already carry them, read the records' **frontmatter first**, never the whole folder:
+  `status: active` plus a `touches:` matching the path, then act on that record's `rule:`
+  **verbatim**. A record predating those fields is found by its slug, and its norm is the first
+  sentence of its `## Decision` — the one case where you open the record itself. A norm you would
+  have to soften to proceed is a reason to stop, not to proceed carefully. **No `docs/decisions/`
+  is no layer, not an empty answer**: say which it was.
 - **Leave it green** — run the tests; lint and typecheck are hook-owned in this lane.
 
 ### 4. Tick, note, commit

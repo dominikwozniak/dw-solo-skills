@@ -97,7 +97,7 @@ invocation reads that as not remaining. Never rename a task title. -->
 - [x] 1. `agents/dw-decisions.md` — the contract for three modes (`ask`, `judge`, `audit`),
       `tools: Read, Grep, Glob`, `model: sonnet`; symlink at `plugins/dw-solo-extras/agents/`,
       listed by path in the `agents` array, extras version bumped.
-- [ ] 2. Sharpen both agent descriptions so `dw-docs-drift` keeps referent-existence prompts and
+- [x] 2. Sharpen both agent descriptions so `dw-docs-drift` keeps referent-existence prompts and
       `dw-decisions` keeps decision prompts — `0025`'s revisit trigger fires the moment a second
       agent lands.
 - [ ] 3. `skills/dw-land/references/decision-record.md` — `touches:` and `rule:` in the frontmatter
@@ -152,3 +152,5 @@ invocation reads that as not remaining. Never rename a task title. -->
 
 - Built by the rule this change introduces: the bar-carrying call is nominated in `## Decisions`, not promoted mid-build. Cheapest way to test the mechanism is to use it.
 - `validate-manifests.sh` needs three things per agent, not one: the symlink, the exact `../../../agents/<name>` target, and the `"./agents/<name>"` string in the `agents` array.
+- Splitting the two descriptions found a duplicated finding: `audit` reported dead `touches:` paths, which `dw-docs-drift` already walks the same folder for. Dropped from `dw-decisions`.
+- The boundary is NAMES vs MEANING: drift asks whether what a doc cites exists, `dw-decisions` asks what the records decide. Both descriptions now say it, since a description is the only routing control an agent has (`0025`).

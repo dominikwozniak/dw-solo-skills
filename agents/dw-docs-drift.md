@@ -1,12 +1,14 @@
 ---
 name: dw-docs-drift
 description: >-
-  Read-only auditor of a repo's own doc layer — AGENTS.md and its Task Router, docs/agents/,
-  CONTEXT.md, docs/decisions/. It takes every named referent the prose points at — a path, a symbol,
-  a command, a package, a config key, a version — and reports each as alive, dead or absent at a
-  real `file:line`. Use when asking whether the docs are still true — "are the docs still accurate",
-  "check the docs against the code", "find stale docs", "docs drift", "czy docsy są jeszcze
-  prawdziwe", "sprawdź docsy względem kodu". Never edits, never reviews a diff, never judges prose.
+  Read-only auditor of the NAMES a repo's doc layer cites — AGENTS.md and its Task Router,
+  docs/agents/, CONTEXT.md, and docs/decisions/ for its paths and symbols but never its reasoning.
+  It takes every named referent the prose points at — a path, a symbol, a command, a package, a
+  config key, a version — and reports each as alive, dead or absent at a real `file:line`. Use when
+  asking whether what the docs NAME still exists — "are the docs still accurate", "check the docs
+  against the code", "find stale docs", "docs drift", "czy docsy są jeszcze prawdziwe", "sprawdź
+  docsy względem kodu". Never edits, never reviews a diff, never judges prose. Whether a decision
+  still HOLDS, or deserved a record at all, is dw-decisions' question and not this one's.
 model: sonnet
 tools: Read, Grep, Glob
 ---

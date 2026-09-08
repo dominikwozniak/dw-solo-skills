@@ -18,7 +18,7 @@
     },
     {
       "name": "dw-solo-setup",
-      "version": "0.4.4",
+      "version": "0.4.5",
       "source": "./plugins/dw-solo-setup",
       "keywords": ["solo", "setup", "scaffold", "hooks"],
       "category": "utilities",

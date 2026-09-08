@@ -17,7 +17,8 @@ in [`AGENTS.md`](AGENTS.md) and the procedures in the skills themselves.
   comparable across them — `slugify.sh undate` strips a prefix, and `docs/decisions/` is exempt because
   its `NNNN-` numbering already sorts.
 - **Promotion** — moving the durable residue out of a `CHANGE.md`, **as it happens**: `dw-next`
-  writes a decision or term in the task's own commit, and `dw-land` sweeps what is left at close —
+  writes a term in the task's own commit and **nominates** a decision rather than writing it, and
+  `dw-land` judges every nomination and sweeps what is left at close —
   traps to the `## Gotchas` of the routed topic file, stale pointers rewritten, follow-ups to
   `.ai/backlog/` (one file per idea). It **replaces rather than appends**: each target is read
   first, and what the change supersedes is deleted in the same edit. Decisions are the exception —

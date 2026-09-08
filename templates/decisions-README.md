@@ -1,12 +1,13 @@
 # `docs/decisions/` — why the code is shaped this way
 
 One record per decision, `<NNNN>-<kebab-slug>.md`, append-only. `dw-land` writes them at close,
-`dw-shape` reads them before the next change. **Once `0001` exists it is the worked example — copy its
-shape.**
+`dw-shape` reads them before the next change. The shape comes from the contract named below, which is
+the file that writes one; once `0001` exists it shows the prose at the right weight. A record written
+before this version has no `rule:` or `touches:` — read it for register, not for frontmatter.
 
-No index here on purpose: `ls` sorts them, every slug states its decision, and a record's
-`rule:` and `touches:` are reachable in one grep over frontmatter. An index would be a second
-copy of all three.
+No index here on purpose: `ls` sorts them, every slug states its decision, and a record carrying
+`rule:` and `touches:` is reachable by its frontmatter — the ones predating those fields by slug.
+An index would be a second copy of all three.
 
 Ceiling: **40 lines** per record, enforced by the same checker as `AGENTS.md`'s budget. Size only —
 the bar and the shape stay editorial. Delete the line to switch it off; raise the number and you have

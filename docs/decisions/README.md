@@ -1,12 +1,14 @@
 # `docs/decisions/` — why this repo is shaped this way
 
 One record per decision, `<NNNN>-<kebab-slug>.md`, append-only. `dw-land` writes them at close,
-`dw-shape` reads them before the next change. **[`0011`](0011-bare-dw-next-builds-rather-than-reports.md) is the
-worked example — copy its shape.**
+`dw-shape` reads them before the next change. The shape comes from
+[`decision-record.md`](../../skills/dw-land/references/decision-record.md), which is the file that
+writes one; [`0011`](0011-bare-dw-next-builds-rather-than-reports.md) shows the prose at the right
+weight, and predates `rule:` and `touches:` — so read it for register, not for frontmatter.
 
-No index here on purpose: `ls` sorts them, every slug states its decision, and a record's
-`rule:` and `touches:` are reachable in one grep over frontmatter. An index would be a second
-copy of all three.
+No index here on purpose: `ls` sorts them, every slug states its decision, and a record carrying
+`rule:` and `touches:` is reachable by its frontmatter — the ones predating those fields by slug.
+An index would be a second copy of all three.
 
 Ceiling: **80 lines** per record, enforced by `pnpm validate:docs`. Eighty is what this folder already
 supports — the longest record is 72 — not a claim that eighty is the right number. The payload seeds a

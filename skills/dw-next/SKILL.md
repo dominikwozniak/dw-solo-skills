@@ -15,8 +15,9 @@ laptop or a week away must change nothing about the answer.
 ## What it reads and writes
 
 Reads `.ai/work/<date>-<slug>/CHANGE.md` (written by `dw-shape`), a `HANDOFF.md` beside it when a
-session left one, any sibling file its `## References` names, and `CONTEXT.md` for the project's
-terms. Writes code, ticks the checklist,
+session left one, any sibling file its `## References` names, `CONTEXT.md` for the project's terms,
+and the frontmatter of `docs/decisions/` for the records binding the files a task edits — the
+frontmatter, never the folder. Writes code, ticks the checklist,
 appends to Notes, and commits. Find the active change by branch, never by guessing:
 
 ```
@@ -59,9 +60,16 @@ stale task. Order is a hint — take a later task when this one is blocked, and 
 - **Test the way the project does** — failing test first where the task has a real assertion; say
   so where it genuinely doesn't, instead of fabricating one.
 - **Follow the anchors, use the project's words** — patterns from the doc, names from `CONTEXT.md`.
-- **Promote as you decide** — a decision clearing the decision-record bar (`dw-land` carries it as
-  a reference), or a term the glossary lacks, is written to `docs/decisions/` / `CONTEXT.md` in
-  this task's commit rather than saved up for the close.
+- **Nominate a decision, never promote one** — a call worth a decision record becomes one marked
+  line in the doc's `## Decisions`, in this task's commit: the call, why, and `(nominated)`. It is
+  `dw-land` that judges it against the bar, because leg one — hard to reverse — cannot be answered
+  from inside task two of six, and the bar is a file `dw-next` does not carry. A term the glossary
+  lacks is different: `CONTEXT.md` has no bar to clear, so write it here and now.
+- **Read the decisions that bind the file you are about to edit** — where the doc's `## Decisions`
+  did not already carry them, grep frontmatter once, never the folder:
+  `grep -H -e '^rule:' -e '^touches:' -e '^  - ' docs/decisions/*.md` returns every record's norm
+  and the paths it binds in one pass. Act on the `rule:` verbatim; a record whose norm you would
+  have to soften to proceed is a reason to stop and say so, not to proceed carefully.
 - **Leave it green** — run the tests; lint and typecheck are hook-owned in this lane.
 
 ### 4. Tick, note, commit

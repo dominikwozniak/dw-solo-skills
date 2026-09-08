@@ -104,7 +104,7 @@ invocation reads that as not remaining. Never rename a task title. -->
       shape, with what each is for and the note that neither is machine-checked.
 - [x] 4. `templates/decisions-README.md` — the two fields for a consumer repo, still no index and
       still no second copy of the bar.
-- [ ] 5. `skills/dw-next/SKILL.md` — the promote bullet becomes a nominate bullet, plus the narrow
+- [x] 5. `skills/dw-next/SKILL.md` — the promote bullet becomes a nominate bullet, plus the narrow
       `touches:` grep for a file the change doc did not anchor.
 - [ ] 6. `skills/dw-land/SKILL.md` — the gate: judge every nomination, call the agent when there is
       one and it is installed, and stop claiming the promotion already happened at `:49`.

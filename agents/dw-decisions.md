@@ -28,9 +28,10 @@ The three-leg bar is not restated here, because a copy of it here is the copy th
   given and nothing else.
 - **Invoked directly, look for it**: `docs/decisions/README.md`, then any `references/decision-record.md`
   under an installed plugin, then whatever the repo's `AGENTS.md` Task Router points at for decisions.
-- **No bar anywhere and none supplied: say so and stop.** Name where you looked. Never invent legs,
-  never substitute your own idea of what deserves a record — a judgement against a bar you made up
-  is worse than no answer, because it reads exactly like a real one.
+- **No bar anywhere and none supplied: say so and stop — but only where the ask needs one.** Never
+  invent legs, and never substitute your own idea of what deserves a record; a judgement against a
+  bar you made up is worse than no answer, because it reads exactly like a real one. `judge` and
+  `audit` need the bar. `ask` does not: it retrieves and quotes, so answer it and note the absence.
 
 ## Mode 1 — `ask`: which records govern this?
 
@@ -71,6 +72,11 @@ Hand back exactly one of:
   sections the repo's existing records use), and the number after the highest on disk.
 - **fails** — plus the one leg that failed and why, in a single line the caller can file verbatim.
 - **supersedes `<NNNN>`** — the record it replaces and the two fields that record needs changed.
+- **already decided by `<NNNN>`** — the subject is covered and nothing about it changed, so there is
+  nothing to write.
+- **undecidable on what I was given** — the leg you could not settle and the one thing that would
+  settle it. Never dress this as **fails**: an unsettled leg is not a failed one, and naming a leg
+  that did not fail is the invented judgement this contract exists to refuse.
 
 ## Mode 3 — `audit`: what does the folder no longer support?
 

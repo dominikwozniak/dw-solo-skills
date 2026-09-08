@@ -10,9 +10,12 @@ on:
       # exactly one owner, and that the scripts and templates links point into their canon. None of
       # that is a manifest edit: replacing a symlink with a real directory, adding skills/<new>/ with
       # no owner, or deleting templates/hooks/ all matched no path here, so the job never ran on the
-      # one commit shape it exists to catch.
+      # one commit shape it exists to catch. agents/ is here for the same reason and was missed when
+      # the directory came into being: the reverse loop refuses a canon agent that no plugin ships,
+      # and adding one without touching plugins/ is exactly the commit that used to slip past.
       - plugins/**
       - skills/**
+      - agents/**
       - scripts/runtime/**
       - templates/**
       - scripts/validate-manifests.sh
@@ -24,6 +27,7 @@ on:
       - "**/plugin.json"
       - plugins/**
       - skills/**
+      - agents/**
       - scripts/runtime/**
       - templates/**
       - scripts/validate-manifests.sh

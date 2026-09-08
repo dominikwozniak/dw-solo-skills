@@ -27,7 +27,7 @@ needed. Four markers, and `dw-land` reads the last one:
   record's own words.
 - `[decision] (nominated) — [why it may deserve a record]` — a call `dw-next` judges worth a decision
   record but does not write. `dw-land` is the gate, and it rewrites this line in place: gone, where
-  the call became a record; `(rejected: <leg>)` where a leg failed; `(deferred: <what would settle
+  the call became a record; `(rejected: <leg>)` where a leg failed; `(unsettled: <what would settle
 it>)` where none failed but the change did not show enough. The last two survive into the archive
   receipt — nothing else in this section does.
 

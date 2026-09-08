@@ -66,7 +66,7 @@ this change made untrue or made mechanical:
     - **fails, or cannot be settled on what the change shows** → the line stays in the doc, and
       rides into the archive so the third arrival of the same idea reads as a pattern instead of a
       fresh question. `(nominated)` becomes `(rejected: <leg>)` where a leg actually failed, and
-      `(deferred: <what would settle it>)` where none did — **never a leg you did not establish**.
+      `(unsettled: <what would settle it>)` where none did — **never a leg you did not establish**.
 - **Vocabulary** — new or sharpened terms into `CONTEXT.md`, one bullet of at most two lines saying
   what the word means and nothing about why; rewrite a line, never add a second definition beside it.
 - **Gotchas** — a trap that cost real time goes to the routed topic file covering it (the root file
@@ -84,7 +84,7 @@ this change made untrue or made mechanical:
   `research.md` — once anything durable in it has been promoted; the receipt is `CHANGE.md` alone.
   Then `git mv .ai/work/<shaped date>-<slug>/ .ai/archive/<today>-<slug>/`; flip to
   `status: landed` with `landed: YYYY-MM-DD`. Trim the doc to a receipt: delete Goal, Out of scope,
-  Anchors and References, and Decisions **except its `(rejected:)` and `(deferred:)` lines** — keep
+  Anchors and References, and Decisions **except its `(rejected:)` and `(unsettled:)` lines** — keep
   the frontmatter, the H1, the task list as `dw-next` left it, the Notes no target took, and those
   two. A turned-down decision is residue no durable target would take, which is the same reason
   Notes survive the trim.

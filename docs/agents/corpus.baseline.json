@@ -1,11 +1,11 @@
 {
   "$comment": "The recorded size of docs/agents/*.md excluding README.md, used as a ratchet by check-agents-docs.mjs: the corpus may shrink freely and may only grow through a commit that re-records this file with `--update-baseline`. No threshold is chosen here, so no threshold can be set too high. Delete this file to switch the ratchet off.",
-  "words": 8187,
+  "words": 8216,
   "perFile": {
     "change-artifacts.md": 766,
     "git-history.md": 891,
     "skills-and-plugins.md": 2338,
-    "tooling.md": 3508,
+    "tooling.md": 3537,
     "worktrees.md": 684
   }
 }

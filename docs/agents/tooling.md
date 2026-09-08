@@ -90,6 +90,8 @@ either, and each script names the tokens it rejects.
 
 ## Gotchas
 
+- **Never cut prose for the corpus ratchet without re-reading what the sentence guaranteed.** A
+  tightening pass dropped `where installed` from a cross-plugin call and every gate stayed green.
 - **A Bash heredoc that writes a file runs the file's text past every PreToolUse guard.** The hooks
   lex the whole command, and a `cat > x.test.sh <<'EOF'` body holding `git commit -qm "$3"` read to
   `enforce-commit-hygiene.sh` as a commit whose subject was `$3)` — refused, the file never written.

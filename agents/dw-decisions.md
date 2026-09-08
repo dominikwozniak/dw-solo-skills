@@ -77,7 +77,7 @@ Hand back exactly one of:
 - **already decided by `<NNNN>`** — the subject is covered and nothing about it changed, so there is
   nothing to write.
 - **undecidable on what I was given** — the leg you could not settle and the one thing that would
-  settle it, which the caller files as `(deferred: …)`. Never dress this as **fails**: an unsettled
+  settle it, which the caller files as `(unsettled: …)`. Never dress this as **fails**: an unsettled
   leg is not a failed one, and naming a leg that did not fail is the invented judgement this
   contract exists to refuse.
 

@@ -10,6 +10,8 @@ in [`AGENTS.md`](AGENTS.md) and the procedures in the skills themselves.
   it. Never edit through `plugins/…`.
 - **Change** — one unit of work, held in `.ai/work/<date>-<slug>/CHANGE.md`. Persistent (tracked,
   survives a `/clear`), archived at merge (`.ai/archive/<date>-<slug>/`, `status: landed`).
+- **Nomination** — a decision `dw-next` writes into a `CHANGE.md`'s `## Decisions` as a candidate
+  rather than a record. `dw-land` is the only gate that judges one against the bar.
 - **Sibling file** — a file beside a `CHANGE.md` in its change folder: a shape-time detail file the
   doc names in `## References`, or a `HANDOFF.md`. Removed at archive; the receipt is the doc alone.
 - **Entry name** — `<YYYY-MM-DD>-<slug>`, from `slugify.sh dated`, for every entry in the three `.ai/`

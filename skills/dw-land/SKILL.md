@@ -53,14 +53,20 @@ this change made untrue or made mechanical:
 - **Decisions** — the only gate. Every `(nominated)` line, plus anything the diff decided and
   nobody nominated, is judged against `references/decision-record.md`'s three legs **out loud, one
   candidate at a time**; the whole diff is here, which is why this is where leg one can be answered.
-  - With `dw-decisions` installed and a candidate in hand, give it the candidate **and the three
-    legs verbatim** for a second opinion and on whether an active record already covers it. No
-    candidate: don't call it. Not installed: judge alone and say so.
-  - One that clears the bar becomes a record with `rule:` and `touches:`; most changes add zero, and
-    that is correct. Flip a superseded record in the same pass.
-  - **One that fails keeps a line** — the call and the failing leg, `(nominated)` rewritten to
-    `(rejected: <leg>)`. It rides into the archive, so the third arrival of the same idea reads as a
-    pattern instead of a fresh question.
+  - With `dw-decisions` installed and a candidate in hand, give it the candidate, **the three legs
+    verbatim**, and the diff hunks the candidate turns on — it has no shell and cannot see a diff,
+    so a leg whose evidence lives in the change is unanswerable unless you pass it. No candidate:
+    don't call it. Not installed: judge alone and say so.
+  - Every candidate ends in exactly one of four states, and each has a destination:
+    - **clears the bar** → a record with `rule:` and `touches:`. Most changes add zero, and that is
+      correct.
+    - **supersedes an active record** → the new record carries `supersedes:`, and the old one is
+      flipped in the same pass.
+    - **already decided, nothing changed** → no record. Say which record covers it, in the report.
+    - **fails, or cannot be settled on what the change shows** → the line stays in the doc, and
+      rides into the archive so the third arrival of the same idea reads as a pattern instead of a
+      fresh question. `(nominated)` becomes `(rejected: <leg>)` where a leg actually failed, and
+      `(deferred: <what would settle it>)` where none did — **never a leg you did not establish**.
 - **Vocabulary** — new or sharpened terms into `CONTEXT.md`, one bullet of at most two lines saying
   what the word means and nothing about why; rewrite a line, never add a second definition beside it.
 - **Gotchas** — a trap that cost real time goes to the routed topic file covering it (the root file
@@ -78,10 +84,10 @@ this change made untrue or made mechanical:
   `research.md` — once anything durable in it has been promoted; the receipt is `CHANGE.md` alone.
   Then `git mv .ai/work/<shaped date>-<slug>/ .ai/archive/<today>-<slug>/`; flip to
   `status: landed` with `landed: YYYY-MM-DD`. Trim the doc to a receipt: delete Goal, Out of scope,
-  Anchors and References, and Decisions **except its `(rejected: <leg>)` lines** — keep the
-  frontmatter, the H1, the task list as `dw-next` left it, the Notes no target took, and those
-  rejections. A rejection is residue no durable target would take, which is the same reason Notes
-  survive the trim.
+  Anchors and References, and Decisions **except its `(rejected:)` and `(deferred:)` lines** — keep
+  the frontmatter, the H1, the task list as `dw-next` left it, the Notes no target took, and those
+  two. A turned-down decision is residue no durable target would take, which is the same reason
+  Notes survive the trim.
 
 One commit carries all of it — including a `docs/agents/corpus.baseline.json` re-record where the
 repo keeps one, since a promotion that grows the corpus is what the ratchet asks to be shown.

@@ -58,13 +58,15 @@ caller must be able to tell it apart from an ask you failed to search.
 
 ## Mode 2 — `judge`: does this nomination clear the bar?
 
-One nomination at a time. For each leg the caller gave you: **hold**, **fails**, or **cannot tell
-from what I was given** — and one line of evidence per verdict, from the diff or the tree, never
-from the nomination's own wording. A nomination arguing its own importance is the claim under test.
+One nomination at a time, and **the duplicate check comes first**: run mode 1 over the nomination's
+subject. An active record already covering it makes the nomination a supersession or a duplicate,
+and which one it is matters more than the legs.
 
-Then, before any verdict: **is this already decided?** Run mode 1 over the nomination's subject. An
-active record already covering it makes the nomination a supersession or a duplicate, and which one
-it is matters more than the legs.
+Only then the legs. For each leg the caller gave you: **hold**, **fails**, or **cannot tell from
+what I was given** — one line of evidence each, drawn from the tree you can read and from whatever
+the caller supplied with the nomination, never from the nomination's own wording. A nomination
+arguing its own importance is the claim under test. You have no shell and cannot see a diff: a leg
+that turns on what the change did is **cannot tell** unless the caller handed you that much.
 
 Hand back exactly one of:
 
@@ -75,8 +77,9 @@ Hand back exactly one of:
 - **already decided by `<NNNN>`** — the subject is covered and nothing about it changed, so there is
   nothing to write.
 - **undecidable on what I was given** — the leg you could not settle and the one thing that would
-  settle it. Never dress this as **fails**: an unsettled leg is not a failed one, and naming a leg
-  that did not fail is the invented judgement this contract exists to refuse.
+  settle it, which the caller files as `(deferred: …)`. Never dress this as **fails**: an unsettled
+  leg is not a failed one, and naming a leg that did not fail is the invented judgement this
+  contract exists to refuse.
 
 ## Mode 3 — `audit`: what does the folder no longer support?
 

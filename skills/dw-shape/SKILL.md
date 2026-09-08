@@ -47,11 +47,9 @@ change doc committed to the default branch is what a post-squash rebase resurrec
 The request (it may arrive as the argument below); `AGENTS.md` / `CLAUDE.local.md`, else the manifests,
 for the test and git conventions; `CONTEXT.md` and `docs/decisions/` where present — a settled
 term or decision is not re-litigated, and the records are reached **by frontmatter, never by
-reading the folder**: `grep -H -e '^rule:' -e '^touches:' -e '^  - ' docs/decisions/*.md` in one
-pass, then open only what the anchors' paths match, and carry each matching `rule:` verbatim into
-`## Decisions` so `dw-next` is bound by it without going back to the folder. An open question the
-grep cannot answer — "have we settled anything about X" — goes to `dw-decisions` where it is
-installed; a matching `.ai/backlog/` entry — prior context: create the
+reading the folder**: `grep -H -e '^rule:' -e '^touches:' -e '^  - ' docs/decisions/*.md`, open only
+what the anchors' paths match, and carry each matching `rule:` verbatim into `## Decisions`. An open
+question the grep cannot answer goes to `dw-decisions` where it is installed; a matching `.ai/backlog/` entry — prior context: create the
 folder, `git mv` the entry in as `CHANGE.md`, and expand it in place; the real sibling patterns,
 confirmed with Read or grep — these become the anchors. Every number, caller and consumer a task
 will name is counted **against the thing itself** — the directory, the file, the call sites — before

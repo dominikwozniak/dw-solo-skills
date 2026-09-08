@@ -60,16 +60,14 @@ stale task. Order is a hint — take a later task when this one is blocked, and 
 - **Test the way the project does** — failing test first where the task has a real assertion; say
   so where it genuinely doesn't, instead of fabricating one.
 - **Follow the anchors, use the project's words** — patterns from the doc, names from `CONTEXT.md`.
-- **Nominate a decision, never promote one** — a call worth a decision record becomes one marked
-  line in the doc's `## Decisions`, in this task's commit: the call, why, and `(nominated)`. It is
-  `dw-land` that judges it against the bar, because leg one — hard to reverse — cannot be answered
-  from inside task two of six, and the bar is a file `dw-next` does not carry. A term the glossary
-  lacks is different: `CONTEXT.md` has no bar to clear, so write it here and now.
-- **Read the decisions that bind the file you are about to edit** — where the doc's `## Decisions`
-  did not already carry them, grep frontmatter once, never the folder:
-  `grep -H -e '^rule:' -e '^touches:' -e '^  - ' docs/decisions/*.md` returns every record's norm
-  and the paths it binds in one pass. Act on the `rule:` verbatim; a record whose norm you would
-  have to soften to proceed is a reason to stop and say so, not to proceed carefully.
+- **Nominate a decision, never promote one** — a call worth a record becomes one line in the doc's
+  `## Decisions` in this task's commit: the call, why, `(nominated)`. `dw-land` judges it, because
+  leg one — hard to reverse — is unanswerable from inside task two of six. A term is different:
+  `CONTEXT.md` has no bar to clear, so write it now.
+- **Read the decisions binding the file you are about to edit** — where `## Decisions` doesn't
+  already carry them, grep frontmatter once, never the folder:
+  `grep -H -e '^rule:' -e '^touches:' -e '^  - ' docs/decisions/*.md`. Act on `rule:` verbatim; a
+  norm you would have to soften to proceed is a reason to stop, not to proceed carefully.
 - **Leave it green** — run the tests; lint and typecheck are hook-owned in this lane.
 
 ### 4. Tick, note, commit

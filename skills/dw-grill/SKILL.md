@@ -22,11 +22,10 @@ ask in its terms.
    yields a long session and a plan for none of it. Independent shippability is **not** the test —
    `dw-shape` settled that, and a grill that splits on it hands over a split that skill will refuse.
 2. **Separate facts from decisions.** Facts — anything discoverable in the repo or environment —
-   are looked up, never asked. **A choice this project already settled is a fact**, so asking it
-   back costs a slot and invites reversing it by accident: where `docs/decisions/` exists, ask
-   `dw-decisions` what is already settled about the subject rather than reading the folder, and
-   quote what it returns instead of re-opening it. Only genuinely undecided things (trade-offs,
-   scope boundaries, product choices, which of two shapes) become questions.
+   are looked up, never asked. **A choice this project already settled is a fact** — asking it back
+   spends a slot and invites reversing it by accident, so ask `dw-decisions` what is settled and
+   quote it. Only genuinely undecided things (trade-offs, scope boundaries, product choices, which
+   of two shapes) become questions.
 3. **Spend the round well — five questions a round**, hardest-first by what a wrong answer would
    cost: scope → security/privacy → UX → technical detail. Four good questions beat five with a
    filler. Don't ask what the repo already answers (style, test framework, layout, naming, which

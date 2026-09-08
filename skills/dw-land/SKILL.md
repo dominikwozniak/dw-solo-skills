@@ -50,19 +50,17 @@ decides what happens next.
 the one step that judges them. Each target is read first — **replace, don't append**, deleting what
 this change made untrue or made mechanical:
 
-- **Decisions** — this is the gate, and it is the only one. Take every `(nominated)` line in
-  `## Decisions`, plus anything the diff decided that nobody nominated, and judge each against
-  `references/decision-record.md`'s three legs **out loud, one candidate at a time** — the whole
-  diff is in front of you, which is why the judgement lives here and not in the build.
-  - Where `dw-decisions` is installed and there is at least one candidate, hand it the candidate
-    **and the three legs verbatim** and take its verdict as the second opinion; it also says whether
-    an active record already covers the subject. Zero candidates: do not call it. Not installed:
-    judge alone and say so in the report.
-  - A candidate that clears the bar becomes a record with `rule:` and `touches:`. Most changes add
-    zero records, and that is correct. Flip a superseded record in the same pass.
-  - **A candidate that fails keeps one line in the doc** — the call and the leg that failed, rewritten
-    from `(nominated)` to `(rejected: <leg>)`. It travels into the archive with the receipt, so the
-    same idea arriving a third time is visible as a pattern rather than judged from scratch.
+- **Decisions** — the only gate. Every `(nominated)` line, plus anything the diff decided and
+  nobody nominated, is judged against `references/decision-record.md`'s three legs **out loud, one
+  candidate at a time**; the whole diff is here, which is why this is where leg one can be answered.
+  - With `dw-decisions` installed and a candidate in hand, give it the candidate **and the three
+    legs verbatim** for a second opinion and on whether an active record already covers it. No
+    candidate: don't call it. Not installed: judge alone and say so.
+  - One that clears the bar becomes a record with `rule:` and `touches:`; most changes add zero, and
+    that is correct. Flip a superseded record in the same pass.
+  - **One that fails keeps a line** — the call and the failing leg, `(nominated)` rewritten to
+    `(rejected: <leg>)`. It rides into the archive, so the third arrival of the same idea reads as a
+    pattern instead of a fresh question.
 - **Vocabulary** — new or sharpened terms into `CONTEXT.md`, one bullet of at most two lines saying
   what the word means and nothing about why; rewrite a line, never add a second definition beside it.
 - **Gotchas** — a trap that cost real time goes to the routed topic file covering it (the root file

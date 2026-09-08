@@ -118,7 +118,7 @@ invocation reads that as not remaining. Never rename a task title. -->
 - [x] 8. `skills/dw-shape/SKILL.md` (and `dw-grill`'s read step) — grep `touches:` over the anchors'
       paths and carry the matching `rule:` into `## Decisions`; the agent's `ask` mode for an open
       question.
-- [ ] 9. Green: `pnpm validate:manifests`, `validate:docs`, `validate:artifacts`,
+- [x] 9. Green: `pnpm validate:manifests`, `validate:docs`, `validate:artifacts`,
       `validate:versions`, `eval:routing`, `format`; both plugin versions bumped.
 
 ## Anchors
@@ -162,3 +162,5 @@ invocation reads that as not remaining. Never rename a task title. -->
 - Task 4 shrank on contact: `templates/decisions-README.md:15` already refuses to restate the frontmatter shape, so the two fields must NOT be described there. What was untrue is the no-index rationale, which rested on the slug alone — rewritten in both READMEs.
 - `main` moved during this session (another session pushed dw-solo-setup 0.4.2). The branch was rebased onto origin/main before the bumps, or the merge would have reverted that number.
 - `templates/` ships in dw-solo-setup, so touching `templates/decisions-README.md` obliges a setup bump too — three plugins move in this change, not two.
+- The corpus ratchet caught +481 words. A tightening pass gave 130 back; the remaining 351 are re-recorded, because a gate with three outcomes and a read step in three skills is growth on purpose.
+- `eval:routing` 27/27 rank-1, no description pair at or above 0.5 — the two agents are outside that scan entirely, which is why task 2 had to be done by hand.

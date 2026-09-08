@@ -15,13 +15,21 @@ else. Observable, not aspirational — "the settings screen persists the toggle 
 
 ## Decisions
 
-Only decisions actually taken — the call, then why, in the lines the reasoning needs and none for
-template completeness. A decision taken from a default rather than an answer (what `dw-grill` assumed
-or deferred) is marked `(assumed)`: `dw-next` builds on it and asks only when the build proves it
-wrong. Delete the section if none were needed.
+Decisions actually taken, plus the ones this change inherits or proposes — the call, then why, in
+the lines the reasoning needs and none for template completeness. Delete the section if none were
+needed. Four markers, and `dw-land` reads the last one:
 
-- [decision] — [why]
-- [decision] (assumed) — [the default, and why it is the sensible one]
+- `[decision] — [why]` — taken here, settled.
+- `[decision] (assumed) — [the default, and why]` — taken from a default rather than an answer (what
+  `dw-grill` assumed or deferred). `dw-next` builds on it and asks only when the build proves it wrong.
+- `[decision] (inherited: <NNNN>) — [the record's own rule, verbatim]` — a `docs/decisions/` record
+  already binds a file this change touches. Never reworded: the norm a builder acts on is the
+  record's own words.
+- `[decision] (nominated) — [why it may deserve a record]` — a call `dw-next` judges worth a decision
+  record but does not write. `dw-land` is the gate, and it rewrites this line in place: gone, where
+  the call became a record; `(rejected: <leg>)` where a leg failed; `(unsettled: <what would settle
+it>)` where none failed but the change did not show enough. The last two survive into the archive
+  receipt — nothing else in this section does.
 
 ## Out of scope
 

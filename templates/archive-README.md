@@ -6,8 +6,9 @@ the day the change was shaped, this one carries the day it landed, so the listin
 
 **An entry is a receipt, not a second copy of the change.** It keeps the frontmatter, the one-line
 title, the task list as it was left — ticks and skip reasons — and any notes that found no durable
-home. `dw-land` deletes `## Goal`, `## Decisions`, `## Out of scope`, `## Anchors` and
-`## References` on the way in, along with any sibling file still beside the doc, and drops every note
+home, plus any decision the gate turned down. `dw-land` deletes `## Goal`, `## Out of scope`,
+`## Anchors`, `## References` and all of `## Decisions` **but its `(rejected:)` and `(unsettled:)`
+lines** on the way in, along with any sibling file still beside the doc, and drops every note
 whose finding it has just promoted: those sections steered work the diff now holds, and a finding
 worth keeping lives in the durable layer instead of in a second copy here.
 

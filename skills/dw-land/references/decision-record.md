@@ -21,6 +21,9 @@ Most changes produce **zero** records, and that is the correct number.
 decision: <NNNN>
 status: active # active | superseded
 date: <YYYY-MM-DD>
+rule: <one imperative line, ≤100 chars — what a reader is bound to>
+touches:
+  - <path or glob this record governs>
 supersedes: <NNNN or omit>
 superseded-by: <NNNN or omit>
 ---
@@ -43,6 +46,24 @@ What was given up, and the rejected option, named.
 
 The concrete trigger that reopens this — a number, an event, a threshold; never "periodically".
 ```
+
+## `rule:` and `touches:` — how the record is found again
+
+A folder of records is only worth writing if the two or three governing the file in hand can be
+reached without reading the rest. These two fields are that path, and they do different jobs:
+
+- **`touches:` is the filter** — the paths or globs this record governs, so a reader about to edit
+  one of them greps frontmatter and finds this record. Write what the decision _binds_, not every
+  file the change happened to touch.
+- **`rule:` is the norm** — one imperative line saying what a reader is bound to, so a hit can be
+  acted on or dismissed without opening the file. It is not a summary of the record: the slug is
+  already the title and `## Decision` is already the paragraph. If the line reads like a description
+  rather than an instruction, it is the wrong line.
+
+Neither is machine-checked, and that is deliberate — the shipped checker gates size over this folder
+and never shape. A `touches:` path that leaves the tree is reported by a doc-layer audit, not by a
+gate. Both fields are expected of a record written from now on; a record that predates them is found
+by its slug and is never rewritten to add them.
 
 ## Superseding
 

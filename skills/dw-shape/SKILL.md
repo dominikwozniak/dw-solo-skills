@@ -45,10 +45,17 @@ change doc committed to the default branch is what a post-squash rebase resurrec
 ### 1. Read the project, don't assume it
 
 The request (it may arrive as the argument below); `AGENTS.md` / `CLAUDE.local.md`, else the manifests,
-for the test and git conventions; `CONTEXT.md` and `docs/decisions/` where present — a settled
-term or decision is not re-litigated; a matching `.ai/backlog/` entry — prior context: create the
-folder, `git mv` the entry in as `CHANGE.md`, and expand it in place; the real sibling patterns,
-confirmed with Read or grep — these become the anchors. Every number, caller and consumer a task
+for the test and git conventions; `CONTEXT.md` and `docs/decisions/` where present — a settled term
+or decision is not re-litigated; a matching `.ai/backlog/` entry — prior context: create the folder,
+`git mv` the entry in as `CHANGE.md`, and expand it in place; the real sibling patterns, confirmed
+with Read or grep — these become the anchors.
+
+**The records are reached by frontmatter, never by reading the folder**: `status: active` plus a
+`touches:` matching an anchor's path. Each match is carried into `## Decisions` as an inherited
+line — the record's `rule:` **verbatim**, or, where the record predates that field, its
+`## Decision`'s first sentence marked as your extract rather than the record's own words. An open
+question the lookup cannot answer goes to `dw-decisions` where it is installed. No folder is **no
+layer**, not an empty answer — say which it was. Every number, caller and consumer a task
 will name is counted **against the thing itself** — the directory, the file, the call sites — before
 the task is written. Never from memory, and never from another doc's count of it: a stale figure in
 prose is exactly how a task inherits a wrong one. Every resource the conversation pointed at becomes

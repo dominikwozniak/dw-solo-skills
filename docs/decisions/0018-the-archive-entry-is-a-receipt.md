@@ -1,8 +1,9 @@
 ---
 decision: 0018
-status: active
+status: superseded
 date: 2026-08-25
 supersedes: 0004
+superseded-by: 0026
 ---
 
 # 0018 — An archive entry is a receipt, and a backlog entry carries its own finding

@@ -15,8 +15,9 @@ laptop or a week away must change nothing about the answer.
 ## What it reads and writes
 
 Reads `.ai/work/<date>-<slug>/CHANGE.md` (written by `dw-shape`), a `HANDOFF.md` beside it when a
-session left one, any sibling file its `## References` names, and `CONTEXT.md` for the project's
-terms. Writes code, ticks the checklist,
+session left one, any sibling file its `## References` names, `CONTEXT.md` for the project's terms,
+and the frontmatter of `docs/decisions/` for the records binding the files a task edits — the
+frontmatter, never the folder. Writes code, ticks the checklist,
 appends to Notes, and commits. Find the active change by branch, never by guessing:
 
 ```
@@ -59,9 +60,17 @@ stale task. Order is a hint — take a later task when this one is blocked, and 
 - **Test the way the project does** — failing test first where the task has a real assertion; say
   so where it genuinely doesn't, instead of fabricating one.
 - **Follow the anchors, use the project's words** — patterns from the doc, names from `CONTEXT.md`.
-- **Promote as you decide** — a decision clearing the decision-record bar (`dw-land` carries it as
-  a reference), or a term the glossary lacks, is written to `docs/decisions/` / `CONTEXT.md` in
-  this task's commit rather than saved up for the close.
+- **Nominate a decision, never promote one** — a call worth a record becomes one line in the doc's
+  `## Decisions` in this task's commit: the call, why, `(nominated)`. `dw-land` judges it, because
+  leg one — hard to reverse — is unanswerable from inside task two of six. A term is different:
+  `CONTEXT.md` has no bar to clear, so write it now.
+- **Read the decisions binding the file you are about to edit** — where `## Decisions` doesn't
+  already carry them, read the records' **frontmatter first**, never the whole folder:
+  `status: active` plus a `touches:` matching the path, then act on that record's `rule:`
+  **verbatim**. A record predating those fields is found by its slug, and its norm is the first
+  sentence of its `## Decision` — the one case where you open the record itself. A norm you would
+  have to soften to proceed is a reason to stop, not to proceed carefully. **No `docs/decisions/`
+  is no layer, not an empty answer**: say which it was.
 - **Leave it green** — run the tests; lint and typecheck are hook-owned in this lane.
 
 ### 4. Tick, note, commit

@@ -17,3 +17,5 @@ repo-specific paragraph, while `templates/work-README.md` ↔ **`.ai/README.md`*
 and that third live twin sits at the top of `.ai/`, so any glob shaped `.ai/*/README.md` misses it.
 It is the pair that drifted in `shaping-scales-to-a-large-change`, caught by a delegated review rather
 than by anything in the repo.
+
+Hit again in `decisions-get-a-gate-and-a-finder`: the archive pair needed the same seven-line paragraph edited twice by hand, and a delegated review is what noticed they are two independent files rather than a symlink pair.

@@ -10,6 +10,8 @@ in [`AGENTS.md`](AGENTS.md) and the procedures in the skills themselves.
   it. Never edit through `plugins/…`.
 - **Change** — one unit of work, held in `.ai/work/<date>-<slug>/CHANGE.md`. Persistent (tracked,
   survives a `/clear`), archived at merge (`.ai/archive/<date>-<slug>/`, `status: landed`).
+- **Nomination** — a decision `dw-next` writes into a `CHANGE.md`'s `## Decisions` as a candidate
+  rather than a record. `dw-land` is the only gate that judges one against the bar.
 - **Sibling file** — a file beside a `CHANGE.md` in its change folder: a shape-time detail file the
   doc names in `## References`, or a `HANDOFF.md`. Removed at archive; the receipt is the doc alone.
 - **Entry name** — `<YYYY-MM-DD>-<slug>`, from `slugify.sh dated`, for every entry in the three `.ai/`
@@ -17,7 +19,8 @@ in [`AGENTS.md`](AGENTS.md) and the procedures in the skills themselves.
   comparable across them — `slugify.sh undate` strips a prefix, and `docs/decisions/` is exempt because
   its `NNNN-` numbering already sorts.
 - **Promotion** — moving the durable residue out of a `CHANGE.md`, **as it happens**: `dw-next`
-  writes a decision or term in the task's own commit, and `dw-land` sweeps what is left at close —
+  writes a term in the task's own commit and **nominates** a decision rather than writing it, and
+  `dw-land` judges every nomination and sweeps what is left at close —
   traps to the `## Gotchas` of the routed topic file, stale pointers rewritten, follow-ups to
   `.ai/backlog/` (one file per idea). It **replaces rather than appends**: each target is read
   first, and what the change supersedes is deleted in the same edit. Decisions are the exception —
@@ -72,7 +75,8 @@ in [`AGENTS.md`](AGENTS.md) and the procedures in the skills themselves.
   queueing at all. `dw-prune` applies it late, to a queue that grew anyway.
 - **Archive** — `.ai/archive/<date>-<slug>/`: landed change docs kept as history, not guidance. Nothing
   reads them to decide anything. An entry is a **receipt** rather than the working doc — frontmatter,
-  the H1, the task list as it was left, and only the notes no durable target took. Two statuses end
+  the H1, the task list as it was left, the notes no durable target took, and any decision the close
+  turned down. Two statuses end
   up here and there is no third: `landed`, and **`rejected` ≡ cancelled** — one status for an idea
   turned down and for work abandoned mid-build, since both leave the same thing behind (a
   `## Why rejected`) and nothing downstream tells them apart.

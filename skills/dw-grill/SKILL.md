@@ -28,7 +28,9 @@ ask in its terms.
    accident. Where `docs/decisions/` exists, read what it settled about the subject before question
    one, delegating to `dw-decisions` where that agent is installed; quote it rather than reopening
    it. A lookup still running blocks only the questions **downstream of it** — ask the rest of the
-   frontier now rather than stalling the round on its slowest answer. Only genuinely undecided
+   frontier now rather than stalling the round on its slowest answer. A lookup that fails or comes
+   back empty **stops being a lookup**: what it was going to settle is not discoverable after all,
+   so it rejoins the tree as an ordinary question rather than holding the close open. Only genuinely undecided
    things (trade-offs, scope boundaries, product choices, which of two shapes) become questions;
    where nothing short of throwaway code would settle one, name it a **spike** and offer it at the
    playback rather than building it here.

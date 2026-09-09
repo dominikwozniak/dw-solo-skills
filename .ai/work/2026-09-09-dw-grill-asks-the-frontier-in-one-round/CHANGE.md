@@ -142,3 +142,7 @@ invocation reads that as not remaining. Never rename a task title. -->
   "a frontier that opens huge is a sizing failure" gave the agent a subjective cap by another name.
 - An empty frontier and a finished interview are different states when a lookup is still running,
   and step 7 conflated them; the close now needs both.
+- The behaviour tier was deliberately not run (`0020` makes `--go` a spend), so the uncapped round is
+  argued and reviewed but never observed: the rung for that claim stops below "ran it".
+- Requiring no outstanding lookup at the close made a hung lookup an unreachable terminal state; the
+  second review caught it. A lookup that fails stops being one and its subject becomes a question.

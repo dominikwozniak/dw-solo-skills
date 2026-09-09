@@ -1,11 +1,11 @@
 {
   "skill": "dw-grill",
-  "note": "The runner is single-turn, so a round is carried inside the prompt. Case 1 hands the skill one round's answers and measures the playback that has to come before the next round. Case 2 measures the scope check before question one. Case 3 measures the batching itself, which nothing else here sees. All three fixtures stay on main; the skill writes nothing, so the branch is irrelevant.",
+  "note": "The runner is single-turn, so a round is carried inside the prompt. Case 1 hands the skill a round of three answers, deliberately not five, so the old pause-at-five rule cannot account for the playback it measures. Case 2 measures the scope check before question one. Case 3 measures the uncapped round: a single-goal idea whose frontier runs past five, so no five-question cap can produce a passing response. All three fixtures stay on main; the skill writes nothing, so the branch is irrelevant.",
   "evals": [
     {
       "id": 1,
       "fixture": "grill-round-pause",
-      "prompt": "I want to add a weekly digest email for inactive users. You have already asked me five questions and here are my answers, so continue from where we are:\nQ1 who receives it — A: only inactive users as CONTEXT.md defines them, no session in 30 days.\nQ2 opt-out — A: yes, one-click unsubscribe, the preference stored on the user.\nQ3 content — A: the three most-changed items the user's account owns since their last session, no marketing copy.\nQ4 send path — A: reuse sendEmail in src/notify.js, no new provider.\nQ5 failure handling — A: log and skip the user; retry at most once, next week.\nContinue.",
+      "prompt": "I want to add a weekly digest email for inactive users. You have already asked me a round of questions and here are my answers, so continue from where we are:\nQ1 who receives it — A: only inactive users as CONTEXT.md defines them, no session in 30 days.\nQ2 opt-out — A: yes, one-click unsubscribe, the preference stored on the user.\nQ3 send path — A: reuse sendEmail in src/notify.js, no new provider.\nContinue.",
       "expectations": [
         "The response opens with a playback of what is decided and what is still open; the next round's questions do not come before it",
         "Each still-open item is listed together with the default the agent would assume and what a wrong default would cost, rather than as a bare list of questions",
@@ -29,7 +29,7 @@
       "fixture": "grill-round-pause",
       "prompt": "I want a single thing: a weekly digest email for users who have gone inactive. One feature, one audience, nothing else bundled in. Grill me on it.",
       "expectations": [
-        "More than one question is asked in the same response, numbered, rather than one question followed by a wait",
+        "At least six questions are asked in one numbered response, a count no five-question cap could produce and no one-question-per-message rule could reach",
         "Every question carries the answer the agent would pick, not the question alone",
         "No question in the round depends on the answer to another question asked in the same round; anything downstream is deferred to a later round rather than asked now",
         "Nothing is written to disk: no file is created or edited, and no CHANGE.md appears under .ai/"

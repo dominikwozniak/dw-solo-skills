@@ -2,7 +2,7 @@
 change: dw-grill-asks-the-frontier-in-one-round
 branch: dw-grill-asks-the-frontier-in-one-round
 created: 2026-09-09
-status: shaping
+status: building
 ---
 
 # Change — dw-grill asks the whole frontier in one round, and only what is the user's to answer
@@ -88,7 +88,7 @@ it in as few turns as the dependency order allows.
 A task that stopped being necessary keeps its box and gains `**skip:** <reason>`; every later
 invocation reads that as not remaining. Never rename a task title. -->
 
-- [ ] 1. `dw-grill` asks by frontier — steps 3, 4 and 6 rewritten around the frontier and the empty
+- [x] 1. `dw-grill` asks by frontier — steps 3, 4 and 6 rewritten around the frontier and the empty
       frontier as the close condition, the `description` rewritten, `frontier` added to `CONTEXT.md`,
       the corpus baseline re-recorded and `dw-solo` bumped in both manifests, all in one commit
 - [ ] 2. `dw-grill` step 2 settles by running rather than asking — a fact needing a command is still
@@ -129,3 +129,10 @@ invocation reads that as not remaining. Never rename a task title. -->
   its decline table is why `## Out of scope` is as short as it is
 
 ## Notes
+
+- Step 5's cadence word had to move with the batch ("after each answer" → "after each round's
+  answers"); `## Decisions` claimed step 5 stayed untouched, and the rule did, the cadence did not.
+- The `description` edit dropped `eval:routing` to 26/27 on one `dw-land` positive, a 0.153 tie with
+  `dw-next` decided by order. Cause: `close` is `dw-land`'s argument word, its phase 2 heading and
+  what a user types, and it was missing from the only text the router reads. Named in the same
+  commit; 27/27 restored and `dw-land ↔ dw-ship` fell 0.216 → 0.212.

@@ -94,7 +94,7 @@ invocation reads that as not remaining. Never rename a task title. -->
 - [x] 2. `dw-grill` step 2 settles by running rather than asking — a fact needing a command is still
       a fact, a lookup in flight blocks only what depends on it, and a fork only throwaway code can
       settle is named as a spike and offered at the playback rather than built
-- [ ] 3. The README's task-router row stops promising five questions a round
+- [x] 3. The README's task-router row stops promising five questions a round
 - [ ] 4. The behaviour cases follow the frontier premise — case 1 loses its "at the point where a
       sixth would come" framing, case 2's third expectation stops counting questions, and neither
       loses its "nothing is written to disk" assertion

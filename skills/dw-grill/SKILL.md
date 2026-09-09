@@ -22,11 +22,16 @@ ask in its terms.
    yields a long session and a plan for none of it. Independent shippability is **not** the test —
    `dw-shape` settled that, and a grill that splits on it hands over a split that skill will refuse.
 2. **Separate facts from decisions.** Facts — anything discoverable in the repo or environment —
-   are looked up, never asked. **A choice this project already settled is a fact** — asking it back
-   spends a slot and invites reversing it by accident. Where `docs/decisions/` exists, read what it
-   settled about the subject before question one, delegating to `dw-decisions` where that agent is
-   installed; quote it rather than reopening it. Only genuinely undecided things (trade-offs, scope
-   boundaries, product choices, which of two shapes) become questions.
+   are looked up, never asked, and **a fact you would have to run something to see is still a fact**:
+   behaviour, timing, output and cost get a read-only probe, not a question. **A choice this project
+   already settled is a fact** — asking it back spends a question and invites reversing it by
+   accident. Where `docs/decisions/` exists, read what it settled about the subject before question
+   one, delegating to `dw-decisions` where that agent is installed; quote it rather than reopening
+   it. A lookup still running blocks only the questions **downstream of it** — ask the rest of the
+   frontier now rather than stalling the round on its slowest answer. Only genuinely undecided
+   things (trade-offs, scope boundaries, product choices, which of two shapes) become questions;
+   where nothing short of throwaway code would settle one, name it a **spike** and offer it at the
+   playback rather than building it here.
 3. **A round is the whole frontier.** The frontier is every decision whose prerequisites are already
    settled — the questions answerable now without guessing at an answer you have not heard. Ask all
    of them in one message, numbered, hardest-first by what a wrong answer would cost: scope →
@@ -47,7 +52,8 @@ ask in its terms.
 6. **Play back after every round**, whatever its size. Before the next one: what is decided, and what
    is still open — each with the default you would assume and what a wrong default costs. Offer three
    ways forward: another round · shape now with those defaults · the idea is too big to grill as
-   one, here are the pieces. Then **wait**; a hedged reply is not a choice.
+   one, here are the pieces. Where an open item is one only a spike would settle, name that spike as
+   a fourth. Then **wait**; a hedged reply is not a choice.
 7. **Close when the frontier is empty** — every branch of the tree visited, nothing left silently
    assumed; an unknown that would not change what gets built is closed by saying so rather than by
    asking it. Play back in a few lines: what we're building, what we decided, every resource the conversation pointed at, and

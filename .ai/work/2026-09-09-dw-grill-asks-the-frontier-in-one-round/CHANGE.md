@@ -91,7 +91,7 @@ invocation reads that as not remaining. Never rename a task title. -->
 - [x] 1. `dw-grill` asks by frontier — steps 3, 4 and 6 rewritten around the frontier and the empty
       frontier as the close condition, the `description` rewritten, `frontier` added to `CONTEXT.md`,
       the corpus baseline re-recorded and `dw-solo` bumped in both manifests, all in one commit
-- [ ] 2. `dw-grill` step 2 settles by running rather than asking — a fact needing a command is still
+- [x] 2. `dw-grill` step 2 settles by running rather than asking — a fact needing a command is still
       a fact, a lookup in flight blocks only what depends on it, and a fork only throwaway code can
       settle is named as a spike and offered at the playback rather than built
 - [ ] 3. The README's task-router row stops promising five questions a round

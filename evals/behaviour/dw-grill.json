@@ -1,13 +1,13 @@
 {
   "skill": "dw-grill",
-  "note": "The runner is single-turn, so the round is carried inside the prompt: case 1 hands the skill five questions already answered and measures what it does at the point where a sixth would come. Case 2 measures the scope check before question one. Both fixtures stay on main; the skill writes nothing, so the branch is irrelevant.",
+  "note": "The runner is single-turn, so a round is carried inside the prompt. Case 1 hands the skill one round's answers and measures the playback that has to come before the next round. Case 2 measures the scope check before question one. Case 3 measures the batching itself, which nothing else here sees. All three fixtures stay on main; the skill writes nothing, so the branch is irrelevant.",
   "evals": [
     {
       "id": 1,
       "fixture": "grill-round-pause",
       "prompt": "I want to add a weekly digest email for inactive users. You have already asked me five questions and here are my answers, so continue from where we are:\nQ1 who receives it — A: only inactive users as CONTEXT.md defines them, no session in 30 days.\nQ2 opt-out — A: yes, one-click unsubscribe, the preference stored on the user.\nQ3 content — A: the three most-changed items the user's account owns since their last session, no marketing copy.\nQ4 send path — A: reuse sendEmail in src/notify.js, no new provider.\nQ5 failure handling — A: log and skip the user; retry at most once, next week.\nContinue.",
       "expectations": [
-        "No sixth question is asked before a playback: the response opens with what is decided and what is still open, not with another question",
+        "The response opens with a playback of what is decided and what is still open; the next round's questions do not come before it",
         "Each still-open item is listed together with the default the agent would assume and what a wrong default would cost, rather than as a bare list of questions",
         "Three ways forward are offered explicitly — another round of questions, shaping now with those defaults, or splitting the idea into pieces — and the agent stops to wait for the choice rather than picking one itself",
         "Nothing is written to disk: no file is created or edited, and no CHANGE.md appears under .ai/"
@@ -20,8 +20,19 @@
       "expectations": [
         "Before any question is asked, the idea is named as several independent goals and the pieces are listed by name",
         "One piece is proposed to grill first and the agent waits for that choice; a first question posed across the whole portal fails this",
-        "At most one question is asked in the whole response",
+        "The only question in the response is which piece to grill first; no question about the portal's own content is asked, however many the frontier would otherwise hold",
         "Nothing is written to disk: no file is created or edited"
+      ]
+    },
+    {
+      "id": 3,
+      "fixture": "grill-round-pause",
+      "prompt": "I want a single thing: a weekly digest email for users who have gone inactive. One feature, one audience, nothing else bundled in. Grill me on it.",
+      "expectations": [
+        "More than one question is asked in the same response, numbered, rather than one question followed by a wait",
+        "Every question carries the answer the agent would pick, not the question alone",
+        "No question in the round depends on the answer to another question asked in the same round; anything downstream is deferred to a later round rather than asked now",
+        "Nothing is written to disk: no file is created or edited, and no CHANGE.md appears under .ai/"
       ]
     }
   ]

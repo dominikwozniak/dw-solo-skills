@@ -40,8 +40,9 @@ ask in its terms.
    nothing. Two filters replace a size limit: don't ask what the repo already answers (style, test
    framework, layout, naming, which installed library), and don't spend a question on a decision
    with one sensible default — assume it and say so in the same message, "assuming X unless you say
-   otherwise", so a wrong default costs one correction. A frontier that opens huge is a sizing
-   failure at step 1, not a licence: name the pieces and go back.
+   otherwise", so a wrong default costs one correction. A large frontier is not a reason to hold
+   questions back, only a reason to check both filters ran; splitting an idea is step 1's
+   separate-goals test and nothing else.
 4. **Each question stands alone**, answerable as two to five mutually exclusive options or in five
    words, always with the option you'd pick and why. Short active sentences, one word with one
    meaning. Then **wait** for the round's answers — never answer your own question and move on. A
@@ -54,10 +55,12 @@ ask in its terms.
    ways forward: another round · shape now with those defaults · the idea is too big to grill as
    one, here are the pieces. Where an open item is one only a spike would settle, name that spike as
    a fourth. Then **wait**; a hedged reply is not a choice.
-7. **Close when the frontier is empty** — every branch of the tree visited, nothing left silently
-   assumed; an unknown that would not change what gets built is closed by saying so rather than by
-   asking it. Play back in a few lines: what we're building, what we decided, every resource the conversation pointed at, and
-   — each explicit and separate — what we **assumed** without asking, what we **deferred** and why,
+7. **Close when the frontier is empty and no lookup is still running** — every branch of the tree
+   visited, nothing left silently assumed. A frontier emptied by a pending lookup is a wait, not a
+   close: say what is outstanding and hold. An unknown that would not change what gets built is
+   closed by saying so rather than by asking it. Play back in a few lines: what we're building, what
+   we decided, every resource the conversation pointed at, and — each explicit and separate — what
+   we **assumed** without asking, what we **deferred** and why,
    and what we deliberately **left out**. `dw-shape` gives each named item its fate — an assumed or
    deferred item becomes a decision marked as such, a left-out item goes under `## Out of scope` or
    into the change — and an item you don't name never gets one.

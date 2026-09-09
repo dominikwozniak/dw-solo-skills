@@ -138,3 +138,7 @@ invocation reads that as not remaining. Never rename a task title. -->
   commit; 27/27 restored and `dw-land ↔ dw-ship` fell 0.216 → 0.212.
 - Nothing measured the batching itself, so case 3 is new: a well-sized single-goal idea, expecting
   more than one numbered question in one response and no question downstream of a sibling.
+- `dw-check` caught the guard I added against an unbounded round re-creating the bound it removed:
+  "a frontier that opens huge is a sizing failure" gave the agent a subjective cap by another name.
+- An empty frontier and a finished interview are different states when a lookup is still running,
+  and step 7 conflated them; the close now needs both.

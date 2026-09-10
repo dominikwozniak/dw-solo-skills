@@ -106,6 +106,9 @@ is not in the skill corpus and `eval:routing` does not score it — which is als
 
 ## Gotchas
 
+- **Removing a numeric limit from a skill invites writing a subjective one in its place.** Dropping
+  `dw-grill`'s five-question cap, the guard added beside it, that a frontier opening "huge" is a
+  sizing failure, handed the agent the same cap without the number. The review caught it; no gate can.
 - **An agent `description` written as a plain YAML scalar breaks on the first `: ` inside it.** Claude
   Code loaded the file and ran the agent, and `claude plugin validate` passed it; only `agnix` refused
   it as unparseable frontmatter. Use a `>-` block, as every `SKILL.md` here does.

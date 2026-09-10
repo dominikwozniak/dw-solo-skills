@@ -58,8 +58,9 @@ stale task. Order is a hint — take a later task when this one is blocked, and 
   this change's `## Goal`; shrinking the goal is the user's call.
 - **Two fixes on one premise means the premise is the suspect** — a second fix refused by the same
   gate as the first, resting on the same assumption, is evidence about the assumption. Write the
-  premise down as one sentence and list every case that gate refused before writing a third fix; an
-  even list says the premise is not the cause, and the list is still the evidence.
+  premise down as one sentence and list every case that gate refused before writing a third fix; a
+  list whose cases share nothing beyond the gate says the premise is not the cause after all, and
+  the list is still the evidence.
 - **No drive-by edits** — outside the task and its absorbed fixes, touch nothing.
 - **Test the way the project does** — failing test first where the task has a real assertion; say
   so where it genuinely doesn't, instead of fabricating one. A test that also passes against the
@@ -83,8 +84,10 @@ stale task. Order is a hint — take a later task when this one is blocked, and 
 
 **Run the task's `proof:` first, then flip the box** — the tick and skip convention lives in the
 `CHANGE.md` template, and there a tick means the named check ran, not that the code got written.
-What ran goes in the commit body, named in the prose — never a pasted log. A check that cannot run yet leaves the box
-open with one Notes line saying what blocks it; a task whose line names no check gets one now,
+What ran goes in the commit body, named in the prose — never a pasted log. A check something blocks leaves the box open with
+one Notes line naming the blocker. A check only the push can run leaves it open too, with a Notes
+line saying so — that box is not work left pending, it is the result `dw-land` already carves out
+as pending on the push, and it never holds up the hand-off. A task whose line names no check gets one now,
 before the tick, since a box nobody can check is the thing this convention exists to refuse. Set
 `status: building` on the first tick. `**skip:**` is for a task that stopped being necessary,
 never for one that is merely hard. Append to Notes only what a future session needs, one line per

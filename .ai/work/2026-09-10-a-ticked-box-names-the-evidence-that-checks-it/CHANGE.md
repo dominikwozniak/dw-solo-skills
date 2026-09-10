@@ -94,6 +94,7 @@ invocation reads that as not remaining. Never rename a task title. -->
 
 ## Notes
 
+- A proof only the push can run keeps its box open and still hands off: without that carve-out named in `dw-next`, a CI-only check could never be ticked and `dw-land` could never be reached.
 - The falsifiability clause went to `dw-land:75`, the phase-2 Gotchas bullet, not phase 3 as the plan said; phase 3 opens the PR.
 - `CONTEXT.md`'s **Task** bullet was rewritten rather than joined by a second one, since the term gained half its meaning here.
 - `dw-shape`'s `## References` line was updated in task 2 so the pointer to the template still names what it holds.

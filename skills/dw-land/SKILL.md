@@ -76,8 +76,8 @@ this change made untrue or made mechanical:
   never X, one clause of why, a pointer — with what happened and when left in the commit and the
   archived doc. Where a mechanism (hook, lint rule, check) could refuse the trap outright, build or
   backlog that instead of writing prose, and delete the prose it replaces, leaving its name. That
-  claim is falsifiable, so check it: cite a mechanism and the diff must hold the hook, validator,
-  check or self-test — no file, and it was prose after all.
+  claim is falsifiable, so check it: cite a mechanism and the diff holds it — the hook, validator,
+  check or self-test itself, or the backlog entry that names it. Neither, and it was prose after all.
 - **Stale references** — a `## References` entry the diff made untrue is rewritten where it lives;
   that edits a file the change never touched, so name the exact line and get a yes first.
 - **Follow-ups** — do the ones cheaper to do than to file; report-open is the default; a

@@ -91,10 +91,10 @@ On a no, the reason goes in `## Decisions` so the question isn't reopened.
 Each task is a complete narrow path, not a layer — independently committable, leaving the project
 green, small enough for a fresh session. Order is a hint, never a gate.
 
-Each carries the check that would prove it, in the `proof:` phrase the template puts on the line: a
-command, a file, a log line, a run. A slice no check can be named for is cut wrong rather than
-worded wrong — recut it until one can be, and where the honest answer is that only a reader can
-tell, say that on the line instead of inventing a command.
+Each carries the check that would prove it, in the `proof:` phrase the template defines. A slice no
+check can be named for is cut wrong rather than worded wrong: recut it until one can be, and where
+the honest answer is that only a reader can tell, say that on the line instead of inventing a
+command.
 
 ### 4. Write, read back, commit
 

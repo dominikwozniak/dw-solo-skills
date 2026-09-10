@@ -33,7 +33,9 @@ straight to closing.
   deletion, renamed public API) as irreversible.
 - **Is "done" proven?** — name the rung each claim reached: said so · pointed at the line · showed
   the bad case impossible · ran it · reproduced it in the artifact a user gets. A claim short of
-  "ran it" is spoken aloud, never written up as settled.
+  "ran it" is spoken aloud, never written up as settled. Read the rung off the boxes rather than
+  deriving it again: a ticked task names in its `proof:` what was run against it, and a box ticked
+  with nothing run, or carrying no check to run, is `said so` however finished the code looks.
 
 **The completion gate:** read the `## Goal` against the **diff, not the checklist** — an
 undelivered result is **not ready**, never "ready with follow-ups"; finish it, or the user amends
@@ -73,7 +75,9 @@ this change made untrue or made mechanical:
   only where it already keeps a `## Gotchas`) as **one undated bullet of at most two lines** — do or
   never X, one clause of why, a pointer — with what happened and when left in the commit and the
   archived doc. Where a mechanism (hook, lint rule, check) could refuse the trap outright, build or
-  backlog that instead of writing prose, and delete the prose it replaces, leaving its name.
+  backlog that instead of writing prose, and delete the prose it replaces, leaving its name. That
+  claim is falsifiable, so check it: cite a mechanism and the diff must hold the hook, validator,
+  check or self-test — no file, and it was prose after all.
 - **Stale references** — a `## References` entry the diff made untrue is rewritten where it lives;
   that edits a file the change never touched, so name the exact line and get a yes first.
 - **Follow-ups** — do the ones cheaper to do than to file; report-open is the default; a

@@ -67,7 +67,7 @@ invocation reads that as not remaining. Never rename a task title. -->
 - [x] 3. `skills/dw-next/SKILL.md:78` — the box flips after the named check ran, not after the code was written, and what ran goes in the commit body — proof: `sed -n '76,84p' plugins/dw-solo/skills/dw-next/SKILL.md`
 - [x] 4. `skills/dw-next/SKILL.md:60`, **Test the way the project does** — the `0013` bar in one sentence — proof: the sentence read back beside `docs/decisions/0013`'s own wording, no third variant introduced
 - [x] 5. `skills/dw-next/SKILL.md` step 3 — `attack-the-premise` as one bullet: two fixes on one premise refused by the same gate means write the premise down and list the cases before the third fix — proof: `grep -n 'premise' plugins/dw-solo/skills/dw-next/SKILL.md`
-- [ ] 6. `skills/dw-land/SKILL.md:34` and `:75` — the rung ladder reads the boxes and grades a proofless box as `said so`; the mechanism requirement gains `build-the-lever`'s falsifiable half (cited a mechanism, no hook, validator or self-test in the diff, then you did not do it) — proof: `sed -n '32,36p;73,78p' plugins/dw-solo/skills/dw-land/SKILL.md`
+- [x] 6. `skills/dw-land/SKILL.md:34` and `:75` — the rung ladder reads the boxes and grades a proofless box as `said so`; the mechanism requirement gains `build-the-lever`'s falsifiable half (cited a mechanism, no hook, validator or self-test in the diff, then you did not do it) — proof: `sed -n '32,36p;73,78p' plugins/dw-solo/skills/dw-land/SKILL.md`
 - [ ] 7. `node scripts/check-skill-corpus.mjs --update-baseline`, and bump `dw-solo` 0.9.2 → 0.9.3 in `plugins/dw-solo/.claude-plugin/plugin.json` and `.claude-plugin/marketplace.json`, all in one commit — proof: `pnpm validate:artifacts` and `pnpm validate:versions` both green
 
 ## Anchors

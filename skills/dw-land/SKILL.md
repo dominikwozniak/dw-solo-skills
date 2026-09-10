@@ -104,8 +104,9 @@ doc's `pr:` as a one-line follow-up commit. Don't wait on CI — opening the PR 
 `origin` at all — say so and stop at the close commit.
 
 The body is `.github/PULL_REQUEST_TEMPLATE.md`, read and filled — `--body` bypasses it, so a body
-composed without opening the file is the one that drifts. Its guidance comments come out; phase 1's
-report-open follow-ups go under `## What changes`, what phase 1 ran under `## Test plan`.
+composed without opening the file is the one that drifts. Its guidance comments come out and its caps
+hold; phase 1's report-open follow-ups go under `## What changes`, what phase 1 ran under
+`## Test plan`. `## How it flows` is optional — drop the heading with it.
 
 ### 4. Report
 

@@ -89,8 +89,8 @@ declared bullets under `## Solo lane` are hook-enforced; the rest is on you.
   Never force; a push to `{{DEFAULT_BRANCH}}` needs a yes first.
 - **PR**: `gh pr create` against the default branch — title in the commit-subject shape, body
   filled from `.github/PULL_REQUEST_TEMPLATE.md`: a lede saying why, `## What changes`,
-  `## Test plan`, and none of its guidance comments left behind. `--body` bypasses the template,
-  so read the file. No such file → those three sections anyway; no attribution footer.
+  `## Test plan`, `## Risk`, and none of its guidance comments left behind. `--body` bypasses the
+  template, so read the file. No such file → those four sections anyway; no attribution footer.
 - **Sync — rebase, never merge**: `git fetch origin && git rebase origin/{{DEFAULT_BRANCH}}`; refuse
   on a dirty tree, and on a conflict report and **stop** — never auto-resolve.
 - **Stash** always with a message: `git stash push -m "<what is being saved>"`, never bare.

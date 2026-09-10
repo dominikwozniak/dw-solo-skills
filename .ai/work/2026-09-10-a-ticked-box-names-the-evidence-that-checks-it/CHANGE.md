@@ -68,7 +68,7 @@ invocation reads that as not remaining. Never rename a task title. -->
 - [x] 4. `skills/dw-next/SKILL.md:60`, **Test the way the project does** — the `0013` bar in one sentence — proof: the sentence read back beside `docs/decisions/0013`'s own wording, no third variant introduced
 - [x] 5. `skills/dw-next/SKILL.md` step 3 — `attack-the-premise` as one bullet: two fixes on one premise refused by the same gate means write the premise down and list the cases before the third fix — proof: `grep -n 'premise' plugins/dw-solo/skills/dw-next/SKILL.md`
 - [x] 6. `skills/dw-land/SKILL.md:34` and `:75` — the rung ladder reads the boxes and grades a proofless box as `said so`; the mechanism requirement gains `build-the-lever`'s falsifiable half (cited a mechanism, no hook, validator or self-test in the diff, then you did not do it) — proof: `sed -n '32,36p;73,78p' plugins/dw-solo/skills/dw-land/SKILL.md`
-- [ ] 7. `node scripts/check-skill-corpus.mjs --update-baseline`, and bump `dw-solo` 0.9.2 → 0.9.3 in `plugins/dw-solo/.claude-plugin/plugin.json` and `.claude-plugin/marketplace.json`, all in one commit — proof: `pnpm validate:artifacts` and `pnpm validate:versions` both green
+- [x] 7. `node scripts/check-skill-corpus.mjs --update-baseline`, and bump `dw-solo` 0.9.2 → 0.9.3 in `plugins/dw-solo/.claude-plugin/plugin.json` and `.claude-plugin/marketplace.json`, all in one commit — proof: `pnpm validate:artifacts` and `pnpm validate:versions` both green
 
 ## Anchors
 
@@ -92,3 +92,6 @@ invocation reads that as not remaining. Never rename a task title. -->
 - `.ai/archive/2026-09-10-dw-grill-asks-the-frontier-in-one-round/CHANGE.md` — change A, the sibling this one was split from and now follows.
 
 ## Notes
+
+- The falsifiability clause went to `dw-land:75`, the phase-2 Gotchas bullet, not phase 3 as the plan said; phase 3 opens the PR.
+- `dw-shape`'s `## References` line was updated in task 2 so the pointer to the template still names what it holds.

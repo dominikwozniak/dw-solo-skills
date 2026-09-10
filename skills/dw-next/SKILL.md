@@ -58,9 +58,9 @@ stale task. Order is a hint — take a later task when this one is blocked, and 
   this change's `## Goal`; shrinking the goal is the user's call.
 - **Two fixes on one premise means the premise is the suspect** — a second fix refused by the same
   gate as the first, resting on the same assumption, is evidence about the assumption. Write the
-  premise down as one sentence and list every case that gate refused before writing a third fix; a
-  list whose cases share nothing beyond the gate says the premise is not the cause after all, and
-  the list is still the evidence.
+  premise down as one sentence and list every case that gate refused before writing a third fix. The
+  premise stays the suspect until one of those cases refutes it — the gate refused it and the
+  premise did not hold there — and the list is the evidence either way.
 - **No drive-by edits** — outside the task and its absorbed fixes, touch nothing.
 - **Test the way the project does** — failing test first where the task has a real assertion; say
   so where it genuinely doesn't, instead of fabricating one. A test that also passes against the

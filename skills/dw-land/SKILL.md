@@ -2,7 +2,7 @@
 name: dw-land
 description: >-
   You are done with a change: wrap it up and decide whether it is ready to merge. One last thin
-  verdict over the whole finished branch, then on your go promote what is worth keeping — the
+  verdict over the whole finished branch, then on your go close it: promote what is worth keeping — the
   decision records, the glossary, the gotchas — file the leftovers, archive the change doc, push
   the branch and open its pull request.
 argument-hint: "bare for the verdict — your go closes it and opens the PR · close to trust the diff and close at once · reject to archive a turned-down idea with its reason"

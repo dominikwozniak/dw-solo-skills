@@ -21,7 +21,7 @@ holds the rest.
 ## Running it
 
 ```bash
-pnpm eval:routing                           # what CI and the pre-push gate run (67 / max 3 blank)
+pnpm eval:routing                           # what CI and the pre-push gate run (96 / no blanks)
 node evals/routing.ts                       # report only, no floor enforced
 node evals/routing.ts dw-shape dw-grill     # only these skills
 node evals/routing.ts --top 5               # show more of each ranking, and more collision pairs

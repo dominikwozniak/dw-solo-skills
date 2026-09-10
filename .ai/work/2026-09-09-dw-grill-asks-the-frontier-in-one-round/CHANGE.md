@@ -34,17 +34,17 @@ it in as few turns as the dependency order allows.
   `.inspirations/mattpocock-skills/skills/productivity/grilling/SKILL.md:6-8,18`.
 - **Batching is safe by construction** — a question whose answer depends on another still open in
   the round belongs to a later round. Nothing in a batch can be closed by its own siblings, so
-  step 5's "Resolve the tree, not the list" keeps working untouched. This is the whole reason the
+  the resolve-the-tree step keeps working untouched. This is the whole reason the
   turn cost can drop without the interview getting dumber.
 - **The cap of five goes, three days after `0af5d1a` argued it** (nominated) — the cap bought
   "choose what is worth asking", and two rules already in the skill do that better: facts are looked
-  up rather than asked (step 2), and a decision with one sensible default is assumed and said out
-  loud in the same message (step 3). The cap was a proxy for that filter; the frontier plus those
+  up rather than asked (the facts step), and a decision with one sensible default is assumed and said out
+  loud in the same message (the round step). The cap was a proxy for that filter; the frontier plus those
   two rules are the filter. Worth a record because it reverses a recent argued call, and the next
   reader will otherwise re-add the cap.
 - **The playback survives, per round rather than per fifth question** — that was the half of
   `0af5d1a` with no prior behaviour behind it, and a round of nine needs it more than a round of five.
-- **A fact you would have to run something to see is still a fact** — step 2 excludes anything
+- **A fact you would have to run something to see is still a fact** — the facts step excluded anything
   "discoverable in the repo or environment", which reads as reading. Behaviour, timing, output and
   cost are observable too, and asking the user to guess at them spends a slot on something a command
   answers better.
@@ -141,8 +141,11 @@ invocation reads that as not remaining. Never rename a task title. -->
 - `dw-check` caught the guard I added against an unbounded round re-creating the bound it removed:
   "a frontier that opens huge is a sizing failure" gave the agent a subjective cap by another name.
 - An empty frontier and a finished interview are different states when a lookup is still running,
-  and step 7 conflated them; the close now needs both.
+  and the close step conflated them; it now needs both.
 - The behaviour tier was deliberately not run (`0020` makes `--go` a spend), so the uncapped round is
   argued and reviewed but never observed: the rung for that claim stops below "ran it".
 - Requiring no outstanding lookup at the close made a hung lookup an unreachable terminal state; the
   second review caught it. A lookup that fails stops being one and its subject becomes a question.
+- Step 2 had grown to seven clauses against one per step elsewhere, so classifying a fact and going
+  to look it up are now separate steps; the file runs eight. Step numbers drifted in this doc as a
+  result, which is why its own references are by name.

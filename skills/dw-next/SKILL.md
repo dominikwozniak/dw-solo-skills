@@ -75,7 +75,11 @@ stale task. Order is a hint — take a later task when this one is blocked, and 
 
 ### 4. Tick, note, commit
 
-Flip the box — the tick and skip convention lives in the `CHANGE.md` template — and set
+**Run the task's `proof:` first, then flip the box** — the tick and skip convention lives in the
+`CHANGE.md` template, and there a tick means the named check ran, not that the code got written.
+What ran goes in the commit body, named in the prose — never a pasted log. A check that cannot run yet leaves the box
+open with one Notes line saying what blocks it; a task whose line names no check gets one now,
+before the tick, since a box nobody can check is the thing this convention exists to refuse. Set
 `status: building` on the first tick. `**skip:**` is for a task that stopped being necessary,
 never for one that is merely hard. Append to Notes only what a future session needs, one line per
 finding — the diff holds the detail. `git rm` a consumed `HANDOFF.md` in the same commit. Commit

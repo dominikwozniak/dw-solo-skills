@@ -56,6 +56,10 @@ stale task. Order is a hint — take a later task when this one is blocked, and 
   own commit. Only work that exceeds the session or the goal defers: a one-line Notes item, or —
   above that bar — a `.ai/backlog/` file with `why-not-now:` and `effort:`. Never park a gap in
   this change's `## Goal`; shrinking the goal is the user's call.
+- **Two fixes on one premise means the premise is the suspect** — a second fix refused by the same
+  gate as the first, resting on the same assumption, is evidence about the assumption. Write the
+  premise down as one sentence and list every case that gate refused before writing a third fix; an
+  even list says the premise is not the cause, and the list is still the evidence.
 - **No drive-by edits** — outside the task and its absorbed fixes, touch nothing.
 - **Test the way the project does** — failing test first where the task has a real assertion; say
   so where it genuinely doesn't, instead of fabricating one. A test that also passes against the

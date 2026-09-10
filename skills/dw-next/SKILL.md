@@ -58,7 +58,9 @@ stale task. Order is a hint — take a later task when this one is blocked, and 
   this change's `## Goal`; shrinking the goal is the user's call.
 - **No drive-by edits** — outside the task and its absorbed fixes, touch nothing.
 - **Test the way the project does** — failing test first where the task has a real assertion; say
-  so where it genuinely doesn't, instead of fabricating one.
+  so where it genuinely doesn't, instead of fabricating one. A test that also passes against the
+  unfixed code is not a test: `docs/decisions/0013` set the bar at confirming each case by mutating
+  the code back to the broken behaviour and watching exactly that case fail.
 - **Follow the anchors, use the project's words** — patterns from the doc, names from `CONTEXT.md`.
 - **Nominate a decision, never promote one** — a call worth a record becomes one line in the doc's
   `## Decisions` in this task's commit: the call, why, `(nominated)`. `dw-land` judges it, because

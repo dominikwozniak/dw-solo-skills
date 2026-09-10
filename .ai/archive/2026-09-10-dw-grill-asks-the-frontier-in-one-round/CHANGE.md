@@ -4,6 +4,7 @@ branch: dw-grill-asks-the-frontier-in-one-round
 created: 2026-09-09
 status: landed # shaping | building | landed
 landed: 2026-09-10
+pr: https://github.com/dominikwozniak/dw-solo-skills/pull/66
 ---
 
 # Change — dw-grill asks the whole frontier in one round, and only what is the user's to answer

@@ -2,7 +2,7 @@
 change: a-ticked-box-names-the-evidence-that-checks-it
 branch: a-ticked-box-names-the-evidence-that-checks-it
 created: 2026-09-10
-status: shaping # shaping | building | landed
+status: building # shaping | building | landed
 ---
 
 # Change — a ticked box names the evidence that checks it
@@ -62,7 +62,7 @@ A tick in `CHANGE.md` means "checked", not "written".
 A task that stopped being necessary keeps its box and gains `**skip:** <reason>`; every later
 invocation reads that as not remaining. Never rename a task title. -->
 
-- [ ] 1. The task line in `skills/dw-shape/references/CHANGE.md` gains the `proof:` clause, and the tick-convention comment above it gains the sentence that a box is ticked only once its named proof exists — proof: `sed -n '43,49p' plugins/dw-solo/skills/dw-shape/references/CHANGE.md` shows both through the shipped symlink
+- [x] 1. The task line in `skills/dw-shape/references/CHANGE.md` gains the `proof:` clause, and the tick-convention comment above it gains the sentence that a box is ticked only once its named proof exists — proof: `sed -n '43,49p' plugins/dw-solo/skills/dw-shape/references/CHANGE.md` shows both through the shipped symlink
 - [ ] 2. `skills/dw-shape/SKILL.md:89-92` — a task with no nameable check is badly cut, one sentence in step 3 — proof: `grep -n 'proof' plugins/dw-solo/skills/dw-shape/SKILL.md` returns the new line
 - [ ] 3. `skills/dw-next/SKILL.md:78` — the box flips after the named check ran, not after the code was written, and what ran goes in the commit body — proof: `sed -n '76,84p' plugins/dw-solo/skills/dw-next/SKILL.md`
 - [ ] 4. `skills/dw-next/SKILL.md:60`, **Test the way the project does** — the `0013` bar in one sentence — proof: the sentence read back beside `docs/decisions/0013`'s own wording, no third variant introduced

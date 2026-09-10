@@ -41,11 +41,15 @@ items, and the neighbouring work a reader would otherwise expect here. Delete on
 ## Tasks
 
 <!-- Convention: `- [ ]` pending, `- [x]` done — `dw-next` flips the box in the task's own commit.
+A box is ticked only once the proof it names exists: the check ran, not the code got written.
 A task that stopped being necessary keeps its box and gains `**skip:** <reason>`; every later
 invocation reads that as not remaining. Never rename a task title. -->
 
-- [ ] 1. [slice]
-- [ ] 2. [slice]
+Every task carries the check that would prove it, one phrase on the line — a command, a file, a log
+line, a run. A task no check can be named for is badly cut, not badly worded; step 3 recuts it.
+
+- [ ] 1. [slice] — proof: [what checks it]
+- [ ] 2. [slice] — proof: [what checks it]
 
 ## Anchors
 

@@ -4,6 +4,7 @@ branch: a-ticked-box-names-the-evidence-that-checks-it
 created: 2026-09-10
 status: landed # shaping | building | landed
 landed: 2026-09-10
+pr: https://github.com/dominikwozniak/dw-solo-skills/pull/67
 ---
 
 # Change — a ticked box names the evidence that checks it

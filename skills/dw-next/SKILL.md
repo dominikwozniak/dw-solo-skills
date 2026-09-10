@@ -56,9 +56,16 @@ stale task. Order is a hint — take a later task when this one is blocked, and 
   own commit. Only work that exceeds the session or the goal defers: a one-line Notes item, or —
   above that bar — a `.ai/backlog/` file with `why-not-now:` and `effort:`. Never park a gap in
   this change's `## Goal`; shrinking the goal is the user's call.
+- **Two fixes on one premise means the premise is the suspect** — a second fix refused by the same
+  gate as the first, resting on the same assumption, is evidence about the assumption. Write the
+  premise down as one sentence and list every case that gate refused before writing a third fix. The
+  premise stays the suspect until one of those cases refutes it — the gate refused it and the
+  premise did not hold there — and the list is the evidence either way.
 - **No drive-by edits** — outside the task and its absorbed fixes, touch nothing.
 - **Test the way the project does** — failing test first where the task has a real assertion; say
-  so where it genuinely doesn't, instead of fabricating one.
+  so where it genuinely doesn't, instead of fabricating one. A test that also passes against the
+  unfixed code is not a test: `docs/decisions/0013` set the bar at confirming each case by mutating
+  the code back to the broken behaviour and watching exactly that case fail.
 - **Follow the anchors, use the project's words** — patterns from the doc, names from `CONTEXT.md`.
 - **Nominate a decision, never promote one** — a call worth a record becomes one line in the doc's
   `## Decisions` in this task's commit: the call, why, `(nominated)`. `dw-land` judges it, because
@@ -75,7 +82,13 @@ stale task. Order is a hint — take a later task when this one is blocked, and 
 
 ### 4. Tick, note, commit
 
-Flip the box — the tick and skip convention lives in the `CHANGE.md` template — and set
+**Run the task's `proof:` first, then flip the box** — the tick and skip convention lives in the
+`CHANGE.md` template, and there a tick means the named check ran, not that the code got written.
+What ran goes in the commit body, named in the prose — never a pasted log. A check something blocks leaves the box open with
+one Notes line naming the blocker. A check only the push can run leaves it open too, with a Notes
+line saying so — that box is not work left pending, it is the result `dw-land` already carves out
+as pending on the push, and it never holds up the hand-off. A task whose line names no check gets one now,
+before the tick, since a box nobody can check is the thing this convention exists to refuse. Set
 `status: building` on the first tick. `**skip:**` is for a task that stopped being necessary,
 never for one that is merely hard. Append to Notes only what a future session needs, one line per
 finding — the diff holds the detail. `git rm` a consumed `HANDOFF.md` in the same commit. Commit

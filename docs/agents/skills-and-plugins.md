@@ -106,6 +106,9 @@ is not in the skill corpus and `eval:routing` does not score it — which is als
 
 ## Gotchas
 
+- **A precondition added to a step needs its exit checked, not only its loophole closed.** `dw-grill`'s
+  close and `dw-next`'s tick each grew one whose legitimate exception — a hung lookup, a proof only
+  the push can run — made the step unreachable. The delegated review caught both; no gate can.
 - **Removing a numeric limit from a skill invites writing a subjective one in its place.** Dropping
   `dw-grill`'s five-question cap, the guard added beside it, that a frontier opening "huge" is a
   sizing failure, handed the agent the same cap without the number. The review caught it; no gate can.

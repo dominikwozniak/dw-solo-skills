@@ -80,8 +80,9 @@ in [`AGENTS.md`](AGENTS.md) and the procedures in the skills themselves.
   up here and there is no third: `landed`, and **`rejected` ≡ cancelled** — one status for an idea
   turned down and for work abandoned mid-build, since both leave the same thing behind (a
   `## Why rejected`) and nothing downstream tells them apart.
-- **Task** — one ticked box in a `CHANGE.md`: a thin vertical slice, independently committable, leaving
-  the project green. Not a layer ("add all the migrations" is not a task).
+- **Task** — one box in a `CHANGE.md`: a thin vertical slice, independently committable, leaving the
+  project green, and carrying in its `proof:` phrase the check that would settle it. Not a layer
+  ("add all the migrations" is not a task). The box is ticked once that check has run.
 - **Anchor** — a `path/to/file.rb:42` reference in a `CHANGE.md`. Orientation for a fresh session, never
   an edit script; re-verified when the work resumes.
 - **Payload** — `templates/`: files `dw-init` copies **verbatim into a target project**, never read

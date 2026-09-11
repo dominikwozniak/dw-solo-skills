@@ -47,7 +47,7 @@ name what you dismissed, one line each:
 ### 3. Present, wait — and offer the outside pass in the same breath
 
 List the findings with a severity-ordered recommendation and **stop — nothing is fixed and nothing
-is delegated without approval.** Above the triviality floor — more than 2 files **or** 50 lines from
+is delegated without approval.** Above the triviality floor — more than 2 files **or** 50-plus lines from
 `git diff --shortstat` — that same stop carries one more line: `codex:rescue` can re-read this,
 worth it? Below the floor, don't ask. `codex` in the argument skips the ask, and no plugin installed
 drops it; neither costs a line of explanation, because the verdict is already in.

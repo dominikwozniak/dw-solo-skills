@@ -1,10 +1,10 @@
 {
   "skill": "dw-check",
-  "note": "dw-check and dw-land both render a verdict over a diff. The whole distinction is timing — mid-build and repeatable versus once at the end, promoting residue — so the negatives put that boundary under load rather than picking distant skills. The outside-reviewer positive is here because delegation is now what bare does, so asking for one is a first-class way in and not a synonym for typing /codex:review.",
+  "note": "dw-check and dw-land both render a verdict over a diff. The whole distinction is timing — mid-build and repeatable versus once at the end, promoting residue — so the negatives put that boundary under load rather than picking distant skills. The outside-reviewer positive stays because dw-check is still where an outside pass is arranged — it offers one after reading the diff itself — so asking for a reviewer is a way in and not a synonym for typing /codex:review.",
   "positives": [
     {
       "prompt": "give what I have written so far a once-over before I carry on",
-      "note": "Scores zero everywhere, and counted in the blank column. The only terms carrying signal are \"written\" and \"far\", and \"far\" belongs to dw-handoff. A real vocabulary gap: dw-check's description has no words for a mid-build once-over. Widening it is its own measurement."
+      "note": "Was the corpus's one blank — nothing scored, because the only terms carrying signal were \"written\" and \"far\", and \"far\" belongs to dw-handoff. It ranks 1 at 0.080 since 0027 put \"one quick pass reads the diff here\" in the description, which is the first phrasing dw-check has ever had for a mid-build once-over. Thin, and it was not the point of that edit — treat the margin as incidental, not as a measured widening."
     },
     {
       "prompt": "anything wrong with the code I just wrote? point me at the lines"

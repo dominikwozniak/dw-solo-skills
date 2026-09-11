@@ -1,7 +1,8 @@
 ---
 decision: 0012
-status: active # active | superseded
+status: superseded
 date: 2026-08-17
+superseded-by: 0027
 ---
 
 # 0012 — Bare `dw-check` delegates to an outside reviewer; a triviality floor is the only way out

@@ -74,7 +74,7 @@ Parallel changes: queue the ideas as `.ai/backlog/` entries, then one worktree +
 | [`dw-grill`](skills/dw-grill/SKILL.md)   | Interview a fuzzy idea into decisions — one round asks the whole frontier, played back between rounds | shared understanding (writes nothing)                                     |
 | [`dw-shape`](skills/dw-shape/SKILL.md)   | Synthesize it into one goal + decisions + task checklist — in a worktree when asked                   | `.ai/work/<date>-<slug>/CHANGE.md` · backlog · `.claude/worktrees/<slug>` |
 | [`dw-next`](skills/dw-next/SKILL.md)     | Build step _and_ resume point (`status` reports and stops)                                            | code + ticked box + commit                                                |
-| [`dw-check`](skills/dw-check/SKILL.md)   | Fast optional QA gate — delegates by default, else self-review                                        | findings at `file:line`, fixed in-session                                 |
+| [`dw-check`](skills/dw-check/SKILL.md)   | Fast optional QA gate — reads the diff here, offers an outside pass after                             | findings at `file:line`, fixed in-session                                 |
 | [`dw-land`](skills/dw-land/SKILL.md)     | One thin verdict, then promote, archive and open the PR                                               | `docs/decisions/` · `CONTEXT.md` · backlog · `.ai/archive/` · an open PR  |
 | [`dw-ship`](skills/dw-ship/SKILL.md) `⭑` | Squash-merge that PR, tear the worktree down, sync                                                    | merged default branch, clean tree                                         |
 

@@ -31,16 +31,16 @@ smaller job — whether to bother asking — and no model or effort is named any
 
 ## Tasks
 
-- [ ] 1. `skills/dw-check/SKILL.md` — description, argument-hint, `## What it reads`, and steps 2–4.
+- [x] 1. `skills/dw-check/SKILL.md` — description, argument-hint, `## What it reads`, and steps 2–4.
       proof: read the new steps against a real diff by hand; the body is unexercised until reinstall.
-- [ ] 2. The prose that cited the old behaviour — `CONTEXT.md` triviality floor, `README.md` row,
+- [x] 2. The prose that cited the old behaviour — `CONTEXT.md` triviality floor, `README.md` row,
       `docs/agents/tooling.md` gotcha opener, `evals/cases/dw-check.json` note.
       proof: `pnpm validate:docs`, `pnpm eval:routing`.
-- [ ] 3. `docs/decisions/` — `0012` superseded in exactly two fields, `0027` written.
+- [x] 3. `docs/decisions/` — `0012` superseded in exactly two fields, `0027` written.
       proof: `pnpm validate:docs` (the 80-line ceiling).
-- [ ] 4. `skills/dw-doctor/` — the dead "dw-land's review offer on the PR" claim in `doctor.sh` and
+- [x] 4. `skills/dw-doctor/` — the dead "dw-land's review offer on the PR" claim in `doctor.sh` and
       `SKILL.md`. proof: `bash scripts/tests/doctor.test.sh`.
-- [ ] 5. Version bumps — `dw-solo` 0.9.5, `dw-solo-setup` 0.4.7, both manifests.
+- [x] 5. Version bumps — `dw-solo` 0.9.5, `dw-solo-setup` 0.4.7, both manifests.
       proof: `pnpm validate:manifests` and `pnpm validate:versions`.
 
 ## Anchors

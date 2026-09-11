@@ -2,10 +2,10 @@
 name: dw-check
 description: >-
   A second opinion on the diff so far, mid-build: what is wrong with it, and does it fit this
-  repo? The pass goes to an outside reviewer — codex — or to a quick self-review when the diff is
-  trivial or none is installed, and every mistake it names is verified at a real file:line before
-  it counts, then fixed in-session on your approval.
-argument-hint: "bare delegates the pass · codex forces it on a trivial diff · a path or topic narrows the focus"
+  repo? One quick pass reads the diff here, and an outside reviewer — codex — is offered afterwards
+  as confirmation rather than run by default; every mistake either one names is verified at a real
+  file:line before it counts, then fixed in-session on your approval.
+argument-hint: "bare reviews the diff here · codex adds the outside pass without asking · a path or topic narrows the focus"
 ---
 
 # dw-check — a fast look, then fixes
@@ -16,9 +16,9 @@ argument-hint: "bare delegates the pass · codex forces it on a trivial diff · 
 
 The diff against the default branch — the ref `bash "${CLAUDE_PLUGIN_ROOT}/scripts/base-ref.sh"` prints — plus
 the branch's `CHANGE.md` goal, so findings are judged against what the change is trying to do, not
-against taste. The argument is read two ways: the single word `codex` forces the delegated pass
-past the triviality floor, and anything else narrows the focus to a path or a topic. It writes no
-`.ai/` artifact — approved fixes land as code commits.
+against taste. The argument is read two ways: the single word `codex` adds the outside pass without
+asking first, and anything else narrows the focus to a path or a topic. It writes no `.ai/`
+artifact — approved fixes land as code commits.
 
 ## Workflow
 
@@ -26,23 +26,11 @@ past the triviality floor, and anything else narrows the focus to a path or a to
 
 `git diff <base>...HEAD` plus `git log --oneline <base>..HEAD`, narrowed by the focus when given.
 
-### 2. Delegate by default, above a floor
+### 2. Read the diff yourself — two axes, judged separately, never merged into one score
 
-Bare hands the diff to `codex:rescue` whenever the codex plugin is installed, without asking — the
-second model is what this gate adds. Two things send it to step 3 unassisted, each costing one
-line saying so, never a silent skip:
-
-- **A trivial diff** — 2 files or fewer **and** under 50 lines from `git diff --shortstat`.
-  `codex` overrides this floor, and only this floor.
-- **No reviewer installed** — self-review, naming the fix in the same line:
-  `/plugin marketplace add openai/codex-plugin-cc`, then `/plugin install codex@openai-codex` —
-  or `/codex:setup` when it's installed but not ready.
-
-`/codex:review --wait` is the richer, user-typed pass — name it when the diff deserves it. Either
-way, quote delegated findings verbatim, then **verify each against the file before it counts** —
-line numbers are the first thing to check.
-
-### 3. Two axes, judged separately — never merged into one score
+Every run, whatever else follows, and **with this skill's own prose in the main thread** — never
+`/code-review`, `/simplify` or `/security-review`, never a subagent, never an effort level. The
+filter below is what bounds it.
 
 - **Correct?** — does the diff do what the goal says: edge cases, error paths, the empty input.
 - **Does it fit?** — compared against the neighbouring code, not best practice in the abstract.
@@ -56,10 +44,23 @@ name what you dismissed, one line each:
 - More than five things to act on means the filter is too loose — except correctness and security,
   which earn more scrutiny before dismissal, not less.
 
-### 4. Present, wait, then fix
+### 3. Present, wait — and offer the outside pass in the same breath
 
-List the findings with a severity-ordered recommendation and **stop — nothing is fixed without
-approval.** On approval, fix in-session and commit per `## Git conventions` — related fixes together,
+List the findings with a severity-ordered recommendation and **stop — nothing is fixed and nothing
+is delegated without approval.** Above the triviality floor — more than 2 files **or** 50-plus lines from
+`git diff --shortstat` — that same stop carries one more line: `codex:rescue` can re-read this,
+worth it? Below the floor, don't ask. `codex` in the argument skips the ask, and no plugin installed
+drops it; neither costs a line of explanation, because the verdict is already in.
+
+### 4. The second opinion, then the fixes
+
+Only on your yes, or on `codex`: hand the diff to `codex:rescue`, passing no model and no effort —
+the codex config decides both. **Verify every finding it names against the file before it counts** —
+line numbers are the first thing to check — then quote what survives verbatim, say what didn't
+ground, and fold the rest into step 2's list. `/codex:review --wait` is the richer pass you type
+yourself; name it when the diff deserves more than a re-read.
+
+Then, on approval, fix in-session and commit per `## Git conventions` — related fixes together,
 unrelated apart. Then offer to run again; the second look is the point of a gate this cheap.
 
 **Next:** `dw-next` for the next task, `dw-land` when nothing is pending, or `dw-grain` where

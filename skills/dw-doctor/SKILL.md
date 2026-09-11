@@ -60,9 +60,9 @@ assumed:
   plugin/version-sync glance.
 - Tool presence on `PATH` via `command -v`: `git`, `jq`, `gh`, `codex`, `node`, `pnpm`, and the
   project-local `agnix` / `prettier` / `tsc` binaries. `codex` is WARN-tier and **never** FAIL — the
-  loop works without it, only `dw-check`'s outside reviewer and `dw-land`'s review offer on the PR degrade —
-  and the check stops at "installed": probing auth would mean a network call from a read-only
-  diagnostic.
+  loop works without it, and `dw-check` reviews the diff itself either way; all that degrades is the
+  second read it offers afterwards — and the check stops at "installed": probing auth would mean a
+  network call from a read-only diagnostic.
 - **The `dw-solo-extras` plugin**, found by its cache directory rather than on `PATH`. It ships
   `dw-decisions`, which `dw-land`, `dw-grill` and `dw-shape` each route to "where installed" without
   being able to look — so the answer belongs here. WARN-tier like `codex`, and stopping at

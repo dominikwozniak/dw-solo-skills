@@ -64,10 +64,10 @@ in [`AGENTS.md`](AGENTS.md) and the procedures in the skills themselves.
   `dw-check`, `dw-land` and `dw-grain` take. `validate-versions.sh` is the other consumer and
   resolves its own: it needs **two** refs, the merge base for which paths changed and the base _tip_
   for whether the version grew.
-- **Triviality floor** — the diff size below which `dw-check` self-reviews instead of handing the diff
-  to an outside reviewer. The `codex` argument overrides it, and overrides nothing else; a missing
-  reviewer is not something it can override. The numbers live in the skill, not here. Set by
-  [`0012`](docs/decisions/0012-bare-dw-check-delegates-by-default.md).
+- **Triviality floor** — the diff size below which `dw-check` does not bother offering the outside
+  reviewer, having already read the diff itself. The `codex` argument skips the ask at any size, and
+  overrides nothing else. The numbers live in the skill, not here. Set by
+  [`0027`](docs/decisions/0027-dw-check-reads-the-diff-and-codex-confirms.md).
 - **Absorption bar** — the second test a backlog entry must clear, and a **default rather than a
   judgement**: nothing blocks it and doing it costs less than describing it → the change that found
   it, now. Only genuinely blocked work — waiting on a decision, a dependency, a change not yet made —

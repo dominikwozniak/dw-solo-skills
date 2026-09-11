@@ -3,6 +3,7 @@ change: dw-check-reads-the-diff-itself
 branch: dw-check-reviews-first
 created: 2026-09-11
 landed: 2026-09-11
+pr: "#68"
 status: landed # shaping | building | landed | rejected
 ---
 

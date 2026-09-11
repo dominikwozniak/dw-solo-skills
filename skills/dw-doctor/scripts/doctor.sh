@@ -80,10 +80,11 @@ if have gh; then
 else
   report warn "gh" "absent — dw-land PRs and dw-ship merges need it. Install: brew install gh"
 fi
-# Codex is the only companion the skills route to by name — dw-check delegates an outside review to
-# it, and dw-land offers it on the PR when the change skipped dw-check. WARN tier and never FAIL: the whole loop works without
-# it, only those two routes degrade. Depth stops at "installed": probing auth would mean a network
-# call from a read-only diagnostic, and a logged-out codex is the user's business, not this script's.
+# Codex is the only companion the skills route to by name, from one place: dw-check offers it a
+# second read after reviewing the diff itself. WARN tier and never FAIL, and the tier is not a
+# hedge — 0027 made that pass a confirmation, so absent codex costs the run nothing but the offer.
+# Depth stops at "installed": probing auth would mean a network call from a read-only diagnostic,
+# and a logged-out codex is the user's business, not this script's.
 codex_plugin=""
 # ${HOME:-} — this script runs under `set -u`, and a bare $HOME with HOME unset aborts it outright,
 # taking every check below down with it. Rare, but a diagnostic that dies is worse than one that
@@ -98,7 +99,7 @@ elif have codex; then
 elif [ -n "$codex_plugin" ]; then
   report warn "codex" "plugin installed but the codex CLI is not on PATH; fix: /codex:setup"
 else
-  report warn "codex" "absent — dw-check's outside reviewer and dw-land's review offer on the PR need it; fix: /codex:setup"
+  report warn "codex" "absent — dw-check reviews without it and just won't offer the second read; fix: /codex:setup"
 fi
 
 # dw-solo-extras ships the two read-only agents three loop skills branch on — dw-land hands a decision

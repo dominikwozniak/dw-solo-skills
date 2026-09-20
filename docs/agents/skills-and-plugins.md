@@ -106,6 +106,14 @@ is not in the skill corpus and `eval:routing` does not score it — which is als
 
 ## Gotchas
 
+- **An agent's `description` is a second contract, and nothing checks it against the prompt.** It is
+  the only control over when the agent fires, so a caller who reads it and stops there never invokes
+  the agent for work the body would have handled. `dw-docs-drift`'s body computed its scope from a
+  consumer's Task Router; its description enumerated four scaffolded paths, and that repo read the
+  list as the boundary for weeks. Nothing catches this: `validate-docs.sh` and `eval:routing` both
+  measure skills, and an agent has neither. Where the body computes a scope, the description states
+  the rule and marks any list as an example.
+
 - **A precondition added to a step needs its exit checked, not only its loophole closed.** `dw-grill`'s
   close and `dw-next`'s tick each grew one whose legitimate exception — a hung lookup, a proof only
   the push can run — made the step unreachable. The delegated review caught both; no gate can.

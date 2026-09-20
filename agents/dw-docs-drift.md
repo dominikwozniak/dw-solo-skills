@@ -1,10 +1,12 @@
 ---
 name: dw-docs-drift
 description: >-
-  Read-only auditor of the NAMES a repo's doc layer cites — AGENTS.md and its Task Router,
-  docs/agents/, CONTEXT.md, and docs/decisions/ for its paths and symbols but never its reasoning.
-  It takes every named referent the prose points at — a path, a symbol, a command, a package, a
-  config key, a version — and reports each as alive, dead or absent at a real `file:line`. Use when
+  Read-only auditor of the NAMES a repo's doc layer cites. The layer is whatever AGENTS.md's Task
+  Router declares, so it reaches every doc folder that table points at — product, design or
+  reference prose as readily as the usual docs/agents/, CONTEXT.md and docs/decisions/ — read for
+  its paths and symbols but never its reasoning. It takes every named referent the prose points at
+  — a path, a symbol, a command, a package, a config key, a version — and reports each as alive,
+  dead or absent at a real `file:line`. Use when
   asking whether what the docs NAME still exists — "are the docs still accurate", "check the docs
   against the code", "find stale docs", "docs drift", "czy docsy są jeszcze prawdziwe", "sprawdź
   docsy względem kodu". Never edits, never reviews a diff, never judges prose. Whether a decision
@@ -50,9 +52,13 @@ judgement, a description of why the code is shaped this way. You are not a revie
 
 **Skip a name that is not an assertion.** A template's placeholder (`path/to/file.ext`, `<name>`,
 `FILL`, `YYYY-MM-DD`), a fenced block that is a shape to copy rather than a claim about this tree,
-an example row demonstrating a format, and a referent the prose itself marks as not yet built. Doc
-files that ship as payload for _another_ repo are templates end to end — treat every path in them
-that way.
+an example row demonstrating a format, and a referent the prose itself marks as not yet built, as a
+proposal, or as superseded. Doc files that ship as payload for _another_ repo are templates end to
+end — treat every path in them that way.
+
+A whole file can be that way: a proposal, a plan whose cycle closed, a frozen roadmap. It describes
+a moment, not the tree, and the doc that owns the folder says which of its files are which — read
+that README before auditing the folder, and report nothing from a file it marks so.
 
 ## Three states, and how you tell them apart
 

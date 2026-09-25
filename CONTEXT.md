@@ -11,20 +11,19 @@ in [`AGENTS.md`](AGENTS.md) and the procedures in the skills themselves.
 - **Change** — one unit of work: a result a user sees, delivered whole, held in
   `.ai/work/<date>-<slug>/CHANGE.md`. Persistent (tracked, survives a `/clear`), archived at merge
   (`.ai/archive/<date>-<slug>/`, `status: landed`).
-- **Nomination** — a decision `dw-next` writes into a `CHANGE.md`'s `## Decisions` as a candidate
-  rather than a record. `dw-land` is the only gate that judges one against the bar.
+- **Nomination** — a decision or a term `dw-next` writes into a `CHANGE.md`'s `## Decisions` as a
+  candidate rather than a record. `dw-land` puts each to the user and writes only the named ones.
 - **Sibling file** — a file beside a `CHANGE.md` in its change folder: a shape-time detail file the
   doc names in `## References`, or a `HANDOFF.md`. Removed at archive; the receipt is the doc alone.
 - **Entry name** — `<YYYY-MM-DD>-<slug>`, from `slugify.sh dated`, for every entry in the three `.ai/`
   lanes. Each lane stamps **its own** date (noted, shaped, landed), so only the **bare slug** is
   comparable across them — `slugify.sh undate` strips a prefix, and `docs/decisions/` is exempt because
   its `NNNN-` numbering already sorts.
-- **Promotion** — moving the durable residue out of a `CHANGE.md`, **as it happens**: `dw-next`
-  writes a term in the task's own commit and **nominates** a decision rather than writing it, and
-  `dw-land` judges every nomination and sweeps what is left at close —
-  traps to the `## Gotchas` of the routed topic file, stale pointers rewritten, follow-ups the
-  user names to `.ai/backlog/` (one file per idea). It **replaces rather than appends**: each target is read
-  first, and what the change supersedes is deleted in the same edit. Decisions are the exception —
+- **Promotion** — moving the durable residue out of a `CHANGE.md`, **on the user's yes**: `dw-next`
+  **nominates** a term or a decision rather than writing it, and `dw-land` writes at close only what
+  the user named — records, terms, traps to the `## Gotchas` of the routed topic file, follow-ups to
+  `.ai/backlog/` (one file per idea) — and rewrites stale pointers unasked. It **replaces rather than
+  appends**: each target is read first, and what the change supersedes is deleted in the same edit. Decisions are the exception —
   there the replacement is a `superseded-by:` link and the old record stays.
 - **Cap** — the limit `validate-artifacts.sh` enforces on `.ai/backlog/`, the one durable list that
   would otherwise only grow; that script holds the number. A count of **entries**, never of bytes or

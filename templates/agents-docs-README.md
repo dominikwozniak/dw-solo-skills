@@ -31,10 +31,11 @@ An entry stamped with the day it was learned reads as a log, and a log is append
 rewritten. What happened, when, and what it measured belongs in the commit and the archived change
 doc. Not the root either, which loads in full every session, so traps there push a real rule out.
 
-**Ask first whether a hook, a validator or a lint rule would refuse the trap outright** — a rule
-enforced on trust is one a tired session skips. When that mechanism arrives, **delete the prose it
-replaced and leave its name**; when an argument is settled in `docs/decisions/`, replace the argument
-here with a pointer to the record. Writing the new rule _beside_ the prose it made redundant is how a
+**Ask first whether a case added to a hook, validator or lint rule the repo already has would
+refuse the trap** — a rule enforced on trust is one a tired session skips. Then add it instead of the
+bullet, **delete the prose it replaced and leave its name**; a new hook, script or harness is never
+that cheap, so the bullet stays. When an argument is settled in `docs/decisions/`, replace the
+argument here with a pointer to the record. Writing the new rule _beside_ the prose it made redundant is how a
 corpus doubles without anyone deciding it should.
 
 **Two numbers hold this layer, and both are yours to delete.** `agents:check` measures every

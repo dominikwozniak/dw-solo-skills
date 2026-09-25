@@ -49,13 +49,14 @@ a go writes only the candidates the user names, and a plain go writes none.
 
 ### 2. Close — on an explicit go
 
-`dw-next` promoted terms and gotchas as they happened; **decisions it only nominated**, and this is
-the one step that judges them. Each target is read first — **replace, don't append**, deleting what
-this change made untrue or made mechanical:
+`dw-next` nominated decisions and terms rather than writing them, and this is the one step that
+judges them: **a new record, term or gotcha is written only where the user named it** at the verdict.
+Each target is read first — **replace, don't append**, deleting what this change made untrue or made
+mechanical, which needs no name:
 
-- **Decisions** — the only gate. Every `(nominated)` line, plus anything the diff decided and
-  nobody nominated, is judged against `references/decision-record.md`'s three legs **out loud, one
-  candidate at a time**; the whole diff is here, which is why this is where leg one can be answered.
+- **Decisions** — the only gate. Every candidate the user named — a `(nominated)` line, or a call
+  the diff made that nobody nominated — is judged against `references/decision-record.md`'s three
+  legs **out loud, one at a time**, and a named call that fails them is still not written; the whole diff is here, which is why this is where leg one can be answered.
   - With `dw-decisions` installed and a candidate in hand, give it the candidate, **the three legs
     verbatim**, and the diff hunks the candidate turns on — it has no shell and cannot see a diff,
     so a leg whose evidence lives in the change is unanswerable unless you pass it. No candidate:
@@ -70,15 +71,15 @@ this change made untrue or made mechanical:
       rides into the archive so the third arrival of the same idea reads as a pattern instead of a
       fresh question. `(nominated)` becomes `(rejected: <leg>)` where a leg actually failed, and
       `(unsettled: <what would settle it>)` where none did — **never a leg you did not establish**.
-- **Vocabulary** — new or sharpened terms into `CONTEXT.md`, one bullet of at most two lines saying
-  what the word means and nothing about why; rewrite a line, never add a second definition beside it.
-- **Gotchas** — a trap that cost real time goes to the routed topic file covering it (the root file
-  only where it already keeps a `## Gotchas`) as **one undated bullet of at most two lines** — do or
-  never X, one clause of why, a pointer — with what happened and when left in the commit and the
-  archived doc. Where a mechanism (hook, lint rule, check) could refuse the trap outright, build or
-  backlog that instead of writing prose, and delete the prose it replaces, leaving its name. That
-  claim is falsifiable, so check it: cite a mechanism and the diff holds it — the hook, validator,
-  check or self-test itself, or the backlog entry that names it. Neither, and it was prose after all.
+- **Vocabulary** — a named term into `CONTEXT.md`, one bullet of at most two lines saying what the
+  word means and nothing about why; a term the diff sharpened is rewritten in place, never a second
+  definition beside it.
+- **Gotchas** — a named trap goes to the routed topic file covering it (the root file only where it
+  already keeps a `## Gotchas`) as **one undated bullet of at most two lines** — do or never X, one
+  clause of why, a pointer — with what happened and when left in the commit and the archived doc. Where a case added to an existing hook, lint rule or check would refuse the trap,
+  add it in this change instead — named or not — and delete the prose it replaces, leaving its name.
+  A new hook, script or harness is never that cheap: the report names it in one line, never a
+  backlog entry. Cite a mechanism and the diff holds it, or it was prose after all.
 - **Stale references** — a `## References` entry the diff made untrue is rewritten where it lives;
   that edits a file the change never touched, so name the exact line and get a yes first.
 - **Follow-ups** — the done-now ones are built first; the rest are report lines. A

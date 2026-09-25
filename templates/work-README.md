@@ -50,7 +50,8 @@ prefix with `slugify.sh undate` rather than comparing folder names.
 
 ## Where the durable parts go
 
-`dw-land` promotes out of `CHANGE.md` before archiving it, to five targets:
+`dw-land` promotes out of `CHANGE.md` before archiving it — a new entry only where you named
+it — to five targets:
 
 - `docs/decisions/` — hard-to-reverse decisions, one record each
 - `CONTEXT.md` — domain terms, glossary only

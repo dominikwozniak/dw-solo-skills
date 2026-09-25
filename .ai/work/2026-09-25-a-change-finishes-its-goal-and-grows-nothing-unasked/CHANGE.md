@@ -97,7 +97,7 @@ invocation reads that as not remaining. Never rename a task title. -->
       README pairs, `templates/AGENTS.md`, `templates/agents-docs-README.md:50-51`, `README.md`,
       `CONTEXT.md` — proof: the task 2 grep over `skills templates .ai/backlog/README.md` prints
       nothing; each twin `diff` shows only its repo paragraph; `pnpm validate:docs`, `pnpm eval:routing`.
-- [ ] 4. Decisions, gotchas and terms grow only on a named yes, and a trap's mechanism is built here
+- [x] 4. Decisions, gotchas and terms grow only on a named yes, and a trap's mechanism is built here
       or not at all — `dw-land` phase 2, `dw-next`'s term line, the `CHANGE.md` template markers,
       `templates/agents-docs-README.md:34-35`, `README.md:28-33`, `CONTEXT.md` Nomination and
       Promotion — proof: `grep -n "build or" skills/dw-land/SKILL.md` prints nothing; `pnpm validate:docs`.

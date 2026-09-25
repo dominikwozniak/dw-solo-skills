@@ -67,10 +67,11 @@ stale task. Order is a hint — take a later task when this one is blocked, and 
   unfixed code is not a test: `docs/decisions/0013` set the bar at confirming each case by mutating
   the code back to the broken behaviour and watching exactly that case fail.
 - **Follow the anchors, use the project's words** — patterns from the doc, names from `CONTEXT.md`.
-- **Nominate a decision, never promote one** — a call worth a record becomes one line in the doc's
-  `## Decisions` in this task's commit: the call, why, `(nominated)`. `dw-land` judges it, because
-  leg one — hard to reverse — is unanswerable from inside task two of six. A term is different:
-  `CONTEXT.md` has no bar to clear, so write it now.
+- **Nominate, never promote** — a call worth a record, or a term worth defining, becomes one line
+  in the doc's `## Decisions` in this task's commit: the call or the term, why, `(nominated)`.
+  `dw-land` puts each to the user, because the durable layer keeps only what the user names, and leg
+  one — hard to reverse — is unanswerable from inside task two of six. A term this change made
+  untrue is rewritten in place now.
 - **Read the decisions binding the file you are about to edit** — where `## Decisions` doesn't
   already carry them, read the records' **frontmatter first**, never the whole folder:
   `status: active` plus a `touches:` matching the path, then act on that record's `rule:`

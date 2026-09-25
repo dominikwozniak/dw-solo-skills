@@ -25,12 +25,10 @@ smallest weight that still works:
   anything is written.
 - **The process outweighs the change** — one artifact instead of spec + plan + notes, one gated pass
   instead of five auditors and a separate writer.
-- **A private repo rots** — what's durable is **promoted as it happens**: a term lands in
-  `CONTEXT.md` in the commit that coined it (`dw-next`), a decision is nominated there and judged
-  once against the bar at close (`dw-land`, the only gate on `docs/decisions/`), and `dw-land`
-  sweeps the rest — gotchas to the routed topic file, stale pointers rewritten, follow-ups
-  reported or, on your yes, filed to `.ai/backlog/` — before archiving the change doc
-  (`.ai/archive/`). Without that you accumulate stale specs and lose the decisions worth keeping.
+- **A private repo rots** — what's durable is **kept on your yes**: `dw-next` nominates a term or a
+  decision in the commit that coined it, and `dw-land` puts each to you at close — the only gate on
+  `docs/decisions/` and `CONTEXT.md` — writes what you name, rewrites stale pointers, and reports the
+  rest or, on your yes, files it to `.ai/backlog/` before archiving the change doc (`.ai/archive/`). Without that you accumulate stale specs and lose the decisions worth keeping.
 - **Commits drift from your conventions** — the scaffold ships a `## Git conventions` block every
   session loads in full, and the hooks refuse what a regex can decide; no git skill sits between.
 

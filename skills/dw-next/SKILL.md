@@ -52,10 +52,10 @@ stale task. Order is a hint — take a later task when this one is blocked, and 
 
 - **Narrow and complete** — a vertical slice, never a whole layer; a second task is cheaper than a
   sprawling commit.
-- **Absorb what you find** — a reversible, related, session-sized discovery is fixed now, as its
-  own commit. Only work that exceeds the session or the goal defers: a one-line Notes item, or —
-  above that bar — a `.ai/backlog/` file with `why-not-now:` and `effort:`. Never park a gap in
-  this change's `## Goal`; shrinking the goal is the user's call.
+- **Absorb what you find** — a discovery inside the goal is built now, as its own commit, or as a
+  new task when it is big. One outside the goal is a one-line Notes item, which `dw-land` carries
+  into its report — never a `.ai/backlog/` file. Never park a gap in this change's `## Goal`;
+  shrinking the goal is the user's call.
 - **Two fixes on one premise means the premise is the suspect** — a second fix refused by the same
   gate as the first, resting on the same assumption, is evidence about the assumption. Write the
   premise down as one sentence and list every case that gate refused before writing a third fix. The

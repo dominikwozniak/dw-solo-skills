@@ -88,7 +88,7 @@ invocation reads that as not remaining. Never rename a task title. -->
       a cheap in-goal fix, an out-of-goal idea and a trap only a new hook would refuse; a plain go),
       `dw-land` #3's expectations rewritten for a named-trap yes and a short receipt — proof:
       `node evals/behaviour.ts` lists all three, then `--go` on each at this commit, results in Notes.
-- [ ] 2. The goal, not the session, sizes the work — `dw-shape` step 3 and read-back, the
+- [x] 2. The goal, not the session, sizes the work — `dw-shape` step 3 and read-back, the
       piece-of-a-flow extension, the internal-only rule, `dw-next`'s absorb bullet, `CONTEXT.md`
       Change and Task — proof: `grep -rn -E "session-sized|exceeds the session|small enough for a fresh session" skills/dw-shape skills/dw-next`
       prints nothing; `pnpm validate:docs`.

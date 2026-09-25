@@ -63,6 +63,10 @@ a `## References` line.
 
 ### 2. Size it, then count the scopes
 
+**The goal is a result a user sees, delivered whole.** Asked for one piece of a flow — the endpoint,
+not the screen calling it — widen the goal to that result and say so at the read-back. Internal-only
+work — a check, a lint rule, a test harness, a refactor — is its own change only when asked for.
+
 - **Small** — one obvious edit: a goal and one or two checkboxes, no other section.
 - **Normal** — a few files, one seam: goal, the decisions taken, 3–6 tasks, anchors, out of scope.
 - **Large** — several layers, or you can't see the end: say so plainly. It takes the count test
@@ -89,7 +93,7 @@ On a no, the reason goes in `## Decisions` so the question isn't reopened.
 ### 3. Cut the tasks as thin vertical slices
 
 Each task is a complete narrow path, not a layer — independently committable, leaving the project
-green, small enough for a fresh session. Order is a hint, never a gate.
+green. Order is a hint, never a gate.
 
 Each carries the check that would prove it, in the `proof:` phrase the template defines. A slice no
 check can be named for is cut wrong rather than worded wrong: recut it until one can be, and where

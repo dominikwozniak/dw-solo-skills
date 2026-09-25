@@ -8,8 +8,9 @@ in [`AGENTS.md`](AGENTS.md) and the procedures in the skills themselves.
 - **Canon** — the single real copy of a file. `skills/<name>/`, `agents/<name>.md` and
   `scripts/runtime/<s>.sh` are canon; everything under `plugins/` is a git-tracked symlink back to
   it. Never edit through `plugins/…`.
-- **Change** — one unit of work, held in `.ai/work/<date>-<slug>/CHANGE.md`. Persistent (tracked,
-  survives a `/clear`), archived at merge (`.ai/archive/<date>-<slug>/`, `status: landed`).
+- **Change** — one unit of work: a result a user sees, delivered whole, held in
+  `.ai/work/<date>-<slug>/CHANGE.md`. Persistent (tracked, survives a `/clear`), archived at merge
+  (`.ai/archive/<date>-<slug>/`, `status: landed`).
 - **Nomination** — a decision `dw-next` writes into a `CHANGE.md`'s `## Decisions` as a candidate
   rather than a record. `dw-land` is the only gate that judges one against the bar.
 - **Sibling file** — a file beside a `CHANGE.md` in its change folder: a shape-time detail file the

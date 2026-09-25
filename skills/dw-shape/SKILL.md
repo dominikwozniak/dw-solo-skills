@@ -63,6 +63,11 @@ a `## References` line.
 
 ### 2. Size it, then count the scopes
 
+**The goal is a result a user sees, delivered whole.** Asked for one piece of a flow — the endpoint,
+not the screen calling it — widen the goal to that result, say so at the read-back and offer to
+narrow it back. Internal-only work — a check, a lint rule, a test harness, a refactor — is its own
+change only when asked for.
+
 - **Small** — one obvious edit: a goal and one or two checkboxes, no other section.
 - **Normal** — a few files, one seam: goal, the decisions taken, 3–6 tasks, anchors, out of scope.
 - **Large** — several layers, or you can't see the end: say so plainly. It takes the count test
@@ -89,7 +94,7 @@ On a no, the reason goes in `## Decisions` so the question isn't reopened.
 ### 3. Cut the tasks as thin vertical slices
 
 Each task is a complete narrow path, not a layer — independently committable, leaving the project
-green, small enough for a fresh session. Order is a hint, never a gate.
+green. Order is a hint, never a gate.
 
 Each carries the check that would prove it, in the `proof:` phrase the template defines. A slice no
 check can be named for is cut wrong rather than worded wrong: recut it until one can be, and where
@@ -101,9 +106,10 @@ command.
 Write `CHANGE.md` from the shape in `references/CHANGE.md`. From a `dw-grill` close, an assumed or
 deferred item becomes a `## Decisions` line marked `(assumed)` with its default — `dw-next` builds
 on it and asks only when the build proves it wrong. Read back the goal, the task list, and the
-left-out list with a proposed fate per item (into the change / a one-line backlog entry /
-`## Out of scope` with why) — **one stop**: granularity and fates are corrected in one reply. Then
-commit per `## Git conventions`, everything this shaping wrote staged by name.
+left-out list with a proposed fate per item (into the change / `## Out of scope` with why; a
+backlog entry only where the user asks for one) — **one stop**: granularity and fates are
+corrected in one reply. Then commit per `## Git conventions`, everything this shaping wrote staged
+by name.
 
 Beyond small, prefer a fresh session per change — the committed file is the handoff.
 

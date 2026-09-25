@@ -9,9 +9,9 @@ status: shaping # shaping | building | landed
 
 ## Goal
 
-What changes, and how you'd know it worked — one line per observable result, no line for anything
-else. Observable, not aspirational — "the settings screen persists the toggle across a restart", not
-"improve settings".
+What changes for the person using it, and how you'd know it worked — one line per result they see,
+no line for anything else. Observable, not aspirational — "the settings screen persists the toggle
+across a restart", not "improve settings".
 
 ## Decisions
 
@@ -25,11 +25,9 @@ needed. Four markers, and `dw-land` reads the last one:
 - `[decision] (inherited: <NNNN>) — [the record's own rule, verbatim]` — a `docs/decisions/` record
   already binds a file this change touches. Never reworded: the norm a builder acts on is the
   record's own words.
-- `[decision] (nominated) — [why it may deserve a record]` — a call `dw-next` judges worth a decision
-  record but does not write. `dw-land` is the gate, and it rewrites this line in place: gone, where
-  the call became a record; `(rejected: <leg>)` where a leg failed; `(unsettled: <what would settle
-it>)` where none failed but the change did not show enough. The last two survive into the archive
-  receipt — nothing else in this section does.
+- `[decision or term] (nominated) — [why it may deserve a record]` — a call worth a decision record,
+  or a term worth a `CONTEXT.md` line, that `dw-next` does not write. `dw-land` puts it to the user
+  at the verdict and writes it only when named and, for a decision, when it clears the bar.
 
 ## Out of scope
 

@@ -7,7 +7,7 @@ active change is and where it stands.
 ## Layout
 
 ```
-backlog/<date>-<slug>.md      follow-ups not being done now   (dw-land + dw-shape park, dw-shape takes)
+backlog/<date>-<slug>.md      follow-ups you said yes to      (filed on your yes, dw-shape takes)
                               entry shape and the two bars: backlog/README.md
 work/<date>-<slug>/CHANGE.md  the live state of ONE change    (dw-shape writes, dw-next ticks)
                               goal · decisions · out of scope · tasks · anchors · references
@@ -50,7 +50,8 @@ prefix with `slugify.sh undate` rather than comparing folder names.
 
 ## Where the durable parts go
 
-`dw-land` promotes out of `CHANGE.md` before archiving it, to five targets:
+`dw-land` promotes out of `CHANGE.md` before archiving it — a new entry only where you named
+it — to five targets:
 
 - `docs/decisions/` — hard-to-reverse decisions, one record each
 - `CONTEXT.md` — domain terms, glossary only
@@ -59,8 +60,8 @@ prefix with `slugify.sh undate` rather than comparing folder names.
   beside the topic that sprang the trap rather than in the always-loaded root
 - wherever a `## References` entry points — a pointer this change made untrue,
   rewritten in place on your go, never silently. Nothing to do where the doc named none
-- `.ai/backlog/<date>-<slug>.md` — ordinary follow-ups that clear none of the above bars,
-  each carrying its finding inline; the archive keeps only what none of these five took
+- `.ai/backlog/<date>-<slug>.md` — a follow-up you named at the verdict, carrying its finding
+  inline; the archive keeps only the receipt
 
 ## Rules
 

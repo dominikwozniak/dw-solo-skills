@@ -52,10 +52,10 @@ stale task. Order is a hint — take a later task when this one is blocked, and 
 
 - **Narrow and complete** — a vertical slice, never a whole layer; a second task is cheaper than a
   sprawling commit.
-- **Absorb what you find** — a reversible, related, session-sized discovery is fixed now, as its
-  own commit. Only work that exceeds the session or the goal defers: a one-line Notes item, or —
-  above that bar — a `.ai/backlog/` file with `why-not-now:` and `effort:`. Never park a gap in
-  this change's `## Goal`; shrinking the goal is the user's call.
+- **Absorb what you find** — a discovery inside the goal is built now, as its own commit, or as a
+  new task when it is big. One outside the goal is a one-line Notes item, which `dw-land` carries
+  into its report — never a `.ai/backlog/` file. Never park a gap in this change's `## Goal`;
+  shrinking the goal is the user's call.
 - **Two fixes on one premise means the premise is the suspect** — a second fix refused by the same
   gate as the first, resting on the same assumption, is evidence about the assumption. Write the
   premise down as one sentence and list every case that gate refused before writing a third fix. The
@@ -67,10 +67,11 @@ stale task. Order is a hint — take a later task when this one is blocked, and 
   unfixed code is not a test: `docs/decisions/0013` set the bar at confirming each case by mutating
   the code back to the broken behaviour and watching exactly that case fail.
 - **Follow the anchors, use the project's words** — patterns from the doc, names from `CONTEXT.md`.
-- **Nominate a decision, never promote one** — a call worth a record becomes one line in the doc's
-  `## Decisions` in this task's commit: the call, why, `(nominated)`. `dw-land` judges it, because
-  leg one — hard to reverse — is unanswerable from inside task two of six. A term is different:
-  `CONTEXT.md` has no bar to clear, so write it now.
+- **Nominate, never promote** — a call worth a record, or a term worth defining, becomes one line
+  in the doc's `## Decisions` in this task's commit: the call or the term, why, `(nominated)`.
+  `dw-land` puts each to the user, because the durable layer keeps only what the user names, and leg
+  one — hard to reverse — is unanswerable from inside task two of six. A term this change made
+  untrue is rewritten in place now.
 - **Read the decisions binding the file you are about to edit** — where `## Decisions` doesn't
   already carry them, read the records' **frontmatter first**, never the whole folder:
   `status: active` plus a `touches:` matching the path, then act on that record's `rule:`

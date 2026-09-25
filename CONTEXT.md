@@ -8,22 +8,22 @@ in [`AGENTS.md`](AGENTS.md) and the procedures in the skills themselves.
 - **Canon** — the single real copy of a file. `skills/<name>/`, `agents/<name>.md` and
   `scripts/runtime/<s>.sh` are canon; everything under `plugins/` is a git-tracked symlink back to
   it. Never edit through `plugins/…`.
-- **Change** — one unit of work, held in `.ai/work/<date>-<slug>/CHANGE.md`. Persistent (tracked,
-  survives a `/clear`), archived at merge (`.ai/archive/<date>-<slug>/`, `status: landed`).
-- **Nomination** — a decision `dw-next` writes into a `CHANGE.md`'s `## Decisions` as a candidate
-  rather than a record. `dw-land` is the only gate that judges one against the bar.
+- **Change** — one unit of work: a result a user sees, delivered whole, held in
+  `.ai/work/<date>-<slug>/CHANGE.md`. Persistent (tracked, survives a `/clear`), archived at merge
+  (`.ai/archive/<date>-<slug>/`, `status: landed`).
+- **Nomination** — a decision or a term `dw-next` writes into a `CHANGE.md`'s `## Decisions` as a
+  candidate rather than a record. `dw-land` puts each to the user and writes only the named ones.
 - **Sibling file** — a file beside a `CHANGE.md` in its change folder: a shape-time detail file the
   doc names in `## References`, or a `HANDOFF.md`. Removed at archive; the receipt is the doc alone.
 - **Entry name** — `<YYYY-MM-DD>-<slug>`, from `slugify.sh dated`, for every entry in the three `.ai/`
   lanes. Each lane stamps **its own** date (noted, shaped, landed), so only the **bare slug** is
   comparable across them — `slugify.sh undate` strips a prefix, and `docs/decisions/` is exempt because
   its `NNNN-` numbering already sorts.
-- **Promotion** — moving the durable residue out of a `CHANGE.md`, **as it happens**: `dw-next`
-  writes a term in the task's own commit and **nominates** a decision rather than writing it, and
-  `dw-land` judges every nomination and sweeps what is left at close —
-  traps to the `## Gotchas` of the routed topic file, stale pointers rewritten, follow-ups to
-  `.ai/backlog/` (one file per idea). It **replaces rather than appends**: each target is read
-  first, and what the change supersedes is deleted in the same edit. Decisions are the exception —
+- **Promotion** — moving the durable residue out of a `CHANGE.md`, **on the user's yes**: `dw-next`
+  **nominates** a term or a decision rather than writing it, and `dw-land` writes at close only what
+  the user named — records, terms, traps to the `## Gotchas` of the routed topic file, follow-ups to
+  `.ai/backlog/` (one file per idea) — and rewrites stale pointers unasked. It **replaces rather than
+  appends**: each target is read first, and what the change supersedes is deleted in the same edit. Decisions are the exception —
   there the replacement is a `superseded-by:` link and the old record stays.
 - **Cap** — the limit `validate-artifacts.sh` enforces on `.ai/backlog/`, the one durable list that
   would otherwise only grow; that script holds the number. A count of **entries**, never of bytes or
@@ -74,12 +74,11 @@ in [`AGENTS.md`](AGENTS.md) and the procedures in the skills themselves.
   earns an entry. Joins the month bar (_will you ever?_), which tests only whether the idea is worth
   queueing at all. `dw-prune` applies it late, to a queue that grew anyway.
 - **Archive** — `.ai/archive/<date>-<slug>/`: landed change docs kept as history, not guidance. Nothing
-  reads them to decide anything. An entry is a **receipt** rather than the working doc — frontmatter,
-  the H1, the task list as it was left, the notes no durable target took, and any decision the close
-  turned down. Two statuses end
-  up here and there is no third: `landed`, and **`rejected` ≡ cancelled** — one status for an idea
-  turned down and for work abandoned mid-build, since both leave the same thing behind (a
-  `## Why rejected`) and nothing downstream tells them apart.
+  reads them to decide anything. An entry is a **receipt** rather than the working doc — the
+  frontmatter, the H1 and one line saying what the user got. Two statuses end up here and there is
+  no third: `landed`, and **`rejected` ≡ cancelled** — one status for an idea turned down and for
+  work abandoned mid-build, since both leave the same thing behind (a `## Why rejected`) and nothing
+  downstream tells them apart.
 - **Task** — one box in a `CHANGE.md`: a thin vertical slice, independently committable, leaving the
   project green, and carrying in its `proof:` phrase the check that would settle it. Not a layer
   ("add all the migrations" is not a task). The box is ticked once that check has run.

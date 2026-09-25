@@ -108,7 +108,7 @@ invocation reads that as not remaining. Never rename a task title. -->
 - [x] 6. Versions and the gate — `dw-solo`, `dw-solo-setup` and `dw-solo-extras` bumped in both
       manifests, the corpus baseline re-recorded in whichever commit grew it — proof: every check in
       `package.json`'s `scripts` block passes, `pnpm validate:versions` and `pnpm eval:routing` among them.
-- [ ] 7. The three cases green on the finished branch, recorded under a new `### Measured` heading in
+- [x] 7. The three cases green on the finished branch, recorded under a new `### Measured` heading in
       `evals/README.md` — proof: `node evals/behaviour.ts dw-shape --case 4 --go` and `dw-land --case 3`
       / `--case 4` grade every expectation passed.
 

@@ -548,6 +548,30 @@ promotion. The prompt had asked for the trap not to get lost, and the run treate
 where that is satisfied rather than the topic file — which is the whole distinction the case exists
 to measure.
 
+### Measured 2026-09-25 — the named-yes close, before and after
+
+Three cases, executor `opus`, grader `sonnet`, **n=1**, each run on the rules before the change and
+again after it. $8.30 in all, two re-runs included.
+
+| case                                           | before | after | cost after |
+| ---------------------------------------------- | ------ | ----- | ---------- |
+| `dw-shape` #4 — one piece of a flow            | 1/4    | 4/4   | $0.548     |
+| `dw-land` #3 — a named trap, a short receipt   | 2/4    | 4/4   | $1.294     |
+| `dw-land` #4 — a plain go over three leftovers | 2/5    | 5/5   | $1.028     |
+
+**Before, each case reproduced the failure it was written for.** `dw-shape` stopped the goal at the
+endpoint and proposed the page's button as "backlog entry (the likely next change)". `dw-land` #3
+filed a backlog entry for a test-count guard and pointed the new gotcha at it — a check about a
+check. `dw-land` #4 closed without a balance and archived the whole doc.
+
+**The first run after found one defect each way.** `dw-shape` #4 went 3/4: the goal widened and the
+read-back said so, but nothing offered the way back — the half of the decision the rewrite had
+dropped. The sentence was fixed and the re-run is the row above. `dw-land` #4 went 4/5 on an
+expectation demanding the balance be the report's last line, where `dw-land`'s own order puts the
+PR note last; the expectation was widened and the case re-run. Its third expectation was widened
+too, after the run before, which refused the `Intl` trap with a case in the existing test file — the
+cheap check the rule under test allows. Each case note says so.
+
 ## Asking the real router
 
 **Which skill fired is still not measured by a tool here**, and that is deliberate: `evals/trigger.ts`

@@ -105,7 +105,7 @@ invocation reads that as not remaining. Never rename a task title. -->
       the template, the archive and work README pairs, `docs/agents/change-artifacts.md`,
       `CONTEXT.md` Archive, `README.md:118-120` — proof: the archive README twin `diff` shows only
       its repo paragraph; `pnpm validate:docs`; a reader holds step 4 and the archive step to goal line 4.
-- [ ] 6. Versions and the gate — `dw-solo`, `dw-solo-setup` and `dw-solo-extras` bumped in both
+- [x] 6. Versions and the gate — `dw-solo`, `dw-solo-setup` and `dw-solo-extras` bumped in both
       manifests, the corpus baseline re-recorded in whichever commit grew it — proof: every check in
       `package.json`'s `scripts` block passes, `pnpm validate:versions` and `pnpm eval:routing` among them.
 - [ ] 7. The three cases green on the finished branch, recorded under a new `### Measured` heading in

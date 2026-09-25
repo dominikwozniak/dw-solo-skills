@@ -10,8 +10,8 @@ status: shaping # shaping | building | landed
 ## Goal
 
 What changes for the person using it, and how you'd know it worked — one line per result they see,
-no line for anything else. Observable, not aspirational — "the settings screen persists the toggle across a restart", not
-"improve settings".
+no line for anything else. Observable, not aspirational — "the settings screen persists the toggle
+across a restart", not "improve settings".
 
 ## Decisions
 

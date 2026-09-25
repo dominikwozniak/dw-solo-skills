@@ -56,7 +56,8 @@ mechanical, which needs no name:
 
 - **Decisions** — the only gate. Every candidate the user named — a `(nominated)` line, or a call
   the diff made that nobody nominated — is judged against `references/decision-record.md`'s three
-  legs **out loud, one at a time**, and a named call that fails them is still not written; the whole diff is here, which is why this is where leg one can be answered.
+  legs **out loud, one at a time**, and a named call that fails them is still not written; the
+  whole diff is here, which is why this is where leg one can be answered.
   - With `dw-decisions` installed and a candidate in hand, give it the candidate, **the three legs
     verbatim**, and the diff hunks the candidate turns on — it has no shell and cannot see a diff,
     so a leg whose evidence lives in the change is unanswerable unless you pass it. No candidate:
@@ -74,10 +75,10 @@ mechanical, which needs no name:
   definition beside it.
 - **Gotchas** — a named trap goes to the routed topic file covering it (the root file only where it
   already keeps a `## Gotchas`) as **one undated bullet of at most two lines** — do or never X, one
-  clause of why, a pointer — with what happened and when left in the commit. Where a case added to an existing hook, lint rule or check would refuse the trap,
-  add it in this change instead — named or not — and delete the prose it replaces, leaving its name.
-  A new hook, script or harness is never that cheap: the report names it in one line, never a
-  backlog entry. Cite a mechanism and the diff holds it, or it was prose after all.
+  clause of why, a pointer — with what happened and when left in the commit. Where a case added to
+  an existing hook, lint rule or check would refuse the trap, add it in this change instead — named
+  or not — and delete the prose it replaces, leaving its name. A new hook, script or harness is
+  never that cheap: the report names it in one line, never a backlog entry. Cite a mechanism and the diff holds it, or it was prose after all.
 - **Stale references** — a `## References` entry the diff made untrue is rewritten where it lives;
   that edits a file the change never touched, so name the exact line and get a yes first.
 - **Follow-ups** — the done-now ones are built first; the rest are report lines. A
@@ -109,7 +110,8 @@ hold; phase 1's report-open follow-ups go under `## What changes`, what phase 1 
 What was promoted and archived, and each report-open line. Then two lines: **`You get:`** — each
 `## Goal` result as what a user can now do — and
 **`Backlog +N/−M (now K) · decisions +N · docs +N/−M`**, the entries, records and gotcha or term
-bullets the close added and removed. The PR link last. This skill never merges; the squash is `dw-ship`'s one-way door.
+bullets the close added and removed. The PR link last. This skill never merges; the squash is
+`dw-ship`'s one-way door.
 
 ## Modes
 

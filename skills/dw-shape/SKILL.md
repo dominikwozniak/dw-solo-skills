@@ -107,8 +107,9 @@ Write `CHANGE.md` from the shape in `references/CHANGE.md`. From a `dw-grill` cl
 deferred item becomes a `## Decisions` line marked `(assumed)` with its default — `dw-next` builds
 on it and asks only when the build proves it wrong. Read back the goal, the task list, and the
 left-out list with a proposed fate per item (into the change / `## Out of scope` with why; a
-backlog entry only where the user asks for one) — **one stop**: granularity and fates are corrected in one reply. Then
-commit per `## Git conventions`, everything this shaping wrote staged by name.
+backlog entry only where the user asks for one) — **one stop**: granularity and fates are
+corrected in one reply. Then commit per `## Git conventions`, everything this shaping wrote staged
+by name.
 
 Beyond small, prefer a fresh session per change — the committed file is the handoff.
 

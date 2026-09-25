@@ -14,8 +14,8 @@ blocker you cannot name means the item belonged in the report — or done on the
 
 Shape of an entry, `<date>-<slug>.md` from `slugify.sh dated`: the frontmatter above, an H1 saying
 what-and-why in one line, at most ~3 lines of context. The finding goes **in the entry** — never as
-a pointer at `.ai/archive/<date>-<slug>`, because the archived doc keeps no notes at all. No status, no priority, and nothing
-validates these files, deliberately.
+a pointer at `.ai/archive/<date>-<slug>`, because the archived doc keeps no notes at all. No
+status, no priority, and nothing validates these files, deliberately.
 
 One exception to the three lines: an entry may **bundle** several small fixes as a bullet list when
 they ship together — same version bump, same gate run, one PR. Say in the lead sentence what makes

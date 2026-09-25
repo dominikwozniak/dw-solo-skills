@@ -64,8 +64,9 @@ a `## References` line.
 ### 2. Size it, then count the scopes
 
 **The goal is a result a user sees, delivered whole.** Asked for one piece of a flow — the endpoint,
-not the screen calling it — widen the goal to that result and say so at the read-back. Internal-only
-work — a check, a lint rule, a test harness, a refactor — is its own change only when asked for.
+not the screen calling it — widen the goal to that result, say so at the read-back and offer to
+narrow it back. Internal-only work — a check, a lint rule, a test harness, a refactor — is its own
+change only when asked for.
 
 - **Small** — one obvious edit: a goal and one or two checkboxes, no other section.
 - **Normal** — a few files, one seam: goal, the decisions taken, 3–6 tasks, anchors, out of scope.

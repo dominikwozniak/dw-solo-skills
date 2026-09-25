@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Recipe box</title>
+  </head>
+  <body>
+    <h1>Recipes</h1>
+    <ul id="recipes"></ul>
+    <script type="module">
+      const list = document.getElementById("recipes")
+      const recipes = await fetch("/api/recipes").then((res) => res.json())
+      for (const recipe of recipes) {
+        const item = document.createElement("li")
+        item.textContent = recipe.name
+        list.append(item)
+      }
+    </script>
+  </body>
+</html>

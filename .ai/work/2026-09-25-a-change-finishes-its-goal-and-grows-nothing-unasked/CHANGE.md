@@ -2,7 +2,7 @@
 change: a-change-finishes-its-goal-and-grows-nothing-unasked
 branch: a-change-finishes-its-goal-and-grows-nothing-unasked
 created: 2026-09-25
-status: shaping
+status: building
 ---
 
 # Change — a change finishes its goal, and nothing it leaves behind grows unasked
@@ -83,7 +83,7 @@ A box is ticked only once the proof it names exists: the check ran, not the code
 A task that stopped being necessary keeps its box and gains `**skip:** <reason>`; every later
 invocation reads that as not remaining. Never rename a task title. -->
 
-- [ ] 1. The three behaviour cases, red first: `dw-shape` #4 on a new fixture (an endpoint asked
+- [x] 1. The three behaviour cases, red first: `dw-shape` #4 on a new fixture (an endpoint asked
       for, a page that would use it), `dw-land` #4 on a new fixture (a delivered goal whose Notes hold
       a cheap in-goal fix, an out-of-goal idea and a trap only a new hook would refuse; a plain go),
       `dw-land` #3's expectations rewritten for a named-trap yes and a short receipt — proof:
@@ -160,3 +160,11 @@ invocation reads that as not remaining. Never rename a task title. -->
   `--plugin-dir`) and not this session's cached skill is what exercises the edit.
 
 ## Notes
+
+- Red on the current rules (n=1, $3.59): `dw-shape` #4 1/4 — the goal stopped at the endpoint and
+  the page's button got "backlog entry (the likely next change)" as its fate; `dw-land` #3 2/4 — the
+  gotcha pointed at a new `.ai/backlog/…-zero-tests-guard.md`; `dw-land` #4 2/5 — no balance, full receipt.
+- `dw-land` #4 refused the `Intl` trap with a case in the existing test file, a cheap check under
+  this change's rule; its expectation 3 was widened after the run to admit that path.
+- `land-gotcha-shape`'s `docs/agents/README.md:28-29,42-43` is a vendored copy of
+  `templates/agents-docs-README.md`; task 4 moves it with the template so #3 measures the new payload.

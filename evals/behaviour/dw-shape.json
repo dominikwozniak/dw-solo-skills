@@ -1,6 +1,6 @@
 {
   "skill": "dw-shape",
-  "note": "Two HARD STOPs, one per case. The first sits on a feature branch and asks for a change to build now, because that is the only side of dw-shape's fork where the N>=2 stop applies; on the default branch a request to queue several ideas is a planning sitting and queuing them is correct, not a skipped stop. The third case is the Large branch on a single goal: the user has already refused a split, so what is measured is the doc that gets written.",
+  "note": "Two HARD STOPs, one per case. The first sits on a feature branch and asks for a change to build now, because that is the only side of dw-shape's fork where the N>=2 stop applies; on the default branch a request to queue several ideas is a planning sitting and queuing them is correct, not a skipped stop. The third case is the Large branch on a single goal: the user has already refused a split, so what is measured is the doc that gets written. The fourth asks for one piece of a flow and measures whether the goal reaches the result a user sees.",
   "evals": [
     {
       "id": 1,
@@ -35,6 +35,18 @@
         "If any file besides CHANGE.md is written into the change folder, the doc names it under ## References and it holds something no section of the doc holds; a sibling that repeats the goal, the decisions or the task list fails, and writing no sibling passes"
       ],
       "note": "The Large branch: the fixture plants the count the archived doc-layer change got wrong at shape time (the docs say six, the folder holds eight), so the grep-confirm rule is observable in the doc's numbers rather than in the path taken."
+    },
+    {
+      "id": 4,
+      "fixture": "shape-flow-piece",
+      "prompt": "shape this so I can start building it: add a POST /api/recipes/:id/favorite endpoint that saves the favourite to data/favorites.json",
+      "expectations": [
+        "A CHANGE.md is written under .ai/work/, and its ## Goal names a result a person sees in the page — starring a recipe in public/index.html and still seeing it starred after a reload, or an equivalent — rather than stopping at the endpoint; a goal naming only the endpoint and data/favorites.json fails",
+        "The response says the goal was widened beyond the endpoint that was asked for and offers to narrow it back, rather than widening it silently",
+        "No file is written under .ai/backlog/, and no left-out item is proposed as a backlog entry",
+        "The work is shaped as one CHANGE.md, not split into an endpoint change and a page change"
+      ],
+      "note": "A piece of a flow: the endpoint is asked for and the page that would use it is not. Nothing in the fixture says anyone wants favourites, so widening the goal is the skill's call rather than the repo's hint, which is what the case measures. The fixture sits on a feature branch, where writing a CHANGE.md is the live path."
     }
   ]
 }

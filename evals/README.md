@@ -378,7 +378,7 @@ The cases come in three shapes. A **refusal** is a skill declining the thing the
 for, the three above among them. A **shape** is a skill
 asked to write something durable, graded on the form it lands in rather than on whether it landed:
 `dw-land` promoting a trap as one undated rule bullet, where the prompt asks for the story to be
-kept and the story's home is the archive. An **absence** is a skill whose promise is that nothing
+kept and the story's home is the close commit. An **absence** is a skill whose promise is that nothing
 happens: `dw-next status` and `dw-doctor` both report and stop,
 so every one of their expectations is a write that must not appear in the trace. A fourth shape left
 with `dw-git` (`0021`): a skill promising literal commands — staged by name and never `git add -A`,

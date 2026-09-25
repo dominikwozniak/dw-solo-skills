@@ -61,7 +61,7 @@ it — to five targets:
 - wherever a `## References` entry points — a pointer this change made untrue,
   rewritten in place on your go, never silently. Nothing to do where the doc named none
 - `.ai/backlog/<date>-<slug>.md` — a follow-up you named at the verdict, carrying its finding
-  inline; the archive keeps only what none of these five took
+  inline; the archive keeps only the receipt
 
 ## Rules
 

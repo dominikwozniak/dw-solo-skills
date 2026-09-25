@@ -74,12 +74,11 @@ in [`AGENTS.md`](AGENTS.md) and the procedures in the skills themselves.
   earns an entry. Joins the month bar (_will you ever?_), which tests only whether the idea is worth
   queueing at all. `dw-prune` applies it late, to a queue that grew anyway.
 - **Archive** — `.ai/archive/<date>-<slug>/`: landed change docs kept as history, not guidance. Nothing
-  reads them to decide anything. An entry is a **receipt** rather than the working doc — frontmatter,
-  the H1, the task list as it was left, the notes no durable target took, and any decision the close
-  turned down. Two statuses end
-  up here and there is no third: `landed`, and **`rejected` ≡ cancelled** — one status for an idea
-  turned down and for work abandoned mid-build, since both leave the same thing behind (a
-  `## Why rejected`) and nothing downstream tells them apart.
+  reads them to decide anything. An entry is a **receipt** rather than the working doc — the
+  frontmatter, the H1 and one line saying what the user got. Two statuses end up here and there is
+  no third: `landed`, and **`rejected` ≡ cancelled** — one status for an idea turned down and for
+  work abandoned mid-build, since both leave the same thing behind (a `## Why rejected`) and nothing
+  downstream tells them apart.
 - **Task** — one box in a `CHANGE.md`: a thin vertical slice, independently committable, leaving the
   project green, and carrying in its `proof:` phrase the check that would settle it. Not a layer
   ("add all the migrations" is not a task). The box is ticked once that check has run.

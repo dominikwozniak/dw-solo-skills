@@ -67,16 +67,14 @@ mechanical, which needs no name:
     - **supersedes an active record** → the new record carries `supersedes:`, and the old one is
       flipped in the same pass.
     - **already decided, nothing changed** → no record. Say which record covers it, in the report.
-    - **fails, or cannot be settled on what the change shows** → the line stays in the doc, and
-      rides into the archive so the third arrival of the same idea reads as a pattern instead of a
-      fresh question. `(nominated)` becomes `(rejected: <leg>)` where a leg actually failed, and
-      `(unsettled: <what would settle it>)` where none did — **never a leg you did not establish**.
+    - **fails, or cannot be settled on what the change shows** → no record; one report line names
+      the leg that failed, or what would settle it — **never a leg you did not establish**.
 - **Vocabulary** — a named term into `CONTEXT.md`, one bullet of at most two lines saying what the
   word means and nothing about why; a term the diff sharpened is rewritten in place, never a second
   definition beside it.
 - **Gotchas** — a named trap goes to the routed topic file covering it (the root file only where it
   already keeps a `## Gotchas`) as **one undated bullet of at most two lines** — do or never X, one
-  clause of why, a pointer — with what happened and when left in the commit and the archived doc. Where a case added to an existing hook, lint rule or check would refuse the trap,
+  clause of why, a pointer — with what happened and when left in the commit. Where a case added to an existing hook, lint rule or check would refuse the trap,
   add it in this change instead — named or not — and delete the prose it replaces, leaving its name.
   A new hook, script or harness is never that cheap: the report names it in one line, never a
   backlog entry. Cite a mechanism and the diff holds it, or it was prose after all.
@@ -88,11 +86,8 @@ mechanical, which needs no name:
 - **Archive** — `git rm` every sibling still beside the doc — a leftover `HANDOFF.md`, a shape-time
   `research.md` — once anything durable in it has been promoted; the receipt is `CHANGE.md` alone.
   Then `git mv .ai/work/<shaped date>-<slug>/ .ai/archive/<today>-<slug>/`; flip to
-  `status: landed` with `landed: YYYY-MM-DD`. Trim the doc to a receipt: delete Goal, Out of scope,
-  Anchors and References, and Decisions **except its `(rejected:)` and `(unsettled:)` lines** — keep
-  the frontmatter, the H1, the task list as `dw-next` left it, the Notes no target took, and those
-  two. A turned-down decision is residue no durable target would take, which is the same reason
-  Notes survive the trim.
+  `status: landed` with `landed: YYYY-MM-DD`. Trim the doc to a receipt: **the frontmatter, the H1
+  and the report's `You get:` line, nothing else** — the worked state lives in the PR `pr:` names.
 
 One commit carries all of it — including a `docs/agents/corpus.baseline.json` re-record where the
 repo keeps one, since a promotion that grows the corpus is what the ratchet asks to be shown.
@@ -111,8 +106,10 @@ hold; phase 1's report-open follow-ups go under `## What changes`, what phase 1 
 
 ### 4. Report
 
-What was promoted, parked and archived — the PR link last. This skill never merges; the squash is
-`dw-ship`'s one-way door.
+What was promoted and archived, and each report-open line. Then two lines: **`You get:`** — each
+`## Goal` result as what a user can now do — and
+**`Backlog +N/−M (now K) · decisions +N · docs +N/−M`**, the entries, records and gotcha or term
+bullets the close added and removed. The PR link last. This skill never merges; the squash is `dw-ship`'s one-way door.
 
 ## Modes
 

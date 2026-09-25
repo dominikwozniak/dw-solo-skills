@@ -101,7 +101,7 @@ invocation reads that as not remaining. Never rename a task title. -->
       or not at all — `dw-land` phase 2, `dw-next`'s term line, the `CHANGE.md` template markers,
       `templates/agents-docs-README.md:34-35`, `README.md:28-33`, `CONTEXT.md` Nomination and
       Promotion — proof: `grep -n "build or" skills/dw-land/SKILL.md` prints nothing; `pnpm validate:docs`.
-- [ ] 5. The close ends with what the user got — `dw-land`'s report and archive trim, `dw-shape`,
+- [x] 5. The close ends with what the user got — `dw-land`'s report and archive trim, `dw-shape`,
       the template, the archive and work README pairs, `docs/agents/change-artifacts.md`,
       `CONTEXT.md` Archive, `README.md:118-120` — proof: the archive README twin `diff` shows only
       its repo paragraph; `pnpm validate:docs`; a reader holds step 4 and the archive step to goal line 4.

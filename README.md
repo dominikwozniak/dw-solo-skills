@@ -114,8 +114,8 @@ meaning:
 - **`.ai/` is tracked, one folder per change, no central index.** A registry becomes a merge-conflict
   magnet once tracked; discovery is by directory name + frontmatter, matched to the git branch.
 - **Persistent, then archived.** The change doc is tracked so a `/clear` changes nothing, and moved
-  to `.ai/archive/` at merge so `work/` doesn't accumulate stale specs — a squash merge would
-  otherwise erase its worked state from history. What's genuinely durable is still promoted out.
+  to `.ai/archive/` at merge so `work/` doesn't accumulate stale specs, trimmed to a receipt: what
+  the user got, and the PR that holds the worked state. What's genuinely durable is still promoted.
 - **One gate, not a skill boundary.** The fuller workflow separates read-only auditors from the one
   writer so an auditor can't under-report what it couldn't fix. Here you read every finding yourself,
   so a single pass reports first and mutates only after explicit approval.

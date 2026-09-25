@@ -26,10 +26,8 @@ needed. Four markers, and `dw-land` reads the last one:
   already binds a file this change touches. Never reworded: the norm a builder acts on is the
   record's own words.
 - `[decision or term] (nominated) — [why it may deserve a record]` — a call worth a decision record,
-  or a term worth a `CONTEXT.md` line, that `dw-next` does not write. `dw-land` is the gate, and it
-  rewrites this line in place: gone, where the call became a record; `(rejected: <leg>)` where a leg
-  failed; `(unsettled: <what would settle it>)` where none failed but the change did not show enough.
-  The last two survive into the archive receipt — nothing else in this section does.
+  or a term worth a `CONTEXT.md` line, that `dw-next` does not write. `dw-land` puts it to the user
+  at the verdict and writes it only when named and, for a decision, when it clears the bar.
 
 ## Out of scope
 

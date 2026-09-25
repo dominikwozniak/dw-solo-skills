@@ -5,12 +5,10 @@ the frontmatter. The folder is `<landed date>-<slug>`, re-stamped on the move �
 the day the change was shaped, this one carries the day it landed, so the listing is ship order.
 
 **An entry is a receipt, not a second copy of the change.** It keeps the frontmatter, the one-line
-title, the task list as it was left — ticks and skip reasons — and any notes that found no durable
-home, plus any decision the gate turned down. `dw-land` deletes `## Goal`, `## Out of scope`,
-`## Anchors`, `## References` and all of `## Decisions` **but its `(rejected:)` and `(unsettled:)`
-lines** on the way in, along with any sibling file still beside the doc, and drops every note
-whose finding it has just promoted: those sections steered work the diff now holds, and a finding
-worth keeping lives in the durable layer instead of in a second copy here.
+title and one line saying what the user got. `dw-land` deletes everything else on the way in, along
+with any sibling file still beside the doc: those sections steered work the diff now holds, the
+worked state lives in the PR the frontmatter's `pr:` names, and a finding worth keeping lives in the
+durable layer.
 
 A turned-down idea ends here too — `dw-land reject` writes `status: rejected` with a `rejected:`
 date, which is that folder's prefix, the closed-unmerged `pr:` if there was one, and a

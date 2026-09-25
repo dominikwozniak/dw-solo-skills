@@ -29,8 +29,8 @@ smallest weight that still works:
   `CONTEXT.md` in the commit that coined it (`dw-next`), a decision is nominated there and judged
   once against the bar at close (`dw-land`, the only gate on `docs/decisions/`), and `dw-land`
   sweeps the rest — gotchas to the routed topic file, stale pointers rewritten, follow-ups
-  to `.ai/backlog/` — before archiving the change doc (`.ai/archive/`). Without that you accumulate
-  stale specs and lose the decisions worth keeping.
+  reported or, on your yes, filed to `.ai/backlog/` — before archiving the change doc
+  (`.ai/archive/`). Without that you accumulate stale specs and lose the decisions worth keeping.
 - **Commits drift from your conventions** — the scaffold ships a `## Git conventions` block every
   session loads in full, and the hooks refuse what a regex can decide; no git skill sits between.
 

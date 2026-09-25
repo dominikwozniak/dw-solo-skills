@@ -92,7 +92,7 @@ invocation reads that as not remaining. Never rename a task title. -->
       piece-of-a-flow extension, the internal-only rule, `dw-next`'s absorb bullet, `CONTEXT.md`
       Change and Task — proof: `grep -rn -E "session-sized|exceeds the session|small enough for a fresh session" skills/dw-shape skills/dw-next`
       prints nothing; `pnpm validate:docs`.
-- [ ] 3. The backlog grows only on a named yes — `dw-next`, `dw-shape`'s read-back, `dw-land`'s
+- [x] 3. The backlog grows only on a named yes — `dw-next`, `dw-shape`'s read-back, `dw-land`'s
       verdict, Follow-ups and description, `dw-ship`, `dw-handoff`, `dw-init`, the backlog and work
       README pairs, `templates/AGENTS.md`, `templates/agents-docs-README.md:50-51`, `README.md`,
       `CONTEXT.md` — proof: the task 2 grep over `skills templates .ai/backlog/README.md` prints

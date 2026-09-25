@@ -13,7 +13,7 @@ disable-model-invocation: true
 `CHANGE.md` already survives a `/clear` at **task** granularity. This skill covers the gap that
 leaves — the middle of a task, where a checkbox cannot say which three approaches you already ruled
 out — and holds **only** that: decisions belong in `CHANGE.md`, traps in `## Gotchas`, follow-ups in
-the backlog.
+its `## Notes`.
 
 ## Output location
 

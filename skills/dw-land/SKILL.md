@@ -2,8 +2,8 @@
 name: dw-land
 description: >-
   You are done with a change: wrap it up and decide whether it is ready to merge. One last thin
-  verdict over the whole finished branch, then on your go close it: promote what is worth keeping — the
-  decision records, the glossary, the gotchas — file the leftovers, archive the change doc, push
+  verdict over the whole finished branch, then on your go close it: promote what you name — the
+  decision records, the glossary, the gotchas — report the leftovers, archive the change doc, push
   the branch and open its pull request.
 argument-hint: "bare for the verdict — your go closes it and opens the PR · close to trust the diff and close at once · reject to archive a turned-down idea with its reason"
 ---
@@ -42,9 +42,10 @@ undelivered result is **not ready**, never "ready with follow-ups"; finish it, o
 the goal. One carve-out: a result only CI can show is **pending on the push**, handed to `dw-ship`.
 
 Close with one line — **ready to merge**, **ready with follow-ups**, or **not ready** and why —
-and sort each follow-up: **done now** (phase 2 starts by doing it) · **report-open** (a line in
-the report and PR body) · **backlog** (genuinely exceeds the session). Then **stop**: the user
-decides what happens next.
+and sort each follow-up: **done now** (inside the goal; phase 2 starts by doing it) ·
+**report-open** (outside it; a line in the report and PR body). List every candidate for a new
+durable entry — a backlog entry, a decision record, a gotcha, a term — one line each. Then **stop**:
+a go writes only the candidates the user names, and a plain go writes none.
 
 ### 2. Close — on an explicit go
 
@@ -80,10 +81,9 @@ this change made untrue or made mechanical:
   check or self-test itself, or the backlog entry that names it. Neither, and it was prose after all.
 - **Stale references** — a `## References` entry the diff made untrue is rewritten where it lives;
   that edits a file the change never touched, so name the exact line and get a yes first.
-- **Follow-ups** — do the ones cheaper to do than to file; report-open is the default; a
+- **Follow-ups** — the done-now ones are built first; the rest are report lines. A
   `.ai/backlog/<date>-<slug>.md` file (frontmatter `created:`, `source:`, `why-not-now:`,
-  `effort:`) only for work that genuinely exceeds the session. `git rm` any entry the diff
-  completed.
+  `effort:`) only for one the user named. `git rm` any entry the diff completed.
 - **Archive** — `git rm` every sibling still beside the doc — a leftover `HANDOFF.md`, a shape-time
   `research.md` — once anything durable in it has been promoted; the receipt is `CHANGE.md` alone.
   Then `git mv .ai/work/<shaped date>-<slug>/ .ai/archive/<today>-<slug>/`; flip to
@@ -118,7 +118,7 @@ What was promoted, parked and archived — the PR link last. This skill never me
 - **bare** — the verdict, then stop. A plain "go" or "close" in the conversation runs phases 2–3
   in this same invocation; a hedged reply is not a go.
 - **`close`** — the trust shortcut: one-line verdict, then close at once — unless it comes out
-  **not ready**, which always stops.
+  **not ready**, which always stops. Nothing was named, so it writes no new durable entry.
 - **`reject`** — the idea was turned down or the work abandoned: skip the verdict, promote what is
   still worth keeping, archive with `status: rejected`, `rejected: YYYY-MM-DD` and a
   `## Why rejected` naming what was tried and what killed it — refuse to write one without a

@@ -22,8 +22,8 @@ in [`AGENTS.md`](AGENTS.md) and the procedures in the skills themselves.
 - **Promotion** — moving the durable residue out of a `CHANGE.md`, **as it happens**: `dw-next`
   writes a term in the task's own commit and **nominates** a decision rather than writing it, and
   `dw-land` judges every nomination and sweeps what is left at close —
-  traps to the `## Gotchas` of the routed topic file, stale pointers rewritten, follow-ups to
-  `.ai/backlog/` (one file per idea). It **replaces rather than appends**: each target is read
+  traps to the `## Gotchas` of the routed topic file, stale pointers rewritten, follow-ups the
+  user names to `.ai/backlog/` (one file per idea). It **replaces rather than appends**: each target is read
   first, and what the change supersedes is deleted in the same edit. Decisions are the exception —
   there the replacement is a `superseded-by:` link and the old record stays.
 - **Cap** — the limit `validate-artifacts.sh` enforces on `.ai/backlog/`, the one durable list that

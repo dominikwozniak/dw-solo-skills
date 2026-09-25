@@ -1,16 +1,16 @@
 # `.ai/backlog/` — one file per follow-up
 
-Ideas not being worked on now. `dw-land` and `dw-shape` both park them here — the first at land time,
-the second when shaping decides an item is out of the change. `dw-shape` also takes one as the seed of
-a new change (`git mv` → `.ai/work/<date>-<slug>/CHANGE.md`) — the **bare slug** travels backlog →
-work → archive, while each lane stamps its own date.
+Ideas not being worked on now, and **each one is here on your yes**: a planning sitting in which
+`dw-shape` queues ideas on the default branch, the siblings of a split you agreed to, or a follow-up
+you named at `dw-land`'s verdict. No skill files one on its own. `dw-shape` also takes one as the
+seed of a new change (`git mv` → `.ai/work/<date>-<slug>/CHANGE.md`) — the **bare slug** travels
+backlog → work → archive, while each lane stamps its own date.
 
-**An entry is the expensive tier, and most follow-ups never reach it.** The default resting place
-for a leftover is a line in the land report and the PR body — no file. A file here is only for work
-that genuinely exceeds the session it was found in, and it pays for that: frontmatter
-`created: YYYY-MM-DD` (the same date as the prefix), `why-not-now:` naming what blocks it, and
-`effort:` with an honest size (optional `source:` naming the change that parked it). A blocker you
-cannot name means the item belonged in the report — or done on the spot.
+**Most follow-ups never reach this folder.** One inside the goal is done in the change that found
+it; one outside is a line in the land report and the PR body — no file. An entry pays for its place:
+frontmatter `created: YYYY-MM-DD` (the same date as the prefix), `why-not-now:` naming what blocks
+it, and `effort:` with an honest size (optional `source:` naming the change that parked it). A
+blocker you cannot name means the item belonged in the report — or done on the spot.
 
 Shape of an entry, `<date>-<slug>.md` from `slugify.sh dated`: the frontmatter above, an H1 saying
 what-and-why in one line, at most ~3 lines of context. The finding goes **in the entry** — never as

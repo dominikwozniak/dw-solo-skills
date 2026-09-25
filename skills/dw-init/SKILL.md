@@ -225,7 +225,7 @@ removes the gate the rest of the lane is built around.
 **Seed `.ai/backlog/` and `.ai/archive/` with their READMEs and nothing else** — no example entry, no
 `TODO`, nothing standing in for one. On the next read a placeholder is indistinguishable from real
 queued work, and a backlog you have to first decide isn't real is one you stop opening. The copied
-`backlog-README.md` states the entry shape; entries arrive later, from `dw-land`.
+`backlog-README.md` states the entry shape; entries arrive later, each on the user's yes.
 
 ### 5. Optional — wire the pre-commit
 

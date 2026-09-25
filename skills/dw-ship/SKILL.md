@@ -73,7 +73,6 @@ nothing.
 
 ### 6. Report
 
-What merged and where, what was torn down. Follow-ups parked in `.ai/backlog/` are where the next
-`dw-shape` starts — that's the loop closing.
+What merged and where, what was torn down.
 
-**Next:** `dw-shape` for the next change — the backlog is where it starts.
+**Next:** `dw-shape` for the next change.

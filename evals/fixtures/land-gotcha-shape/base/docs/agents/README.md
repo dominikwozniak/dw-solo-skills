@@ -40,4 +40,4 @@ cap off — and with it the one shape rule a number cannot express, the ban on a
 
 **Not here.** What a word _means_ goes in `CONTEXT.md`, on the same terms: one bullet, at most two
 lines, no rationale. Why the code is shaped this way goes in `docs/decisions/`. A follow-up worth
-keeping but not worth doing now goes in `.ai/backlog/`.
+keeping but not worth doing now goes in `.ai/backlog/`, and only on your yes.

@@ -168,3 +168,4 @@ invocation reads that as not remaining. Never rename a task title. -->
   this change's rule; its expectation 3 was widened after the run to admit that path.
 - `land-gotcha-shape`'s `docs/agents/README.md:28-29,42-43` is a vendored copy of
   `templates/agents-docs-README.md`; task 4 moves it with the template so #3 measures the new payload.
+- Task 4 missed two spots saying dw-land keeps "what is worth keeping" — the H1 and `reject` mode; fixed on their own commit after task 5.

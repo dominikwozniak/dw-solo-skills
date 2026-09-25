@@ -8,7 +8,7 @@ description: >-
 argument-hint: "bare for the verdict — your go closes it and opens the PR · close to trust the diff and close at once · reject to archive a turned-down idea with its reason"
 ---
 
-# dw-land — one thin verdict, then keep what's worth keeping
+# dw-land — one thin verdict, then keep what you name
 
 Two phases, and the gate between them is your word.
 
@@ -117,8 +117,8 @@ bullets the close added and removed. The PR link last. This skill never merges; 
   in this same invocation; a hedged reply is not a go.
 - **`close`** — the trust shortcut: one-line verdict, then close at once — unless it comes out
   **not ready**, which always stops. Nothing was named, so it writes no new durable entry.
-- **`reject`** — the idea was turned down or the work abandoned: skip the verdict, promote what is
-  still worth keeping, archive with `status: rejected`, `rejected: YYYY-MM-DD` and a
+- **`reject`** — the idea was turned down or the work abandoned: skip the verdict, promote what the
+  user names, archive with `status: rejected`, `rejected: YYYY-MM-DD` and a
   `## Why rejected` naming what was tried and what killed it — refuse to write one without a
   reason. The archive trim spares that section. Commit it somewhere that survives the branch — a
   short branch off the default one and a PR.

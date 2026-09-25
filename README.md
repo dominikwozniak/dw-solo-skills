@@ -28,7 +28,8 @@ smallest weight that still works:
 - **A private repo rots** — what's durable is **kept on your yes**: `dw-next` nominates a term or a
   decision in the commit that coined it, and `dw-land` puts each to you at close — the only gate on
   `docs/decisions/` and `CONTEXT.md` — writes what you name, rewrites stale pointers, and reports the
-  rest or, on your yes, files it to `.ai/backlog/` before archiving the change doc (`.ai/archive/`). Without that you accumulate stale specs and lose the decisions worth keeping.
+  rest or, on your yes, files it to `.ai/backlog/` before archiving the change doc (`.ai/archive/`).
+  Without that you accumulate stale specs and lose the decisions worth keeping.
 - **Commits drift from your conventions** — the scaffold ships a `## Git conventions` block every
   session loads in full, and the hooks refuse what a regex can decide; no git skill sits between.
 
